@@ -1,4 +1,4 @@
-﻿/*主框架*/
+/*主框架*/
 
 #web {
 	margin: 0 auto;
@@ -81,8 +81,78 @@ body {
 	overflow: hidden;
 }
 
+#web {
+	position: fixed;
+	z-index: 1;
+	top: 104px;
+	width: 100%;
+    height: 158px;
+    /*line-height: 500px;
+    text-align: center;
+    border: 1px solid #000;
+    background-color: #FFF;*/
+}
+
+#web #top_logo {
+	margin: 0 auto; width: 210px; height: 70px;
+}
+
+#web #top_logo .logo-item {
+	position: absolute;
+    display: block;
+    width: 210px;
+    height: 70px;
+}
+
+#web #top {
+	margin: 44px auto 0; width: 643px; height: 44px;
+}
+
+#web #top #search { float: left; width: 570px;
+    background-color: #fff;
+    border: 1px #d7d7d7 solid;
+    border-right: 0;
+    border-radius: 5px 0 0 5px;  
+}
+
+#web #top #search #search_1 {
+	float: left; padding-left: 10px; width: 560px; height: 38px; font-weight: 400;
+    font-size: 16px;
+    color: #333;
+    font-family: "Microsoft Yahei","Heiti SC";
+    background-color: transparent;
+}
+
+#web #top .search-button-box {
+	float: left; height: 100%; width: 72px;outline: 0;
+    font-size: 0;
+    cursor: pointer;
+    border-radius: 0 5px 5px 0;
+    border: 1px #aeaeae solid;
+    border-left: 0;background: linear-gradient(#bcbcbc,#aeaeae);
+}
+
+#web #top .search-button-box .search-button { 
+	background-image: url(https://res.hao1258.com/styles/front/img/home/all_in_one_blue.png);
+	position: absolute;
+    width: 20px;
+    height: 20px;
+    display: block;
+    padding: 0;
+    top: 86%;
+    left: 71%;
+    outline: 0;
+    margin-left: -10px;
+    margin-top: -10px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: auto 40px;
+    background-position: -840px 0;
+}
+
 #head {}
 
 /*底部*/
 
 #bot {}
+
