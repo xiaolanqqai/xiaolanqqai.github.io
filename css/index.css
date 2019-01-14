@@ -26,6 +26,6 @@ label,button{cursor:pointer}
 .wordwrap{word-break:break-all;word-wrap:break-word}
 pre.wordwrap{white-space:pre-wrap}
 body{text-align:center}
-body,form{position:relative}
+/*body,form{position:relative}*/
 td{text-align:left}
 img{border:0}
