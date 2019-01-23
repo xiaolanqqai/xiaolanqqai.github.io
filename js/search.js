@@ -19,9 +19,9 @@ function searchToggle(obj, evt){
 			_html = "Yup yup! Add some text friend :D";
 		}
 		else{
-			_html += "<b>" + value + "</b>";
+			_html = "https://www.baidu.com/s?word=" + value;
 		}
-		$(obj).find('.result-container').html('<span>' + _html + '</span>');
+		$(obj).find('.result-container').html(window.location.href=_html);
 		$(obj).find('.result-container').fadeIn(100);
 		evt.preventDefault();
 	}
