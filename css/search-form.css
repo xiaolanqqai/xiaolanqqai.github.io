@@ -1,5 +1,5 @@
 html,body {height: 100%;}
-body {padding: 0px; margin:0px; background:url(../img/image.jpg) ; background-position: center; background-size: cover; background-attachment: fixed; background-repeat: no-repeat;}
+body {padding: 0px; margin:0px; background-position: center; background-size: cover; background-attachment: fixed; background-repeat: no-repeat;}
 
 .search-wrapper {
     position: absolute;
