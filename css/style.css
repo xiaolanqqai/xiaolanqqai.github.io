@@ -104,53 +104,59 @@ body {
     height: 70px;
 }
 
-/*#web #top {
-	margin: 44px auto 0; width: 643px; height: 44px;
+/*快捷导航栏*/
+#kj {
+	position: fixed;
+	z-index: 1;
+	top: 400px;
+	width: 100%;
 }
 
-#web #top #search { float: left; width: 570px;
-    background-color: #fff;
-    border: 1px #d7d7d7 solid;
-    border-right: 0;
-    border-radius: 5px 0 0 5px;
+#kj #kj_z {
+	margin: 0 auto;
+	width: 585px;
+	height: 200px;
+	padding: 5px;
+	background: #f3f3f359;
+	border-radius: 10px;
 }
 
-#web #top #search #search_1 {
-	float: left; padding-left: 10px; width: 560px; height: 38px; font-weight: 400px;
-    font-size: 16px;
-    color: #333;
-    font-family: "Microsoft Yahei","Heiti SC";
-    background-color: transparent;
+#kj #kj_z .kj_li {
+	float: left;
+	margin: 5px 0 0 20px;
+	width: 120px;
+	height: 40px;
+	border-radius: 10px;
+	background: #61a6abad;
 }
 
-#web #top .search-button-box {
-	float: left; height: 100%; width: 72px;outline: 0;
-    font-size: 0;
-    cursor: pointer;
-    border-radius: 0 5px 5px 0;
-    border: 1px #aeaeae solid;
-    border-left: 0;background: linear-gradient(#bcbcbc,#aeaeae);
+#kj #kj_z .kj_li:hover {
+	float: left;
+	margin: 5px 0 0 20px;
+	width: 120px;
+	height: 40px;
+	border-radius: 10px;
+	background: #86b8b1;
+}
+#kj #kj_z .kj_li .kj_a {
+	float: left;
+	padding: 10px;
+	font-size: 14px;
+	color: #fff;
+	text-align: left;
+	font-weight: 400;
 }
 
-#web #top .search-button-box .search-button { 
-	background-image: url(/img/all_in_one_blue.png);
-	position: absolute;
+
+#kj #kj_z .kj_li .kj_icon {
+	margin-right: 4px;
+	float: left;
     width: 20px;
     height: 20px;
-    display: block;
-    padding: 0;
-    top: 86%;
-    left: 71%;
-    outline: 0;
-    margin-left: -10px;
-    margin-top: -10px;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-size: auto 40px;
-    background-position: -840px 0;
-}*/
-
-#head {}
+    background-position: center;
+    background-size: contain;
+    border-radius: 4px;
+}
 
 /*底部*/
 
