@@ -6,7 +6,7 @@ em{font-style:normal}
 small{font-size:12px}
 ul,ol{list-style:none}
 a{text-decoration:none}
-a:hover{text-decoration:underline}
+a:hover{text-decoration:none}
 legend{color:#000}
 fieldset,img{border:0}
 button,input,select,textarea{font-size:100%}
