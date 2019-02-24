@@ -21,7 +21,7 @@ function searchToggle(obj, evt){
 		else{
 			_html = "https://www.baidu.com/s?word=" + value;
 		}
-		$(obj).find('.result-container').html(window.location.href=_html);
+		$(obj).find('.result-container').html(window.open(_html));
 		$(obj).find('.result-container').fadeIn(100);
 		evt.preventDefault();
 	}
