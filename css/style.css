@@ -86,7 +86,7 @@ body {
 	z-index: 1;
 	top: 104px;
 	width: 100%;
-    height: 358px;
+    height: 658px;
     /*line-height: 500px;
     text-align: center;
     border: 1px solid #000;
@@ -104,10 +104,52 @@ body {
     height: 70px;
 }
 
+/*搜索ajx*/
+
+#search_ajx {
+	position: fixed;
+	z-index: 1;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    top:60%;
+    left:50%;
+}
+
+#search_ajx ul {
+	text-align: left;
+	
+}
+
+#list{
+	width:453px;
+	border-radius: 5px;
+	display:none;
+	background: #fff;
+}
+#list li{
+	margin-top: 2px;
+	line-height:36px;
+	border-radius: 5px;
+}
+#list li a{
+	font-size:14px;
+	color:#000;
+	text-decoration:none;
+	display:block;
+	padding-left: 20px;
+	border-radius: 5px;
+}
+#list li a:hover{
+	background:#e8eaed;
+	border-radius: 5px;
+}
+
+
 /*快捷导航栏*/
 #kj {
 	position: fixed;
-	z-index: 1;
+	/*z-index: 1;*/
 	top: 400px;
 	width: 100%;
 }
