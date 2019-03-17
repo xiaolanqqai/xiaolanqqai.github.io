@@ -213,6 +213,14 @@ body {
 	float: left; margin: 5px; width: 300px; height: 54px;
 }
 
-#bot #github {
-	float: right; margin: 22px 10px 5px;
+#bot #bot_right {
+	float: right; bottom: 1px;
+}
+
+#bot #bot_right #about {
+	float: left; margin: 22px 5px 5px ; width: 32px; height: 32px; border-radius: 20px; background: #ffffffbf;
+}
+
+#bot #bot_right #github {
+	float: left; margin: 22px 10px 5px;
 }
