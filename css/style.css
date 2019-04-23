@@ -173,10 +173,10 @@ body {
 }
 
 #kj #kj_z .kj_li:hover {
-	float: left;
+/* 	float: left;
 	width: 121px;
 	height: 41px;
-/* 	border-radius: 10px; */
+	border-radius: 10px; */
 	background: #86b8b1;
 }
 #kj #kj_z .kj_li .kj_a {
