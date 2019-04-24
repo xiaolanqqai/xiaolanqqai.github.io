@@ -223,3 +223,24 @@ body {
 #bot #bot_right #github {
 	float: left; margin: 22px 10px 5px;
 }
+
+#about:hover .tin {
+	opacity:1;z-index:5;visibility:visible
+}
+
+.tin {
+	color:#1b2226;
+	background:#ffffffbf;
+	position:absolute;
+	right: 10px;
+	top: -35px;
+	padding:1px;
+	height:40px;
+	width:200px;
+	border-radius: 5px;
+	box-sizing:border-box;
+	opacity:0;
+	visibility:hidden;
+	z-index:-1;
+	transition:opacity .13s ease-in-out,width .13s ease-in-out
+}
