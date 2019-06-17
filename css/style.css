@@ -154,6 +154,16 @@ body {
 	width: 100%;
 }
 
+#kj #jk_a {margin: 0 auto;width: 690px;height: 50px;padding: 5px;background: #f3f3f359;border-radius: 10px;margin-bottom: 10px;}
+#kj #jk_a #ul1 li{margin: 5px 0 0 15px; float: left;width: 120px;height: 40px;border-radius: 10px;background: #61a6ab30;text-align: center;align-content: center;
+line-height: 40px; font-size: 14px;}
+#kj #jk_a #ul1 li:hover{background: #86b8b1;}
+
+
+
+
+
+
 #kj #kj_z {
 	margin: 0 auto;
 	width: 690px;
