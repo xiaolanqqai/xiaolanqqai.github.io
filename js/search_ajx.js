@@ -11,8 +11,12 @@ oTxt.onkeyup = function(){
 	document.body.appendChild(oScript);
 	document.body.removeChild(oScript);
 }
-//oBox失去焦点时发生：
-oBox.onblur = function(){
+//oTxt失去焦点时发生：
+oTxt.onblur = function(){
+	oList.style.display = "none";
+}
+//oTxt获取焦点时发生：
+oTxt.onfocus = function(){
 	oList.style.display = "none";
 }
 //通过for循环遍历获得的数据
