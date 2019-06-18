@@ -17,7 +17,7 @@ oTxt.onblur = function(){
 }
 //oTxt获取焦点时发生：
 oTxt.onfocus = function(){
-	oList.style.display = "none";
+	oList.style.display = "block";
 }
 //通过for循环遍历获得的数据
 function fly(myJson){
