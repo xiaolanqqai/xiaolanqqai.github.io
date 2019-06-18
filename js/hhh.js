@@ -9,7 +9,7 @@ window.onload =function()
 	for (i=0;Oul1.length>i;i++) {
 		Oul1[i].index=i;
 		
-		Oul1[i].onclick = function()
+		Oul1[i].onmousemove = function()
 		{
 			for (j=0;Oul1.length>j;j++) {
 				if (j==i) {
