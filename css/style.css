@@ -126,7 +126,7 @@ body {
 #list{
 	width:453px;
 	border-radius: 5px;
-	display:none;
+/* 	display:none; */
 	background: #fff;
 }
 #list li{
