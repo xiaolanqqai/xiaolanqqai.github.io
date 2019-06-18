@@ -86,22 +86,24 @@ body {
 	z-index: 2;
 	top: 90px;
 	width: 100%;
-    /*height: 658px;*/
-    /*line-height: 500px;
+    /*height: 658px;
+    line-height: 500px;
     text-align: center;
     border: 1px solid #000;
     background-color: #FFF;*/
 }
 
 #web #top_logo {
-	margin: 0 auto; width: 210px; height: 70px;
+	margin: 0 auto;
+	width: 210px;
+	height: 70px;
 }
 
 #web #top_logo .logo-item {
 	position: absolute;
-    display: block;
-    width: 210px;
-    height: 70px;
+        display: block;
+        width: 210px;
+        height: 70px;
 }
 
 /*搜索ajx*/
@@ -109,11 +111,11 @@ body {
 #search_ajx {
 	position: fixed;
 	z-index: 1;
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    margin-top: 300px;
-    left:50%;
+        -webkit-transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        margin-top: 300px;
+        left:50%;
 }
 
 #search_ajx ul {
@@ -154,13 +156,38 @@ body {
 	width: 100%;
 }
 
-#kj #jk_a {margin: 0 auto;width: 690px;height: 50px;padding: 5px;background: #f3f3f359;border-radius: 10px;margin-bottom: 10px;}
-#kj #jk_a #ul1 li{margin: 5px 0 0 15px; float: left;width: 120px;height: 40px;border-radius: 10px;background: #61a6ab30;text-align: center;align-content: center;
-line-height: 40px; font-size: 14px;}
-#kj #jk_a #ul1 li:hover{background: #86b8b1;}
+#kj #jk_a { 
+	margin: 0 auto;
+	width: 690px;
+	height: 50px;
+	padding: 5px;
+	background: #f3f3f359;
+	border-radius: 10px;
+	margin-bottom: 10px;
+}
 
-.top11{display: none;}
-#ul1{}
+#kj #jk_a #ul1 li { 
+	margin: 5px 0 0 15px;
+	float: left;
+	width: 120px;
+	height: 40px;
+	border-radius: 10px;
+	background: #61a6ab30;
+	text-align: center;
+	align-content: center;
+        line-height: 40px;
+	font-size: 14px;
+}
+
+#kj #jk_a #ul1 li:hover { 
+	background: #86b8b1;
+}
+
+.top11 {
+	display: none;
+}
+
+#ul1 {}
 
 
 
@@ -190,8 +217,9 @@ line-height: 40px; font-size: 14px;}
 	border-radius: 10px; */
 	background: #86b8b1;
 }
+
 #kj #kj_z .kj_li .kj_a {
-	float: left;
+	
 	padding: 10px;
 	font-size: 14px;
 	color: #fff;
@@ -199,15 +227,18 @@ line-height: 40px; font-size: 14px;}
 	font-weight: 400;
 }
 
+#kj #kj_z a{
+	display: block;
+}
 
 #kj #kj_z .kj_li .kj_icon {
 	margin-right: 4px;
 	float: left;
-    width: 20px;
-    height: 20px;
-    background-position: center;
-    background-size: contain;
-    border-radius: 4px;
+        width: 20px;
+        height: 20px;
+        background-position: center;
+        background-size: contain;
+        border-radius: 4px;
 }
 
 /*底部*/
@@ -220,23 +251,35 @@ line-height: 40px; font-size: 14px;}
 }
 
 #bot #music {
-	float: left; margin: 5px; width: 300px; height: 54px;
+	float: left;
+	margin: 5px;
+	width: 300px;
+	height: 54px;
 }
 
 #bot #bot_right {
-	float: right; bottom: 1px;
+	float: right;
+	bottom: 1px;
 }
 
 #bot #bot_right #about {
-	float: left; margin: 22px 5px 5px ; width: 32px; height: 32px; border-radius: 20px; background: #ffffffbf;
+	float: left;
+	margin: 22px 5px 5px ;
+	width: 32px;
+	height: 32px;
+	border-radius: 20px;
+	background: #ffffffbf;
 }
 
 #bot #bot_right #github {
-	float: left; margin: 22px 10px 5px;
+	float: left;
+	margin: 22px 10px 5px;
 }
 
 #about:hover .tin {
-	opacity:1;z-index:5;visibility:visible
+	opacity:1;
+	z-index:5;
+	visibility:visible
 }
 
 .tin {
