@@ -9,7 +9,7 @@ oTxt.onkeyup = function(){
 	oList.style.display = "block";
 	var oValue = oTxt.value;
 	var oScript = document.createElement("script");
-	oScript.src = "https://sp0.baidu.com/su?wd="+oValue+"&cb=fly";
+	oScript.src = "https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd="+oValue+"&cb=fly";
 	document.body.appendChild(oScript);
 	document.body.removeChild(oScript);
 }
