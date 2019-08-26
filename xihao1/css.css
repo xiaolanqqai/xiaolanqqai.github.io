@@ -1,0 +1,148 @@
+@charset "utf-8";
+body,ul,p,h1,h2,h3,h4,dl,dd,form,input,textarea,select ,input{ padding:0; margin:0; }
+li { list-style:none; }
+img { border:none; }
+a { text-decoration:none;}
+a:hover { text-decoration:none; }
+
+#htm{margin: 0 auto;height: auto;background-color: #FFFFFF;max-width: 1920px;}
+.top{height: 80px; background-color: rgba(255, 255, 255, 0.9);display: flex;position: fixed;
+z-index: 999;margin: 0 auto;-webkit-transform: translateZ(0);border-bottom: 1px #ccc solid;}
+
+/* 左边导航 */
+.menu_left{width: 460px;}
+.menu_left_li{float: left;border-right: 1px #ccc solid;text-align: center;width: 110px;height: 80px;line-height: 80px;}
+.menu_left_li a{color: black;text-decoration: none;display: block;}
+.menu_left_li a:hover{color: black;background:rgba(132,132,132,0.5);}
+.menu_left_img{width: 120px;height: 80px;display: inline;float: left;border-right: 1px #ccc solid;}
+.menu_left_img a{display: block;width: 120px;height: 80px;}
+.menu_left_img img{width: 50px;height: 50px;margin-top: 15px;margin-left: 35px;}
+
+/* logo */
+.menu_logo{height: 80px;width: 1000px;}
+.logo{height: 80px;width: 255px;margin-left: 360px;}
+
+/* 右边导航 */
+.menu_right{width: 460px;display: flex;}
+.menu_right_li{float: left;border-left: 1px #ccc solid;text-align: center;width: 110px;height: 80px;line-height: 80px;}
+.menu_right_li a{color: black;text-decoration: none;display: block;}
+.menu_right_li a:hover{color: black;background:rgba(132,132,132,0.5);}
+.menu_right_img{width: 110px;height: 80px;float: left;border-left: 1px #ccc solid;}
+.menu_right_img a{display: block;width: 110px;height: 80px;}
+.menu_right_img img{width: 50px;height: 50px;margin-top: 15px;margin-left: 35px;}
+.menu_text{background:rgba(132,132,132,0.8);width: 250px;height: 40px;border: 0;border-radius: 3px;display: none;margin-top: 20px;margin-left: 83px;}
+
+
+/* 大图轮播 */
+.swiper-container {width: 100%;height: 920px;z-index: 3;}  
+.swiper-container img {width: 100%;height: 920px;} 
+.swiper-pagination{margin-right: 30px;}
+
+
+/* 产品展示 */
+.show{margin-top: 180px;height: 900px;}
+.show_img{background-image: url(../img/beijing1.png);width: 645px;height: 895px;}
+.show_text{width: 300ox;height: 400px;margin-left: 160px;padding-top: 250px;}
+.show_img h3{font-size: 30px;margin-top: 20px;margin-bottom: 60px;color: #FFFFFF;line-height: 50px;}
+.show_img p{font-size: 15px;margin-top: 20px;color: #FFFFFF;}
+
+/* 产品展示 轮播 */
+.swiper-container_3 {max-width: 1300px;height: 900px;overflow: hidden;position: relative;top: -900px;	right: -400px;}
+.swiper-container_3 .swiper-slide {text-align: center;font-size: 18px;
+				/* Center slide text vertically */
+display: -webkit-box;display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-pack: center;-ms-flex-pack: center;
+-webkit-justify-content: center;justify-content: center;-webkit-box-align: center;-ms-flex-align: center;-webkit-align-items: center;
+align-items: center;transition: 300ms;transform: scale(0.9);}
+
+.swiper-container_3 .swiper-slide img:hover{box-shadow: 0px 0px 15px #000000;}
+.swiper-container_3 .swiper-slide-active,.swiper-container_3 .swiper-slide-duplicate-active {transform: scale(1.1);z-index: 2;}
+
+
+/* 产品展示 轮播按钮 */
+.show_but{display: flex;margin-top: 30px;}
+.swiper-button-prev_3{background-image: url(../img/zuoanniu.png);width: 50px;height: 50px;background-repeat: no-repeat;}
+.swiper-button-next_3{background-image: url(../img/youanniu.png);width: 50px;height: 50px;background-repeat: no-repeat;}
+
+/* 产品展示 客服与下载 */
+.show_customer{width: 75px;position: fixed;right:50px;top: 350px;background: #5c8891;border-radius: 2px;z-index: 2;}
+.show_customer_download{border-bottom: 1px #FFFFFF solid;}
+.show_customer_download img{width: 60px;height: 60px;margin-left: 5px;margin-top: 10px;}
+.show_customer_download p{font-size: 10px;margin-bottom: 10px;text-align: center;}
+.show_customer_download a{color: #FFFFFF;text-decoration: none;}
+
+/* 公司简介 */
+.company{margin-top: 180px;display: flex;height: 1000px;width: 100%;position: relative;}
+.company_content{width: 1160px;background-color: #eee;flex-direction: column;}
+.company_content_text{margin-left: 160px;width: 520px;margin-top: 140px;}
+.company_content_text h3{font-size: 30px;margin-top: 50px;}
+.company_content_text h4{font-size: 30px;margin-top: 20px;margin-bottom: 150px;}
+.company_content_text p{font-size: 20px;margin-top: 10px;}
+.company_float{position: absolute;top :264px;left: 745px;}
+.company_img{width: 760px;}
+
+
+/* 最新动态 */
+.content{margin-top: 180px;width: 1600px;margin-left: 160px;margin-right: 160px;}
+.content_top{display: flex;justify-content: space-between;height: 90px;}
+.content_top h3{font-size: 35px;font-weight: 700;}
+.content_top p{font-size: 20px;font-weight: 700;}
+.content_top a{text-decoration: none;color: #000000;}
+.content_input{margin-top: 65px;display: flex;justify-content: space-between;}
+.content_input_banner{width: 720px;height: 600px;overflow: hidden;position: relative;}
+.content_input_banner a{color: #FFFFFF;}
+.content_input_text{width: 780px;height: 600px;}
+.content_input_text a{color: #000000;}
+.content_input_substance{margin-top: 20px;border-bottom: 5px #ccc solid;margin-bottom: 20px;}
+.content_input_substance h3{font-size: 20px;font-weight: 700;margin-bottom: 30px;}
+.content_input_substance h4{font-size: 10px;font-weight: 300;margin-bottom: 40px;}
+.content_input_time{justify-content: space-between;display: flex;margin-bottom: 25px;}
+.content_input_time img{width: 40px;height: 25px;}
+		/* 控制轮播的图片介绍 */
+.swiper-slide_introduce{position: relative;width: 720px;height: 80px;background-color: rgba(0,0,0,0.5);z-index: 2;top: -80px;}
+.swiper-slide_introduce p{line-height: 80px;font-size: 23px;text-align: center;}
+
+/*最新动态 轮播下边的分页器 */
+.swiper-pagination_1{position: relative;z-index: 3;top: -100px;}
+		/*最新动态 控制轮播的小圆按钮位置背景颜色等 */
+.swiper-pagination_1 .swiper-pagination-bullet{position: relative;right: -660px;top: -30px;background:#CCCCCC;}
+		/*最新动态 控制轮播的小圆按钮选中的颜色 */
+.swiper-pagination_1 .swiper-pagination-bullet-active{background: #FFFFFF;}
+
+/* 最新动态 轮播图片大小 */
+.swiper-container_1 img{width: 720px;height: 600px;}
+
+
+/* 工程案例 */
+.project{margin-top: 180px;height: 150px;}
+.project_top{margin-left: 885px;margin-right: 160px;display: flex;justify-content: space-between;}
+.project_top h3{font-size: 35px;font-weight: 700;}
+.project_top p{font-size: 20px;font-weight: 700;}
+.project_top a{text-decoration: none;color: #000000;}
+.project h4{font-size: 35px;font-weight: 700;text-align: center;margin-top: 10px;}
+
+/* 工程案例 轮播 */
+.swiper-container_2 {max-width: 1920px;width: 100%;height: 100%;overflow: hidden;	}
+.swiper-container_2 .swiper-slide {text-align: center;font-size: 18px;background: #fff;
+				/* Center slide text vertically */
+display: -webkit-box;display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-pack: center;-ms-flex-pack: center;
+-webkit-justify-content: center;justify-content: center;-webkit-box-align: center;-ms-flex-align: center;-webkit-align-items: center;
+align-items: center;transition: 300ms;transform: scale(0.7);}
+.swiper-container_2 .swiper-slide-active,.swiper-container_2 .swiper-slide-duplicate-active {transform: scale(1);z-index: 2;}
+
+/* 工程案例 轮播按钮 */
+.swiper-button-prev{top: 4700px;}
+.swiper-button-next{top:4700px}
+
+/* .separator{border-top: 1px #cccc solid;margin-top: 160px;} */
+/* 页尾 */
+.footer{margin-top: 50px;height: 240px;display: flex;justify-content: space-between;margin-left: 160px;margin-right: 160px;}
+.footer_content{flex-direction: column;}
+.footer_code{}
+.footer_code p{text-align: center;}
+.footer_ul{flex-direction: row;height: 25px;margin-top: 30px;}
+.footer_li{display: inline-flex;margin-right: 40px;font-size: 20px;font-weight: 600;}
+.footer_li a{color: #000000; text-decoration: none;}
+.footer_content p{font-size: 15px;}
+
+.footer_char{padding-left: 40px;border-left: 1px #ccc solid;}
+
