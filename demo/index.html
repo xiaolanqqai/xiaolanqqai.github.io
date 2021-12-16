@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>Xiaolan</title>
+		<link rel="Shortcut icon" href="favicon.ico">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/search-form.css">
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<script type="text/javascript" src="js/hhh.js"></script>
+
+	</head>
+	<body>
+
+		<div class="z-2 d-flex flex-column justify-content-center mx-auto">
+			<div class=" mt-5 pt-5 d-none d-sm-block"></div>
+			<div class="mx-auto shadow mt-3"><a href="index.html"><img src="img/google_logo.webp" width="250" class="img-fluid img-thumbnail"></a></div>
+			<div class="mx-auto mt-5 pt-5">
+				<!--搜索框-->
+			<form onsubmit="submitFn(this, event);">
+		        <div class="search-wrapper">
+			        <div class="input-holder">
+				        <input type="text" id="txt" class="search-input" placeholder="Type to search" />
+				    <button class="search-icon" onclick="searchToggle(this, event);"><span></span></button>
+			        </div>
+			    <span class="close" onclick="searchToggle(this, event);"></span>
+			        <div class="result-container">
+			        </div>
+		        </div>
+		        <div id="search_ajx"><ul id="list" style="display:none;"></ul></div>
+	        </form>
+	        
+	        
+	        <script type="text/javascript" src="js/search.js"></script>
+	        <script type="text/javascript" src="js/search_ajx.js"></script>
+			
+	        <!--搜索框-->
+			</div>
+
+			<nav class="p-2 mx-auto mt-5 pt-5">
+				<div class="nav nav-tabs shadow" id="list-tab" role="tablist">
+				  <a class="nav-link btn btn-outline-secondary active" id="list-1-list" data-bs-toggle="list" href="#list-1" role="tab" aria-controls="1">Home</a>
+				  <a class="nav-link btn btn-outline-secondary" id="list-2-list" data-bs-toggle="list" href="#list-2" role="tab" aria-controls="2">Tools</a>
+				  <a class="nav-link btn btn-outline-secondary" id="list-3-list" data-bs-toggle="list" href="#list-3" role="tab" aria-controls="3">Tools NEW</a>
+				  <a class="nav-link btn btn-outline-secondary" id="list-4-list" data-bs-toggle="list" href="#list-4" role="tab" aria-controls="4">Network</a>
+				  <a class="nav-link btn" href="index/more.html">...</a>
+				</div>
+			</nav>
+			  <div class="tab-content kuaijie mx-auto mt-3" id="nav-tabContent">
+				<div class="tab-pane fade show active" id="list-1" role="tabpanel" aria-labelledby="list-1-list">
+					<div class="row row-cols-4 p-2">
+						<a href="https://www.bilibili.com" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img  class="border rounded-circle w" src="https://www.bilibili.com/favicon.ico"><h6 class="t1">Bilibili</h6></a>
+						<a href="http://www.imomoe.in/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="http://www.imomoe.in/favicon.ico"><h6 class="t1">樱花动漫</h6></a>
+						<a href="https://v.qq.com" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://v.qq.com/favicon.ico"><h6 class="t1">腾讯视频</h6></a>
+						<a href="https://www.iqiyi.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://www.iqiyi.com/favicon.ico"><h6 class="t1">爱奇艺</h6></a>
+						<a href="https://www.taobao.com" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://www.taobao.com/favicon.ico"><h6 class="t1">淘宝</h6></a>
+						<a href="https://www.jd.com" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://www.jd.com/favicon.ico"><h6 class="t1">京东</h6></a>
+						<a href="https://www.jianshu.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://www.jianshu.com/favicon.ico"><h6 class="t1">简书</h6></a>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="list-2" role="tabpanel" aria-labelledby="list-2-list">
+					<div class="row row-cols-4 p-2">
+						<a href="https://translate.google.cn" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img  class="border rounded-circle w" src="https://translate.google.cn/favicon.ico"><h6 class="t1">谷歌翻译</h6></a>
+						<a href="https://pan.baidu.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://pan.baidu.com/static/images/favicon.ico"><h6 class="t1">百度网盘</h6></a>
+						<a href="https://mail.163.com" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://mail.163.com/favicon.ico"><h6 class="t1">163</h6></a>
+						<a href="https://tinypng.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://tinypng.com/images/favicon.ico"><h6>TinyPNG</h6></a>
+						<a href="https://cn.office-converter.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://www.office-converter.com/images/favicon.ico"><h6 class="t1">office-converter</h6></a>
+						<a href="https://www.ilovepdf.com/zh-cn" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://www.ilovepdf.com/img/favicons-pdf/favicon-32x32.png"><h6 class="t1">ilovepdf</h6></a>
+						<a href="https://docs.qq.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://docs.qq.com/favicon.ico"><h6 class="t1">腾讯文档</h6></a>
+						<a href="http://www.zdfans.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="http://www.zdfans.com/favicon.ico"><h6 class="t1">zd423</h6></a>
+						<a href="https://www.appinn.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://www.appinn.com/favicon.ico"><h6 class="t1">小众软件</h6></a>
+						<a href="https://www.iconfont.cn/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://img.alicdn.com/imgextra/i4/O1CN01EYTRnJ297D6vehehJ_!!6000000008020-55-tps-64-64.svg"><h6 class="t1">iconfont</h6></a>
+						<a href="https://www.ghxi.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://www.ghxi.com/favicon.ico"><h6 class="t1">果壳剥壳</h6></a>
+						<a href="http://www.yxssp.com/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="http://www.yxssp.com/wp-content/uploads/2017/12/yx250.png"><h6 class="t1">异星软件</h6></a>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="list-3" role="tabpanel" aria-labelledby="list-3-list">
+					<div class="row row-cols-4 p-2">
+						<a href="https://msdn.itellyou.cn/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://msdn.itellyou.cn/favicon.ico"><h6 class="t1">异星软件</h6></a>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="list-4" role="tabpanel" aria-labelledby="list-4-list">
+					<div class="row row-cols-4 p-2">
+						<a href="http://192.168.2.1/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img  class="border rounded-circle w" src="http://192.168.2.1/../../favicon.ico"><h6 class="t1">主路由</h6></a>
+						<a href="http://192.168.1.1/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="http://192.168.1.1/../../favicon.ico"><h6 class="t1">次路由</h6></a>
+						<a href="http://192.168.31.1/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="http://192.168.31.1/../../favicon.ico"><h6 class="t1">小米路由</h6></a>
+						<a href="http://192.168.2.102/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="http://192.168.2.102/../../favicon.ico"><h6 class="t1">小黑</h6></a>
+						<a href="http://192.168.2.102:8080/" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="http://192.168.2.102:8080/../../favicon.ico"><h6 class="t1">小黑bt</h6></a>
+					</div>
+				</div>
+			  </div>
+
+			
+			<div class="fixed-bottom mx-1">
+				<div class="float-start fw-light"><span id="jinrishici-sentence">正在加载今日诗词....</span>
+					<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script></div>
+				<div class="float-end">
+					<span class="badge text-black-50"><a href="https://vscode.dev/" rel="nofollow" target="_blank">Dev</a> • <a href="index/develop.html">Beta:3.2.1</a></span>
+					<div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
+					
+				</div>
+			</div>
+
+		  </div>
+
+		<!--背景-->
+		<div class="z-1">
+			<canvas class="background"></canvas>
+		</div>
+		<script src="js/particles.min.js"></script>
+		<script>
+			window.onload= function() 
+			{
+				Particles.init({selector: '.background' });
+			};
+		</script>
+		<!--背景-->
+		
+		<script>
+			$('img').on("error", function() {
+  				$(this).attr('src', 'img/index.png');  // 替换为默认图片
+			});
+		</script>
+
+	</body>
+	
+
+</html>
