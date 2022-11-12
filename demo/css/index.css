@@ -2,7 +2,7 @@
 
 body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{margin:0;padding:0}
 a:hover {text-decoration:none}
-a{text-decoration:none; cursor:url(favicon.ico);}
+a{text-decoration:none}
 ul,ol{list-style:none}
 fieldset,img{border:0}
 
@@ -30,7 +30,7 @@ html, body {
 }
 
 .z-1 {
-    position: absolute;
+    position: fixed;
     z-index: 1;
     top: 0;
     left: 0;
@@ -40,7 +40,7 @@ html, body {
 
 .z-2 {
     position: absolute;
-    z-index: 2;
+    z-index: 3;
     top: 0;
     left: 0;
     right: 0;
@@ -48,16 +48,19 @@ html, body {
 }
 
 .kuaijie {
-    width: 550px;
+    width: 100%;
+    max-width: 550px;
 }
 
 .kuaijie-a {
     border: solid  1px #ffffff00;
+    overflow: hidden;
 }
 
 .kuaijie-a:hover {
     border-radius: 10px;
     border: solid 1px #e1e1e1;
+    background-color: #0dcaf021;
 }
 
 .w {
@@ -70,11 +73,11 @@ html, body {
 #search_ajx {
 	position: fixed;
 	z-index: 1;
-        -webkit-transform: translate(-50%, -50%);
-        -moz-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-        margin-top: 230px;
-        left:50%;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	margin-top: 230px;
+	left:50%;
 }
 
 #search_ajx ul {
@@ -111,11 +114,13 @@ html, body {
 .kuaijie-a-1 {
     border: solid  1px #ffffff00;
     width: 100px;
+    overflow: hidden;
 }
 
 .kuaijie-a-1:hover {
     border-radius: 10px;
     border: solid 1px #e1e1e1;
+    background-color: #fb67a829;
 }
 
 .t1 {
@@ -123,4 +128,15 @@ html, body {
     height: 20px;
     margin-top: 5px;
     white-space:nowrap;
+}
+
+
+
+.z-4 {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    max-height: 165px;
 }
