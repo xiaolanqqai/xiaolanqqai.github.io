@@ -49,7 +49,7 @@
 			<div class="fixed-bottom mx-1">
 				<div class=" container-fluid">
 					<div class="float-end">
-						<span class="badge text-black-50"><a href="https://vscode.dev/" rel="nofollow" target="_blank">Dev</a> • <a href="../index/develop.html">Beta:3.4.1</a></span>
+						<span class="badge text-black-50"><a href="https://vscode.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="../index/develop.html">Beta:3.4.1</a></span>
 						<div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
 					</div>
 				</div>
@@ -104,7 +104,21 @@ console.log(t);
 			});
 		</script>
 		
-		<div style="display: none;">111</div>
+		<div id="uptime2" style="display: none;">up20221112</div>
+
+	<script>
+		var uptime1 = document.getElementById('uptime1');
+		var uptime2 = document.getElementById('uptime2');
+
+		uptime1.onmouseover = function (){
+			uptime2.style.display = 'block';
+		};
+		uptime1.onmouseout = function (){
+			uptime2.style.display = 'none';
+		}
+	</script>
+
+	<div style="display: none;">111</div><!-- 去广告 -->
 	</body>
 	
 
