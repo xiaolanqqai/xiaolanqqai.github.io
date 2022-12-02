@@ -16,7 +16,7 @@
 		<div class="z-2 d-flex flex-column mx-auto">
 			<div class="d-flex flex-row">
 				<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>Back</strong></button>
-				<button onclick="clearTimeout(tt)" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong id="cc">Stop</strong></button>
+				<button onclick="clearTimeout(tt)" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong id="cc">Stop -s</strong></button>
 			</div>
 
 
@@ -49,7 +49,7 @@
 			<div class="fixed-bottom mx-1">
 				<div class=" container-fluid">
 					<div class="float-end">
-						<span class="badge text-black-50"><a href="https://vscode.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="../index/develop.html">Beta:3.4.1</a></span>
+						<span class="badge text-black-50"><a href="https://vscode.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="../index/develop.html">Beta:3.4.2</a></span>
 						<div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
 					</div>
 				</div>
@@ -75,24 +75,44 @@
 				var gg = document.querySelector("body>div:last-of-type");
 				gg.parentNode.removeChild(gg);
 				// 去广告
-				
+				c();
 			};
 
+
+			//生成随机数字
 			var a = parseInt(Math.random() *10000) ;
 			console.log(a);
-			var tt = setTimeout("b()", a);
+			a = parseInt(a/1000%10) * 1000;
+			console.log(a);
 
+			//随机倒数跳转回more页
+			var tt = setTimeout("b()", a);
 			function b() {
 				window.open("more.html","_self");
 			};
 			
+			//倒计时显示
 			function c() {
+				var t = 0;
+				a = parseInt(a/1000%10) + 1;
+				console.log(t);
+				console.log(a);
+
+				setInterval(function(){
+					if(a>0){
+						a--;
+						document.getElementById("cc").innerHTML = "Stop " + a + "s";
+					}else{
+						document.getElementById("cc").innerHTML = "Stop";
+					};
+					
+					
+				},1000)
+
 				
-				for(var i = 0 ;i<10;i++){
-t = t+1;
-				}
-				//document.getElementById("cc").innerHTML = "Stop" + t;
-console.log(t);
+				
+			
+				
 			};
 			
 		</script>
@@ -104,7 +124,7 @@ console.log(t);
 			});
 		</script>
 		
-		<div id="uptime2" style="display: none;">up20221112</div>
+		<div id="uptime2" style="display: none;">up20221202</div><!-- 最后更新时间 -->
 
 	<script>
 		var uptime1 = document.getElementById('uptime1');
