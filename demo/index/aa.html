@@ -42,6 +42,7 @@
 						<a href="https://avmai.xyz/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://avmai.xyz/favicon.ico" loading="lazy"><h6 class="t1">avman</h6></a>
 						<a href="https://www.xvideos.com/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://www.xvideos.com/favicon.ico" loading="lazy"><h6 class="t1">xvideos</h6></a>
 						<a href="https://baofa-hotel.cn/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://baofa-hotel.cn/favicon.ico" loading="lazy"><h6 class="t1">看吧影院</h6></a>
+						<a href="https://avmai.xyz/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://avmai.xyz/favicon.ico" loading="lazy"><h6 class="t1">avman</h6></a>
 					</div>
 			</div>
 
@@ -52,7 +53,7 @@
 			<div class="fixed-bottom mx-1">
 				<div class=" container-fluid">
 					<div class="float-end">
-						<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="../index/develop.html">Beta:3.4.3</a></span>
+						<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" class="bat" href="../index/develop.html">Beta:3.4.3</a></span>
 						<div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
 					</div>
 				</div>
@@ -127,9 +128,11 @@
 			});
 		</script>
 		
-		<div id="uptime2" style="display: none;">up20230216</div><!-- 最后更新时间 -->
-
-	<script>
+		<div id="uptime2" style="display: none;">20230301</div><!-- 最后更新时间 -->
+		
+		<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
+			
+		<script>
 		var uptime1 = document.getElementById('uptime1');
 		var uptime2 = document.getElementById('uptime2');
 
@@ -139,7 +142,25 @@
 		uptime1.onmouseout = function (){
 			uptime2.style.display = 'none';
 		}
-	</script>
+
+		var loca_bat = uptime2.innerHTML;
+		document.getElementsByClassName('bat');
+		console.log("loca_bat="+loca_bat);
+		console.log("git_bat="+git_bat);
+		console.log(uptime1.innerHTML);
+		if(loca_bat < git_bat)
+		{
+			uptime1.style.color = 'red';
+			uptime1.innerHTML= 'This version is old';
+		}
+		else if(loca_bat >= git_bat)
+		{
+			uptime1.style.color = '';
+		}
+		</script>		
+			
+
+	
 
 	<div style="display: none;">111</div><!-- 去广告 -->
 	</body>

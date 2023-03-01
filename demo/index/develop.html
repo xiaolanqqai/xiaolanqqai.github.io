@@ -26,11 +26,15 @@
 				<a href="https://xiaolanqqai.lanzous.com/b01zx4syb" class="badge badge-light">Website update address (code:xiaolan)</a>
 			</div>
 			<div class="alert alert-success shadow" role="alert">
-				<h4 class="alert-heading">BETA 3.4.1<span class="badge badge-danger">New</span></h4>
+				<h4 class="alert-heading">BETA 3.4.2<span class="badge badge-danger">New</span></h4>
+				<h6 class="float-end">2022-12-20</h6>
+				<p>The framework updated to BOOSTRAP_v5.2.3</p>
+				<hr class="my-2">
+				<h5 class="alert-heading">BETA 3.4.1</h5>
 				<h6 class="float-end">2022-11-12</h6>
 				<p>The framework updated to BOOSTRAP_v5.2.2</p>
 				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.3.0<span class="badge badge-danger">New</span></h5>
+				<h5 class="alert-heading">BETA 3.3.0</h5>
 				<h6 class="float-end">2022-07-04</h6>
 				<p>The framework updated to BOOSTRAP_v5.2.0_Beta1.</p>
 				<hr class="my-2">
@@ -93,7 +97,7 @@
 		<div class="fixed-bottom mx-1">
 			<div class="container-fluid">
 				<div class="float-end">
-					<span class="badge text-black-50"><a href="https://vscode.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="#">Beta:3.4.2</a></span>
+					<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="#">Beta:3.4.2</a></span>
 					<div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
 				</div>
 			</div>
@@ -127,9 +131,11 @@
 		});
 	</script>
 	
-	<div id="uptime2" style="display: none;">up20221202</div>
+	<div id="uptime2" style="display: none;">20221220</div>
 
-	<script>
+	<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
+			
+		<script>
 		var uptime1 = document.getElementById('uptime1');
 		var uptime2 = document.getElementById('uptime2');
 
@@ -139,7 +145,22 @@
 		uptime1.onmouseout = function (){
 			uptime2.style.display = 'none';
 		}
-	</script>
+
+		var loca_bat = uptime2.innerHTML;
+		document.getElementsByClassName('bat');
+		console.log("loca_bat="+loca_bat);
+		console.log("git_bat="+git_bat);
+		console.log(uptime1.innerHTML);
+		if(loca_bat < git_bat)
+		{
+			uptime1.style.color = 'red';
+			uptime1.innerHTML= 'This version is old';
+		}
+		else if(loca_bat >= git_bat)
+		{
+			uptime1.style.color = '';
+		}
+		</script>
 
 	<div style="display: none;">111</div><!-- 去广告 -->
 </body>
