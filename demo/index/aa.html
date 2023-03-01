@@ -88,6 +88,10 @@
 			console.log(a);
 			a = parseInt(a/1000%10) * 1000;
 			console.log(a);
+			if(a<=2000){
+				a=a+3000;
+			};
+			console.log(a);
 
 			//随机倒数跳转回more页
 			var tt = setTimeout("b()", a);
@@ -97,10 +101,8 @@
 			
 			//倒计时显示
 			function c() {
-				var t = 0;
 				a = parseInt(a/1000%10) + 1;
-				console.log(t);
-				console.log(a);
+				console.log("time="+a);
 
 				setInterval(function(){
 					if(a>0){
@@ -152,10 +154,6 @@
 		{
 			uptime1.style.color = 'red';
 			uptime1.innerHTML= 'This version is old';
-		}
-		else if(loca_bat >= git_bat)
-		{
-			uptime1.style.color = '';
 		}
 		</script>		
 			
