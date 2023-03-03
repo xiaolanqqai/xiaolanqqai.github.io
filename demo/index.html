@@ -182,7 +182,7 @@
 
 </script>
 
-	<div id="uptime2" style="display: none;">20221220</div><!-- 最后更新时间 -->
+	<div id="uptime2" style="display: none;">20230301</div><!-- 最后更新时间 -->
 
 	<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
 			
@@ -206,6 +206,11 @@
 		{
 			uptime1.style.color = 'red';
 			uptime1.innerHTML= 'This version is old';
+		}
+		else if(loca_bat > git_bat)
+		{
+			uptime1.style.color = 'green';
+			uptime1.innerHTML= 'Please upload a new version to the server!!!';
 		}
 		</script>
 
