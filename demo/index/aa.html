@@ -41,7 +41,6 @@
 						<a href="https://www.ncbb15.xyz/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://www.ncbb15.xyz/favicon.ico" loading="lazy"><h6 class="t1">嫩草影院</h6></a>
 						<a href="https://avmai.xyz/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://avmai.xyz/favicon.ico" loading="lazy"><h6 class="t1">avman</h6></a>
 						<a href="https://www.xvideos.com/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://www.xvideos.com/favicon.ico" loading="lazy"><h6 class="t1">xvideos</h6></a>
-						<a href="https://baofa-hotel.cn/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://baofa-hotel.cn/favicon.ico" loading="lazy"><h6 class="t1">看吧影院</h6></a>
 						<a href="https://avmai.xyz/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://avmai.xyz/favicon.ico" loading="lazy"><h6 class="t1">avman</h6></a>
 					</div>
 			</div>
@@ -84,7 +83,13 @@
 
 
 			//生成随机数字
-			var a = parseInt(Math.random() *10000) ;
+			var a =Math.random();
+			console.log(a);
+			if(a<0.1)
+			{
+				a = 0.1;
+			};
+			a = parseInt(a *10000) ;
 			console.log(a);
 			a = parseInt(a/1000%10) * 1000;
 			console.log(a);
@@ -101,13 +106,13 @@
 			
 			//倒计时显示
 			function c() {
-				a = parseInt(a/1000%10) + 1;
-				console.log("time="+a);
+				d = a/1000;
+				console.log("time="+d);
 
 				setInterval(function(){
-					if(a>0){
-						a--;
-						document.getElementById("cc").innerHTML = "Stop " + a + "s";
+					if(d>0){
+						d--;
+						document.getElementById("cc").innerHTML = "Stop " + d + "s";
 					}else{
 						document.getElementById("cc").innerHTML = "Stop";
 					};
@@ -154,6 +159,11 @@
 		{
 			uptime1.style.color = 'red';
 			uptime1.innerHTML= 'This version is old';
+		}
+		else if(loca_bat > git_bat)
+		{
+			uptime1.style.color = 'green';
+			uptime1.innerHTML= 'Please upload a new version to the server!!!';
 		}
 		</script>		
 			

@@ -86,7 +86,7 @@
 				<a href="https://getbootstrap.com/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://getbootstrap.com/favicon.ico" loading="lazy"><h6 class="t1">bootstrap_v5.2</h6></a>
 				<a href="https://v5.bootcss.com/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://v5.bootcss.com/favicon.ico" loading="lazy"><h6 class="t1">bootstrap_v5</h6></a>
 				<a href="https://freewha.com/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://freewha.com/favicon.ico" loading="lazy"><h6 class="t1">FreeWHA</h6></a>
-				<a href="https://github.com/" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://github.com/favicon.ico" loading="lazy"><h6 class="t1">github</h6></a>
+				<a href="https://github.com/xiaolanqqai/xiaolanqqai.github.io" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://github.com/favicon.ico" loading="lazy"><h6 class="t1">github</h6></a>
 			</div>
 		</div>
 
@@ -131,7 +131,7 @@
 		});
 	</script>
 	
-	<div id="uptime2" style="display: none;">20221220</div>
+	<div id="uptime2" style="display: none;">20230301</div>
 
 	<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
 			
@@ -155,6 +155,11 @@
 		{
 			uptime1.style.color = 'red';
 			uptime1.innerHTML= 'This version is old';
+		}
+		else if(loca_bat > git_bat)
+		{
+			uptime1.style.color = 'green';
+			uptime1.innerHTML= 'Please upload a new version to the server!!!';
 		}
 		</script>
 
