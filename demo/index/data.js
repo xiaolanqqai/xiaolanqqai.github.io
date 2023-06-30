@@ -243,7 +243,7 @@ function datad() {
 		'https://bbs.kafan.cn/thread-2244866-1-1.html', '卡巴免费15年',
 		'https://github.com/aiboboxx/v2rayfree', '免费节点',
 		'https://xxxxx525.com', 'switch游戏',
-		'https://bbs.kafan.cn/thread-2244866-1-1.html', '卡巴免费15年',
+		'https://zhuanlan.zhihu.com/p/617025808', '设计师的 Midjourney 入门真保姆级教程',
 		'https://bbs.kafan.cn/thread-2244866-1-1.html', '卡巴免费15年',
 		'https://bbs.kafan.cn/thread-2244866-1-1.html', '卡巴免费15年',
 	])
@@ -255,18 +255,22 @@ function wwt(ar1, arr1) {
 	var ar1;
 	var arr1;
 	var arrdtat = []
-	for (var j = 0; j < arr1.length; j = j + 2) {
+	for (var j = 0; j < arr1.length; j++) {
+		var index=0;
+		var ttemp = [];
 		for (var i = 0; i < arr1.length; i = i + 2) {
 			// <a href="https://wx.qq.com" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://wx.qq.comfavicon.ico" loading="lazy"><h6 class="t1">微信网页版</h6></a>
-			arrdtat[i] = '<a href="' + arr1[i] + '" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="' + arr1[i] + '/favicon.ico" loading="lazy"><h6 class="t1">' + arr1[i + 1] + '</h6></a>';
+			arrdtat[index] = '<a href="' + arr1[i] + '" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="' + arr1[i] + '/favicon.ico" loading="lazy"><h6 class="t1">' + arr1[i + 1] + '</h6></a>';
 			// console.log(arr1[i] + arr1[i+1]);
 			// console.log(arrdtat);
+			index++;
 		};
-		var temp = arrdtat
+		ttemp.push(arrdtat.join(""));	
+		var temp = ttemp;
 		// console.log(temp);
 	}
 	ar1.innerHTML = temp;
-	// console.log(ar1.innerHTML);
+	// console.log(temp);
 }
 
 // 列表，aa通用
@@ -275,14 +279,18 @@ function ww(ar1, arr1) {
 	var ar1;
 	var arr1;
 	var arrdtat = []
-	for (var j = 0; j < arr1.length; j = j + 2) {
+	for (var j = 0; j < arr1.length; j++) {
+		var index=0;
+		var ttemp = [];
 		for (var i = 0; i < arr1.length; i = i + 2) {
 			// <a href="https://wx.qq.com" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://wx.qq.comfavicon.ico" loading="lazy"><h6 class="t1">微信网页版</h6></a>
-			arrdtat[i] = '<a href="' + arr1[i] + '" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="' + arr1[i] + '/favicon.ico" loading="lazy"><h6 class="t1">' + arr1[i + 1] + '</h6></a>';
+			arrdtat[index] = '<a href="' + arr1[i] + '" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="' + arr1[i] + '/favicon.ico" loading="lazy"><h6 class="t1">' + arr1[i + 1] + '</h6></a>';
 			// console.log(arr1[i] + arr1[i+1]);
 			// console.log(arrdtat);
+			index++;
 		};
-		var temp = arrdtat
+		ttemp.push(arrdtat.join(""));	
+		var temp = ttemp;
 		// console.log(temp);
 	}
 	ar1.innerHTML = temp;
@@ -295,14 +303,18 @@ function wwd(ar1, arr1) {
 	var ar1;
 	var arr1;
 	var arrdtat = []
-	for (var j = 0; j < arr1.length; j = j + 2) {
+	for (var j = 0; j < arr1.length; j++) {
+		var index=0;
+		var ttemp = [];
 		for (var i = 0; i < arr1.length; i = i + 2) {
 			// <a href="https://wx.qq.com" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://wx.qq.comfavicon.ico" loading="lazy"><h6 class="t1">微信网页版</h6></a>
-			arrdtat[i] = '<a href="' + arr1[i] + '" rel="nofollow" target="_blank" class="my-2 p-1 text-black-50"><img class="border rounded-circle w2" src="' + arr1[i] + '/favicon.ico" loading="lazy"><h6 class="t2">' + arr1[i + 1] + '</h6></a>';
+			arrdtat[index] = '<a href="' + arr1[i] + '" rel="nofollow" target="_blank" class="my-2 p-1 text-black-50"><img class="border rounded-circle w2" src="' + arr1[i] + '/favicon.ico" loading="lazy"><h6 class="t2">' + arr1[i + 1] + '</h6></a>';
 			// console.log(arr1[i] + arr1[i+1]);
 			// console.log(arrdtat);
+			index++;
 		};
-		var temp = arrdtat
+		ttemp.push(arrdtat.join(""));	
+		var temp = ttemp;
 		// console.log(temp);
 	}
 	ar1.innerHTML = temp;
