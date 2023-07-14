@@ -31,7 +31,12 @@
 				<h5 class="alert-heading">JQuery_v3.5.1</h5>
 				<h5 class="alert-heading">Particles_v2.2.3</h5>
 				<hr class="my-2">
-				<h4 class="alert-heading">BETA 3.4.2<span class="badge badge-danger">New</span></h4>
+				<h4 class="alert-heading">BETA 3.5.0<span class="badge badge-danger">New</span></h4>
+				<h6 class="float-end">2023-07-14</h6>
+				<p>Website request data segregation</p>
+				<hr class="my-2">
+				<hr class="my-2">
+				<h5 class="alert-heading">BETA 3.4.2</h5>
 				<h6 class="float-end">2022-12-20</h6>
 				<p>The framework updated to BOOSTRAP_v5.2.3</p>
 				<hr class="my-2">
@@ -95,14 +100,10 @@
 			</div>
 		</div>
 
-
-
-
-
 		<div class="fixed-bottom mx-1">
 			<div class="container-fluid">
 				<div class="float-end">
-					<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="#">Beta:3.4.2</a></span>
+					<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="#">Beta:error</a></span>
 					<div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
 				</div>
 			</div>
@@ -136,7 +137,7 @@
 		});
 	</script>
 	
-	<div id="uptime2" style="display: none;">20230316</div>
+	<div id="uptime2" style="display: none;">20230714</div>
 
 	<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
 			
@@ -152,19 +153,22 @@
 		}
 
 		var loca_bat = uptime2.innerHTML;
-		document.getElementsByClassName('bat');
 		console.log("loca_bat="+loca_bat);
 		console.log("git_bat="+git_bat);
 		console.log(uptime1.innerHTML);
 		if(loca_bat < git_bat)
 		{
 			uptime1.style.color = 'red';
-			uptime1.innerHTML= 'This version is old';
+			uptime1.innerHTML = 'This version is old';
 		}
 		else if(loca_bat > git_bat)
 		{
 			uptime1.style.color = 'green';
-			uptime1.innerHTML= 'Please upload a new version to the server!!!';
+			uptime1.innerHTML = 'Please upload a new version to the server!!!';
+		}
+		else
+		{
+			uptime1.innerHTML = git_vol;
 		}
 		</script>
 

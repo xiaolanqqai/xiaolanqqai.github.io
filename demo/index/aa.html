@@ -1,145 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-		<title>Xiaolan</title>
-		<link rel="Shortcut icon" href="../favicon.ico" loading="lazy">
-		<script type="text/javascript" src="data.js"></script>
-		<link rel="stylesheet" href="../css/bootstrap.min.css">
-		<script type="text/javascript" src="../js/jquery-3.5.1.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="../css/index.css"/>
-	</head>
-	<body>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Xiaolan</title>
+	<link rel="Shortcut icon" href="../favicon.ico" loading="lazy">
+	<script type="text/javascript" src="data.js"></script>
+	<link rel="stylesheet" href="../css/bootstrap.min.css">
+	<script type="text/javascript" src="../js/jquery-3.5.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/index.css" />
+</head>
 
-		<div class="z-2 d-flex flex-column mx-auto">
-			<div class="d-flex flex-row">
-				<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>Back</strong></button>
-				<button onclick="clearTimeout(tt)" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong id="cc">Stop -s</strong></button>
-			</div>
+<body>
 
-			<div class="mt-3 mx-3">
-				<div class="alert alert-secondary shadow" role="alert">论坛</div>
-					<div id="ar15" class="d-flex flex-wrap p-2"></div>
-			</div>
+	<div class="z-2 d-flex flex-column mx-auto">
+		<div class="d-flex flex-row">
+			<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>Back</strong></button>
+			<button onclick="clearTimeout(tt)" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong id="cc">Stop -s</strong></button>
+		</div>
 
-			<div class="fixed-bottom mx-1">
-				<div class=" container-fluid">
-					<div class="float-end">
-						<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" class="bat" href="../index/develop.html">Beta:3.4.3</a></span>
-						<div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
-					</div>
+		<div class="mt-3 mx-3">
+			<div class="alert alert-secondary shadow" role="alert">论坛</div>
+			<div id="ar15" class="d-flex flex-wrap p-2"></div>
+		</div>
+
+		<div class="fixed-bottom mx-1">
+			<div class=" container-fluid">
+				<div class="float-end">
+					<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" class="bat" href="../index/develop.html">Beta:error</a></span>
+					<div class="spinner-grow spinner-grow-sm text-info" role="status"></div>
 				</div>
 			</div>
-
 		</div>
 
-		<script>dataa()</script><!-- 网站列表数据请求 -->
+	</div>
 
-		<!--背景-->
-		<div class="z-1">
-			<div class="z-4">
-				<div id="jsi-flying-fish-container" class="w-100"></div>
-				<script src="../js/fish.js"></script>
-			</div>
-			<canvas class="background"></canvas>
+	<script>dataa()</script><!-- 网站列表数据请求 -->
+
+	<!--背景-->
+	<div class="z-1">
+		<div class="z-4">
+			<div id="jsi-flying-fish-container" class="w-100"></div>
+			<script src="../js/fish.js"></script>
 		</div>
-		<script src="../js/particles.min.js"></script>
-		<script>
-			window.onload = function () {
-				Particles.init({ selector: '.background' });
+		<canvas class="background"></canvas>
+	</div>
+	<script src="../js/particles.min.js"></script>
+	<script>
+		window.onload = function () {
+			Particles.init({ selector: '.background' });
 
-				var gg = document.querySelector("body>div:last-of-type");
-				gg.parentNode.removeChild(gg);
-				// 去广告
-				c();
-			};
+			var gg = document.querySelector("body>div:last-of-type");
+			gg.parentNode.removeChild(gg);
+			// 去广告
+			c();
+		};
 
-			//生成随机数字
-			var a =Math.random();
-			console.log(a);
-			if(a<0.1)
-			{
-				a = 0.1;
-			};
-			a = parseInt(a *10000) ;
-			console.log(a);
-			a = parseInt(a/1000%10) * 1000;
-			console.log(a);
-			if(a<=2000){
-				a=a+3000;
-			};
-			console.log(a);
+		//生成随机数字
+		var a = Math.random();
+		console.log(a);
+		if (a < 0.1) {
+			a = 0.1;
+		};
+		a = parseInt(a * 10000);
+		console.log(a);
+		a = parseInt(a / 1000 % 10) * 1000;
+		console.log(a);
+		if (a <= 2000) {
+			a = a + 3000;
+		};
+		console.log(a);
 
-			//随机倒数跳转回more页
-			var tt = setTimeout("b()", a);
-			function b() {
-				window.open("more.html","_self");
-			};
-			
-			//倒计时显示
-			function c() {
-				d = a/1000;
-				console.log("time="+d);
+		//随机倒数跳转回more页
+		var tt = setTimeout("b()", a);
+		function b() {
+			window.open("more.html", "_self");
+		};
 
-				setInterval(function(){
-					if(d>0){
-						d--;
-						document.getElementById("cc").innerHTML = "Stop " + d + "s";
-					}else{
-						document.getElementById("cc").innerHTML = "Stop";
-					};
-					
-					
-				},1000)
-				
-			};
-			
-		</script>
-		<!--背景-->
-		
-		<script>
-			$('img').on("error", function () {
-				$(this).attr('src', '../img/index.png');  // 替换为默认图片
-			});
-		</script>
-		
-		<div id="uptime2" style="display: none;">20230316</div><!-- 最后更新时间 -->
-		
-		<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
-			
-		<script>
+		//倒计时显示
+		function c() {
+			d = a / 1000;
+			console.log("time=" + d);
+
+			setInterval(function () {
+				if (d > 0) {
+					d--;
+					document.getElementById("cc").innerHTML = "Stop " + d + "s";
+				} else {
+					document.getElementById("cc").innerHTML = "Stop";
+				};
+			}, 1000)
+
+		};
+
+	</script>
+	<!--背景-->
+
+	<script>
+		$('img').on("error", function () {
+			$(this).attr('src', '../img/index.png');  // 替换为默认图片
+		});
+	</script>
+
+	<div id="uptime2" style="display: none;">20230714</div><!-- 最后更新时间 -->
+
+	<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
+
+	<script>
 		var uptime1 = document.getElementById('uptime1');
 		var uptime2 = document.getElementById('uptime2');
 
-		uptime1.onmouseover = function (){
+		uptime1.onmouseover = function () {
 			uptime2.style.display = 'block';
 		};
-		uptime1.onmouseout = function (){
+		uptime1.onmouseout = function () {
 			uptime2.style.display = 'none';
 		}
 
 		var loca_bat = uptime2.innerHTML;
-		document.getElementsByClassName('bat');
-		console.log("loca_bat="+loca_bat);
-		console.log("git_bat="+git_bat);
+		console.log("loca_bat=" + loca_bat);
+		console.log("git_bat=" + git_bat);
 		console.log(uptime1.innerHTML);
-		if(loca_bat < git_bat)
-		{
+		if (loca_bat < git_bat) {
 			uptime1.style.color = 'red';
-			uptime1.innerHTML= 'This version is old';
+			uptime1.innerHTML = 'This version is old';
 		}
-		else if(loca_bat > git_bat)
-		{
+		else if (loca_bat > git_bat) {
 			uptime1.style.color = 'green';
-			uptime1.innerHTML= 'Please upload a new version to the server!!!';
+			uptime1.innerHTML = 'Please upload a new version to the server!!!';
 		}
-		</script>		
+		else {
+			uptime1.innerHTML = git_vol;
+		}
+	</script>
 
 	<div style="display: none;">111</div><!-- 去广告 -->
-	
-	</body>
+
+</body>
 
 </html>
