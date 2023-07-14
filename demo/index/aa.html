@@ -122,7 +122,6 @@
 		var loca_bat = uptime2.innerHTML;
 		console.log("loca_bat=" + loca_bat);
 		console.log("git_bat=" + git_bat);
-		console.log(uptime1.innerHTML);
 		if (loca_bat < git_bat) {
 			uptime1.style.color = 'red';
 			uptime1.innerHTML = 'This version is old';
@@ -134,6 +133,7 @@
 		else {
 			uptime1.innerHTML = git_vol;
 		}
+		console.log(uptime1.innerHTML);
 	</script>
 
 	<div style="display: none;">111</div><!-- 去广告 -->
