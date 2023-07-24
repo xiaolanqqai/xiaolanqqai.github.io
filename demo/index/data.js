@@ -4,7 +4,7 @@ function datat() {
 
 	wwt(document.getElementById("tar1"), [
 		'https://www.bilibili.com', 'Bilibili',
-		'http://www.dmh8.com', '樱花动漫',
+		'https://www.dmh8.com', '樱花动漫',
 		'https://v.qq.com', '腾讯视频',
 		'https://www.iqiyi.com', '爱奇艺',
 		'https://www.taobao.com', '淘宝',
@@ -19,11 +19,11 @@ function datat() {
 		'https://cn.office-converter.com', 'office-converter',
 		'https://www.ilovepdf.com/zh-cn', 'ilovepdf',
 		'https://docs.qq.com', '腾讯文档',
-		'http://www.zdfans.com', 'zd423',
+		'https://www.zdfans.com', 'zd423',
 		'https://www.appinn.com', '小众软件',
 		'https://www.iconfont.cn', 'iconfont',
 		'https://www.ghxi.com', '果壳剥壳',
-		'http://www.yxssp.com', '异星软件',
+		'https://www.yxssp.com', '异星软件',
 	])
 	wwt(document.getElementById("tar3"), [
 		'https://msdn.itellyou.cn', '异星软件',
@@ -31,11 +31,11 @@ function datat() {
 		'https://brevent.sh', '黑域',
 	])
 	wwt(document.getElementById("tar4"), [
-		'http://192.168.2.1', '主路由',
-		'http://192.168.1.1', '次路由',
-		'http://192.168.31.1', '小米路由',
-		'http://192.168.2.102', '小黑',
-		'http://192.168.2.102:8080', '小黑bt',
+		'https://192.168.2.1', '主路由',
+		'https://192.168.1.1', '次路由',
+		'https://192.168.31.1', '小米路由',
+		'https://192.168.2.102', '小黑',
+		'https://192.168.2.102:8080', '小黑bt',
 	])
 }
 
@@ -94,10 +94,10 @@ function data() {
 		'https://cli.im', '草料二维码',
 	])
 	ww(document.getElementById("ar5"), [
-		'http://servicedev.tpddns.cn:8181', 'csdn下载',
+		'https://servicedev.tpddns.cn:8181', 'csdn下载',
 		'https://ai-bot.cn', 'AI工具集',
 		'https://zxxgj.net', '在线小工具',
-		'http://tools.liumingye.cn', '刘明野的工具箱',
+		'https://tools.liumingye.cn', '刘明野的工具箱',
 		'https://modelscope.cnstudios/damo/ai_artist/summary?from=baidu_sem', 'ai绘画',
 		'https://www.virustotal.comgui/home/upload', '在线查毒',
 		'https://api.hkfx.net', '在线MD5解密',
@@ -106,10 +106,10 @@ function data() {
 		'https://btbtt16.com', 'BT之家',
 		'https://duo123.best', '磁力多',
 		'https://so.btlm.site', 'BT联盟',
-		'http://clb0.top', '磁力宝',
-		'http://clg0.biz', '磁力狗',
+		'https://clb0.top', '磁力宝',
+		'https://clg0.biz', '磁力狗',
 		'https://www.cilitiantang.online', '磁力天堂',
-		'http://www.eclzz.info', '磁力蜘蛛 ',
+		'https://www.eclzz.info', '磁力蜘蛛 ',
 		'https://www.tokyotosho.info', '东京图书馆',
 		'https://sk.btfox.pw', '磁力狐',
 		'https://lianjie.cilimiaomiao.xyz', '搜磁力',
@@ -119,10 +119,10 @@ function data() {
 	])
 	ww(document.getElementById("ar7"), [
 		'https://www.bilibili.com', 'Bilibili',
-		'http://www.bimiacg4.net', 'M站',
+		'https://www.bimiacg4.net', 'M站',
 		'https://www.yxdmlove.com', '怡萱动漫',
 		'https://www.acfun.cn', 'ACfan',
-		'http://www.dmh8.com', '樱花动漫',
+		'https://www.dmh8.com', '樱花动漫',
 		'https://www.yhdmp.cc', '樱花动漫',
 		'https://www.lndayp.com', '樱花动漫',
 		'https://v.qq.com', '腾讯视频',
@@ -132,21 +132,21 @@ function data() {
 		'https://www.qydmz.com', '樱花风车动漫',
 		'https://www.dm530p.net', '风车动漫',
 		'https://www.whpaiger.com', '风车动漫',
-		'http://www.dmdm2020.com', '哆咪动漫',
+		'https://www.dmdm2020.com', '哆咪动漫',
 		'https://www.qiqidongman.com', '奇奇动漫',
-		'http://www.zzzfun.com', 'zzzfun',
+		'https://www.zzzfun.com', 'zzzfun',
 		'https://www.xskdm.com', '新时空动漫',
 		'https://www.cqtvm.com', '剧浦浦',
-		'http://www.dmdm2020.com', '哆咪动漫',
+		'https://www.dmdm2020.com', '哆咪动漫',
 		'https://www.puquyy.com', '蒲趣影院',
 		'https://80s.tw', '80s',
 		'https://www.mhdyw.net', '麻花电影',
 		'https://www.ttdianying.vip', '天堂电影',
 		'https://www.cupfox.com', '茶杯狐',
 		'https://91mjw.com', '美剧网',
-		'http://www.liaocao88.net', '潦草网',
+		'https://www.liaocao88.net', '潦草网',
 		'https://www.5060w.cc', '新视觉影院',
-		'http://www.reinfsources.com', '人人影视',
+		'https://www.reinfsources.com', '人人影视',
 		'https://www.feifei6.com', '飞飞影院',
 		'https://www.dixidixi.com', '滴嘻滴嘻',
 		'https://www.ysgc.cc', '影视工场',
@@ -161,38 +161,38 @@ function data() {
 	ww(document.getElementById("ar8"), [
 		'https://www.1kkk.com', '漫画人',
 		'https://www.mkzhan.com', '漫客栈',
-		'http://m.pufei.cc', '扑飞动漫',
-		'http://m.sixmh7.com', '六漫画',
+		'https://m.pufei.cc', '扑飞动漫',
+		'https://m.sixmh7.com', '六漫画',
 	])
 	ww(document.getElementById("ar9"), [
 		'https://www.coolzhanweb.com', '酷站导航',
 		'https://movie.coolzhanweb.com', '电影导航',
-		'http://ltzhp.ysepan.com', '辣条杂货铺',
-		'http://bileizhen.ysepan.com?xzpd=1', 'bileizhen的收纳箱',
+		'https://ltzhp.ysepan.com', '辣条杂货铺',
+		'https://bileizhen.ysepan.com?xzpd=1', 'bileizhen的收纳箱',
 		'https://qxnav.com', '奇心导航',
-		'http://ago.ysepan.com?xzpd=1', '👪怸歪的网盘🔞',
+		'https://ago.ysepan.com?xzpd=1', '👪怸歪的网盘🔞',
 	])
 	ww(document.getElementById("ar10"), [
-		'http://www.3h3.com', '当游软件',
+		'https://www.3h3.com', '当游软件',
 		'https://www.ypojie.com', '易破解',
 		'https://www.appinn.com', '小众软件',
 		'https://www.ghxi.com', '果壳剥壳',
-		'http://www.yxssp.com', '异星软件',
+		'https://www.yxssp.com', '异星软件',
 		'https://msdn.itellyou.cn', 'msdn',
 		'https://www.mpyit.com', '殁漂遥',
 		'https://www.uxpc.com', '精脑汇',
 		'https://www.wrfou.com', '挖软否',
 		'https://www.kelongwo.com', '克隆窝',
 		'https://www.uy5.net', '克隆窝',
-		'http://niumaizi.cn', '牛麦子',
+		'https://niumaizi.cn', '牛麦子',
 		'https://www.zdfans.com', 'ZD423',
 		'https://www.pc6.com', 'PC6',
 		'https://www.ittel.cn', 'IT技术之家',
 		'https://www.mimods.com', 'MOD迷',
 	])
 	ww(document.getElementById("ar11"), [
-		'http://owlcarousel2.github.io/OwlCarousel2', 'OwlCarousel2',
-		'http://sscms.comdocs/v7', 'SSCMS',
+		'https://owlcarousel2.github.io/OwlCarousel2', 'OwlCarousel2',
+		'https://sscms.comdocs/v7', 'SSCMS',
 	])
 	ww(document.getElementById("ar12"), [
 		'https://greasyfork.org/zh-Cn', 'Greasy Fork',
@@ -200,6 +200,7 @@ function data() {
 	])
 	ww(document.getElementById("ar13"), [
 		'https://shumeipai.nxez.com', '树莓派实验室',
+		'https://wiki.friendlyelec.com/wiki/index.php/NanoPi_NEO2/zh', 'NanoPi_NEO',
 	])
 	ww(document.getElementById("ar14"), [
 		'https://dkxuanye.cn', '玄烨品果',
