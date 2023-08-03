@@ -56,7 +56,7 @@ function data() {
 		'https://szfilehelper.weixin.qq.com', '微信传输',
 		'https://baidu.kinh.cc', '百度直链',
 		'https://www.kuaidi100.com', '快递100',
-		'https://brevent.sh/', '黑域',
+		'https://brevent.sh', '黑域',
 		'https://translate.google.cn', '谷歌翻译',
 		'https://fanyi.baidu.com', '百度翻译',
 		'https://map.baidu.com', '百度地图',
@@ -70,21 +70,21 @@ function data() {
 	])
 	ww(document.getElementById("ar3"), [
 		'https://tinypng.com', 'TinyPNG',
-		'https://www.polaxiong.comweb', '泼辣修图',
-		'https://www.gaituya.comps', '改图鸭',
-		'https://pixlr.comcn', 'Pixlr',
+		'https://www.polaxiong.com/web', '泼辣修图',
+		'https://www.gaituya.com/ps', '改图鸭',
+		'https://pixlr.com.cn', 'Pixlr',
 		'https://pc.meitu.com', '美图秀秀',
 		'https://www.gaoding.com', '稿定设计',
 		'https://pixso.cn', 'Pixso',
 		'https://bigjpg.com', 'Bigjpg',
-		'https://tiomg.org/', 'tiomg',
+		'https://tiomg.org', 'tiomg',
 		'https://www.canva.cn', '可画',
 		'https://www.uugai.com', 'U钙',
 		'https://zh.clippingmagic.com', 'Clipping Magic',
 		'https://www.remove.bg/zh', 'Remove.bg',
-		'https://imagecompressor.comzh', 'imagecompressor',
+		'https://imagecompressor.com/zh', 'imagecompressor',
 		'https://zh.recompressor.com', 'Recompressor',
-		'https://www.aconvert.comcn', 'aconvert',
+		'https://www.aconvert.com.cn', 'aconvert',
 	])
 	ww(document.getElementById("ar4"), [
 		'https://www.ilovepdf.com', 'ilovepdf',
@@ -94,12 +94,12 @@ function data() {
 		'https://cli.im', '草料二维码',
 	])
 	ww(document.getElementById("ar5"), [
-		'https://servicedev.tpddns.cn:8181', 'csdn下载',
+		'http://servicedev.tpddns.cn:8181', 'csdn下载',
 		'https://ai-bot.cn', 'AI工具集',
 		'https://zxxgj.net', '在线小工具',
 		'https://tools.liumingye.cn', '刘明野的工具箱',
-		'https://modelscope.cnstudios/damo/ai_artist/summary?from=baidu_sem', 'ai绘画',
-		'https://www.virustotal.comgui/home/upload', '在线查毒',
+		'https://modelscope.cn/studios/damo/ai_artist/summary?from=baidu_sem', 'ai绘画',
+		'https://www.virustotal.com/gui/home/upload', '在线查毒',
 		'https://api.hkfx.net', '在线MD5解密',
 	])
 	ww(document.getElementById("ar6"), [
@@ -253,9 +253,7 @@ function datad() {
 // 首页专用
 
 function wwt(ar1, arr1) {
-	var ar1;
-	var arr1;
-	var arrdtat = []
+	var arrdtat = [];
 	for (var j = 0; j < arr1.length; j++) {
 		var index=0;
 		var ttemp = [];
@@ -277,47 +275,33 @@ function wwt(ar1, arr1) {
 // 列表，aa通用
 
 function ww(ar1, arr1) {
-	var ar1;
-	var arr1;
-	var arrdtat = []
+	var arrdtat = [];
 	for (var j = 0; j < arr1.length; j++) {
 		var index=0;
 		var ttemp = [];
 		for (var i = 0; i < arr1.length; i = i + 2) {
-			// <a href="https://wx.qq.com" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://wx.qq.comfavicon.ico" loading="lazy"><h6 class="t1">微信网页版</h6></a>
 			arrdtat[index] = '<a href="' + arr1[i] + '" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="' + arr1[i] + '/favicon.ico" loading="lazy"><h6 class="t1">' + arr1[i + 1] + '</h6></a>';
-			// console.log(arr1[i] + arr1[i+1]);
-			// console.log(arrdtat);
 			index++;
 		};
 		ttemp.push(arrdtat.join(""));	
 		var temp = ttemp;
-		// console.log(temp);
 	}
 	ar1.innerHTML = temp;
-	// console.log(ar1.innerHTML);
 }
 
 // dd专用
 
 function wwd(ar1, arr1) {
-	var ar1;
-	var arr1;
-	var arrdtat = []
+	var arrdtat = [];
 	for (var j = 0; j < arr1.length; j++) {
 		var index=0;
 		var ttemp = [];
 		for (var i = 0; i < arr1.length; i = i + 2) {
-			// <a href="https://wx.qq.com" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://wx.qq.comfavicon.ico" loading="lazy"><h6 class="t1">微信网页版</h6></a>
 			arrdtat[index] = '<a href="' + arr1[i] + '" rel="nofollow" target="_blank" class="my-2 p-1 text-black-50"><img class="border rounded-circle w2" src="' + arr1[i] + '/favicon.ico" loading="lazy"><h6 class="t2">' + arr1[i + 1] + '</h6></a>';
-			// console.log(arr1[i] + arr1[i+1]);
-			// console.log(arrdtat);
 			index++;
 		};
 		ttemp.push(arrdtat.join(""));	
 		var temp = ttemp;
-		// console.log(temp);
 	}
 	ar1.innerHTML = temp;
-	// console.log(ar1.innerHTML);
 }
