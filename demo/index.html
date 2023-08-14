@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -18,7 +17,7 @@
 
 	<div class="z-2 d-flex flex-column justify-content-center mx-auto">
 		<div class=" mt-5 pt-5 d-none d-sm-block"></div>
-		<div class="mx-auto shadow mt-3"><a href="index.html"><img src="img/google_logo.png" width="250" class="img-fluid img-thumbnail"></a></div>
+		<div class="mx-auto shadow mt-3"><a href="index.html"><img src="img/google_logo.webp" width="250" class="img-fluid img-thumbnail"></a></div>
 		<div class="mx-auto mt-5 pt-5">
 			<!--搜索框-->
 			<form onsubmit="submitFn(this, event);">
@@ -56,7 +55,6 @@
 			<div class="nav-ban" style="display: none;"><div id="tar4" class="row row-cols-4 p-2"></div></div>
 		</div>
 
-
 		<div class="fixed-bottom mx-1">
 			<div class="container-fluid">
 				<div class="float-start fw-light"><span id="jinrishici-sentence">正在加载今日诗词....</span>
@@ -64,7 +62,7 @@
 				</div>
 				<div class="float-end">
 					<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="index/develop.html">Beta:error</a></span>
-					<a href="JavaScript:void(0)" onclick="jav()"><div class="spinner-grow spinner-grow-sm text-info" role="status"></div></a>
+					<a><div class="spinner-grow spinner-grow-sm text-info" role="status"></div></a>
 				</div>
 			</div>
 		</div>
@@ -84,7 +82,7 @@
 	<script src="js/particles.min.js"></script>
 	<script>
 		window.onload = function () {
-			Particles.init({ selector: '.background' });
+			Particles.init({ selector: '.background' });//背景触发
 
 			var gg = document.querySelector("body>div:last-of-type");
 			gg.parentNode.removeChild(gg);
@@ -100,14 +98,14 @@
 		});
 	</script>
 
-	<script type="text/javascript">
+	<script type="text/javascript">//首页栏目切换
 
 		var aTop = document.getElementsByClassName('nav-top');
 		var aBan = document.getElementsByClassName('nav-ban');
 		var i = 0;
-		for (i = 0; i < aTop.length; i++) {
+		for (i = 0; i < aTop.length - 1; i++) {
 			aTop[i].index = i;
-			aTop[i].onclick = function () {
+			aTop[i].onmouseenter = function () {
 				for (i = 0; i < aBan.length; i++) {
 					aTop[i].className = 'nav-link btn nav-top';
 					aBan[i].style.display = 'none';
@@ -116,27 +114,9 @@
 				this.className = 'nav-link btn nav-top active';
 			};
 		};
-
 	</script>
 
-	<script>
-		function jav() {
-			var na = prompt('Please enter password !!! >>>');
-			var nn = na % 10;
-			if (nn == 9) {
-				window.open("index/1.htm");
-			} else if (nn == 8) {
-				window.open("index/2.chm");
-			} else if (nn == 7) {
-				window.open("index/aa.html", "_self");
-			} else {
-				alert('???');
-			}
-		};
-
-	</script>
-
-	<div id="uptime2" style="display: none;">20230714</div><!-- 最后更新时间 -->
+	<div id="uptime2" style="display: none;">20230811</div><!-- 最后更新时间 -->
 
 	<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
 
