@@ -152,7 +152,7 @@
 			console.log(nnc);
 			//aa的触发规则
 			var na = prompt('Please enter password !!! >>>');
-			if (na !=null && na !="") {
+			if (na === null || na === "") {
 				alert('???');
 				return;
 			}else if (na === "123456") {
