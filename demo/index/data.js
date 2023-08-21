@@ -292,4 +292,8 @@ function ww(top,ar1,arr1) {
 	};
 	ar1.innerHTML = temp;
 	// console.log(temp);
+	
 };
+
+//data数据版本
+var lv = 0.1;
