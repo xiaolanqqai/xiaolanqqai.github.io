@@ -50,6 +50,7 @@ function data() {
 		'pan.baidu.com', '百度网盘',
 		'mail.163.com', '163邮箱',
 		'www.jd.com', '京东',
+		'www.google.com.hk', '谷歌HK',
 	])
 	ww(2,document.getElementById("ar2"), [
 		'wx.qq.com', '微信网页版',
@@ -67,6 +68,7 @@ function data() {
 		'yiso.fun', '易搜',
 		'jujuso.com', '优聚搜',
 		'www.rvso.com', '免费短信接码',
+		'www.zsrq.net', '免费短信平台',
 	])
 	ww(2,document.getElementById("ar3"), [
 		'tinypng.com', 'TinyPNG',
@@ -157,6 +159,7 @@ function data() {
 		'www.cuihuays.com', '翠花影视',
 		'wandou.la', '豌豆Pro',
 		'www.5yju.com', '无忧居',
+		'share.dmhy.org', '动漫花园资源网',
 	])
 	ww(2,document.getElementById("ar8"), [
 		'www.1kkk.com', '漫画人',
