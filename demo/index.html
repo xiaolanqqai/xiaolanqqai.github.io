@@ -24,7 +24,7 @@
 			<form onsubmit="submitFn(this, event);">
 				<div class="search-wrapper">
 					<div class="input-holder">
-						<input type="text" id="txt" class="search-input" placeholder="Type to search" />
+						<input type="text" id="txt" class="search-input" placeholder="Type to search" onkeyup="searchToggle(this, event);" />
 						<button class="search-icon" onclick="searchToggle(this, event);"><span></span></button>
 					</div>
 					<span class="close" onclick="searchToggle(this, event);"></span>
