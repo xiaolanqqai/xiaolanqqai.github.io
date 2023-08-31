@@ -2,6 +2,7 @@ function datat() {
 
 	// 首页
 
+	//Home
 	ww(1,document.getElementById("ar1"), [
 		'www.bilibili.com', 'Bilibili',
 		'www.dmh8.com', '樱花动漫',
@@ -11,6 +12,8 @@ function datat() {
 		'www.jd.com', '京东',
 		'www.jianshu.com', '简书',
 	])
+
+	//Tools
 	ww(1,document.getElementById("ar2"), [
 		'fanyi.baidu.com', '百度翻译',
 		'pan.baidu.com', '百度网盘',
@@ -25,11 +28,15 @@ function datat() {
 		'www.ghxi.com', '果壳剥壳',
 		'www.yxssp.com', '异星软件',
 	])
+
+	//Tools NEW
 	ww(1,document.getElementById("ar3"), [
 		'msdn.itellyou.cn', '异星软件',
 		'www.kuaidi100.com', '快递100',
 		'brevent.sh', '黑域',
 	])
+
+	//Network
 	ww(1,document.getElementById("ar4"), [
 		'192.168.2.1', '主路由',
 		'192.168.1.1', '次路由',
@@ -43,6 +50,7 @@ function data() {
 
 	// 列表
 
+	//平台
 	ww(2,document.getElementById("ar1"), [
 		'www.jd.com', '京东',
 		'www.jianshu.com', '简书',
@@ -52,6 +60,8 @@ function data() {
 		'www.jd.com', '京东',
 		'www.google.com.hk', '谷歌HK',
 	])
+
+	//工具
 	ww(2,document.getElementById("ar2"), [
 		'wx.qq.com', '微信网页版',
 		'szfilehelper.weixin.qq.com', '微信传输',
@@ -60,6 +70,8 @@ function data() {
 		'brevent.sh', '黑域',
 		'translate.google.cn', '谷歌翻译',
 		'fanyi.baidu.com', '百度翻译',
+		'flowus.cn', 'flowus息流',
+		'xiezuocat.com', '写作猫',
 		'map.baidu.com', '百度地图',
 		'www.amap.com', '高德地图',
 		'docs.qq.com', '腾讯文档',
@@ -70,10 +82,13 @@ function data() {
 		'www.rvso.com', '免费短信接码',
 		'www.zsrq.net', '免费短信平台',
 	])
+
+	//图片处理
 	ww(2,document.getElementById("ar3"), [
 		'tinypng.com', 'TinyPNG',
 		'www.polaxiong.com/web', '泼辣修图',
 		'www.gaituya.com/ps', '改图鸭',
+		'js.design', '即时设计',
 		'pixlr.com.cn', 'Pixlr',
 		'pc.meitu.com', '美图秀秀',
 		'www.gaoding.com', '稿定设计',
@@ -87,7 +102,10 @@ function data() {
 		'imagecompressor.com/zh', 'imagecompressor',
 		'zh.recompressor.com', 'Recompressor',
 		'www.aconvert.com.cn', 'aconvert',
+		'www.superbed.cn/', '聚合图床',
 	])
+
+	//其它处理
 	ww(2,document.getElementById("ar4"), [
 		'www.ilovepdf.com', 'ilovepdf',
 		'tool.browser.qq.com', '帮小忙',
@@ -95,6 +113,8 @@ function data() {
 		'jianwai.youdao.com', '网易见外工作台',
 		'cli.im', '草料二维码',
 	])
+
+	//专业工具
 	ww(2,document.getElementById("ar5"), [
 		'servicedev.tpddns.cn:8181', 'csdn下载',
 		'ai-bot.cn', 'AI工具集',
@@ -104,6 +124,8 @@ function data() {
 		'www.virustotal.com/gui/home/upload', '在线查毒',
 		'api.hkfx.net', '在线MD5解密',
 	])
+
+	//视频下载 • 磁力
 	ww(2,document.getElementById("ar6"), [
 		'btbtt16.com', 'BT之家',
 		'duo123.best', '磁力多',
@@ -119,6 +141,8 @@ function data() {
 		'sk.btfox.pw', '磁力狐',
 		'www.dytt8.net', '电影天堂',
 	])
+
+	//视频
 	ww(2,document.getElementById("ar7"), [
 		'www.bilibili.com', 'Bilibili',
 		'www.bimiacg4.net', 'M站',
@@ -161,12 +185,16 @@ function data() {
 		'www.5yju.com', '无忧居',
 		'share.dmhy.org', '动漫花园资源网',
 	])
+
+	//漫画
 	ww(2,document.getElementById("ar8"), [
 		'www.1kkk.com', '漫画人',
 		'www.mkzhan.com', '漫客栈',
 		'm.pufei.cc', '扑飞动漫',
 		'm.sixmh7.com', '六漫画',
 	])
+
+	//导航
 	ww(2,document.getElementById("ar9"), [
 		'www.coolzhanweb.com', '酷站导航',
 		'movie.coolzhanweb.com', '电影导航',
@@ -175,6 +203,8 @@ function data() {
 		'qxnav.com', '奇心导航',
 		'ago.ysepan.com?xzpd=1', '👪怸歪的网盘🔞',
 	])
+
+	//软件资源
 	ww(2,document.getElementById("ar10"), [
 		'www.3h3.com', '当游软件',
 		'www.ypojie.com', '易破解',
@@ -193,24 +223,34 @@ function data() {
 		'www.ittel.cn', 'IT技术之家',
 		'www.mimods.com', 'MOD迷',
 	])
+
+	//JS资源 • 开发
 	ww(2,document.getElementById("ar11"), [
 		'owlcarousel2.github.io/OwlCarousel2', 'OwlCarousel2',
 		'sscms.comdocs/v7', 'SSCMS',
 	])
+
+	//其它 • 开发
 	ww(2,document.getElementById("ar12"), [
 		'greasyfork.org/zh-Cn', 'Greasy Fork',
 		'hkfx.net', '红客防线（网络安全）',
 	])
+
+	//树莓派 • 开发
 	ww(2,document.getElementById("ar13"), [
 		'shumeipai.nxez.com', '树莓派实验室',
 		'wiki.friendlyelec.com/wiki/index.php/NanoPi_NEO2/zh', 'NanoPi_NEO',
 	])
+
+	//论坛
 	ww(2,document.getElementById("ar14"), [
 		'dkxuanye.cn', '玄烨品果',
 		'bbs.pcbeta.com', '远景论坛',
 		'bbs.kafan.cn', '卡饭论坛',
 		'www.chiphell.com', 'chiphell',
 	])
+
+	//论坛
 	ww(2,document.getElementById("ar15"), [
 		'tom51727.com', '汤姆叔叔',
 		'www.b6b33.com', '四虎影院',
@@ -218,7 +258,7 @@ function data() {
 		'www.tokyotosho.info', '东京图书馆',
 		'yj2207.click/pw', '1024xp',
 		'www.aventertainments.com', 'Ave',
-		'javbee.net', 'JAV',
+		'javbee.net', 'JAVbee',
 		'elsb.i6xh.news', '2048xp',
 		's2212v.cc', '2048xp',
 		'www.nckao41.xyz', '嫩草影院',
@@ -269,31 +309,29 @@ function datade() {
 
 // 通用调用程序
 
-function ww(top,ar1,arr1) {
+function ww(top, ar1, arr1) {
 	var arrdtat = [];
 	for (var j = 0; j < arr1.length; j++) {
-		var index=0;
+		var index = 0;
 		var temp = [];
-		for (var i = 0; i < arr1.length; i = i + 2) {
-			if(top === 1){
-				// <a href="wx.qq.com" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="wx.qq.comfavicon.ico" loading="lazy"><h6 class="t1">微信网页版</h6></a>
-				arrdtat[index] = '<a href="https://' + arr1[i] + '" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/' + arr1[i] + '.png" loading="lazy"><h6 class="t1">' + arr1[i + 1] + '</h6></a>';
-				// console.log(arr1[i] + arr1[i+1]);
-				// console.log(arrdtat);
-			}else if(top === 2){
-				arrdtat[index] = '<a href="https://' + arr1[i] + '" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/' + arr1[i] + '.png" loading="lazy"><h6 class="t1">' + arr1[i + 1] + '</h6></a>';
-            }else if(top === 3){
-				arrdtat[index] = '<a href="https://' + arr1[i] + '" rel="nofollow" target="_blank" class="my-2 p-1 text-black-50"><img class="border rounded-circle w2" src="https://api.iowen.cn/favicon/' + arr1[i] + '.png" loading="lazy"><h6 class="t2">' + arr1[i + 1] + '</h6></a>';
-			};
+		for (var i = 0; i < arr1.length; i += 2) {
+			var url = 'https://' + arr1[i];
+			var title = arr1[i + 1];
+			var imgSrc = 'https://api.iowen.cn/favicon/' + arr1[i] + '.png';
+ 
+			if (top === 1) {
+				arrdtat[index] = '<a href="' + url + '" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="' + imgSrc + '" loading="lazy"><h6 class="t1">' + title + '</h6></a>';
+			} else if (top === 2) {
+				arrdtat[index] = '<a href="' + url + '" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="' + imgSrc + '" loading="lazy"><h6 class="t1">' + title + '</h6></a>';
+			} else if (top === 3) {
+				arrdtat[index] = '<a href="' + url + '" rel="nofollow" target="_blank" class="my-2 p-1 text-black-50"><img class="border rounded-circle w2" src="' + imgSrc + '" loading="lazy"><h6 class="t2">' + title + '</h6></a>';
+			}
 			index++;
-		};
+		}
 		temp.push(arrdtat.join(""));
-		// console.log(temp);
-	};
+	}
 	ar1.innerHTML = temp;
-	// console.log(temp);
-	
-};
+}
 
 //data数据版本
-var lv = 0.1;
+var lv = '0.2_20230830';
