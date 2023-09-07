@@ -168,7 +168,11 @@ function data() {
 		'80s.tw', '80s',
 		'www.mhdyw.net', '麻花电影',
 		'www.ttdianying.vip', '天堂电影',
-		'www.cupfox.com', '茶杯狐',
+		'cupfox.app', '茶杯狐',
+		'ddys.pro', '低端影视',
+		'www.zxzjhd.com', '在线之家',
+		'aucfox.fun', 'AucFox影视',
+		'www.freeok.vip', 'freeok',
 		'91mjw.com', '美剧网',
 		'www.liaocao88.net', '潦草网',
 		'www.5060w.cc', '新视觉影院',
@@ -334,4 +338,4 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = '0.2_20230830';
+var lv = '0.3_20230907';
