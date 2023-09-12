@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Xiaolan</title>
+	<link rel="Shortcut icon" href="favicon.ico" loading="lazy">
+	<script type="text/javascript" src="index/data.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/search-form.css">
+	<link rel="stylesheet" type="text/css" href="css/index.css" />
+</head>
+
+
+<body style="overflow-y: hidden">
+
+	<div class="z-2 d-flex flex-column justify-content-center mx-auto">
+		<div class=" mt-5 pt-5 d-none d-sm-block"></div>
+		<div class="mx-auto shadow mt-3"><a href="index.html"><img src="img/google_logo.webp" width="250" class="img-fluid img-thumbnail"></a></div>
+		<div class="mx-auto mt-5 pt-5">
+			<!--搜索框-->
+			<form onsubmit="submitFn(this, event);">
+				<div class="search-wrapper">
+					<div class="input-holder">
+						<input type="text" id="txt" class="search-input" placeholder="Type to search" onkeyup="searchToggle(this, event);"/>
+						<button class="search-icon" onclick="searchToggle(this, event);"><span></span></button>
+					</div>
+					<span class="close" onclick="searchToggle(this, event);"></span>
+					<div class="result-container"></div>
+				</div>
+				<div id="search_ajx">
+					<ul id="list" style="display:none;"></ul>
+				</div>
+			</form>
+
+			<script type="text/javascript" src="js/search_ajx.js"></script>
+
+			<!--搜索框-->
+		</div>
+
+		<nav class="p-2 mx-auto mt-5 pt-5">
+			<div class="nav nav-tabs shadow">
+				<a class="nav-link btn nav-top active">Home</a>
+				<a class="nav-link btn nav-top">Tools</a>
+				<a class="nav-link btn nav-top">Tools NEW</a>
+				<a class="nav-link btn nav-top">Network</a>
+				<a class="nav-link btn nav-top" href="index/more.html">...</a>
+			</div>
+		</nav>
+		<div class="kuaijie mx-auto mt-3">
+			<div class="nav-ban" style="display: block;"><div id="ar1" class="row row-cols-4 p-2"></div></div>
+			<div class="nav-ban" style="display: none;"><div id="ar2" class="row row-cols-4 p-2"></div></div>
+			<div class="nav-ban" style="display: none;"><div id="ar3" class="row row-cols-4 p-2"></div></div>
+			<div class="nav-ban" style="display: none;"><div id="ar4" class="row row-cols-4 p-2"></div></div>
+		</div>
+
+		<div class="fixed-bottom mx-1">
+			<div class="container-fluid">
+				<div class="float-start fw-light"><span id="jinrishici-sentence">正在加载今日诗词....</span>
+					<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+				</div>
+				<div class="float-end">
+					<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="index/develop.html">Beta:error</a></span>
+					<span id="state1" class="badge text-bg-success">Success</span>
+					<a><div class="spinner-grow spinner-grow-sm text-info" role="status"></div></a>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script>datat()</script><!-- 网站列表数据请求 -->
+
+	<!--背景-->
+	<div class="z-1">
+		<div class="z-4">
+			<div id="jsi-flying-fish-container" class="w-100"></div>
+			<script src="js/fish.js"></script>
+		</div>
+		<canvas class="background"></canvas>
+	</div>
+	<script src="js/particles.min.js"></script>
+	<script>
+		window.onload = function () {
+			Particles.init({ selector: '.background' });//背景触发
+
+			var gg = document.querySelector("body>div:last-of-type");
+			gg.parentNode.removeChild(gg);
+			// 去广告
+		};
+	</script>
+
+	<!--背景-->
+
+	<script>
+		$('img').on("error", function () {
+			$(this).attr('src', 'img/index.png');  // 替换为默认图片
+		});
+	</script>
+
+	<script type="text/javascript">//首页栏目切换
+
+		var aTop = document.getElementsByClassName('nav-top');
+		var aBan = document.getElementsByClassName('nav-ban');
+		var i = 0;
+		for (i = 0; i < aTop.length - 1; i++) {
+			aTop[i].index = i;
+			aTop[i].onmouseenter = function () {
+				for (i = 0; i < aBan.length; i++) {
+					aTop[i].className = 'nav-link btn nav-top';
+					aBan[i].style.display = 'none';
+				};
+				aBan[this.index].style.display = 'block';
+				this.className = 'nav-link btn nav-top active';
+			};
+		};
+	</script>
+
+	<div id="uptime2" style="display: none;">20230821</div><!-- 最后更新时间 -->
+
+	<script src="https://xiaolanqqai.github.io/demo/git-bat.js"></script>
+
+	<script>
+		//网页编译版本显示
+		var uptime1 = document.getElementById('uptime1');
+		var uptime2 = document.getElementById('uptime2');
+
+		uptime1.onmouseover = function () {
+			uptime2.style.display = 'block';
+		};
+		uptime1.onmouseout = function () {
+			uptime2.style.display = 'none';
+		}
+
+		var loca_bat = uptime2.innerHTML;
+		console.log("loca_bat=" + loca_bat);
+		console.log("git_bat=" + git_bat);
+		if (loca_bat < git_bat) {
+			uptime1.style.color = 'red';
+			uptime1.innerHTML = 'This version is old';
+		}
+		else if (loca_bat > git_bat) {
+			uptime1.style.color = 'green';
+			uptime1.innerHTML = 'Please upload a new version to the server!!!';
+		}
+		else {
+			uptime1.innerHTML = git_vol;
+		}
+		console.log(uptime1.innerHTML);
+
+
+		//网页物理地址状态显示
+		function isLocalPage() {
+			return window.location.protocol === 'file:';
+		};
+
+		var state1 = document.getElementById('state1');
+
+		if (isLocalPage()) {
+			state1.innerHTML = 'Local';
+			console.log('Web page status:Local');
+		} else {
+			state1.innerHTML = 'Server';
+			console.log('Web page status:Server');
+		};
+
+		console.log('web_data=' + lv);//列表数据版本
+	</script>
+
+	<script>
+		//剪贴板内容跳转百度搜索
+		function getClipboardText() {
+			return new Promise((resolve, reject) => {
+				navigator.clipboard.readText().then(text => {
+					resolve(text);
+				}).catch(err => {
+					reject(err);
+				});
+			});
+		}
+
+		getClipboardText().then(text => {
+			window.open("https://www.baidu.com/s?word="+text,"_self");
+		}).catch(err => {
+			console.error('获取剪贴板文本失败：', err);
+		});
+	</script>
+
+	<div style="display: none;">111</div><!-- 去广告 -->
+
+</body>
+
+</html>
