@@ -49,6 +49,20 @@ function datat() {
 function data() {
 
 	// 列表
+	var ff = ['平台', '工具', '图片处理', '其它处理 • PDF • 文字 • 视频', '专业工具', '视频下载 • 磁力', '视频', '漫画', '导航', '软件资源', 'JS资源 • 开发', '其它 • 开发', '树莓派 • 开发', 'Git • 项目', '论坛'];
+	var ffl = document.getElementById('ff');
+	var ffdata = [];
+	for (var f = 0; f < ff.length; f++) {
+		var index = 0;
+		var ttemp = [];
+		for (var s = 0; s < f; s++) {
+			ffdata[index] = '<div class="mt-3 mx-3"><div class="alert alert-secondary shadow" role="alert">' + ff[s] + '</div><div id="ar' + (s + 1) + '" class="d-flex flex-wrap p-2"></div></div>';
+			index++;
+		};
+		// console.log(ffdata[index]);
+		ttemp.push(ffdata.join(''));
+	}
+	ffl.innerHTML = ttemp;
 
 	//平台
 	ww(2,document.getElementById("ar1"), [
@@ -74,6 +88,7 @@ function data() {
 		'fanyi.baidu.com', '百度翻译',
 		'flowus.cn', 'flowus息流',
 		'xiezuocat.com', '写作猫',
+		'yiyan.baidu.com', '文心一言',
 		'map.baidu.com', '百度地图',
 		'www.amap.com', '高德地图',
 		'docs.qq.com', '腾讯文档',
@@ -248,8 +263,13 @@ function data() {
 		'wiki.friendlyelec.com/wiki/index.php/NanoPi_NEO2/zh', 'NanoPi_NEO',
 	])
 
-	//论坛
+	//Git • 项目
 	ww(2,document.getElementById("ar14"), [
+		'alist.nn.ci', 'Alist',
+	])
+
+	//论坛
+	ww(2,document.getElementById("ar15"), [
 		'dkxuanye.cn', '玄烨品果',
 		'bbs.pcbeta.com', '远景论坛',
 		'bbs.kafan.cn', '卡饭论坛',
@@ -257,7 +277,7 @@ function data() {
 	])
 
 	//论坛
-	ww(2,document.getElementById("ar15"), [
+	ww(2,document.getElementById("ar16"), [
 		'tom51727.com', '汤姆叔叔',
 		'www.b6b33.com', '四虎影院',
 		'www.nidexbb.info', '杏吧',
@@ -321,16 +341,17 @@ function ww(top, ar1, arr1) {
 		var index = 0;
 		var temp = [];
 		for (var i = 0; i < arr1.length; i += 2) {
-			var url = 'https://' + arr1[i];
-			var title = arr1[i + 1];
-			var imgSrc = 'https://api.iowen.cn/favicon/' + arr1[i] + '.png';
+			var url = '<a href="https://' + arr1[i]+ '" rel="nofollow" target="_blank" class="';
+			var title = arr1[i + 1]+ '</h6></a>';
+			var imgSrc = 'src="https://api.iowen.cn/favicon/' + arr1[i] + '.png" loading="lazy">';
+			var className = 'my-2 p-1 text-center text-black-50';
  
 			if (top === 1) {
-				arrdtat[index] = '<a href="' + url + '" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a"><img class="border rounded-circle w" src="' + imgSrc + '" loading="lazy"><h6 class="t1">' + title + '</h6></a>';
+				arrdtat[index] = url +'col'+ className +' kuaijie-a"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
 			} else if (top === 2) {
-				arrdtat[index] = '<a href="' + url + '" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="' + imgSrc + '" loading="lazy"><h6 class="t1">' + title + '</h6></a>';
+				arrdtat[index] = url + className +' kuaijie-a-1"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
 			} else if (top === 3) {
-				arrdtat[index] = '<a href="' + url + '" rel="nofollow" target="_blank" class="my-2 p-1 text-black-50"><img class="border rounded-circle w2" src="' + imgSrc + '" loading="lazy"><h6 class="t2">' + title + '</h6></a>';
+				arrdtat[index] = url + className +'"><img class="border rounded-circle w2"' + imgSrc + '<h6 class="t2">' + title;
 			}
 			index++;
 		}
@@ -340,4 +361,4 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = '0.3_20230907';
+var lv = '0.5_20230915';

@@ -17,7 +17,7 @@
 	<div class="z-2 d-flex flex-column mx-auto">
 		<div class="d-flex flex-row">
 			<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>返回</strong></button>
-			<button onclick="window.location.href = '../cpanel'" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong>Console</strong></button>
+			<button onclick="window.location.href = '../cpanel'" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong>控制台</strong></button>
 			<button onclick="window.location.href = '../ftp'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>FTP</strong></button>
 			<button onclick="window.location.href = '../demo20230424.rar'" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong>ZIP</strong></button>
 		</div>
@@ -30,7 +30,11 @@
 				<h5 class="alert-heading">JQuery_v3.5.1</h5>
 				<h5 class="alert-heading">Particles_v2.2.3</h5>
 				<hr class="my-2">
-				<h4 class="alert-heading">BETA 3.5.4<span class="badge badge-danger">New</span></h4>
+				<h4 class="alert-heading">BETA 3.5.5<span class="badge badge-danger">New</span></h4>
+				<h6 class="float-end">2023-09-15</h6>
+				<p>进一步优化more的列表算法，但存在报错</p>
+				<hr class="my-2">
+				<h5 class="alert-heading">BETA 3.5.4</h5>
 				<h6 class="float-end">2023-09-12</h6>
 				<p>1：注册域名: xiaolanqqai.xyz</p>
 				<p>2：摒弃英文，发扬中文</p>
@@ -138,15 +142,6 @@
 		<canvas class="background"></canvas>
 	</div>
 	<script src="../js/particles.min.js"></script>
-	<script>
-		window.onload = function () {
-			Particles.init({ selector: '.background' });
-
-			var gg = document.querySelector("body>div:last-of-type");
-			gg.parentNode.removeChild(gg);
-			// 去广告
-		};
-	</script>
 	<!--背景-->
 	
 	<script>
@@ -155,59 +150,13 @@
 		});
 	</script>
 	
-	<div id="uptime2" style="display: none;">20230821</div>
+	<div id="uptime2" style="display: none;">20230915</div>
 
 	<script src="https://xiaolanqqai.xyz/git-bat.js"></script>
 			
-	<script>
-		//网页编译版本显示
-		var uptime1 = document.getElementById('uptime1');
-		var uptime2 = document.getElementById('uptime2');
-
-		uptime1.onmouseover = function () {
-			uptime2.style.display = 'block';
-		};
-		uptime1.onmouseout = function () {
-			uptime2.style.display = 'none';
-		}
-
-		var loca_bat = uptime2.innerHTML;
-		console.log("loca_bat=" + loca_bat);
-		console.log("git_bat=" + git_bat);
-		if (loca_bat < git_bat) {
-			uptime1.style.color = 'red';
-			uptime1.innerHTML = 'This version is old';
-		}
-		else if (loca_bat > git_bat) {
-			uptime1.style.color = 'green';
-			uptime1.innerHTML = 'Please upload a new version to the server!!!';
-		}
-		else {
-			uptime1.innerHTML = git_vol;
-		}
-		console.log(uptime1.innerHTML);
-
-
-		//网页物理地址状态显示
-		function isLocalPage() {
-			return window.location.protocol === 'file:';
-		};
-
-		var state1 = document.getElementById('state1');
-
-		if (isLocalPage()) {
-			state1.innerHTML = 'Local';
-			console.log('Web page status:Local');
-		} else {
-			state1.innerHTML = 'Server';
-			console.log('Web page status:Server');
-		};
-
-		console.log('web_data='+ lv);//列表数据版本
-	</script>
+	<script src="../js/foot.js"></script>
 
 	<div style="display: none;">111</div><!-- 去广告 -->
 </body>
-
 
 </html>
