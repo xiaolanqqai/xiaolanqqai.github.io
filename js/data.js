@@ -80,6 +80,7 @@ function data() {
 		'www.google.com.hk', '谷歌HK',
 		'www.aliyun.com', '阿里云',
 		'cp.aliyun.com', '万网主机管理控制台',
+		'www.creditchina.gov.cn', '信用中国',
 	])
 
 	//工具
@@ -92,6 +93,7 @@ function data() {
 		'translate.google.cn', '谷歌翻译',
 		'fanyi.baidu.com', '百度翻译',
 		'flowus.cn', 'flowus息流',
+		'www.notion.so', 'Notion',
 		'xiezuocat.com', '写作猫',
 		'yiyan.baidu.com', '文心一言',
 		'map.baidu.com', '百度地图',
@@ -278,6 +280,7 @@ function data() {
 	//论坛
 	ww(2,document.getElementById("ar15"), [
 		'dkxuanye.cn', '玄烨品果',
+		'www.feng.com', '威锋',
 		'bbs.pcbeta.com', '远景论坛',
 		'bbs.kafan.cn', '卡饭论坛',
 		'www.chiphell.com', 'chiphell',
@@ -369,4 +372,6 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = '0.5_20230918';
+var lv = '0.5_20230921';
+
+
