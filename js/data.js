@@ -64,7 +64,13 @@ function data() {
 	// }
 	// ffl.innerHTML = ttemp;
 
-	var ff = ['平台', '工具', '图片处理', '其它处理 • PDF • 文字 • 视频', '专业工具', '视频下载 • 磁力', '视频', '漫画', '导航', '软件资源', 'JS资源 • 开发', '其它 • 开发', '树莓派 • 开发', 'Git • 项目', '论坛'];
+	var ff = ['平台', '工具', '图片处理', 
+			  '其它处理 • PDF • 文字 • 视频',
+			  '专业工具', '视频下载 • 磁力',
+			  '视频', '漫画', '导航', '软件资源',
+			  'JS资源 • 开发', '其它 • 开发',
+			  '树莓派 • 开发', 'Git • 项目', '论坛',
+			];
 	var ffl = document.getElementById('ff');
     var ffn = 1;
 	ffl.innerHTML = ff.map(item => `<div class="mt-3 mx-3"><div class="alert alert-secondary shadow" role="alert">${item}</div><div id="ar${ffn++}" class="d-flex flex-wrap p-2"></div></div>`).join('');
@@ -252,6 +258,7 @@ function data() {
 		'www.pc6.com', 'PC6',
 		'www.ittel.cn', 'IT技术之家',
 		'www.mimods.com', 'MOD迷',
+		'www.bydmax.com', '迪友社区',
 	])
 
 	//JS资源 • 开发
@@ -323,7 +330,7 @@ function datad() {
 		'xxxxx525.com', 'switch游戏',
 		'zhuanlan.zhihu.com/p/617025808', '设计师的 Midjourney 入门真保姆级教程',
 		'xn--1-948a43hd5x.com', '一号机场（1元100g）',
-		'bbs.kafan.cn/thread-2244866-1-1.html', '卡巴免费15年',
+		'docs.qq.com/sheet/DQWJweHVmQUtacUFu?tab=BB08J2&scode=', 'BYD车机APP汇总',
 	])
 
 }
@@ -372,6 +379,6 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = '0.5_20230921';
+var lv = '0.6_20231007';
 
 
