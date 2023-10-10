@@ -282,6 +282,7 @@ function data() {
 	//Git • 项目
 	ww(2,document.getElementById("ar14"), [
 		'alist.nn.ci', 'Alist',
+		'github.com/seemoo-lab/openhaystack', 'openhaystack',
 	])
 
 	//论坛
@@ -380,6 +381,6 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = '0.6_20231007';
+var lv = '0.6_20231010';
 
 
