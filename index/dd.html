@@ -18,6 +18,18 @@
 		<div class="d-flex flex-row">
 			<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>返回</strong></button>
 			<button onclick="window.location.href = 'more.html'" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong>More</strong></button>
+			<form class="more-tag d-flex mx-3" role="search">
+				<input id="txt" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+				<button id="btn" class="btn btn-outline-success" type="submit">Search</button>
+			</form>
+			<script type="text/javascript">
+				var oTxt = document.getElementById("txt");
+				var oBtn = document.getElementById("btn");
+				oBtn.onclick = function () {
+					var oValue = oTxt.value;
+					window.open("https://www.baidu.com/s?wd=" + oValue);
+				};
+			</script>
 		</div>
 
 		<div class="mt-3 mx-3">
