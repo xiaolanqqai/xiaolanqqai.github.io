@@ -70,6 +70,7 @@ if (isLocalPage()) {
 } else {
 	state1.innerHTML = 'Server';
 	console.log('Web page status:Server');
+	document.getElementById('state2').style.display = 'none';
 };
 
 console.log('web_data='+ lv);//列表数据版本
