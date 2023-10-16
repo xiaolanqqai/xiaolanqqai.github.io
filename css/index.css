@@ -158,3 +158,8 @@ html, body {
     z-index: 2;
     max-height: 165px;
 }
+
+.more-tag {
+    height: 38px;
+    margin-top: 16px;
+}
