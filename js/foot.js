@@ -28,7 +28,6 @@ window.onload = function () {
 
 //---------------------------------------------------------------------------------
 
-
 //网页编译版本显示
 var uptime1 = document.getElementById('uptime1');
 var uptime2 = document.getElementById('uptime2');
@@ -74,7 +73,6 @@ if (isLocalPage()) {
 };
 
 console.log('web_data='+ lv);//列表数据版本
-
 
 //----------------------------------------------------------------------------------
 
