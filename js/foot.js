@@ -19,11 +19,11 @@ for (i = 0; i < aTop.length - 1; i++) {
 
 //网页背景
 window.onload = function () {
-	Particles.init({ selector: '.background' });//背景触发
-
+	//背景触发
+	Particles.init({ selector: '.background' });
+	// 去广告
 	var gg = document.querySelector("body>div:last-of-type");
 	gg.parentNode.removeChild(gg);
-	// 去广告
 };
 
 //---------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ uptime1.onmouseover = function () {
 };
 uptime1.onmouseout = function () {
 	uptime2.style.display = 'none';
-}
+};
 
 var loca_bat = uptime2.innerHTML;
 console.log("loca_bat=" + loca_bat);
@@ -45,14 +45,12 @@ console.log("git_bat=" + git_bat);
 if (loca_bat < git_bat) {
 	uptime1.style.color = 'red';
 	uptime1.innerHTML = 'This version is old';
-}
-else if (loca_bat > git_bat) {
+} else if (loca_bat > git_bat) {
 	uptime1.style.color = 'green';
 	uptime1.innerHTML = 'Please upload a new version to the server!!!';
-}
-else {
+} else {
 	uptime1.innerHTML = git_vol;
-}
+};
 console.log(uptime1.innerHTML);
 
 
@@ -87,7 +85,7 @@ function jav() {
 	if (na === null || na === "") {
 		alert('???');
 		return;
-	}else if (na === "123456") {
+	} else if (na === "123456") {
 		aav.style.display = "block";
 		aavt.style.display = "none";
 		return;

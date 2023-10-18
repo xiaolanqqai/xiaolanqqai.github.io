@@ -37,7 +37,7 @@ function datat() {
 	])
 
 	//Network
-	ww(1,document.getElementById("ar4"), [
+	ww(4,document.getElementById("ar4"), [
 		'192.168.2.1', '主路由',
 		'192.168.1.1', '次路由',
 		'192.168.31.1', '小米路由',
@@ -362,6 +362,7 @@ function ww(top, ar1, arr1) {
 		var temp = [];
 		for (var i = 0; i < arr1.length; i += 2) {
 			var url = '<a href="https://' + arr1[i]+ '" rel="nofollow" target="_blank" class="';
+			var url1 = '<a href="http://' + arr1[i]+ '" rel="nofollow" target="_blank" class="';
 			var title = arr1[i + 1]+ '</h6></a>';
 			var imgSrc = 'src="https://api.iowen.cn/favicon/' + arr1[i] + '.png" loading="lazy">';
 			var className = 'my-2 p-1 text-center text-black-50';
@@ -373,7 +374,10 @@ function ww(top, ar1, arr1) {
 				arrdtat[index] = url + className +' kuaijie-a-1"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
 			} else if (top === 3) {
 				arrdtat[index] = url + className +'"><img class="border rounded-circle w2"' + imgSrc + '<h6 class="t2">' + title;
-			}
+			} else if (top === 4) {
+				arrdtat[index] = url1 +'col'+ className +' kuaijie-a"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
+				//http跳转，局域网专用
+			};
 			index++;
 		}
 		temp.push(arrdtat.join(""));
@@ -382,6 +386,6 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = '0.6_20231010';
+var lv = '0.6_20231018';
 
 
