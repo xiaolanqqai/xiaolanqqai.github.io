@@ -20,103 +20,32 @@
 			<button onclick="window.location.href = 'dd.html'" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong>DD</strong></button>
 			<form class="more-tag d-flex mx-3" role="search">
 				<input id="txt" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-				<button id="btn" class="btn btn-outline-success" type="submit">Search</button>
+				<button id="btn" class="btn btn-outline-success" type="button">Search</button>
 			</form>
 			<div class="btn-group">
-				<button id="more-s" class="more-tag btn btn-info dropdown-toggle" type="button">Baidu</button>
+				<button id="more-s" class="more-tag btn btn-info dropdown-toggle" type="button">•••</button>
+				
 			</div>
 		</div>
 		<div class="d-flex flex-column">
 			<div class="mt-3 mx-3" id="more-b" style="display: none;">
-				<button onclick="a6()" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/192.168.1.1.png" loading="lazy"><h6 class="t1">.1.</h6></button>
-				<button onclick="a7()" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/192.168.1.1.png" loading="lazy"><h6 class="t1">.2.</h6></button>
-				<button onclick="a0()" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.baidu.com.png" loading="lazy"><h6 class="t1">Baidu</h6></button>
-				<button onclick="a1()" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.bilibili.com.png" loading="lazy"><h6 class="t1">BiliBili</h6></button>
-				<button onclick="a2()" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.bing.com.png" loading="lazy"><h6 class="t1">Bing</h6></button>
-				<button onclick="a3()" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.google.com.png" loading="lazy"><h6 class="t1">Google.hk</h6></button>
-				<button onclick="a4()" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.Yandex.com.png" loading="lazy"><h6 class="t1">Yandex</h6></button>
-				<button onclick="a5()" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.kuaidi100.com.png" loading="lazy"><h6 class="t1">快递100</h6></button>
+				<button onclick="a(0)" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1" type="button"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/192.168.1.1.png" loading="lazy"><h6 class="t1">.1.</h6></button>
+				<button onclick="a(1)" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1" type="button"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/192.168.1.1.png" loading="lazy"><h6 class="t1">.2.</h6></button>
+				<button onclick="a(2)" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1" type="button"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.baidu.com.png" loading="lazy"><h6 class="t1">Baidu</h6></button>
+				<button onclick="a(3)" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1" type="button"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.bilibili.com.png" loading="lazy"><h6 class="t1">BiliBili</h6></button>
+				<button onclick="a(4)" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1" type="button"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.bing.com.png" loading="lazy"><h6 class="t1">Bing</h6></button>
+				<button onclick="a(5)" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1" type="button"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.google.com.png" loading="lazy"><h6 class="t1">Google.hk</h6></button>
+				<button onclick="a(6)" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1" type="button"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.Yandex.com.png" loading="lazy"><h6 class="t1">Yandex</h6></button>
+				<button onclick="a(7)" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1" type="button"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/www.kuaidi100.com.png" loading="lazy"><h6 class="t1">快递100</h6></button>
 			</div>
 		</div>
-
-		<script type="text/javascript">
-			var oTxt = document.getElementById("txt");
-			var oBtn = document.getElementById("btn");
-			var oMoreS = document.getElementById("more-s");
-			var oMoreB = 0;
-			var oMoreC = document.getElementById("more-b");
-			oMoreS.onclick = function () {
-				if (oMoreC.style.display == "none"){
-					oMoreC.style.display = "block";
-				}else{
-					oMoreC.style.display = "none";
-				};
-			};
-			function a0 (){
-				oMoreS.innerHTML = "Baidu";
-				oMoreB = 0;
-			};
-			function a1 (){
-				oMoreS.innerHTML = "BiliBili";
-				oMoreB = 1;
-			};
-			function a2 (){
-				oMoreS.innerHTML = "Bing";
-				oMoreB = 2;
-			};
-			function a3 (){
-				oMoreS.innerHTML = "Google";
-				oMoreB = 3;
-			};
-			function a4 (){
-				oMoreS.innerHTML = "Yandex";
-				oMoreB = 4;
-			};
-			function a5 (){
-				oMoreS.innerHTML = "快递100";
-				oMoreB = 5;
-			};
-			function a6 (){
-				oMoreS.innerHTML = ".1.";
-				oMoreB = 6;
-			};
-			function a7 (){
-				oMoreS.innerHTML = ".2.";
-				oMoreB = 7;
-			};
-
-			oBtn.onclick = function () {
-				var oValue = oTxt.value;
-				if (oValue == "") {
-					alert("请输入内容");
-					return;
-				}else if (oMoreB == 0) {
-					window.open("https://www.baidu.com/s?wd=" + oValue);
-				}else if (oMoreB == 1) {
-					window.open("https://search.bilibili.com/all?keyword=" + oValue);
-				}else if (oMoreB == 2) {
-					window.open("https://www.bing.com/search?q=" + oValue);
-				}else if (oMoreB == 3) {
-					window.open("https://www.google.com.hk/search?q=" + oValue);
-				}else if (oMoreB == 4) {
-					window.open("https://yandex.com/search/?text=" + oValue);
-				}else if (oMoreB == 5) {
-					window.open("https://www.kuaidi100.com/chaxun?com=&nu=" + oValue);
-				}else if (oMoreB == 6) {
-					window.open("http://192.168.1." + oValue);
-				}else if (oMoreB == 7) {
-					window.open("http://192.168.2." + oValue);
-				};
-			};
-		</script>
 
 
 		<!-- 头部导航栏 -->
 		<div class="d-flex flex-column" id="ff"></div>
 
-		<div class="mt-3 mx-3" id="aa" style="display: none;">
-			<div class="alert alert-secondary shadow" role="alert">论坛</div>
-				<button onclick="clearTimeout(tt)" type="button" class="btn btn-info shadow mt-3 mx-3" id="aat" style="width: 100px; display: none;"><strong id="cc">Stop -s</strong></button>
+		<div class="mt-3 mx-3" id="aav" style="display: none;">
+			<div class="alert alert-secondary shadow" role="alert">小日本ポートエロ</div>
 			<div id="ar16" class="d-flex flex-wrap p-2"></div>
 		</div>
 
@@ -125,7 +54,7 @@
 				<div class="float-end">
 					<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="../index/develop.html">Beta:error</a></span>
 					<span id="state1" class="badge text-bg-success">Error</span>
-					<a href="JavaScript:void(0)" onclick="jav()"><div class="spinner-grow spinner-grow-sm text-info" role="status"></div></a>
+					<a><div class="spinner-grow spinner-grow-sm text-info" role="status"></div></a>
 				</div>
 			</div>
 		</div>
@@ -157,6 +86,8 @@
 	<script src="https://xiaolanqqai.xyz/js/git-bat.js"></script>
 
 	<script src="../js/foot.js"></script>
+
+	<script>mots()</script><!-- 头部搜索指向记忆加载 -->
 
 	<div style="display: none;">111</div><!-- 去广告 -->
 
