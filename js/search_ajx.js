@@ -17,19 +17,32 @@ function submitFn(obj, evt){
 	_html = "Yup yup! Your search text sounds like this: ";
 	if(!value.length){
 		_html = "https://www.baidu.com/";
-	}
-	else{
-		_html = "https://www.baidu.com/s?word=" + value;
+	}else {
+		if (oMoreB == 0) {
+			_html ="http://192.168.1." + value;
+		} else if (oMoreB == 1) {
+			_html ="http://192.168.2." + value;
+		} else if (oMoreB == 2) {
+			_html ="https://www.baidu.com/s?wd=" + value;
+		} else if (oMoreB == 3) {
+			_html ="https://search.bilibili.com/all?keyword=" + value;
+		} else if (oMoreB == 4) {
+			_html ="https://www.bing.com/search?q=" + value;
+		} else if (oMoreB == 5) {
+			_html ="https://www.google.com.hk/search?q=" + value;
+		} else if (oMoreB == 6) {
+			_html ="https://yandex.com/search/?text=" + value;
+		} else if (oMoreB == 7) {
+			_html ="https://www.kuaidi100.com/chaxun?com=&nu=" + value;
+		};
 	}
 	$(obj).find('.result-container').html(window.open(_html));
 	$(obj).find('.result-container').fadeIn(100);
 	evt.preventDefault();
 };
 
-
-
-
-
+//-------------------------------------------------------------------------------------
+//搜索框预加载
 
 var oTxt = document.getElementById("txt");
 var oList = document.getElementById("list");

@@ -132,6 +132,7 @@ function data() {
 		'imagecompressor.com/zh', 'imagecompressor',
 		'zh.recompressor.com', 'Recompressor',
 		'www.aconvert.com.cn', 'aconvert',
+		'www.zamzar.com', 'zamzar',
 		'www.superbed.cn/', '聚合图床',
 	])
 
@@ -283,6 +284,7 @@ function data() {
 	ww(2,document.getElementById("ar14"), [
 		'alist.nn.ci', 'Alist',
 		'github.com/seemoo-lab/openhaystack', 'openhaystack',
+		'github.com/gkd-kit/gkd', 'GKD',
 	])
 
 	//论坛
@@ -386,6 +388,6 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = '0.6_20231018';
+var lv = '0.6_20231025';
 
 
