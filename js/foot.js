@@ -1,5 +1,4 @@
 //首页栏目切换算法
-
 var aTop = document.getElementsByClassName('nav-top');
 var aBan = document.getElementsByClassName('nav-ban');
 var i = 0;
@@ -60,6 +59,7 @@ function isLocalPage() {
 };
 
 var state1 = document.getElementById('state1');
+var state2 = document.getElementById('state2');
 
 if (isLocalPage()) {
 	state1.innerHTML = 'Local';
@@ -67,7 +67,7 @@ if (isLocalPage()) {
 } else {
 	state1.innerHTML = 'Server';
 	console.log('Web page status:Server');
-	document.getElementById('state2').style.display = 'none';
+	state2.style.display = 'none';
 };
 
 console.log('web_data='+ lv);//列表数据版本

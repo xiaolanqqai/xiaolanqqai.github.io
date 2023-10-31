@@ -370,14 +370,14 @@ function ww(top, ar1, arr1) {
 			var className = 'my-2 p-1 text-center text-black-50';
  
 			if (top === 1) {
-				arrdtat[index] = url +'col'+ className +' kuaijie-a"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
+				arrdtat[index] = url +'col '+ className +' kuaijie-a"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
 			} else if (top === 2) {
 				//<a href="https://xx" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/xx.png" loading="lazy"><h6 class="t1">xx</h6></a>
 				arrdtat[index] = url + className +' kuaijie-a-1"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
 			} else if (top === 3) {
 				arrdtat[index] = url + className +'"><img class="border rounded-circle w2"' + imgSrc + '<h6 class="t2">' + title;
 			} else if (top === 4) {
-				arrdtat[index] = url1 +'col'+ className +' kuaijie-a"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
+				arrdtat[index] = url1 +'col '+ className +' kuaijie-a"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
 				//http跳转，局域网专用
 			};
 			index++;
