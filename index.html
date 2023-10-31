@@ -18,7 +18,7 @@
 
 	<div class="z-2 d-flex flex-column justify-content-center mx-auto">
 		<div class=" mt-5 pt-5 d-none d-sm-block"></div>
-		<div class="mx-auto shadow mt-3"><img width="250" src="img/google_logo.webp" class="img-fluid img-thumbnail"></div>
+		<div class="mx-auto shadow mt-3 rounded-4"><img id="indexing" width="250" src="img/login.png" class="p-1"></div>
 		
 		<div class="mx-auto mt-5 pt-5">
 			<!--搜索框-->
@@ -97,6 +97,26 @@
 	<script src="https://xiaolanqqai.xyz/js/git-bat.js"></script>
 
 	<script src="js/foot.js"></script>
+	<script>
+		var indexing = document.getElementById("indexing");
+		if(oMoreB == 0){
+			indexing.setAttribute("src", "img/1.jpg");
+		}else if(oMoreB == 1){
+			indexing.setAttribute("src", "img/1.jpg");
+		}else if(oMoreB == 2){
+			indexing.setAttribute("src", "img/baidu.gif");
+		}else if(oMoreB == 3){
+			indexing.setAttribute("src", "img/bilibili.png");
+		}else if(oMoreB == 4){
+			indexing.setAttribute("src", "img/bing.jpg");
+		}else if(oMoreB == 5){
+			indexing.setAttribute("src", "img/google.webp");
+		}else if(oMoreB == 6){
+			indexing.setAttribute("src", "img/yandex.jpg");
+		}else if(oMoreB == 7){
+			indexing.setAttribute("src", "img/kd100.png");
+		}
+	</script>
 	<script>
 		//剪贴板内容跳转百度搜索
 		function getClipboardText() {
