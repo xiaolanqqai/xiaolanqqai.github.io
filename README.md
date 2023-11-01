@@ -1,80 +1,93 @@
 # xiaolanqqai.github.io
-				<h5 class="alert-heading">BOOSTRAP_v5.3.0-alpha3</h5>
-				<h5 class="alert-heading">JQuery_v3.5.1</h5>
-				<h5 class="alert-heading">Particles_v2.2.3</h5>
-				<hr class="my-2">
-				<h4 class="alert-heading">BETA 3.5.3<span class="badge badge-danger">New</span></h4>
-				<h6 class="float-end">2023-08-21</h6>
-				<p>Add List Data Version</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.5.2</h5>
-				<h6 class="float-end">2023-08-16</h6>
-				<p>Update the list reference method of the development page</p>
-				<p>Request to optimize web page icons using 'One for API'</p>
-				<p>Add physical address status display for web pages</p>
-				<p>Skip clipboard content to Baidu search</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.5.1</h5>
-				<h6 class="float-end">2023-08-11</h6>
-				<p>Refine and optimize aa pages</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.5.0</h5>
-				<h6 class="float-end">2023-5-20</h6>
-				<p>Website request data segregation</p>
-				<p>Optimizing core code using AI</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.4.3</h5>
-				<h6 class="float-end">2023-5-20</h6>
-				<p>The framework updated to BOOSTRAP_v5.3.0-alpha3</p>
-				<p>Style and framework library request changed to local</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.4.2</h5>
-				<h6 class="float-end">2022-12-20</h6>
-				<p>The framework updated to BOOSTRAP_v5.2.3</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.4.1</h5>
-				<h6 class="float-end">2022-11-12</h6>
-				<p>The framework updated to BOOSTRAP_v5.2.2</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.3.0</h5>
-				<h6 class="float-end">2022-07-04</h6>
-				<p>The framework updated to BOOSTRAP_v5.2.0_Beta1.</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.2.3</h5>
-				<h6 class="float-end">2022-06-30</h6>
-				<p>Improve picture loading speed.
-					<br>Update more links.
-				</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.2.1</h5>
-				<h6 class="float-end">2021-11-08</h6>
-				<p>Add "Poetry of the Day" control.
-					<br>Organize links and add 9 links.
-				</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.2</h5>
-				<h6 class="float-end">2021-10-17</h6>
-				<p>The framework updated to BOOSTRAP_v5.1.3.</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.1</h5>
-				<h6 class="float-end">2021-09-20</h6>
-				<p>Minor adjustments to the interface.
-					<br>The framework updated to BOOSTRAP_v5.0.0-beta2.
-				</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 3.0</h5>
-				<h6 class="float-end">2021-11-08</h6>
-				<p>The framework updated to BOOSTRAP_v5.0.0-beta1.</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 2.4</h5>
-				<h6 class="float-end">2021-11-08</h6>
-				<p>Add web development details page and more.</p>
-				<hr class="my-2">
-				<h5 class="alert-heading">BETA 2.3</h5>
-				<h6 class="float-end">2021-11-08</h6>
-				<p class="mb-0">Introduce boostrap-v4 framework.
-					<br>Change the page navigation bar to a new style to reduce the performance of the wallpaper.
-				</p>
+
+BOOSTRAP_v5.3.0-alpha3
+JQuery_v3.5.1
+Particles_v2.2.3
+
+网站数据_v0.6_20231025
+
+BETA 3.6.0-2023-10-25
+1：更改aa的跳转方式，集成在搜索框
+2：增加more的搜索框指向缓存为localStorage
+3：优化more的搜索样式
+4：增加more搜索框指向的缓存检测
+5：增加index搜索框指向,初步指向more的搜索选项
+
+BETA 3.5.9-2023-10-18
+1：more页面增加搜索框跳转选项，可以指定网站的搜索和局域网的跳转
+
+BETA 3.5.8-2023-10-12
+1：more页面增加搜索框
+
+BETA 3.5.7-2023-10-09
+1：优化dd，develop的返回跳转
+2：优化index样式的注释错误
+
+BETA 3.5.6-2023-09-18
+1：进一步优化more的列表算法
+
+BETA 3.5.5-2023-09-15
+1：进一步优化more的列表算法，但存在报错
+2：合并所有页面的JavaScript引用
+
+BETA 3.5.4-2023-09-12
+1：注册域名: xiaolanqqai.xyz
+2：摒弃英文，发扬中文
+3：更新文件布局，demo网站转正
+
+BETA 3.5.3-2023-08-21
+1：添加列表数据版本号
+
+BETA 3.5.2-2023-08-16
+1：更新开发信息页面的列表引用算法
+2：使用“一为 • API”优化网页图标请求
+3：首页获取剪贴板内容到百度搜索
+4：为网页添加物理地址状态显示。
+
+BETA 3.5.1-2023-08-11
+1：优化aa页面算法。
+
+BETA 3.5.0-2023-5-20
+1：分离式请求网站列表数据。
+2：使用AI优化网站列表核心算法。
+
+BETA 3.4.3-2023-5-20
+1：更新网站主框架版本为：BOOSTRAP_v5.3.0-alpha3
+2：样式和框架库文件请求更改为本地请求。
+
+BETA 3.4.2-2022-12-20
+1：更新网站主框架版本为：BOOSTRAP_v5.2.3
+
+BETA 3.4.1-2022-11-12
+1：更新网站主框架版本为：BOOSTRAP_v5.2.2
+
+BETA 3.3.0-2022-07-04
+1：更新网站主框架版本为：BOOSTRAP_v5.2.0_Beta1.
+
+BETA 3.2.3-2022-06-30
+1：使用延迟算法加载图标。
+2：更新更多的网站列表。
+
+BETA 3.2.1-2021-11-08
+1：添加“每日诗歌”插件。
+2：更新更多的网站列表。
+
+BETA 3.2-2021-10-17
+1：更新网站主框架版本为：BOOSTRAP_v5.1.3.
+
+BETA 3.1-2021-09-20
+1：对界面进行样式优化。
+2：更新网站主框架版本为：BOOSTRAP_v5.0.0-beta2.
+
+BETA 3.0-2021-11-08
+1：更新网站主框架版本为：BOOSTRAP_v5.0.0-beta1.
+
+BETA 2.4-2021-11-08
+1：添加web开发详细信息页面和网页列表概览。
+
+BETA 2.3-2021-11-08
+1：升级主框架boostrap-v4.
+2：将页面导航栏更改为新算法以提供网页加载速度。
 
 20221202：1. 更新新的目录为/demo
 
