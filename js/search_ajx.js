@@ -46,7 +46,6 @@ function submitFn(obj, evt){
 
 var oTxt = document.getElementById("txt");
 var oList = document.getElementById("list");
-var oBtn = document.getElementById("btn");
 var oBox = document.getElementById("box");
 
 var times
@@ -84,16 +83,6 @@ function fly(myJson){
 	}
 	oList.innerHTML = str;
 };
-//点击开始搜索按钮
-oBtn.onclick = function(){
-	var oValue = oTxt.value;
-	window.open("https://www.baidu.com/s?wd="+oValue);
-};
-//鼠标滑过开始搜索按钮时发生：
-oBtn.onmouseover = function(){
-	this.style.cursor = "pointer";
-};
-
 
 window.onload =function()
 {
