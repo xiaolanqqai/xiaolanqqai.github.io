@@ -4,6 +4,7 @@ var oBtn = document.getElementById("btn");
 var oMoreS = document.getElementById("more-s");
 var oMoreC = document.getElementById("more-b");
 var oMoreB = localStorage.getItem("oMoreB");
+var oMoreCC = document.getElementById("more-c");
 
 //浏览器缓存不存在情况
 if (oMoreB == undefined) {
@@ -12,6 +13,13 @@ if (oMoreB == undefined) {
 }else {
 	oMoreB = parseInt(oMoreB);
 	console.log("检查到缓存oMoreB=" + oMoreB);
+};
+
+//清除缓存
+oMoreCC.onclick = function () {
+	localStorage.removeItem("oMoreB");
+	oTxt.value = "";
+	console.log("已清空缓存");
 };
 
 oMoreS.onclick = function () {
@@ -44,27 +52,39 @@ oBtn.onclick = function () {
 		if (oValue == "001"){
 			console.log("welcom to ポートエロ");
 			aav.style.display = "block";
+			window.scrollTo(0, document.documentElement.scrollHeight);
+			oTxt.value = "";
 		}else if (oValue == "002"){
 			window.open("aa.htm");
+			oTxt.value = "";
 		}else if (oValue == "003"){
 			window.open("aa.chm");
+			oTxt.value = "";
 		}else{
 			window.open("http://192.168.1." + oValue);
+			oTxt.value = "";
 		};	
 	}else if (oMoreB == 1) {
 		window.open("http://192.168.2." + oValue);
+		oTxt.value = "";
 	}else if (oMoreB == 2) {
 		window.open("https://www.baidu.com/s?wd=" + oValue);
+		oTxt.value = "";
 	}else if (oMoreB == 3) {
 		window.open("https://search.bilibili.com/all?keyword=" + oValue);
+		oTxt.value = "";
 	}else if (oMoreB == 4) {
 		window.open("https://www.bing.com/search?q=" + oValue);
+		oTxt.value = "";
 	}else if (oMoreB == 5) {
 		window.open("https://www.google.com.hk/search?q=" + oValue);
+		oTxt.value = "";
 	}else if (oMoreB == 6) {
 		window.open("https://yandex.com/search/?text=" + oValue);
+		oTxt.value = "";
 	}else if (oMoreB == 7) {
 		window.open("https://www.kuaidi100.com/chaxun?com=&nu=" + oValue);
+		oTxt.value = "";
 	};
 	
 };

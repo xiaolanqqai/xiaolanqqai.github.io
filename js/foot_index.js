@@ -40,7 +40,7 @@ if (oMoreB == 0) {
 } else if (oMoreB == 4) {
 	indexing.setAttribute("src", "img/bing.jpg");
 } else if (oMoreB == 5) {
-	indexing.setAttribute("src", "img/google.webp");
+	indexing.setAttribute("src", "img/google.gif");
 } else if (oMoreB == 6) {
 	indexing.setAttribute("src", "img/yandex.jpg");
 } else if (oMoreB == 7) {

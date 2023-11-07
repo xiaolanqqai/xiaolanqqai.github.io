@@ -182,25 +182,24 @@ function data() {
 		'www.yxdmlove.com', '怡萱动漫',
 		'www.acfun.cn', 'ACfan',
 		'www.dmh8.com', '樱花动漫',
-		'www.yhdmp.cc', '樱花动漫',
-		'www.lndayp.com', '樱花动漫',
+		// 'www.yhdmp.cc', '樱花动漫',
+		// 'www.lndayp.com', '樱花动漫',
 		'v.qq.com', '腾讯视频',
 		'www.iqiyi.com', '爱奇艺',
-		'www.8666.tv', '樱花风车动漫',
-		'www.91m.cc', '樱花动漫',
-		'www.qydmz.com', '樱花风车动漫',
-		'www.dm530p.net', '风车动漫',
+		// 'www.8666.tv', '樱花风车动漫',
+		// 'www.91m.cc', '樱花动漫',
+		// 'www.qydmz.com', '樱花风车动漫',
+		// 'www.dm530p.net', '风车动漫',
 		'www.whpaiger.com', '风车动漫',
-		'www.dmdm2020.com', '哆咪动漫',
+		// 'www.dmdm2020.com', '哆咪动漫',
 		'www.qiqidongman.com', '奇奇动漫',
 		'www.zzzfun.com', 'zzzfun',
 		'www.xskdm.com', '新时空动漫',
 		'www.cqtvm.com', '剧浦浦',
-		'www.dmdm2020.com', '哆咪动漫',
 		'www.puquyy.com', '蒲趣影院',
-		'80s.tw', '80s',
+		// '80s.tw', '80s',
 		'www.mhdyw.net', '麻花电影',
-		'www.ttdianying.vip', '天堂电影',
+		'dytt.dytt8.net', '电影天堂',
 		'cupfox.app', '茶杯狐',
 		'ddys.pro', '低端影视',
 		'www.zxzjhd.com', '在线之家',
@@ -209,18 +208,19 @@ function data() {
 		'91mjw.com', '美剧网',
 		'www.liaocao88.net', '潦草网',
 		'www.5060w.cc', '新视觉影院',
-		'www.reinfsources.com', '人人影视',
+		// 'www.reinfsources.com', '人人影视',
 		'www.feifei6.com', '飞飞影院',
-		'www.dixidixi.com', '滴嘻滴嘻',
-		'www.ysgc.cc', '影视工场',
+		// 'www.dixidixi.com', '滴嘻滴嘻',
+		// 'www.ysgc.cc', '影视工场',
 		'www.555dianying.cc', '555电影',
-		'baofa-hotel.cn', '看吧影院',
-		'www.840f.com', '恐怖世界',
+		// 'baofa-hotel.cn', '看吧影院',
+		// 'www.840f.com', '恐怖世界',
 		'www.zuankuo.com', '钻阔电影网',
 		'www.cuihuays.com', '翠花影视',
 		'wandou.la', '豌豆Pro',
-		'www.5yju.com', '无忧居',
+		// 'www.5yju.com', '无忧居',
 		'share.dmhy.org', '动漫花园资源网',
+		'libvio.top', 'LIBVIO影视',
 	])
 
 	//漫画
@@ -231,7 +231,7 @@ function data() {
 		'm.sixmh7.com', '六漫画',
 	])
 
-	//导航
+	//聚合导航
 	ww(2,document.getElementById("ar9"), [
 		'www.coolzhanweb.com', '酷站导航',
 		'movie.coolzhanweb.com', '电影导航',
@@ -297,7 +297,7 @@ function data() {
 		'www.right.com.cn', '恩山无线论坛',
 	])
 
-	//论坛
+	//工口论坛
 	ww(2,document.getElementById("ar16"), [
 		'tom51727.com', '汤姆叔叔',
 		'www.b6b33.com', '四虎影院',
@@ -371,11 +371,14 @@ function ww(top, ar1, arr1) {
  
 			if (top === 1) {
 				arrdtat[index] = url +'col '+ className +' kuaijie-a"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
+				//首页
 			} else if (top === 2) {
 				//<a href="https://xx" rel="nofollow" target="_blank" class="col my-2 p-1 text-center text-black-50 kuaijie-a-1"><img class="border rounded-circle w" src="https://api.iowen.cn/favicon/xx.png" loading="lazy"><h6 class="t1">xx</h6></a>
 				arrdtat[index] = url + className +' kuaijie-a-1"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
+				//more，develop
 			} else if (top === 3) {
 				arrdtat[index] = url + className +'"><img class="border rounded-circle w2"' + imgSrc + '<h6 class="t2">' + title;
+				//dd
 			} else if (top === 4) {
 				arrdtat[index] = url1 +'col '+ className +' kuaijie-a"><img class="border rounded-circle w"' + imgSrc + '<h6 class="t1">' + title;
 				//http跳转，局域网专用
