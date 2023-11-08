@@ -25,6 +25,7 @@ oMoreCC.onclick = function () {
 oMoreS.onclick = function () {
 	if (oMoreC.style.display == "none"){
 		oMoreC.style.display = "block";
+		window.scrollTo(0, 0);
 	}else{
 		oMoreC.style.display = "none";
 	};

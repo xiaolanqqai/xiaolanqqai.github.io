@@ -156,6 +156,8 @@ function data() {
 		'api.hkfx.net', '在线MD5解密',
 		'www.rvso.com', '免费短信接码',
 		'www.zsrq.net', '免费短信平台',
+		'fofa.info', 'FOFA网站测绘',
+		'www.wappalyzer.com', '网站框架识别',
 	])
 
 	//视频下载 • 磁力
