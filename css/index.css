@@ -12,6 +12,10 @@ html, body {
     padding: 0;
     background: #f8f8f8;
 }
+
+.oh {
+    overflow: hidden;
+}
 /**基本格式去除**/
 
 /**boostrap补全**/
