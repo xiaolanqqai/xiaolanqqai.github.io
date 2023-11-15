@@ -158,6 +158,8 @@ function data() {
 		'www.zsrq.net', '免费短信平台',
 		'fofa.info', 'FOFA网站测绘',
 		'www.wappalyzer.com', '网站框架识别',
+		'www.itdog.cn', 'IT狗-在线ping',
+		'tool.chinaz.com', '站长工具',
 	])
 
 	//视频下载 • 磁力
@@ -268,6 +270,11 @@ function data() {
 	ww(2,document.getElementById("ar11"), [
 		'owlcarousel2.github.io/OwlCarousel2', 'OwlCarousel2',
 		'sscms.comdocs/v7', 'SSCMS',
+		'cn.vuejs.org', 'Vue.js',
+		'github.com/jquery/jquery', 'jquery',
+		'getbootstrap.com', 'Bootstrap',
+		'www.w3school.com.cn', 'W3School',
+		'jquery.asprain.cn/', 'jQuery',
 	])
 
 	//其它 • 开发
@@ -287,6 +294,8 @@ function data() {
 		'alist.nn.ci', 'Alist',
 		'github.com/seemoo-lab/openhaystack', 'openhaystack',
 		'github.com/gkd-kit/gkd', 'GKD',
+		'github.com/zloirock/core-js', 'core-js',
+		'github.com/ckcr4lyf/EvilAppleJuice-ESP32', '邪恶苹果汁ESP32',
 	])
 
 	//论坛
