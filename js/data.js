@@ -143,6 +143,7 @@ function data() {
 		'123apps.com', '123apps',
 		'jianwai.youdao.com', '网易见外工作台',
 		'cli.im', '草料二维码',
+		'tool.lu', '在线工具',
 	])
 
 	//专业工具

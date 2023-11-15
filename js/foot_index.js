@@ -36,7 +36,7 @@ if (oMoreB == 0) {
 } else if (oMoreB == 2) {
 	indexing.setAttribute("src", "img/baidu.gif");
 } else if (oMoreB == 3) {
-	indexing.setAttribute("src", "img/bilibili.png");
+	indexing.setAttribute("src", "img/bilibili.gif");
 } else if (oMoreB == 4) {
 	indexing.setAttribute("src", "img/bing.jpg");
 } else if (oMoreB == 5) {
