@@ -144,6 +144,8 @@ function data() {
 		'jianwai.youdao.com', '网易见外工作台',
 		'cli.im', '草料二维码',
 		'tool.lu', '在线工具',
+		'c.runoob.com', '菜鸟工具',
+		'www.atoolbox.net', '一个工具箱',
 	])
 
 	//专业工具
@@ -297,6 +299,8 @@ function data() {
 		'github.com/gkd-kit/gkd', 'GKD',
 		'github.com/zloirock/core-js', 'core-js',
 		'github.com/ckcr4lyf/EvilAppleJuice-ESP32', '邪恶苹果汁ESP32',
+		'github.com/2dust/v2rayNG', 'v2rayNG',
+		'https://vuepress.vuejs.org/', 'VuePress',
 	])
 
 	//论坛
