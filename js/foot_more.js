@@ -17,7 +17,8 @@ if (oMoreB == undefined) {
 
 //清除缓存
 oMoreCC.onclick = function () {
-	localStorage.removeItem("oMoreB");
+	localStorage.clear();//清除全部
+	// localStorage.removeItem("oMoreB");只清除oMoreB
 	oTxt.value = "";
 	console.log("已清空缓存");
 };
@@ -61,6 +62,9 @@ oBtn.onclick = function () {
 		}else if (oValue == "003"){
 			window.open("aa.chm");
 			oTxt.value = "";
+		}else if (oValue == "mm"){
+			localStorage.setItem("userName", "xiaolan");
+			oTxt.value = "";
 		}else{
 			window.open("http://192.168.1." + oValue);
 			oTxt.value = "";
@@ -91,4 +95,12 @@ oBtn.onclick = function () {
 		oTxt.value = "";
 	};
 	
+};
+
+//控制mm的显示
+var localMM = localStorage.getItem("userName");
+var oMoreMM = document.getElementById("more-mm");
+
+if (localMM == "xiaolan") {
+	oMoreMM.style.display = "block";
 };

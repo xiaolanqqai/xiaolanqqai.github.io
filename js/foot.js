@@ -11,28 +11,9 @@ window.onload = function () {
 
 //网页编译版本显示
 var uptime1 = document.getElementById('uptime1');
-var uptime2 = document.getElementById('uptime2');
-
-uptime1.onmouseover = function () {
-	uptime2.style.display = 'block';
-};
-uptime1.onmouseout = function () {
-	uptime2.style.display = 'none';
-};
-
-var loca_bat = uptime2.innerHTML;
-console.log("loca_bat=" + loca_bat);
-console.log("git_bat=" + git_bat);
-if (loca_bat < git_bat) {
-	uptime1.style.color = 'red';
-	uptime1.innerHTML = 'This version is old';
-} else if (loca_bat > git_bat) {
-	uptime1.style.color = 'green';
-	uptime1.innerHTML = 'Please upload a new version to the server!!!';
-} else {
-	uptime1.innerHTML = git_vol;
-};
-console.log(uptime1.innerHTML);
+uptime1.innerHTML = vol;
+console.log("web_vol=" + uptime1.innerHTML);
+console.log("web_update time=" + bat);
 
 
 //网页物理地址状态显示

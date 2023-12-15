@@ -22,7 +22,7 @@ var oMoreB = localStorage.getItem("oMoreB");
 
 //浏览器缓存不存在情况
 if (oMoreB == undefined) {
-	oMoreB = 2;
+	oMoreB = 3;
 	console.log("没有检查到缓存oMoreB");
 } else {
 	oMoreB = parseInt(oMoreB);
@@ -34,16 +34,18 @@ if (oMoreB == 0) {
 } else if (oMoreB == 1) {
 	indexing.setAttribute("src", "img/1.jpg");
 } else if (oMoreB == 2) {
-	indexing.setAttribute("src", "img/baidu.gif");
+	indexing.setAttribute("src", "img/1.jpg");
 } else if (oMoreB == 3) {
-	indexing.setAttribute("src", "img/bilibili.gif");
+	indexing.setAttribute("src", "img/baidu.gif");
 } else if (oMoreB == 4) {
-	indexing.setAttribute("src", "img/bing.jpg");
+	indexing.setAttribute("src", "img/bilibili.gif");
 } else if (oMoreB == 5) {
-	indexing.setAttribute("src", "img/google.gif");
+	indexing.setAttribute("src", "img/bing.webp");
 } else if (oMoreB == 6) {
-	indexing.setAttribute("src", "img/yandex.jpg");
+	indexing.setAttribute("src", "img/google.gif");
 } else if (oMoreB == 7) {
+	indexing.setAttribute("src", "img/yandex.webp");
+} else if (oMoreB == 8) {
 	indexing.setAttribute("src", "img/kd100.png");
 };
 

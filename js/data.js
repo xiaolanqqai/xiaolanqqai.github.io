@@ -87,6 +87,7 @@ function data() {
 		'www.aliyun.com', '阿里云',
 		'cp.aliyun.com', '万网主机管理控制台',
 		'www.creditchina.gov.cn', '信用中国',
+		'tousu.sina.com.cn', '黑猫投诉',
 	])
 
 	//工具
@@ -102,6 +103,7 @@ function data() {
 		'www.notion.so', 'Notion',
 		'xiezuocat.com', '写作猫',
 		'yiyan.baidu.com', '文心一言',
+		'tongyi.aliyun.com', '通义千问',
 		'map.baidu.com', '百度地图',
 		'www.amap.com', '高德地图',
 		'docs.qq.com', '腾讯文档',
@@ -133,7 +135,8 @@ function data() {
 		'zh.recompressor.com', 'Recompressor',
 		'www.aconvert.com.cn', 'aconvert',
 		'www.zamzar.com', 'zamzar',
-		'www.superbed.cn/', '聚合图床',
+		'www.superbed.cn', '聚合图床',
+		'www.iloveimg.com', 'iloveimg',
 	])
 
 	//其它处理
@@ -284,6 +287,7 @@ function data() {
 	ww(2,document.getElementById("ar12"), [
 		'greasyfork.org/zh-Cn', 'Greasy Fork',
 		'hkfx.net', '红客防线（网络安全）',
+		'www.chongdiantou.com', '充电头网',
 	])
 
 	//树莓派 • 开发
@@ -300,7 +304,8 @@ function data() {
 		'github.com/zloirock/core-js', 'core-js',
 		'github.com/ckcr4lyf/EvilAppleJuice-ESP32', '邪恶苹果汁ESP32',
 		'github.com/2dust/v2rayNG', 'v2rayNG',
-		'https://vuepress.vuejs.org/', 'VuePress',
+		'vuepress.vuejs.org', 'VuePress',
+		'github.com/RipplePiam/MobaXterm-Chinese-Simplified', 'MobaXterm汉化',
 	])
 
 	//论坛
@@ -351,6 +356,7 @@ function datad() {
 		'xn--1-948a43hd5x.com', '一号机场（1元100g）',
 		'docs.qq.com/sheet/DQWJweHVmQUtacUFu?tab=BB08J2&scode=', 'BYD车机APP汇总',
 		'jamcz.com', '晨钟网络科技',
+		'momoe.link/shizuku/060248.html', '鲲鹏CC 开源固件',
 	])
 
 }
@@ -408,5 +414,5 @@ function ww(top, ar1, arr1) {
 
 //data数据版本
 var lv = '0.6_20231025';
-
-
+var bat = 20231215;
+var vol = "Beta:3.6.2";
