@@ -67,7 +67,7 @@ function data() {
 	var ff = ['平台', '工具', '图片处理', 
 			  '其它处理 • PDF • 文字 • 视频',
 			  '专业工具', '视频下载 • 磁力',
-			  '视频', '漫画', '导航', '软件资源',
+			  '视频', '漫画', '游戏栏目', '导航', '软件资源',
 			  'JS资源 • 开发', '其它 • 开发',
 			  '树莓派 • 开发', 'Git • 项目', '论坛',
 			];
@@ -88,6 +88,7 @@ function data() {
 		'cp.aliyun.com', '万网主机管理控制台',
 		'www.creditchina.gov.cn', '信用中国',
 		'tousu.sina.com.cn', '黑猫投诉',
+		'www.12365auto.com', '车质网',
 	])
 
 	//工具
@@ -118,6 +119,7 @@ function data() {
 	//图片处理
 	ww(2,document.getElementById("ar3"), [
 		'tinypng.com', 'TinyPNG',
+		'www.iconfont.cn', 'iconfont',
 		'www.polaxiong.com/web', '泼辣修图',
 		'www.gaituya.com/ps', '改图鸭',
 		'js.design', '即时设计',
@@ -142,6 +144,7 @@ function data() {
 	//其它处理
 	ww(2,document.getElementById("ar4"), [
 		'www.ilovepdf.com', 'ilovepdf',
+		'cn.office-converter.com', 'Office-Convert',
 		'tool.browser.qq.com', '帮小忙',
 		'123apps.com', '123apps',
 		'jianwai.youdao.com', '网易见外工作台',
@@ -241,8 +244,13 @@ function data() {
 		'm.sixmh7.com', '六漫画',
 	])
 
-	//聚合导航
+	//游戏栏目
 	ww(2,document.getElementById("ar9"), [
+		'www.3dmgame.com', '3DM-GAME',
+	])
+
+	//聚合导航
+	ww(2,document.getElementById("ar10"), [
 		'www.coolzhanweb.com', '酷站导航',
 		'movie.coolzhanweb.com', '电影导航',
 		'ltzhp.ysepan.com', '辣条杂货铺',
@@ -252,7 +260,7 @@ function data() {
 	])
 
 	//软件资源
-	ww(2,document.getElementById("ar10"), [
+	ww(2,document.getElementById("ar11"), [
 		'www.3h3.com', '当游软件',
 		'www.ypojie.com', '易破解',
 		'www.appinn.com', '小众软件',
@@ -273,31 +281,32 @@ function data() {
 	])
 
 	//JS资源 • 开发
-	ww(2,document.getElementById("ar11"), [
+	ww(2,document.getElementById("ar12"), [
 		'owlcarousel2.github.io/OwlCarousel2', 'OwlCarousel2',
 		'sscms.comdocs/v7', 'SSCMS',
 		'cn.vuejs.org', 'Vue.js',
 		'github.com/jquery/jquery', 'jquery',
 		'getbootstrap.com', 'Bootstrap',
 		'www.w3school.com.cn', 'W3School',
-		'jquery.asprain.cn/', 'jQuery',
+		'jquery.asprain.cn', 'jQuery',
+		'codyhouse.co', 'codyhouse',
 	])
 
 	//其它 • 开发
-	ww(2,document.getElementById("ar12"), [
+	ww(2,document.getElementById("ar13"), [
 		'greasyfork.org/zh-Cn', 'Greasy Fork',
 		'hkfx.net', '红客防线（网络安全）',
 		'www.chongdiantou.com', '充电头网',
 	])
 
 	//树莓派 • 开发
-	ww(2,document.getElementById("ar13"), [
+	ww(2,document.getElementById("ar14"), [
 		'shumeipai.nxez.com', '树莓派实验室',
 		'wiki.friendlyelec.com/wiki/index.php/NanoPi_NEO2/zh', 'NanoPi_NEO',
 	])
 
 	//Git • 项目
-	ww(2,document.getElementById("ar14"), [
+	ww(2,document.getElementById("ar15"), [
 		'alist.nn.ci', 'Alist',
 		'github.com/seemoo-lab/openhaystack', 'openhaystack',
 		'github.com/gkd-kit/gkd', 'GKD',
@@ -306,10 +315,11 @@ function data() {
 		'github.com/2dust/v2rayNG', 'v2rayNG',
 		'vuepress.vuejs.org', 'VuePress',
 		'github.com/RipplePiam/MobaXterm-Chinese-Simplified', 'MobaXterm汉化',
+		'github.com/tychxn/jd-assistant', 'JD抢购脚本',
 	])
 
 	//论坛
-	ww(2,document.getElementById("ar15"), [
+	ww(2,document.getElementById("ar16"), [
 		'dkxuanye.cn', '玄烨品果',
 		'www.feng.com', '威锋',
 		'bbs.pcbeta.com', '远景论坛',
@@ -319,7 +329,7 @@ function data() {
 	])
 
 	//工口论坛
-	ww(2,document.getElementById("ar16"), [
+	ww(2,document.getElementById("ar17"), [
 		'tom51727.com', '汤姆叔叔',
 		'www.b6b33.com', '四虎影院',
 		'www.nidexbb.info', '杏吧',
