@@ -5,7 +5,17 @@ window.onload = function () {
 	// 去广告
 	var gg = document.querySelector("body>div:last-of-type");
 	gg.parentNode.removeChild(gg);
+
+	// 设置div的初始位置
+
+	// 定义移动的函数
+
+
+	// 使用setInterval函数定期调用moveDiv函数
+
+
 };
+
 
 //---------------------------------------------------------------------------------
 
@@ -27,10 +37,39 @@ var state1 = document.getElementById('state1');
 if (isLocalPage()) {
 	state1.innerHTML = 'Local';
 	console.log('Web page status:Local');
+	var tc = document.getElementById("tc");
+
+	tc.style.right = "-66px";
+
+	function sd() {
+		// 获取div的当前位置
+
+		var currentLeft = parseInt(tc.style.right);
+		// 计算新的位置
+		if (currentLeft > 0) {
+			var newLeft = Math.floor(currentLeft *2);
+			console.log(newLeft);
+		
+		} else if (currentLeft < 0) {
+			var newLeft = currentLeft / 1.3;
+			console.log(newLeft);
+		} else {
+			var newLeft = +1;
+			console.log(currentLeft);
+		}
+		// 更新div的位置
+		tc.style.right = newLeft + "px";
+
+		// 如果到达了边界，则改变方向
+		if (newLeft >= 66) {
+			clearInterval(tcc);
+		};
+	};
+	var tcc = setInterval(sd, 100);
 } else {
 	state1.innerHTML = 'Server';
 	console.log('Web page status:Server');
 	// state2.style.display = 'none';
 };
 
-console.log('web_data='+ lv);//列表数据版本
+console.log('web_data=' + lv);//列表数据版本

@@ -48,49 +48,46 @@ oBtn.onclick = function () {
 	var oValue = oTxt.value;
 	if (oValue == "") {
 		alert("???");
-	}else if (oMoreB == 0) {
+	}else if (oMoreB === 0) {
 		//触发aa
 		var aav = document.getElementById("aav");
-		if (oValue == "001"){
+		if (oValue === "001"){
 			console.log("welcom to ポートエロ");
 			aav.style.display = "block";
 			window.scrollTo(0, document.documentElement.scrollHeight);
 			oTxt.value = "";
-		}else if (oValue == "002"){
+		}else if (oValue === "002"){
 			window.open("aa.htm");
 			oTxt.value = "";
-		}else if (oValue == "003"){
-			window.open("aa.chm");
-			oTxt.value = "";
-		}else if (oValue == "mm"){
+		}else if (oValue === "mm"){
 			localStorage.setItem("userName", "xiaolan");
 			oTxt.value = "";
 		}else{
 			window.open("http://192.168.1." + oValue);
 			oTxt.value = "";
 		};	
-	}else if (oMoreB == 1) {
+	}else if (oMoreB === 1) {
 		window.open("http://192.168.2." + oValue);
 		oTxt.value = "";
-	}else if (oMoreB == 2) {
+	}else if (oMoreB === 2) {
 		window.open("http://192.168." + oValue);
 		oTxt.value = "";
-	}else if (oMoreB == 3) {
+	}else if (oMoreB === 3) {
 		window.open("https://www.baidu.com/s?wd=" + oValue);
 		oTxt.value = "";
-	}else if (oMoreB == 4) {
+	}else if (oMoreB === 4) {
 		window.open("https://search.bilibili.com/all?keyword=" + oValue);
 		oTxt.value = "";
-	}else if (oMoreB == 5) {
+	}else if (oMoreB === 5) {
 		window.open("https://www.bing.com/search?q=" + oValue);
 		oTxt.value = "";
-	}else if (oMoreB == 6) {
+	}else if (oMoreB === 6) {
 		window.open("https://www.google.com.hk/search?q=" + oValue);
 		oTxt.value = "";
-	}else if (oMoreB == 7) {
+	}else if (oMoreB === 7) {
 		window.open("https://yandex.com/search/?text=" + oValue);
 		oTxt.value = "";
-	}else if (oMoreB == 8) {
+	}else if (oMoreB === 8) {
 		window.open("https://www.kuaidi100.com/chaxun?com=&nu=" + oValue);
 		oTxt.value = "";
 	};

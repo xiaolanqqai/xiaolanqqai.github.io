@@ -30,23 +30,23 @@ if (oMoreB == undefined) {
 };
 
 if (oMoreB == 0) {
-	indexing.setAttribute("src", "img/1.jpg");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg");
 } else if (oMoreB == 1) {
-	indexing.setAttribute("src", "img/1.jpg");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg");
 } else if (oMoreB == 2) {
-	indexing.setAttribute("src", "img/1.jpg");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg");
 } else if (oMoreB == 3) {
-	indexing.setAttribute("src", "img/baidu.gif");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae316a3.gif");
 } else if (oMoreB == 4) {
-	indexing.setAttribute("src", "img/bilibili.gif");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae317c6.gif");
 } else if (oMoreB == 5) {
-	indexing.setAttribute("src", "img/bing.webp");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae31849.webp");
 } else if (oMoreB == 6) {
-	indexing.setAttribute("src", "img/google.gif");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f59871b83018ae31580.gif");
 } else if (oMoreB == 7) {
-	indexing.setAttribute("src", "img/yandex.webp");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e501d871b83018ae61acb.webp");
 } else if (oMoreB == 8) {
-	indexing.setAttribute("src", "img/kd100.png");
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e501d871b83018ae61a59.png");
 };
 
 //--------------------------------------------------------------

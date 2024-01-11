@@ -31,7 +31,7 @@ function datat() {
 
 	//Tools NEW
 	ww(1,document.getElementById("ar3"), [
-		'msdn.itellyou.cn', '异星软件',
+		'msdn.itellyou.cn', 'MSDN',
 		'www.kuaidi100.com', '快递100',
 		'brevent.sh', '黑域',
 	])
@@ -39,8 +39,9 @@ function datat() {
 	//Network
 	ww(4,document.getElementById("ar4"), [
 		'192.168.2.1', '主路由',
-		'192.168.1.1', '次路由',
+		'192.168.1.1', '光猫',
 		'192.168.31.1', '小米路由',
+		'192.168.66.1', '鲲鹏路由',
 		'192.168.2.102', '小黑',
 		'192.168.2.102:8080', '小黑bt',
 	])
@@ -139,6 +140,8 @@ function data() {
 		'www.zamzar.com', 'zamzar',
 		'www.superbed.cn', '聚合图床',
 		'www.iloveimg.com', 'iloveimg',
+		'onlineconvertfree.com/zh/', '图片格式转换',
+		'www.bitbug.net', 'ico图片格式转换',
 	])
 
 	//其它处理
@@ -266,7 +269,8 @@ function data() {
 		'www.appinn.com', '小众软件',
 		'www.ghxi.com', '果壳剥壳',
 		'www.yxssp.com', '异星软件',
-		'msdn.itellyou.cn', 'msdn',
+		'msdn.itellyou.cn', 'MSDN',
+		'next.itellyou.cn', 'NEW-MSDN',
 		'www.mpyit.com', '殁漂遥',
 		'www.uxpc.com', '精脑汇',
 		'www.wrfou.com', '挖软否',
