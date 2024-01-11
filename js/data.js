@@ -47,6 +47,8 @@ function datat() {
 	])
 }
 
+//-----------------------------------------------------------------------------------------------------------------
+
 function data() {
 
 	// 列表
@@ -334,26 +336,21 @@ function data() {
 
 	//工口论坛
 	ww(2,document.getElementById("ar17"), [
-		'tom51727.com', '汤姆叔叔',
-		'www.b6b33.com', '四虎影院',
 		'www.nidexbb.info', '杏吧',
 		'www.tokyotosho.info', '东京图书馆',
 		'yj2207.click/pw', '1024xp',
 		'www.aventertainments.com', 'Ave',
 		'javbee.net', 'JAVbee',
-		'elsb.i6xh.news', '2048xp',
-		's2212v.cc', '2048xp',
-		'www.nckao41.xyz', '嫩草影院',
-		'avmai.xyz', 'avman',
+		's6y7f8.xyz', '2048xp',
+		'snmp3x.xyz', '2048xp',
 		'www.xvideos.com', 'xvideos',
-		'avmai.xyz', 'avman',
 	])
 
-}
+};
 
 function datad() {
 
-	//dd
+	//dd-----------------------------------------------------------------------------------------------------------------
 
 	ww(3,document.getElementById("ar1"), [
 		'www.wolai.com/qianye/guVVV3qJLbrFQQVu3SqLiP', 'PikPak Win&Mac_By_Shimily电脑版更新日志',
@@ -373,11 +370,11 @@ function datad() {
 		'momoe.link/shizuku/060248.html', '鲲鹏CC 开源固件',
 	])
 
-}
+};
 
 function datade() {
 
-	//develop
+	//develop-----------------------------------------------------------------------------------------------------------------
 
 	ww(2,document.getElementById("ar1"), [
 		'v5.bootcss.com', 'Bootstrap_v5',
@@ -389,9 +386,55 @@ function datade() {
 		'github.com/xiaolanqqai/xiaolanqqai.github.io', 'GitHub',
 	])
 
-}
+};
 
-// 通用调用程序
+//-----------------------------------------------------------------------------------------------------------------
+
+function datadow() {
+	var ff = ['系统下载', '系统激活工具', '系统基础库', 
+			  '必备软件','系统优化软件',
+			  '注册机', '漫画', '游戏栏目', '导航', '软件资源',
+			  'JS资源 • 开发', '其它 • 开发',
+			  '树莓派 • 开发', 'Git • 项目', '论坛',
+			];
+	var ffl = document.getElementById('ff');
+    var ffn = 1;
+	ffl.innerHTML = ff.map(item => `<div class="mt-3 mx-3"><div class="alert alert-secondary shadow" role="alert">${item}</div><div id="ar${ffn++}" class="d-flex flex-wrap p-2"></div></div>`).join('');
+
+	//系统下载
+	ww(2,document.getElementById("ar1"), [
+		'www.jd.com', 'win7',
+		'www.ghxi.com/wenqiwin7.html', 'win7吻妻精简',
+		'www.123pan.com/s/HQeA-Pb1Sh', 'win10',
+		'www.123pan.com/s/HQeA-w71Sh', 'win10果壳精简',
+		'www.alipan.com/s/Ze27EbU3jeX', 'win10吻妻精简',
+		'www.123pan.com/s/HQeA-NW1Sh', 'win11',
+		'mail.163.com', 'win11精简',
+		'www.jd.com', '京东',
+		'www.google.com.hk', '谷歌HK',
+		'www.aliyun.com', '阿里云',
+		'cp.aliyun.com', '万网主机管理控制台',
+		'www.creditchina.gov.cn', '信用中国',
+		'tousu.sina.com.cn', '黑猫投诉',
+		'www.12365auto.com', '车质网',
+	])
+
+	//系统激活工具
+	ww(2,document.getElementById("ar2"), [
+		'www.creditchina.gov.cn', '信用中国',
+		'tousu.sina.com.cn', '黑猫投诉',
+		'www.12365auto.com', '车质网',
+	])
+
+	//系统基础库
+	ww(2,document.getElementById("ar3"), [
+		'www.creditchina.gov.cn', '信用中国',
+		'tousu.sina.com.cn', '黑猫投诉',
+		'www.12365auto.com', '车质网',
+	])
+};
+
+// 通用调用程序-----------------------------------------------------------------------------------------------------------------
 
 function ww(top, ar1, arr1) {
 	var arrdtat = [];
@@ -427,6 +470,6 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = '0.6_20231025';
-var bat = 20231215;
-var vol = "Beta:3.6.2";
+var lv = 'v1.0_20240111';
+var bat = 20240111;
+var vol = "Beta:3.7";
