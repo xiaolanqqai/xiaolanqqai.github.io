@@ -174,6 +174,7 @@ function data() {
 		'www.wappalyzer.com', '网站框架识别',
 		'www.itdog.cn', 'IT狗-在线ping',
 		'tool.chinaz.com', '站长工具',
+		'test.ustc.edu.cn', '中科大测速',
 	])
 
 	//视频下载 • 磁力
@@ -252,6 +253,7 @@ function data() {
 	//游戏栏目
 	ww(2,document.getElementById("ar9"), [
 		'www.3dmgame.com', '3DM-GAME',
+		'www.gamer520.com', 'gamer520',
 	])
 
 	//聚合导航
@@ -284,6 +286,7 @@ function data() {
 		'www.ittel.cn', 'IT技术之家',
 		'www.mimods.com', 'MOD迷',
 		'www.bydmax.com', '迪友社区',
+		
 	])
 
 	//JS资源 • 开发
@@ -303,6 +306,7 @@ function data() {
 		'greasyfork.org/zh-Cn', 'Greasy Fork',
 		'hkfx.net', '红客防线（网络安全）',
 		'www.chongdiantou.com', '充电头网',
+		'trollstore.app', '巨魔商店',
 	])
 
 	//树莓派 • 开发
