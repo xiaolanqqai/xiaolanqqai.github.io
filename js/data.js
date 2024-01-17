@@ -286,6 +286,7 @@ function data() {
 		'www.ittel.cn', 'IT技术之家',
 		'www.mimods.com', 'MOD迷',
 		'www.bydmax.com', '迪友社区',
+		'downloadlynet.ir', 'Downloadly',
 		
 	])
 
@@ -297,8 +298,10 @@ function data() {
 		'github.com/jquery/jquery', 'jquery',
 		'getbootstrap.com', 'Bootstrap',
 		'www.w3school.com.cn', 'W3School',
-		'jquery.asprain.cn', 'jQuery',
+		'jquery.asprain.cn', 'jQuery.js',
 		'codyhouse.co', 'codyhouse',
+		'www.lodashjs.com', 'Lodash.js',
+		'www.swiper.com.cn', 'Swiper.js',
 	])
 
 	//其它 • 开发
@@ -395,8 +398,8 @@ function datade() {
 //-----------------------------------------------------------------------------------------------------------------
 
 function datadow() {
-	var ff = ['系统下载', '系统激活工具', '系统基础库', 
-			  '必备软件','系统优化软件',
+	var ff = ['系统下载', '系统激活工具', '系统安装', '系统基础库与优化', 
+			  '系统基础软件',
 			  '注册机', '漫画', '游戏栏目', '导航', '软件资源',
 			  'JS资源 • 开发', '其它 • 开发',
 			  '树莓派 • 开发', 'Git • 项目', '论坛',
@@ -425,16 +428,41 @@ function datadow() {
 
 	//系统激活工具
 	ww(2,document.getElementById("ar2"), [
-		'www.creditchina.gov.cn', '信用中国',
-		'tousu.sina.com.cn', '黑猫投诉',
+		'www.yishimei.cn/network/319.html', '神龙kms',
+		'www.ghxi.com/hwidgen.html', 'win10数字',
 		'www.12365auto.com', '车质网',
 	])
 
-	//系统基础库
+	//系统安装
 	ww(2,document.getElementById("ar3"), [
-		'www.creditchina.gov.cn', '信用中国',
-		'tousu.sina.com.cn', '黑猫投诉',
+		'www.123pan.com/s/HQeA-kD1Sh', '傲梅分区助手',
+		'www.123pan.com/s/HQeA-Zn1Sh', 'WinNTSetup',
 		'www.12365auto.com', '车质网',
+	])
+
+	//系统基础库与优化
+	ww(2,document.getElementById("ar4"), [
+		'www.123pan.com/s/HQeA-zP1Sh', '微软运行库',
+		'tousu.sina.com.cn', '黑猫投诉',
+		'www.ghxi.com/dotnet.html', '.net Framework',
+		'www.ghxi.com/javajdk.html', 'JAVA JDK',
+		'www.ghxi.com/dism.html', 'Dism++',
+		'www.52pojie.cn/thread-1122388-1-1.html', '魔方',
+		'www.ghxi.com/wpd.html', 'WPD(隐私优化)',
+		'www.ghxi.com/winupdatec.html', '联想关闭Win10更新',
+		'iknow.lenovo.com.cn/detail/172545.html', '联想小工具',
+		'www.ghxi.com/ccleanerpro.html', 'CCleaner',
+		'www.ghxi.com/revouninstaller.html', 'Revo Uninstaller',
+	])
+
+	//系统基础软件
+	ww(2,document.getElementById("ar5"), [
+		'www.123pan.com/s/HQeA-T81Sh', 'Winrar压缩',
+		'www.ghxi.com/wps2019zfb.html', 'WPS2019政府专业版',
+		'www.ghxi.com/thunderxjb.html', '迅雷x',
+		'www.ghxi.com/pcidm.html', 'IDM',
+		'www.huorong.cn', '火绒',
+		'bbs.kafan.cn/thread-2244866-1-1.html', '卡巴',
 	])
 };
 
