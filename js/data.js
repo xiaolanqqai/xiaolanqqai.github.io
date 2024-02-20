@@ -70,7 +70,7 @@ function data() {
 	var ff = ['平台','技术平台', '工具', '图片处理', 
 			  '其它处理 • PDF • 文字 • 视频',
 			  '专业工具', '视频下载 • 磁力',
-			  '视频', '漫画', '游戏栏目', '导航', '软件资源',
+			  '视频','影视资源链接（链接模式）', '漫画', '游戏栏目', '导航', '软件资源',
 			  'JS资源 • 开发', '其它 • 开发',
 			  '树莓派 • 开发', 'Git • 项目', '论坛',
 			];
@@ -204,15 +204,19 @@ function data() {
 		'www.bilibili.com', 'Bilibili',
 		'v.qq.com', '腾讯视频',
 		'www.iqiyi.com', '爱奇艺',
+		'www.tiktok.com', '斗音（海外）',
+		'www.douyin.com', '斗音',
 		'www.acfun.cn', 'ACfan',
 		'www.bimiacg4.net', 'M站',
 		'www.yxdmlove.com', '怡萱动漫',
-		'www.yifeng110.com', '樱花动漫',
+		'www.yifeng110.com', '1樱花动漫',//new
+		'www.yhdm.wang', '2樱花动漫',//new
 		'www.whpaiger.com', '风车动漫',
 		'www.zzzfun.com', 'zzzfun',
 		'www.puquyy.com', '蒲趣影院',
 		// '80s.tw', '80s',
 		'dytt.dytt8.net', '电影天堂',
+		'www.dytt50.com', '电影天堂',
 		'cupfox.app', '茶杯狐',
 		'ddys.pro', '低端影视',
 		'www.zxzja.com', '在线之家',
@@ -223,10 +227,33 @@ function data() {
 		'wandou.la', '豌豆Pro',
 		'share.dmhy.org', '动漫花园资源网',
 		'libvio.top', 'LIBVIO影视',
+		//新更新
+		'www.xiaoxiaoy.com', '小小影视',
+		'duoju.vip', '多剧蓝光影院',
+		'www.woaimoon.com', '月亮电影网',
+		'dsxys.pro', '大师兄影视',
+		'4k电影网.com', '4k电影网',
+		'jx.xmflv.com/?url=', '奇心解析',
+		'www.7k789.com', '7k789',
+		'www.ak1080.me', '闪电影视',
+		'www.newfii.com', '奈落影院',
+		'www.760kan.com', '60影视',
+		'ttmja.com', '天天美剧网',
+		'zhuiyingmao2.com', '追影猫',
+	])
+
+	//影视资源链接（链接模式）
+	ww(2,document.getElementById("ar9"), [
+		'www.wujinzy.net', '无尽资源采集',
+		'www.hdzyk.com', '优质资源库',
+		'bfzy1.tv', '暴风资源',
+		'feisuzy.com', '飞速资源站',
+		'tiankongzy.com', '天空资源站',
+		'www.6uzy.cc', '6U资源站',
 	])
 
 	//漫画
-	ww(2,document.getElementById("ar9"), [
+	ww(2,document.getElementById("ar10"), [
 		'www.1kkk.com', '漫画人',
 		'www.mkzhan.com', '漫客栈',
 		'm.pufei.cc', '扑飞动漫',
@@ -234,23 +261,25 @@ function data() {
 	])
 
 	//游戏栏目
-	ww(2,document.getElementById("ar10"), [
+	ww(2,document.getElementById("ar11"), [
 		'www.3dmgame.com', '3DM-GAME',
 		'www.gamer520.com', 'gamer520',
 	])
 
 	//聚合导航
-	ww(2,document.getElementById("ar11"), [
+	ww(2,document.getElementById("ar12"), [
 		'www.coolzhanweb.com', '酷站导航',
 		'movie.coolzhanweb.com', '电影导航',
+		'qxnav.com', '奇心导航',
+		'anee.cc', '安逸影视',
+		'klyingshi.com', '可乐影视',
 		'ltzhp.ysepan.com', '辣条杂货铺',
 		'bileizhen.ysepan.com?xzpd=1', 'bileizhen的收纳箱',
-		'qxnav.com', '奇心导航',
 		'ago.ysepan.com?xzpd=1', '👪怸歪的网盘🔞',
 	])
 
 	//软件资源
-	ww(2,document.getElementById("ar12"), [
+	ww(2,document.getElementById("ar13"), [
 		'www.3h3.com', '当游软件',
 		'www.ypojie.com', '易破解',
 		'www.appinn.com', '小众软件',
@@ -270,11 +299,12 @@ function data() {
 		'www.mimods.com', 'MOD迷',
 		'www.bydmax.com', '迪友社区',
 		'downloadlynet.ir', 'Downloadly',
+		'macapp.org.cn', 'MacApp分享频道',
 		
 	])
 
 	//JS资源 • 开发
-	ww(2,document.getElementById("ar13"), [
+	ww(2,document.getElementById("ar14"), [
 		'owlcarousel2.github.io/OwlCarousel2', 'OwlCarousel2',
 		'sscms.comdocs/v7', 'SSCMS',
 		'cn.vuejs.org', 'Vue.js',
@@ -288,7 +318,7 @@ function data() {
 	])
 
 	//其它 • 开发
-	ww(2,document.getElementById("ar14"), [
+	ww(2,document.getElementById("ar15"), [
 		'greasyfork.org/zh-Cn', 'Greasy Fork',
 		'hkfx.net', '红客防线（网络安全）',
 		'www.chongdiantou.com', '充电头网',
@@ -296,13 +326,13 @@ function data() {
 	])
 
 	//树莓派 • 开发
-	ww(2,document.getElementById("ar15"), [
+	ww(2,document.getElementById("ar16"), [
 		'shumeipai.nxez.com', '树莓派实验室',
 		'wiki.friendlyelec.com/wiki/index.php/NanoPi_NEO2/zh', 'NanoPi_NEO',
 	])
 
 	//Git • 项目
-	ww(2,document.getElementById("ar16"), [
+	ww(2,document.getElementById("ar17"), [
 		'alist.nn.ci', 'Alist',
 		'github.com/seemoo-lab/openhaystack', 'openhaystack',
 		'github.com/gkd-kit/gkd', 'GKD',
@@ -315,7 +345,7 @@ function data() {
 	])
 
 	//论坛
-	ww(2,document.getElementById("ar17"), [
+	ww(2,document.getElementById("ar18"), [
 		'dkxuanye.cn', '玄烨品果',
 		'www.feng.com', '威锋',
 		'bbs.pcbeta.com', '远景论坛',
@@ -325,7 +355,7 @@ function data() {
 	])
 
 	//工口论坛
-	ww(2,document.getElementById("ar18"), [
+	ww(2,document.getElementById("ar19"), [
 		'www.nidexbb.info', '杏吧',
 		'www.tokyotosho.info', '东京图书馆',
 		'yj2207.click/pw', '1024xp',
