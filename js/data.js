@@ -180,6 +180,7 @@ function data() {
 		'www.itdog.cn', 'IT狗-在线ping',
 		'tool.chinaz.com', '站长工具',
 		'test.ustc.edu.cn', '中科大测速',
+		'wormhole.app', '虫洞（文件暂存）',
 	])
 
 	//视频下载 • 磁力
@@ -300,6 +301,7 @@ function data() {
 		'www.bydmax.com', '迪友社区',
 		'downloadlynet.ir', 'Downloadly',
 		'macapp.org.cn', 'MacApp分享频道',
+		'www.3kjs.com', '科技师',
 		
 	])
 
