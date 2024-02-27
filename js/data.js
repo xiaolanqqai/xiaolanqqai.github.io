@@ -523,6 +523,6 @@ function ww(top, ar1, arr1) {
 }
 
 //data数据版本
-var lv = 'v1.0_20240111';
-var bat = 20240220;
-var vol = "Beta:3.7";
+var lv = 'v1.0_20240227';
+var bat = 20240227;
+var vol = "Beta:3.7.1";
