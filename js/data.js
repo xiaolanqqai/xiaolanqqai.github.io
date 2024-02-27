@@ -394,7 +394,8 @@ function datad() {
 		'docs.qq.com/sheet/DQWJweHVmQUtacUFu?tab=BB08J2&scode=', 'BYD车机APP汇总',
 		'jamcz.com', '晨钟网络科技',
 		'momoe.link/shizuku/060248.html', '鲲鹏CC 开源固件',
-		'momoe.link/shizuku/060248.html9jgat.top/08786.html?id=5f41K5Bm2M6rNJ8E7v', '软件集合',
+		'9jgat.top/08786.html?id=5f41K5Bm2M6rNJ8E7v', '软件集合',
+		'www.idc35', '香港便宜服务器',
 		'baijiahao.baidu.com/s?id=1748907411897385699&wfr=spider&for=pc', 'MLCC滤波电容的选择',
 	])
 
