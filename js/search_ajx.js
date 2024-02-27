@@ -27,13 +27,13 @@ function submitFn(obj, evt){
 		} else if (oMoreB == 3) {
 			_html ="https://www.baidu.com/s?wd=" + value;
 		} else if (oMoreB == 4) {
-			_html ="https://search.bilibili.com/all?keyword=" + value;
-		} else if (oMoreB == 5) {
 			_html ="https://www.bing.com/search?q=" + value;
-		} else if (oMoreB == 6) {
+		} else if (oMoreB == 5) {
 			_html ="https://www.google.com.hk/search?q=" + value;
-		} else if (oMoreB == 7) {
+		} else if (oMoreB == 6) {
 			_html ="https://yandex.com/search/?text=" + value;
+		} else if (oMoreB == 7) {
+			_html ="https://search.bilibili.com/all?keyword=" + value;
 		} else if (oMoreB == 8) {
 			_html ="https://www.kuaidi100.com/chaxun?com=&nu=" + value;
 		};

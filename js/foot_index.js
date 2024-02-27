@@ -38,13 +38,13 @@ if (oMoreB == 0) {
 } else if (oMoreB == 3) {
 	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae316a3.gif");
 } else if (oMoreB == 4) {
-	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae317c6.gif");
-} else if (oMoreB == 5) {
 	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae31849.webp");
-} else if (oMoreB == 6) {
+} else if (oMoreB == 5) {
 	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f59871b83018ae31580.gif");
-} else if (oMoreB == 7) {
+} else if (oMoreB == 6) {
 	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e501d871b83018ae61acb.webp");
+} else if (oMoreB == 7) {
+	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae317c6.gif");
 } else if (oMoreB == 8) {
 	indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e501d871b83018ae61a59.png");
 };

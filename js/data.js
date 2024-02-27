@@ -80,13 +80,13 @@ function data() {
 
 	//平台
 	ww(2,document.getElementById("ar1"), [
-		'www.jd.com', '京东',
-		'www.jianshu.com', '简书',
 		'www.taobao.com', '淘宝',
+		'www.jd.com', '京东',
 		'pan.baidu.com', '百度网盘',
 		'mail.163.com', '163邮箱',
-		'www.jd.com', '京东',
+		'www.jianshu.com', '简书',
 		'www.google.com.hk', '谷歌HK',
+		'explorer.globe.engineer', '可视化维基百科',
 		'www.creditchina.gov.cn', '信用中国',
 		'tousu.sina.com.cn', '黑猫投诉',
 		'www.12365auto.com', '车质网',
@@ -97,6 +97,7 @@ function data() {
 		'www.aliyun.com', '阿里云',
 		'cp.aliyun.com', '万网主机管理控制台',
 		'www.shopify.com/zh', 'shopify',
+		'www.kickstarter.com', 'kickstarter',
 	])
 
 	//工具
@@ -205,6 +206,8 @@ function data() {
 		'www.bilibili.com', 'Bilibili',
 		'v.qq.com', '腾讯视频',
 		'www.iqiyi.com', '爱奇艺',
+		'www.youku.com', '优酷',
+		'www.mgtv.com', '芒果TV',
 		'www.tiktok.com', '斗音（海外）',
 		'www.douyin.com', '斗音',
 		'www.acfun.cn', 'ACfan',
@@ -317,6 +320,7 @@ function data() {
 		'codyhouse.co', 'codyhouse',
 		'www.lodashjs.com', 'Lodash.js',
 		'www.swiper.com.cn', 'Swiper.js',
+		'www.sass.hk', 'SASS',
 	])
 
 	//其它 • 开发
@@ -391,6 +395,7 @@ function datad() {
 		'jamcz.com', '晨钟网络科技',
 		'momoe.link/shizuku/060248.html', '鲲鹏CC 开源固件',
 		'momoe.link/shizuku/060248.html9jgat.top/08786.html?id=5f41K5Bm2M6rNJ8E7v', '软件集合',
+		'baijiahao.baidu.com/s?id=1748907411897385699&wfr=spider&for=pc', 'MLCC滤波电容的选择',
 	])
 
 };

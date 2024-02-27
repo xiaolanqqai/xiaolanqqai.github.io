@@ -35,11 +35,11 @@ oMoreS.onclick = function () {
 //头部搜索指向缓存加载
 function mots() {
 	var ii = oMoreB;
-	oMoreS.innerHTML = ["1.","2.","192168","Baidu","BiliBili","Bing","Google.hk","Yandex","快递100"][ii];
+	oMoreS.innerHTML = ["1.","2.","192168","Baidu","Bing","Google.hk","Yandex","BiliBili","快递100"][ii];
 };
 
 function a(i) {
-	oMoreS.innerHTML = ["→1.","→2.","→192168","→Baidu","→BiliBili","→Bing","→Google.hk","→Yandex","→快递100"][i];
+	oMoreS.innerHTML = ["→1.","→2.","→192168","→Baidu","→Bing","→Google.hk","→Yandex","→BiliBili","→快递100"][i];
 	oMoreB = i;
 	localStorage.setItem("oMoreB", i);
 };
@@ -76,16 +76,16 @@ oBtn.onclick = function () {
 		window.open("https://www.baidu.com/s?wd=" + oValue);
 		oTxt.value = "";
 	}else if (oMoreB === 4) {
-		window.open("https://search.bilibili.com/all?keyword=" + oValue);
-		oTxt.value = "";
-	}else if (oMoreB === 5) {
 		window.open("https://www.bing.com/search?q=" + oValue);
 		oTxt.value = "";
-	}else if (oMoreB === 6) {
+	}else if (oMoreB === 5) {
 		window.open("https://www.google.com.hk/search?q=" + oValue);
 		oTxt.value = "";
-	}else if (oMoreB === 7) {
+	}else if (oMoreB === 6) {
 		window.open("https://yandex.com/search/?text=" + oValue);
+		oTxt.value = "";
+	}else if (oMoreB === 7) {
+		window.open("https://search.bilibili.com/all?keyword=" + oValue);
 		oTxt.value = "";
 	}else if (oMoreB === 8) {
 		window.open("https://www.kuaidi100.com/chaxun?com=&nu=" + oValue);
