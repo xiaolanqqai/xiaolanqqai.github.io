@@ -412,6 +412,7 @@ function datade() {
 		'github.com/marcbruederlin/particles.js', 'Particles.js',
 		'api.iowen.cn', 'One for API',
 		'freewha.com', 'FreeWHA',
+		'www.aliyun.com', '阿里云',
 		'github.com/xiaolanqqai/xiaolanqqai.github.io', 'GitHub',
 	])
 
