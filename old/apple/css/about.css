@@ -1,0 +1,1291 @@
+<!--基本格式去除-->
+
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{margin:0;padding:0}
+a:hover {text-decoration:none}
+ul,ol{list-style:none}
+fieldset,img{border:0}
+
+body {
+    color: #333;
+}
+/* .nav-top {
+    background-color: rgba(0,0,0,0.8);
+}
+
+.nav-logo {
+    background-size: 14px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/logo.svg);
+    background-position: center center;
+    width: 14px;
+    
+}
+
+.top-ad-text {
+    font-size: 14px;
+    color: #9c9c9e;
+    line-height: 20px;
+} */
+
+.nav1{
+	width: 100%;
+	min-width: 330px;
+	height: 44px;
+	background-color: #333333;
+	display: flex;
+	/*水平竖直居中*/
+	justify-content: center;
+	align-items: center;
+	font-size: 12px;
+	/* position: fixed; */
+    z-index: 10;
+}
+.nav1 a{
+	color: #fff;
+	text-decoration: none;
+	width: 80px;
+	text-align: center;
+}
+
+.nav1 a:hover{
+	color: rgb(201, 200, 200);
+	text-decoration: none;
+	width: 80px;
+	text-align: center;
+}
+
+.nav1 .logo{
+	height: 44px;
+	background-image: url(../img/logo.svg);
+	/*不重复*/
+	background-repeat: no-repeat;
+	/*背景居中*/
+	background-position: center;
+}
+.nav1 .search{
+	background-size: 18px 88px;
+	height: 44px;
+	background-image: url(../img/search.svg);
+	background-repeat: no-repeat;
+	background-position: top;
+}
+.nav1 .buy{
+	height: 44px;
+	background-image: url(../img/buy.svg);
+	/*不重复*/
+	background-repeat: no-repeat;
+	/*背景居中*/
+	background-position: center;
+}
+
+.toggleBtn {
+	height: 44px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+}
+
+.toggleBtn .line {
+	height: 1px;
+	width: 18px;
+	background: white;
+	display: none;
+	transition: 0.5s;
+	transform-origin: left center;
+}
+
+.toggleBtn .line:nth-child(1) {
+	position: absolute;
+	left: calc(50% -9px);
+	top: 14px;
+}
+
+.toggleBtn .line:nth-child(2) {
+	position: absolute;
+	left: calc(50% -9px);
+	top: 26px;
+}
+
+.navpage {
+    display: flex;
+    width: 100vw;
+	height: 0vh;
+	transition: all 0.8s;
+	overflow: hidden;
+	position: fixed;
+	left: 0;
+    top: 0;
+    background-color: #000;
+}
+.navpage .navmenu{
+	width: 100%;
+}
+
+
+@media only screen and (max-width: 768px) {
+	.toggleBtn{
+		display: flex;
+		z-index: 100;
+		/*相对定位*/
+		position: relative;
+	}
+	.nav1 .logo{
+		z-index: 100;
+	}
+	.toggleBtn .line{
+		display: block;
+	}
+	.nav1 .nav1-item,.nav1 .search{
+		display: none;
+	}
+	.nav1{
+		/*分配弹性元素方式*/
+		justify-content: space-between;
+	}
+	.nav1 a,.nav1 label{
+		width: 50px;
+	}
+	.nav1 .toggleBtn{
+		/*设置弹性盒对象元素的顺序*/
+		order: 1;
+	}
+	.nav1 .logo{
+		order: 2;
+	}
+	.nav1 .buy{
+		order: 3;
+	}
+	#choose:checked ~ .toggleBtn .line:nth-child(1) {
+		transform: rotate(45deg);
+		transform-origin: left;
+	}
+	#choose:checked ~ .toggleBtn .line:nth-child(2) {
+		transform: rotate(-45deg);
+		transform-origin: left;
+	}
+	/* 设定复选框为选中状态时 导航页面显示*/
+	#choose:checked ~ .navpage{
+		display: flex;
+		width: 100vw;
+		height: 100vh;
+		position: fixed;
+		left: 0;
+		top: 0;
+		background-color: #000;
+		color: #fff;
+		flex-direction: column;
+		padding-top: 54px;
+	}
+	
+	.searchInput {
+		margin: 0 28px 20px;
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		height: 36px;
+		border-radius: 4px;
+		color: #ccc;
+		background-color: rgba(45, 45, 45, 0.98);
+		overflow: hidden;
+	}
+	
+	.searchInput .icon {
+		width: 32px;
+		height: 36px;
+		background-size: 32px 72px;
+		background-image: url(../image/search.svg);
+		background-repeat: no-repeat;
+		background-position: top;
+	}
+	.searchInput input {
+		flex: 1;
+		margin: 0 10px;
+		height: 100px;
+		background: transparent;
+		border: none;
+		outline: none;
+		color: white;
+	}
+	.menuList{
+		margin: 0 38px;
+		display: flex;
+		/*主轴方向	从上至下排版*/
+		flex-direction: column;
+		/*伸缩项对齐的默认值*/
+		justify-content: flex-start;
+	}
+	.menuList a{
+		width: 100%;
+		height: 44px;
+		text-align: left;
+		border-bottom: 1px solid #333;
+		line-height: 44px;
+	}
+	.menuList a:last-child {
+		border: none;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 尾部 */
+.foot1 {
+    border-bottom: 1px solid #d2d2d7;
+    padding: 17px 0 11px;
+}
+
+.foot-text1 {
+    font-size: 12px;
+    line-height: 1.33337;
+    font-weight: 400;
+    letter-spacing: 0em;
+    color: #9c9cb1;
+}
+
+.foot3 {
+    border-bottom: 1px solid #d2d2d7;
+    padding: 17px 0 6px;
+}
+
+.foot2 {
+    display: flex;
+
+}
+
+.foot-box1 {
+    width: 100%;
+}
+
+.foot2-text1 {
+    font-size: 12px;
+    line-height: 1.33337;
+    font-weight: 600;
+    color: #424246;
+}
+
+.foot2-text2 a{
+    font-size: 12px;
+    font-weight: 400;
+    color: #424246;
+}
+
+@media only screen and (max-width: 833px) {
+    .foot2 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .foot-box1 {
+        width: 100%;
+        border-bottom: 1px solid #d2d2d7;
+    }
+
+    .foot-box1 ul {
+        display: none;
+    }
+
+    
+}
+
+
+/* 尾部 */
+
+
+.ab-ban1-box {
+    width: 100%;
+    overflow: hidden;
+}
+
+.ab-ban1-box2 {
+    position: relative;
+    left: 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center 30%;
+    min-height: 540px;
+    margin-left: -900px;
+    width: 1800px;
+    background-image: url(../img/banner/about-ban1.jpg);
+}
+
+@media only screen and (min-width: 1800px) {
+    .ab-ban1-box2 {
+        position: relative;
+        left: 0;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center 30%;
+        min-height: 540px;
+        margin-left: 0;
+        width: 100%;
+        background-image: url(../img/banner/about-ban1.jpg);
+    }
+}
+
+.ab-ban1-box3 {
+    color: #fff;
+    top: 209px;
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    text-align: center;
+}
+
+.ab-ban1-text {
+    line-height: 1.175;
+    font-size: 40px;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.ab-ban2-box {
+    width: 1024px;
+}
+
+@media only screen and (max-width: 1024px) {
+    .ab-ban2-box {
+        width: 100%;
+    }
+}
+
+.ab-ban2-img1 {
+    height: auto;
+    max-width: 100%;
+    vertical-align: middle;
+    padding-bottom: 16px;
+}
+
+.ab-ban2-box1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ab-ban2-text1 {
+    text-align: center;
+}
+
+.ab-ban3-box {
+    border-top: 1px solid #dedede;
+    border-bottom: 1px solid #dedede;
+}
+
+.ab-ban3-text1 {
+    margin-top: 16px;
+    color: #0070c9;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+.ab-ban4-img {
+    margin-bottom: 1em;
+    max-width: 100%;
+}
+
+.ab-ban4-text1 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 500;
+}
+
+.ab-ban5-box {
+    max-width: 817px;
+}
+
+.ab-ban5-text1 {
+    font-size: 36px;
+    line-height: 1.175;
+    font-weight: 500;
+}
+
+.ab-ban5-text2 {
+    font-size: 20px;
+    line-height: 1.4545454545;
+    font-weight: 300;
+}
+
+.ab-ban6-box1 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.ab-ban6-box {
+    overflow: hidden;
+}
+
+.ab-ban6-img {
+    width: 1093px;
+    height: 450px;
+    background-size: 1093px 450px;
+    background-image: url(../img/banner/about-ban2.jpg);
+    max-height: 690px;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center 30%;
+    left: 0;
+    margin-left: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+.ab-ban6-text-box {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    z-index: 3;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.ab-ban6-text-box1 {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ab-ban6-text-box2 {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 32px;
+    width: 400px;
+    padding-bottom: 0;
+}
+
+.ab-ban6-text1 {
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 1.175;
+    color: #fff;
+}
+
+.ab-ban6-text2 {
+    font-size: 17px;
+    line-height: 1.5294717647;
+    font-weight: 400;
+    color: #fff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* .pro-top {
+    
+    max-width: 1150px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+
+}
+
+.pro-top-img1 {
+    width: 52px;
+    height: 54px;
+    background-size: 52px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/macbookair.svg);
+    margin: 0 auto 7px;
+}
+.pro-top-text {
+    font-size: 12px;
+    line-height: 1.33337;
+    font-weight: 400;
+    letter-spacing: -.01em;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.pro-top-img2 {
+    width: 84px;
+    height: 54px;
+    background-size: 84px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/macbookpro.svg);
+    margin: 0 auto 7px;
+}
+
+
+.pro-top-img3 {
+    width: 43px;
+    height: 54px;
+    background-size: 43px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/imac.svg);
+    margin: 0 auto 7px;
+}
+
+.pro-top-img4 {
+    width: 28px;
+    height: 54px;
+    background-size: 28px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/macmini.svg);
+    margin: 0 auto 7px;
+}
+
+
+.pro-top-img5 {
+    width: 28px;
+    height: 54px;
+    background-size: 28px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/macstudio.svg);
+    margin: 0 auto 7px;
+}
+
+.pro-top-img6 {
+    width: 35px;
+    height: 54px;
+    background-size: 35px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/macpro.svg);
+    margin: 0 auto 7px;
+}
+
+.pro-top-img7 {
+    width: 45px;
+    height: 54px;
+    background-size: 45px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/对比.svg);
+    margin: 0 auto 7px;
+}
+
+.pro-top-img8 {
+    width: 72px;
+    height: 54px;
+    background-size: 72px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/显示器.svg);
+    margin: 0 auto 7px;
+}
+
+.pro-top-img9 {
+    width: 33px;
+    height: 54px;
+    background-size: 33px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/配件.svg);
+    margin: 0 auto 7px;
+}
+
+.pro-top-img10 {
+    width: 35px;
+    height: 54px;
+    background-size: 35px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/系统.svg);
+    margin: 0 auto 7px;
+}
+
+.pro-top-img11 {
+    width: 103px;
+    height: 54px;
+    background-size: 103px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/选购.svg);
+    margin: 0 auto 7px;
+}
+
+.top-ad2 {
+    background-color: #0071e3;
+    height: 50px;
+}
+.top-ad2-text {
+    line-height: 50px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.mac-ban {
+    margin-top: 6rem;
+    margin-bottom: 6rem;
+}
+
+.mac-ban-bian {
+    width: 100%;
+    border-bottom: 10px solid #f5f5f7;
+}
+
+.mac-ban1-text1 {
+    font-weight: 600;
+    margin-bottom: 0.3em;
+    background: rgba(0,0,0,0);
+    border-color: #bf4800;
+    color: #f56300;
+}
+
+.mac-ban1-text2 {
+    font-size: 56px;
+    line-height: 1.07143;
+    font-weight: 600;
+    letter-spacing: -.005em;
+}
+
+.mac-ban1-text3 {
+    font-size: 26px;
+    line-height: 1.14286;
+    font-weight: 600;
+    letter-spacing: .007em;
+}
+
+.mac-ban1-text4 {
+    font-size: 17px;
+    line-height: 1.47059;
+    font-weight: 400;
+    letter-spacing: -.022em;
+}
+
+.mac-ban1-text5 {
+    background-color: #06c;
+    border-radius: 20px;
+    width: 55px;
+    padding: 5px;
+    
+}
+
+.mac-ban1-text5 a {
+    color: #fff;
+}
+
+.mac-ban1-text5 a:hover {
+    color: #fff;
+    text-decoration:none
+
+}
+
+.mac-ban1-img {
+    margin-top: 100px;
+    width: 470px;
+    height: 232px;
+    background-size: 470px 232px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban1.jpg);
+    position: relative;
+    left: 50%;
+    margin-left: -235px;
+}
+
+
+.mac-ban2-text1 {
+    font-weight: 600;
+    margin-bottom: 0.3em;
+    background: rgba(0,0,0,0);
+    border-color: #bf4800;
+    color: #f56300;
+}
+
+.mac-ban2-text2 {
+    font-size: 56px;
+    line-height: 1.07143;
+    font-weight: 600;
+    letter-spacing: -.005em;
+}
+
+.mac-ban2-text3 {
+    font-size: 26px;
+    line-height: 1.14286;
+    font-weight: 600;
+    letter-spacing: .007em;
+}
+
+.mac-ban2-text4 {
+    font-size: 17px;
+    line-height: 1.47059;
+    font-weight: 400;
+    letter-spacing: -.022em;
+}
+
+.mac-ban2-text5 {
+    background-color: #06c;
+    border-radius: 20px;
+    width: 55px;
+    padding: 5px;
+    
+}
+
+.mac-ban2-text5 a {
+    color: #fff;
+}
+
+.mac-ban2-text5 a:hover {
+    color: #fff;
+    text-decoration:none
+
+}
+
+.mac-ban2-img {
+    margin-top: 90px;
+    width: 548px;
+    height: 422px;
+    background-size: 548px 422px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban2.jpg);
+    position: relative;
+    left: 50%;
+    margin-left: -274px;
+}
+
+
+.mac-ban3-text1 {
+    font-weight: 600;
+    margin-bottom: 0.3em;
+    background: rgba(0,0,0,0);
+    border-color: #bf4800;
+    color: #f56300;
+}
+
+.mac-ban3-text2 {
+    font-size: 56px;
+    line-height: 1.07143;
+    font-weight: 600;
+    letter-spacing: -.005em;
+}
+
+.mac-ban3-text3 {
+    font-size: 26px;
+    line-height: 1.14286;
+    font-weight: 600;
+    letter-spacing: .007em;
+}
+
+.mac-ban3-text4 {
+    font-size: 17px;
+    line-height: 1.47059;
+    font-weight: 400;
+    letter-spacing: -.022em;
+}
+
+.mac-ban3-text5 {
+    background-color: #06c;
+    border-radius: 20px;
+    width: 55px;
+    padding: 5px;
+    
+}
+
+.mac-ban3-text5 a {
+    color: #fff;
+}
+
+.mac-ban3-text5 a:hover {
+    color: #fff;
+    text-decoration:none
+
+}
+
+.mac-ban3-img {
+    width: 834px;
+    height: 282px;
+    background-size: 834px 282px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban3.jpg);
+    position: relative;
+    left: 50%;
+    margin-left: -417px;
+    margin-top: 65px;
+}
+
+.mac-pro-top-text {
+    font-size: 48px;
+    line-height: 1.08349;
+    font-weight: 600;
+    letter-spacing: -.003em;
+}
+
+.mac-pro-img-box {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.mac-pro-img-top-1 {
+    width: 276px;
+    height: 167px;
+    background-size: 276px 167px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-pro1.png);
+}
+
+.mac-pro-img2 {
+    margin-top: 11px;
+    margin-bottom: 31px;
+    width: 50px;
+    height: 14px;
+    background-size: 50px 14px;
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-color.png);
+}
+
+.mac-pro-text1 {
+    min-height: 56px;
+    font-size: 24px;
+    line-height: 1.16667;
+    font-weight: 600;
+    letter-spacing: .009em;
+}
+
+.mac-pro-text1-1 {
+    margin-top: 5px;
+}
+
+.mac-pro-box2 {
+    margin-top: 15px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid #d2d2d7;
+}
+
+.mac-pro-text2 {
+    margin-bottom: 15px;
+    background-color: #06c;
+    border-radius: 20px;
+    width: 55px;
+    padding: 5px;
+    font-size: 12px;
+}
+
+.mac-pro-text2 a {
+    color: #fff;
+}
+
+.mac-pro-text2 a:hover {
+    color: #fff;
+    text-decoration:none
+
+}
+
+.mac-pro-img3 {
+    width: 48px;
+    height: 44px;
+    background-size: 48px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-img1.png);
+}
+
+.mac-pro-text3 {
+    font-size: 14px;
+    line-height: 1.42859;
+    font-weight: 400;
+
+}
+
+.mac-pro-text4 {
+    font-size: 21px;
+    line-height: 1.19048;
+    font-weight: 600;
+    letter-spacing: .011em;
+    margin-top: 6px;
+    margin-bottom: 8px;
+}
+
+.mac-pro-img4 {
+    width: 48px;
+    height: 44px;
+    background-size: 48px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-img2.png);
+}
+
+.mac-pro-img5 {
+    width: 48px;
+    height: 44px;
+    background-size: 48px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-img3.png);
+}
+
+.mac-pro-img6 {
+    width: 48px;
+    height: 44px;
+    background-size: 48px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-img4.png);
+}
+
+.mac-pro-img7 {
+    width: 48px;
+    height: 44px;
+    background-size: 48px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-img5.png);
+}
+
+.mac-pro-box3 {
+    padding-top: 6px;
+    padding-bottom: 45px;
+    border-bottom: 1px solid #d2d2d7;
+}
+
+.mac-pro-img-top-2 {
+    width: 276px;
+    height: 167px;
+    background-size: 276px 167px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-pro2.png);
+}
+
+.mac-pro-img-top-3 {
+    width: 276px;
+    height: 167px;
+    background-size: 276px 167px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-pro3.png);
+}
+
+.mac-pro-ban1 {
+    background-color: #f2f2f2;
+    background-size: 675px 272px;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: bottom;
+    padding-bottom: 276px;
+    background-position-y: 308px;
+    background-image: url(../img/banner/mac-pro4.jpg);
+    padding-left: 4.16667%;
+    padding-right: 4.16667%;
+    width: 38.54167%;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.mac-pro-ban1-text-box {
+    padding-top: 60px;
+    margin-left: auto;
+    margin-right: auto;
+    flex-basis: 100%;
+    max-width: 100%;
+
+}
+
+.mac-pro-ban1-text1 {
+    margin-bottom: .4em;
+    font-size: 24px;
+    line-height: 1.16667;
+    font-weight: 600;
+    letter-spacing: .009em;
+}
+
+.mac-pro-ban1-text2 {
+    font-size: 48px;
+    line-height: 1.08349;
+    font-weight: 500;
+    text-align: center;
+}
+
+.mac-pro-ban1-text3 {
+    margin-bottom: 15px;
+    background-color: #06c;
+    border-radius: 20px;
+    width: 65px;
+    padding: 8px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.mac-pro-ban1-text3 a {
+    color: #fff;
+}
+
+.mac-pro-ban1-text3 a:hover {
+    color: #fff;
+    text-decoration:none
+
+}
+
+.mac-pro-ban2 {
+    background-color: #f2f2f2;
+    background-size: 422px 282px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-pro5.jpg);
+    background-position-x: center;
+    background-position-y: bottom;
+    padding-bottom: 320px;
+    padding-left: 4.16667%;
+    padding-right: 4.16667%;
+    width: 38.54167%;
+    margin-bottom: 30px;
+    
+}
+
+.mac-pro-ban1-text4 {
+    font-size: 16px;
+    line-height: 1.47059;
+    font-weight: 400;
+    color: #1d1d1f;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 430px;
+    text-align: center;
+}
+
+.mac-pro-ban1-box {
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.mac-pro-ban2-box {
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+
+.mac-pro-ban2-img1 {
+    width: 40px;
+    height: 44px;
+    background-size: 40px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-img6.png);
+    position: relative;
+    left: 50%;
+    margin-left: -20px;
+    margin-bottom: 0.70588em;
+}
+
+.mac-pro-ban2-text1 {
+    font-size: 20px;
+    line-height: 1.381;
+    font-weight: 600;
+}
+
+.mac-pro-ban2-text2 {
+    font-size: 20px;
+    line-height: 1.381;
+    font-weight: 400;
+}
+
+.mac-pro-ban2-img2 {
+    width: 40px;
+    height: 44px;
+    background-size: 40px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-img7.png);
+    position: relative;
+    left: 50%;
+    margin-left: -20px;
+    margin-bottom: 0.70588em;
+}
+
+.mac-pro-ban2-img3 {
+    background-repeat: no-repeat;
+    background-image: url(../img/mac-pro-img8.svg);
+    background-size: 100% 56px;
+    background-position-y: -4px;
+    height: 44px;
+    margin-bottom: 0.70588em;
+}
+
+.mac-pro-ban3-box {
+    margin-top: 100px;
+    margin-bottom: 100px;
+
+}
+
+.mac-pro-ban3-box1 {
+    max-width: 1440px;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.mac-pro-ban3-box1-1 {
+    background-color: #fafafa;
+    background-size: 459px 289px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban4.jpg);
+    background-position-x: center;
+    background-position-y: bottom;
+    background-position-y: 264px;
+    margin-bottom: 30px;
+    padding-left: 4.16667%;
+    padding-right: 4.16667%;
+    width: 38.54167%;
+    overflow: hidden;
+}
+
+.mac-pro-ban3-box1-2 {
+    background-color: #fafafa;
+    background-size: 675px 303px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban5.jpg);
+    background-position-x: center;
+    background-position-y: bottom;
+    background-position-y: 93%;
+    margin-bottom: 30px;
+    padding-left: 4.16667%;
+    padding-right: 4.16667%;
+    width: 38.54167%;
+    overflow: hidden;
+}
+
+.mac-pro-ban3-1 {
+    padding-top: 60px;
+    margin-left: auto;
+    margin-right: auto;
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.mac-pro-ban3-text1 {
+    font-size: 24px;
+    line-height: 1.16667;
+    font-weight: 600;
+    margin-bottom: 0.4em;
+}
+
+.mac-pro-ban3-text2 {
+    font-size: 45px;
+    line-height: 1.08349;
+    font-weight: 600;
+    padding-left: 0.4em;
+}
+
+.mac-pro-ban3-text3 {
+    margin-top: 20px;
+    padding-bottom: 360px;
+}
+
+.mac-pro-ban4 {
+    margin-top: 30px;
+    width: 100%;
+    background-size: 1380px 600px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban6.jpg);
+    background-position-x: center;
+    background-position-y: bottom;
+    height: 600px;
+}
+
+.mac-pro-ban4-box {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+}
+
+.mac-pro-ban4-text1 {
+    color: #f5f5f7;
+    font-size: 24px;
+    line-height: 1.16667;
+    font-weight: 600;
+    margin-bottom: 0.4em;
+}
+
+.mac-pro-ban4-text2 {
+    color: #f5f5f7;
+    font-size: 48px;
+    line-height: 1.08349;
+    font-weight: 600;
+}
+
+.mac-pro-ban4-text3 a {
+    color: #f5f5f7;
+}
+
+.mac-pro-ban4-text3 a:hover {
+    color: #f5f5f7;
+}
+
+
+.mac-pro-ban6 {
+    margin-top: 30px;
+    width: 100%;
+    background-size: 1380px 600px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban7.jpg);
+    background-position-x: center;
+    background-position-y: bottom;
+    height: 600px;
+}
+
+.mac-pro-ban6-box {
+    position: relative;
+    top: 40%;
+    transform: translateY(-50%);
+    text-align: center;
+}
+
+.mac-pro-ban7 {
+    margin-top: 30px;
+    width: 100%;
+    background-size: 1380px 600px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban8.jpg);
+    background-position-x: center;
+    background-position-y: bottom;
+    height: 600px;
+}
+.mac-pro-ban8 {
+    margin-top: 30px;
+    width: 100%;
+    background-size: 1380px 600px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/mac-ban9.jpg);
+    background-position-x: center;
+    background-position-y: bottom;
+    height: 600px;
+}
+
+.mac-pro-ban4-text4 {
+    color: #f5f5f7;
+    font-size: 20px;
+    line-height: 1.381;
+    font-weight: 400;
+    margin-top: 20px;
+} */
