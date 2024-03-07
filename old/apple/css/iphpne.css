@@ -1,0 +1,843 @@
+<!--基本格式去除-->
+
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{margin:0;padding:0}
+a:hover {text-decoration:none}
+ul,ol{list-style:none}
+fieldset,img{border:0}
+
+/* body {
+    font-family: "SF Pro SC","SF Pro Display","SF Pro Icons","PingFang SC","Helvetica Neue","Helvetica","Arial",sans-serif !important;
+    color: #212529;
+} */
+/* .nav-top {
+    background-color: rgba(0,0,0,0.8);
+}
+
+.nav-logo {
+    background-size: 14px 44px;
+    background-repeat: no-repeat;
+    background-image: url(../img/logo.svg);
+    background-position: center center;
+    width: 14px;
+    
+}
+
+.top-ad-text {
+    font-size: 14px;
+    color: #9c9c9e;
+    line-height: 20px;
+} */
+
+.nav1{
+	width: 100%;
+	min-width: 330px;
+	height: 44px;
+	background-color: #333333;
+	display: flex;
+	/*水平竖直居中*/
+	justify-content: center;
+	align-items: center;
+	font-size: 12px;
+	/* position: fixed; */
+    z-index: 10;
+}
+.nav1 a{
+	color: #fff;
+	text-decoration: none;
+	width: 80px;
+	text-align: center;
+}
+
+.nav1 a:hover{
+	color: rgb(201, 200, 200);
+	text-decoration: none;
+	width: 80px;
+	text-align: center;
+}
+
+.nav1 .logo{
+	height: 44px;
+	background-image: url(../img/logo.svg);
+	/*不重复*/
+	background-repeat: no-repeat;
+	/*背景居中*/
+	background-position: center;
+}
+.nav1 .search{
+	background-size: 18px 88px;
+	height: 44px;
+	background-image: url(../img/search.svg);
+	background-repeat: no-repeat;
+	background-position: top;
+}
+.nav1 .buy{
+	height: 44px;
+	background-image: url(../img/buy.svg);
+	/*不重复*/
+	background-repeat: no-repeat;
+	/*背景居中*/
+	background-position: center;
+}
+
+.toggleBtn {
+	height: 44px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+}
+
+.toggleBtn .line {
+	height: 1px;
+	width: 18px;
+	background: white;
+	display: none;
+	transition: 0.5s;
+	transform-origin: left center;
+}
+
+.toggleBtn .line:nth-child(1) {
+	position: absolute;
+	left: calc(50% -9px);
+	top: 14px;
+}
+
+.toggleBtn .line:nth-child(2) {
+	position: absolute;
+	left: calc(50% -9px);
+	top: 26px;
+}
+
+.navpage {
+    display: flex;
+    width: 100vw;
+	height: 0vh;
+	transition: all 0.8s;
+	overflow: hidden;
+	position: fixed;
+	left: 0;
+    top: 0;
+    background-color: #000;
+}
+.navpage .navmenu{
+	width: 100%;
+}
+
+
+@media only screen and (max-width: 768px) {
+	.toggleBtn{
+		display: flex;
+		z-index: 100;
+		/*相对定位*/
+		position: relative;
+	}
+	.nav1 .logo{
+		z-index: 100;
+	}
+	.toggleBtn .line{
+		display: block;
+	}
+	.nav1 .nav1-item,.nav1 .search{
+		display: none;
+	}
+	.nav1{
+		/*分配弹性元素方式*/
+		justify-content: space-between;
+	}
+	.nav1 a,.nav1 label{
+		width: 50px;
+	}
+	.nav1 .toggleBtn{
+		/*设置弹性盒对象元素的顺序*/
+		order: 1;
+	}
+	.nav1 .logo{
+		order: 2;
+	}
+	.nav1 .buy{
+		order: 3;
+	}
+	#choose:checked ~ .toggleBtn .line:nth-child(1) {
+		transform: rotate(45deg);
+		transform-origin: left;
+	}
+	#choose:checked ~ .toggleBtn .line:nth-child(2) {
+		transform: rotate(-45deg);
+		transform-origin: left;
+	}
+	/* 设定复选框为选中状态时 导航页面显示*/
+	#choose:checked ~ .navpage{
+		display: flex;
+		width: 100vw;
+		height: 100vh;
+		position: fixed;
+		left: 0;
+		top: 0;
+		background-color: #000;
+		color: #fff;
+		flex-direction: column;
+		padding-top: 54px;
+	}
+	
+	.searchInput {
+		margin: 0 28px 20px;
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		height: 36px;
+		border-radius: 4px;
+		color: #ccc;
+		background-color: rgba(45, 45, 45, 0.98);
+		overflow: hidden;
+	}
+	
+	.searchInput .icon {
+		width: 32px;
+		height: 36px;
+		background-size: 32px 72px;
+		background-image: url(../image/search.svg);
+		background-repeat: no-repeat;
+		background-position: top;
+	}
+	.searchInput input {
+		flex: 1;
+		margin: 0 10px;
+		height: 100px;
+		background: transparent;
+		border: none;
+		outline: none;
+		color: white;
+	}
+	.menuList{
+		margin: 0 38px;
+		display: flex;
+		/*主轴方向	从上至下排版*/
+		flex-direction: column;
+		/*伸缩项对齐的默认值*/
+		justify-content: flex-start;
+	}
+	.menuList a{
+		width: 100%;
+		height: 44px;
+		text-align: left;
+		border-bottom: 1px solid #333;
+		line-height: 44px;
+	}
+	.menuList a:last-child {
+		border: none;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 尾部 */
+.foot1 {
+    border-bottom: 1px solid #d2d2d7;
+    padding: 17px 0 11px;
+}
+
+.foot-text1 {
+    font-size: 12px;
+    line-height: 1.33337;
+    font-weight: 400;
+    letter-spacing: 0em;
+    color: #9c9cb1;
+}
+
+.foot3 {
+    border-bottom: 1px solid #d2d2d7;
+    padding: 17px 0 6px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 尾部 */
+
+.ip-pro-top {
+    max-width: 1150px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+
+}
+
+.ip-pro-top-img1 {
+    width: 38px;
+    height: 54px;
+    background-size: 38px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top1.svg);
+    margin: 0 auto 7px;
+}
+.ip-pro-top-text {
+    font-size: 12px;
+    line-height: 1.33337;
+    font-weight: 400;
+    letter-spacing: -.01em;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.ip-pro-top-img2 {
+    width: 36px;
+    height: 54px;
+    background-size: 36px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top2.svg);
+    margin: 0 auto 7px;
+}
+
+
+.ip-pro-top-img3 {
+    width: 19px;
+    height: 54px;
+    background-size: 19px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top3.svg);
+    margin: 0 auto 7px;
+}
+
+.ip-pro-top-img4 {
+    width: 36px;
+    height: 54px;
+    background-size: 36px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top4.svg);
+    margin: 0 auto 7px;
+}
+
+
+.ip-pro-top-img5 {
+    width: 22px;
+    height: 54px;
+    background-size: 22px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top5.svg);
+    margin: 0 auto 7px;
+}
+
+.ip-pro-top-img6 {
+    width: 45px;
+    height: 54px;
+    background-size: 45px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top6.svg);
+    margin: 0 auto 7px;
+}
+
+.ip-pro-top-img7 {
+    width: 27px;
+    height: 54px;
+    background-size: 27px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top7.svg);
+    margin: 0 auto 7px;
+}
+
+.ip-pro-top-img8 {
+    width: 30px;
+    height: 54px;
+    background-size: 30px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top8.svg);
+    margin: 0 auto 7px;
+}
+
+.ip-pro-top-img9 {
+    width: 35px;
+    height: 54px;
+    background-size: 35px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top9.svg);
+    margin: 0 auto 7px;
+}
+
+.ip-pro-top-img10 {
+    width: 32px;
+    height: 54px;
+    background-size: 32px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top10.svg);
+    margin: 0 auto 7px;
+}
+
+.ip-pro-top-img11 {
+    width: 60px;
+    height: 54px;
+    background-size: 60px 54px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-top11.svg);
+    margin: 0 auto 7px;
+}
+
+.top-ad2 {
+    background-color: #0071e3;
+    height: 50px;
+}
+.top-ad2-text {
+    line-height: 50px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+
+/* top */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.ip-ban1 {
+    margin-top: 6rem;
+}
+
+.ip-ban1-img1 {
+    width: 136px;
+    height: 20px;
+    background-size: 136px 20px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-ban-img1.png);
+    position: relative;
+    left: 50%;
+    margin-left: -68px;
+}
+
+.ip-ban1-text1 {
+    font-size: 46px;
+    line-height: 1.08349;
+    font-weight: 600;
+}
+
+.ip-ban1-text2 {
+    font-size: 20px;
+    line-height: 1.381;
+    font-weight: 400;
+}
+
+.ip-ban1-text3 {
+    background-color: #06c;
+    border-radius: 20px;
+    width: 55px;
+    padding: 5px;
+}
+
+.ip-ban1-text3 a {
+    color: #fff;
+}
+
+.ip-ban1-text3 a:hover {
+    color: #fff;
+    text-decoration:none
+
+}
+
+.ip-ban1-img2 {
+    width: 818px;
+    height: 556px;
+    background-size: 818px 556px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-ban1.png);
+    position: relative;
+    left: 50%;
+    margin-left: -409px;
+    bottom: -15px;
+}
+
+.ip-ban-bian {
+    width: 100%;
+    border-bottom: 10px solid #f2f2f2;
+}
+
+.ip-ban2-img1 {
+    width: 98px;
+    height: 20px;
+    background-size: 98px 20px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-ban-img2.jpg);
+    position: relative;
+    left: 50%;
+    margin-left: -49px;
+}
+
+.ip-ban2-img2 {
+    width: 770px;
+    height: 400px;
+    background-size: 770px 400px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-ban2.png);
+    position: relative;
+    left: 50%;
+    margin-left: -385px;
+    bottom: -15px;
+}
+
+.ip-ban3 {
+    align-items: center;
+}
+
+.ip-ban3-box1 {
+    margin-bottom: 0px;
+    flex-basis: 41.66667%;
+    margin-left: 8.33333%;
+}
+
+.ip-ban3-text1 {
+    font-size: 17px;
+    line-height: 1.47059;
+    font-weight: 400;
+    white-space: nowrap;
+    display: block;
+    color: #bf4800;
+    margin-bottom: 10px;
+}
+
+.ip-ban3-img1 {
+    width: 96px;
+    height: 22px;
+    background-size: 96px 22px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-ban-img3.jpg);
+    position: relative;
+    left: 50%;
+    margin-left: -48px;
+}
+
+.ip-ban3-text2 {
+    -webkit-background-clip: text;
+    background-image: linear-gradient(to right, #1e3791 0%, #2948b1 40%, #3153c6 55%, #385fda 60%);
+    color: transparent;
+    margin-top: 5px;
+    font-size: 48px;
+    line-height: 1.08349;
+    font-weight: 600;
+    margin-left: 35px;
+}
+
+.mac-ban3-img2 {
+    width: 494px;
+    height: 830px;
+    background-size: 494px 830px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-ban3.jpg);
+}
+
+@media only screen and (max-width: 1068px) {
+    .mac-ban3-img2 {
+        left: 50%;
+    margin-left: -141px;
+    position: relative;
+    width: 282px;
+    height: 468px;
+    background-size: 282px 468px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-ban3-1.jpg);
+    }
+}
+
+@media only screen and (max-width: 1068px) {
+    .ip-ban3-text1 {
+        margin-top: 100px;
+        font-size: 17px;
+        line-height: 1.47059;
+        font-weight: 400;
+        white-space: nowrap;
+        display: block;
+        color: #bf4800;
+        margin-bottom: 10px;
+    }
+}
+
+.ip-ban4-img {
+    width: 1412px;
+    height: 814px;
+    background-size: 1412px 814px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-ban4.jpg);
+    background-position: center bottom;
+    border-radius: 34px;
+    z-index: 1;
+}
+
+.ip-ban4-text-box2 {
+    position: relative;
+    overflow: hidden;
+
+    z-index: 2;
+}
+
+.ip-ban4-text-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    height: 100%;
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.ip-ban4-text-box1 {
+    text-align: left;
+    padding-top: 302px;
+    padding-left: 218px;
+}
+
+.ip-ban4-text1 {
+    color: #fff;
+    font-size: 22px;
+    line-height: 1.16667;
+    font-weight: 600;
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.ip-ban4-text2 {
+    margin-top: 10px;
+    color: #fff;
+    font-size: 48px;
+    line-height: 1.08349;
+    font-weight: 600;
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.ip-ban4-text3 {
+    background-color: #fff;
+    border-radius: 25px;
+    width: 100px;
+    padding: 10px;
+    text-align: center;
+}
+
+.ip-ban4-text3 a {
+    color: #5c5c5c;
+}
+
+.ip-ban4-text3 a:hover {
+    text-decoration: none;
+    color: #000;
+}
+
+/* 产品对比 */
+
+.ip-pro-top-text {
+    font-size: 48px;
+    line-height: 1.08349;
+    font-weight: 600;
+}
+
+.ip-pro-img-box {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+ 
+.ip-pro-img-top-1 {
+    width: 182px;
+    height: 255px;
+    background-size: 182px 255px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-pro-1.jpg);
+}
+
+.ip-pro-img1 {
+    width: 86px;
+    height: 14px;
+    background-size: 86px 14px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-pro-img1.png);
+}
+
+.ip-pro-text1 {
+    font-size: 12px;
+    line-height: 1.33337;
+    font-weight: 400;
+    white-space: nowrap;
+    display: block;
+    color: #bf4800;
+}
+
+.ip-pro-img2 {
+    width: 132px;
+    height: 20px;
+    background-size: 132px 20px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-pro-img2.png);
+}
+
+.ip-pro-text2 {
+    font-size: 14px;
+    line-height: 1.42859;
+    font-weight: 400;
+    margin-top: 35px;
+}
+
+.ip-pro-box2 {
+    margin-top: 15px;
+    border-bottom: 1px solid #d2d2d7;
+    padding-bottom: 40px;
+}
+
+.ip-pro-text3 {
+    background-color: #0071e3;
+    border-radius: 15px;
+    width: 48px;
+    text-align: center;
+}
+
+.ip-pro-text3 a {
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.33337;
+    font-weight: 400;
+}
+
+.ip-pro-text3 a:hover {
+    text-decoration: none;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.33337;
+    font-weight: 400;
+}
+
+.ip-pro-text4 {
+    font-size: 14px;
+    line-height: 1.42859;
+    font-weight: 400;
+    margin-top: 10px;
+    padding-left: 8px;
+}
+
+.ip-pro-text5 {
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.ip-pro-text6 {
+    font-size: 14px;
+    line-height: 1.42859;
+    font-weight: 400;
+    color: #1d1d1f;
+}
+
+.ip-pro-img3 {
+    width: 37px;
+    height: 39px;
+    background-size: 37px 39px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-pro-img3.png);
+}
+
+.ip-pro-img4 {
+    width: 40px;
+    height: 40px;
+    background-size: 40px 40px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-pro-img4.png);
+}
+
+.ip-pro-img5 {
+    width: 50px;
+    height: 36px;
+    background-size: 50px 36px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-pro-img5.png);
+}
+
+.ip-pro-img6 {
+    width: 51px;
+    height: 25px;
+    background-size: 51px 25px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-pro-img6.png);
+}
+
+.ip-pro-img7 {
+    width: 38px;
+    height: 37px;
+    background-size: 38px 37px;
+    background-repeat: no-repeat;
+    background-image: url(../img/ip-pro-img7.png);
+}
+
+.ip-pro-box3 {
+    border-bottom: 1px solid #d2d2d7;
+    padding-bottom: 50px;
+    margin-bottom: 50px;
+}
+
+.ip-pro-img-top-2 {
+    width: 160px;
+    height: 255px;
+    background-size: 160px 255px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-pro-2.jpg);
+}
+
+.ip-pro-img-top-3 {
+    width: 149px;
+    height: 255px;
+    background-size: 149px 255px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-pro-3.jpg);
+}
+
+.ip-pro-img-top-4 {
+    width: 161px;
+    height: 255px;
+    background-size: 161px 255px;
+    background-repeat: no-repeat;
+    background-image: url(../img/banner/ip-pro-4.jpg);
+}
+
+.ip-pro-text7 {
+    font-size: 21px;
+    line-height: 1.381;
+    font-weight: 400;
+}
+
+.ip-ban-bbb {
+    width: 100%;
+    background-color: #f2f2f2;
+    padding-top: 100px;
+    margin-top: 100px;
+}
