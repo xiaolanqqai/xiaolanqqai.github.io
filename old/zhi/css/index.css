@@ -1,0 +1,693 @@
+<!--基本格式去除-->
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td {
+    margin: 0;
+    padding: 0
+}
+
+a:hover {
+    text-decoration: none
+}
+
+ul,ol {
+    list-style: none
+}
+
+.oh {
+    overflow: hidden;
+}
+
+fieldset,img {
+    border: 0
+}
+
+@font-face {
+
+    font-family: 'Caslon Bold';
+
+    src: url('../font/ACaslonPro-Bold.otf');
+}
+
+@font-face {
+
+    font-family: 'Montserrat';
+
+    src: url('../font/Montserrat-Light.otf');
+}
+
+@font-face {
+    font-family: 'custom-icons';
+    src: url('../font/custom-icons.eot');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+.te-top-box {
+    height: 60px;
+    background-color: #fff;
+}
+
+.te-top-text-box {
+    height: 60px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.te-top-text {
+    color: #332b26;
+    margin: 0 10px;
+}
+
+.te-ban1-box {
+    width: 100%;
+    height: 576px;
+    background-image: url(../img/banner/banner1.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: relative;
+    min-height: 394px;
+}
+
+.te-ban1-box1 {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding-top: 60px;
+    text-align: center;
+    z-index: 2;
+}
+
+.te-ban1-box1-1 {
+    position: relative;
+    margin: 0 auto;
+    padding: 0 50px;
+    max-width: 600px;
+}
+
+.te-text1 {
+    color: #fff;
+    font-size: 56px;
+    font-family: Caslon Bold, serif;
+    font-weight: 400;
+    line-height: 1.1;
+    font-style: normal;
+    margin: 0 0 0.5em;
+}
+
+.te-ban1-text2 {
+    font-size: 16px;
+    line-height: 30px;
+    letter-spacing: 2px;
+    font-family: Montserrat,sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    margin: 0 0 1.5em;
+}
+
+.te-text2 {
+    color: white;
+    font-size: 14px;
+    line-height: 30px;
+    letter-spacing: 2px;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+
+.te-ban2-box {
+    max-width: 600px;
+    text-align: center;
+    margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+.te-text3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .15em;
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: #332b26;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.te-text4 {
+    font-size: 32px;
+    font-family: Caslon Bold, serif;
+    font-weight: 400;
+    font-style: normal;
+    margin: 0 0 0.5em;
+    line-height: 1.2;
+}
+
+.te-text5 {
+    line-height: 1.5;
+    color: #332b26;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.te-text6 {
+    font-size: 25px;
+    font-family: Caslon Bold, serif;
+    font-weight: 400;
+    font-style: normal;
+    margin: 0 0 0.5em;
+    line-height: 1.4;
+}
+
+.te-ban-wap-box {
+    width: 100%;
+    padding: 0 25px;
+}
+
+@media screen and (min-width: 480px) {
+    .te-ban-wap-box {
+        width: 100%;
+        padding: 0 50px;
+    }
+}
+
+.te-ban3-box1 {
+    padding: 0 10%;
+}
+
+.te-ban4-box {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.te-ban4-img {
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.te-text7 {
+    font-size: 20px;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #332b26;
+    font-style: normal;
+    text-align: center;
+    text-decoration: line-through;
+}
+
+.te-text8 {
+    font-size: 28px;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #332b26;
+    font-style: normal;
+    text-align: center;
+}
+
+.te-ban4-btt {
+    position: relative;
+    overflow: visible;
+    margin: 0 auto;
+    max-width: 130px;
+    min-width: 100px;
+    background: #f7f8fa;
+    font-family: Montserrat, sans-serif;
+}
+
+.te-ban4-btt1 {
+    left: 0;
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    top: 0;
+    bottom: 0;
+    border: 0 none;
+    padding: 0 8px;
+    background: none;
+    text-align: center;
+    overflow: hidden;
+    color: #332b26;
+    user-select: none;
+}
+
+.te-ban4-btt1-1 {
+    /* position: absolute; */
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    text-align: center;
+    color: #332b26;
+}
+
+.te-ban4-btt2 {
+    display: block;
+    background: none;
+    text-align: center;
+    width: 100%;
+    padding: 5px 25px;
+    margin: 0;
+    color: #332b26;
+    border: 1px solid lightgrey;
+    -webkit-appearance: none;
+    border-radius: 0;
+    max-width: 100%;
+}
+
+.te-ban4-btt3 {
+    right: 0;
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    top: 0;
+    bottom: 0;
+    border: 0 none;
+    padding: 0 8px;
+    background: none;
+    text-align: center;
+    overflow: hidden;
+    color: #332b26;
+}
+
+.te-ban4-btt3-1 {
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    text-align: center;
+    color: #332b26;
+}
+
+.te-ban4-btn {
+    margin: 10px auto;
+    cursor: pointer;
+    width: 300px;
+    background: #332b26;
+    color: #ffffff80;
+    display: inline-block;
+    position: relative;
+    border: 2px solid #332b26;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    box-shadow: none;
+    line-height: 1.5;
+    border-radius: 0;
+    font-size: 14px;
+    padding: 12px 24px;
+    transform: perspective(1px) translateZ(0);
+    transition-property: color;
+    transition-duration: .3s;
+    transition-timing-function: cubic-bezier(.46, .01, .32, 1);
+    transition-delay: 0s;
+
+}
+
+.te-ban4-btn::before {
+    content: "";
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition-property: transform;
+    transition-duration: .3s;
+    transition-timing-function: ease-out;
+    transition-delay: 0s;
+    transform-origin: 50%;
+    background: #332b26;
+    transform: scaleX(0);
+}
+
+.te-ban4-btn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #332b26;
+}
+
+.te-ban5-box {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-image: url(../img/banner/banner8.png);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.te-ban4-cant-box {
+    display: flex;
+    align-items: center;
+    padding: 25px 0;
+
+}
+
+.te-ban4-1 {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 50px;
+    margin: 50px 0;
+    background: white;
+    color: #332b26;
+    border: 1px solid lightgrey;
+}
+
+.te-ban4-2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.te-ban4-2-1 {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: auto;
+    line-height: 0;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+.te-ban4-2-sp1 {
+    transition: all 0s ease 0s;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    bottom: 12px;
+    right: 12px;
+    background: white;
+    border-radius: 50%;
+}
+
+.te-ban4-2-sp2 {
+    transition: all 0s ease 0s;
+    border: 1px solid white;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border-radius: 50%;
+}
+
+.te-ban4-2-sp3 {
+    transition: all 0s ease 0s;
+    color: #332b26;
+    font-size: 48px;
+    display: block;
+    width: 36px;
+    height: 48px;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.te-ban4-2-sp3::before {
+    content: "p";
+    font-family: custom-icons;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    /* speak: none; */
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+.te-ban6-box {
+    margin: 50px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+.te-ban7-box {
+    background: #f1f1f1;
+
+}
+
+.te-ban7-box2 {
+    max-width: 960px;
+    width: 95%;
+    margin: 0 auto;
+}
+
+.te-text9 {
+    text-transform: uppercase;
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: .03em;
+    font-weight: 500;
+    margin: 0 0 0.5em;
+    color: #332b26;
+}
+
+.te-text10 {
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+    font-style: normal;
+}
+
+.te-text11 {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+    text-align: center;
+    line-height: 1.6;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.te-onput {
+    position: relative;
+    display: table;
+    border-collapse: separate;
+}
+
+.te-input {
+    border-right: 0;
+    border: 1px solid #ced4da;
+    height: 46px;
+    color: #000000;
+    background: #ffffff;
+    border-radius: 0;
+    width: 100%;
+    display: table-cell;
+    vertical-align: middle;
+    margin: 0;
+    max-width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.te-bt1 {
+    border-radius: 0;
+    position: relative;
+    white-space: nowrap;
+    width: 1%;
+    padding: 0;
+    display: table-cell;
+    vertical-align: middle;
+    margin: 0;
+    border-collapse: separate;
+}
+
+.te-bt2 {
+    height: 46px;
+    background: #0f7e27;
+    border-color: #0f7e27;
+    color: #fff;
+    width: 100px;
+    border: 2px solid #0f7e27;
+    border-left: 0;
+    border-radius: 0;
+    /* cursor: pointer; */
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+}
+
+.te-bt2:hover {
+    background: #191919;
+    border-color: #191919;
+    transition: all .2s ease;
+}
+
+.te-text12 {
+    font-size: 36px;
+    color: #332b26;
+    display: block;
+    font-family: Caslon Bold, serif;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.1;
+}
+
+.te-text13 {
+    font-size: 20px;
+    color: #332b26;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    line-height: 1.4;
+    font-style: normal;
+}
+
+.te-text-box {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #332b26;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+}
+
+.te-ab-img {
+    width: 100%;
+    max-width: 700px;
+}
+
+.te-ab-ul {
+    list-style: none;
+    max-width: 1000px;
+    margin: 0 auto;
+
+}
+
+.te-ab-li {
+    border-bottom: 1px solid lightgrey;
+}
+
+.te-ab-li-1 {
+    padding: 20px 40px 20px 0;
+    cursor: pointer;
+    font-size: 28px;
+    font-family: Caslon Bold, serif;
+    font-weight: 400;
+    font-style: normal;
+    /* margin: 0 0 0.5em; */
+    line-height: 1.4;
+    display: inline-block;
+}
+
+.te-ab-li-2 {
+    transition-duration: .35s;
+    transition-timing-function: cubic-bezier(.46, .01, .32, 1);
+    transition-delay: 0s;
+}
+
+.tea-text1-box {
+    margin-top: 0px;
+    width: 50%;
+    text-align: left;
+    float: left;
+    padding-left: 10%;
+    padding-right: 5%;
+    padding-top: 4%;
+    display: table;
+    height: 500px;
+    overflow: hidden;
+}
+
+.tea-img1 {
+    max-height: 500px;
+    min-height: 350px;
+    max-width: 100%;
+}
+
+.tea-text1 {
+    font-size: 50px;
+    line-height: 1em;
+    color: #332b26;
+    font-family: Caslon Bold, serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.tea-text2 {
+    line-height: 1.6em;
+    font-size: 18px;
+    color: #332b26;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.tea-text3 {
+    font-size: 15px;
+    font-weight: 400;
+    color: #332b26;
+    font-family: Montserrat, sans-serif;
+    font-style: normal;
+}
+
+.tea-ban2-box {
+    max-width: 1332px;
+}
+
+.tea-text4 {
+    font-size: 28px;
+    line-height: 1em;
+    color: #332b26;
+    font-family: Caslon Bold, serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.tea-ban3-box {
+    width: 50%;
+}
+
+@media screen and (max-width: 760px) {
+    .tea-ban3-box {
+        width: 100%;
+    }
+}
+
+.tea-ban4-box {
+    max-width: 1000px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.tea-text5 {
+    font-size: 32px;
+    color: #332b26;
+    font-family: Caslon Bold,serif;
+    font-style: normal;
+    line-height: 1.2;
+}
