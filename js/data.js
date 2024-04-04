@@ -96,8 +96,10 @@ function data() {
 	ww(2,document.getElementById("ar2"), [
 		'www.aliyun.com', '阿里云',
 		'cp.aliyun.com', '万网主机管理控制台',
-		'www.shopify.com/zh', 'shopify',
+		'www.shopify.com', 'shopify',
 		'www.kickstarter.com', 'kickstarter',
+		'manage.pledgebox.com', 'pledgebox',
+		'manage.wix.com', 'wix',
 	])
 
 	//工具
@@ -182,6 +184,7 @@ function data() {
 		'tool.chinaz.com', '站长工具',
 		'test.ustc.edu.cn', '中科大测速',
 		'wormhole.app', '虫洞（文件暂存）',
+		'poe.com', 'POE免费chgpt3.5',
 	])
 
 	//视频下载 • 磁力
@@ -244,6 +247,7 @@ function data() {
 		'www.760kan.com', '60影视',
 		'ttmja.com', '天天美剧网',
 		'zhuiyingmao2.com', '追影猫',
+		'yoyys1.com', '悠云影视',
 	])
 
 	//影视资源链接（链接模式）
