@@ -36,8 +36,21 @@ function datat() {
 		'brevent.sh', '黑域',
 	])
 
+	//Work
+	ww(1,document.getElementById("ar4"), [
+		'www.aliyun.com', '阿里云',
+		'cp.aliyun.com', '万网主机管理控制台',
+		'www.shopify.com', 'shopify',
+		'www.kickstarter.com', 'kickstarter',
+		'manage.pledgebox.com', 'pledgebox',
+		'manage.wix.com', 'wix',
+		'myaccount.shoplazza.com/u/1/account', 'shoplazza',
+		'erp.hupun.com/login', '国内-万里牛ERP',
+		'erp.hupun.com/login', '国外-万里牛ERP',
+	])
+
 	//Network
-	ww(4,document.getElementById("ar4"), [
+	ww(4,document.getElementById("ar5"), [
 		'192.168.2.1', '主路由',
 		'192.168.1.1', '光猫',
 		'192.168.31.1', '小米路由',
