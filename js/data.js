@@ -100,7 +100,7 @@ function data() {
 		'www.kickstarter.com', 'kickstarter',
 		'manage.pledgebox.com', 'pledgebox',
 		'manage.wix.com', 'wix',
-		'https://myaccount.shoplazza.com/u/1/account', 'shoplazza',
+		'myaccount.shoplazza.com/u/1/account', 'shoplazza',
 	])
 
 	//工具
