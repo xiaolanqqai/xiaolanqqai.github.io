@@ -44,7 +44,7 @@ function datat() {
 		'www.kickstarter.com', 'kickstarter',
 		'manage.pledgebox.com', 'pledgebox',
 		'manage.wix.com', 'wix',
-		'myaccount.shoplazza.com/u/1/account', 'shoplazza',
+		'myaccount.shoplazza.com', 'shoplazza',
 		'erp.hupun.com/login', '国内-万里牛ERP',
 		'erp.hupun.com/login', '国外-万里牛ERP',
 	])
@@ -113,7 +113,7 @@ function data() {
 		'www.kickstarter.com', 'kickstarter',
 		'manage.pledgebox.com', 'pledgebox',
 		'manage.wix.com', 'wix',
-		'myaccount.shoplazza.com/u/1/account', 'shoplazza',
+		'myaccount.shoplazza.com', 'shoplazza',
 		'erp.hupun.com/login', '国内-万里牛ERP',
 		'erp.hupun.com/login', '国外-万里牛ERP',
 	])
