@@ -101,6 +101,8 @@ function data() {
 		'manage.pledgebox.com', 'pledgebox',
 		'manage.wix.com', 'wix',
 		'myaccount.shoplazza.com/u/1/account', 'shoplazza',
+		'erp.hupun.com/login', '国内-万里牛ERP',
+		'erp.hupun.com/login', '国外-万里牛ERP',
 	])
 
 	//工具
