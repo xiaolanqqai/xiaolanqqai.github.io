@@ -46,7 +46,7 @@ function datat() {
 		'manage.wix.com', 'wix',
 		'myaccount.shoplazza.com', 'shoplazza',
 		'erp.hupun.com/login', '国内-万里牛ERP',
-		'erp.hupun.com/login', '国外-万里牛ERP',
+		'g.hupun.com/login', '国外-万里牛ERP',
 	])
 
 	//Network
@@ -115,7 +115,7 @@ function data() {
 		'manage.wix.com', 'wix',
 		'myaccount.shoplazza.com', 'shoplazza',
 		'erp.hupun.com/login', '国内-万里牛ERP',
-		'erp.hupun.com/login', '国外-万里牛ERP',
+		'g.hupun.com/login', '国外-万里牛ERP',
 	])
 
 	//工具
