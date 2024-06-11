@@ -45,6 +45,7 @@ function datat() {
 		'manage.pledgebox.com', 'pledgebox',
 		'manage.wix.com', 'wix',
 		'myaccount.shoplazza.com', 'shoplazza',
+		'www.kodai-industries.com', '官网',
 		'erp.hupun.com/login', '国内-万里牛ERP',
 		'g.hupun.com/login', '国外-万里牛ERP',
 	])
@@ -114,6 +115,7 @@ function data() {
 		'manage.pledgebox.com', 'pledgebox',
 		'manage.wix.com', 'wix',
 		'myaccount.shoplazza.com', 'shoplazza',
+		'www.kodai-industries.com', '官网',
 		'erp.hupun.com/login', '国内-万里牛ERP',
 		'g.hupun.com/login', '国外-万里牛ERP',
 	])
