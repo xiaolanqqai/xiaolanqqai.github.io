@@ -40,6 +40,8 @@ function datat() {
 	ww(1,document.getElementById("ar4"), [
 		'www.aliyun.com', '阿里云',
 		'cp.aliyun.com', '万网主机管理控制台',
+		'wl.jdl.com', '京东物流工作台',
+		'qiye.aliyun.com', '阿里企业邮箱',
 		'www.shopify.com', 'shopify',
 		'www.kickstarter.com', 'kickstarter',
 		'manage.pledgebox.com', 'pledgebox',
@@ -48,6 +50,7 @@ function datat() {
 		'www.kodai-industries.com', '官网',
 		'erp.hupun.com/login', '国内-万里牛ERP',
 		'g.hupun.com/login', '国外-万里牛ERP',
+		
 	])
 
 	//Network
@@ -98,6 +101,7 @@ function data() {
 		'www.jd.com', '京东',
 		'pan.baidu.com', '百度网盘',
 		'mail.163.com', '163邮箱',
+		'mail.qq.com', 'QQ邮箱',
 		'www.jianshu.com', '简书',
 		'www.google.com.hk', '谷歌HK',
 		'explorer.globe.engineer', '可视化维基百科',
@@ -110,6 +114,8 @@ function data() {
 	ww(2,document.getElementById("ar2"), [
 		'www.aliyun.com', '阿里云',
 		'cp.aliyun.com', '万网主机管理控制台',
+		'wl.jdl.com', '京东物流工作台',
+		'qiye.aliyun.com', '阿里企业邮箱',
 		'www.shopify.com', 'shopify',
 		'www.kickstarter.com', 'kickstarter',
 		'manage.pledgebox.com', 'pledgebox',
