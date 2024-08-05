@@ -16,7 +16,7 @@ function datat() {
 	//Tools
 	ww(1,document.getElementById("ar2"), [
 		'fanyi.baidu.com', '百度翻译',
-		'pan.baidu.com', '百度网盘',
+		'fanyi.youdao.com', '有道翻译',
 		'mail.163.com', '163',
 		'tinypng.com', 'TinyPNG',
 		'cn.office-converter.com', 'office-converter',
@@ -135,6 +135,7 @@ function data() {
 		'brevent.sh', '黑域',
 		'translate.google.cn', '谷歌翻译',
 		'fanyi.baidu.com', '百度翻译',
+		'fanyi.youdao.com', '有道翻译',
 		'flowus.cn', 'flowus息流',
 		'www.notion.so', 'Notion',
 		'xiezuocat.com', '写作猫',
