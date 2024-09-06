@@ -421,7 +421,7 @@ function datad() {
 		'github.com/aiboboxx/v2rayfree', '免费节点',
 		'xxxxx525.com', 'switch游戏',
 		'zhuanlan.zhihu.com/p/617025808', '设计师的 Midjourney 入门真保姆级教程',
-		'xn--1-948a43hd5x.com', '一号机场（1元100g）',
+		'github.com/yiyuanjichang/dizhi', '一号机场（1元100g）',
 		'https://9.234456.xyz/abc.html?t=638447306965091200', '机场推荐',
 		'docs.qq.com/sheet/DQWJweHVmQUtacUFu?tab=BB08J2&scode=', 'BYD车机APP汇总',
 		'jamcz.com', '晨钟网络科技',
