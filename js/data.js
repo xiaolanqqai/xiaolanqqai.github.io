@@ -401,6 +401,7 @@ function data() {
 		's6y7f8.xyz', '2048xp',
 		'snmp3x.xyz', '2048xp',
 		'www.xvideos.com', 'xvideos',
+		'www.missav.com', 'missav',
 	])
 
 };
