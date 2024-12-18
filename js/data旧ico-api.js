@@ -121,11 +121,9 @@ function data() {
 		'manage.pledgebox.com', 'pledgebox',
 		'manage.wix.com', 'wix',
 		'myaccount.shoplazza.com', 'shoplazza',
-		'kodai-industries.myshopline.com', 'shopline',
 		'www.kodai-industries.com', '官网',
 		'erp.hupun.com/login', '国内-万里牛ERP',
 		'g.hupun.com/login', '国外-万里牛ERP',
-		'wssq.sbj.cnipa.gov.cn:9443/tmsve/', '国家知识产权局商标局',
 	])
 
 	//工具
@@ -209,7 +207,6 @@ function data() {
 		'www.wappalyzer.com', '网站框架识别',
 		'www.itdog.cn', 'IT狗-在线ping',
 		'tool.chinaz.com', '站长工具',
-		'zh.semrush.com', 'semrush网站数据统计',
 		'test.ustc.edu.cn', '中科大测速',
 		'wormhole.app', '虫洞（文件暂存）',
 		'poe.com', 'POE免费chgpt3.5',
@@ -446,7 +443,7 @@ function datade() {
 		'codegeex.cn', 'CodeGeeX',
 		'jquery.com', 'Jquery.js',
 		'github.com/marcbruederlin/particles.js', 'Particles.js',
-		'api.afmax.cn', 'afmax API',
+		'api.iowen.cn', 'One for API',
 		'freewha.com', 'FreeWHA',
 		'www.aliyun.com', '阿里云',
 		'github.com/xiaolanqqai/xiaolanqqai.github.io', 'GitHub',
@@ -536,7 +533,7 @@ function ww(top, ar1, arr1) {
 			var url = '<a href="https://' + arr1[i]+ '" rel="nofollow" target="_blank" class="';
 			var url1 = '<a href="http://' + arr1[i]+ '" rel="nofollow" target="_blank" class="';
 			var title = arr1[i + 1]+ '</h6></a>';
-			var imgSrc = 'src="https://api.afmax.cn/so/ico/index.php?r=https://' + arr1[i] + '" loading="lazy">';
+			var imgSrc = 'src="https://api.iowen.cn/favicon/' + arr1[i] + '.png" loading="lazy">';
 			var className = 'my-2 p-1 text-center text-black-50';
  
 			if (top === 1) {
