@@ -70,7 +70,7 @@ function datat() {
 function data() {
 
 	// 列表
-	// var ff = ['平台', '工具', '图片处理', '其它处理 • PDF • 文字 • 视频', '专业工具', '视频下载 • 磁力', '视频', '漫画', '导航', '软件资源', 'JS资源 • 开发', '其它 • 开发', '树莓派 • 开发', 'Git • 项目', '论坛'];
+	// var ff = ['平台', '工具', '图片处理', '其它处理 • PDF • 文字 • 视频', '专业工具', '视频下载 • 磁力', '视频', '漫画', '导航', '软件资源', 'JS资源 • 开发', '其它 • 开发','PCB • 开发', '树莓派 • 开发', 'Git • 项目', '论坛'];
 	// var ffl = document.getElementById('ff');
 	// var ffdata = [];
 	// for (var f = 0; f <= ff.length; f++) {
@@ -366,14 +366,20 @@ function data() {
 		'trollstore.app', '巨魔商店',
 	])
 
-	//树莓派 • 开发
+	//PCB • 开发
 	ww(2,document.getElementById("ar16"), [
+		'oshwhub.com', '立创开源广场',
+		'www.jiepei.com', '捷配',
+	])
+
+	//树莓派 • 开发
+	ww(2,document.getElementById("ar17"), [
 		'shumeipai.nxez.com', '树莓派实验室',
 		'wiki.friendlyelec.com/wiki/index.php/NanoPi_NEO2/zh', 'NanoPi_NEO',
 	])
 
 	//Git • 项目
-	ww(2,document.getElementById("ar17"), [
+	ww(2,document.getElementById("ar18"), [
 		'alist.nn.ci', 'Alist',
 		'github.com/seemoo-lab/openhaystack', 'openhaystack',
 		'github.com/gkd-kit/gkd', 'GKD',
@@ -386,7 +392,7 @@ function data() {
 	])
 
 	//论坛
-	ww(2,document.getElementById("ar18"), [
+	ww(2,document.getElementById("ar19"), [
 		'dkxuanye.cn', '玄烨品果',
 		'www.feng.com', '威锋',
 		'bbs.pcbeta.com', '远景论坛',
@@ -396,7 +402,7 @@ function data() {
 	])
 
 	//工口论坛
-	ww(2,document.getElementById("ar19"), [
+	ww(2,document.getElementById("ar20"), [
 		'www.nidexbb.info', '杏吧',
 		'www.tokyotosho.info', '东京图书馆',
 		'yj2207.click/pw', '1024xp',
