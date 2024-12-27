@@ -122,7 +122,7 @@ function data() {
 		'manage.pledgebox.com', 'pledgebox',
 		'manage.wix.com', 'wix',
 		'myaccount.shoplazza.com', 'shoplazza',
-		'kodai-industries.myshopline.com', 'shopline',
+		'kodai-industries.myshopline.com/admin/', 'shopline',
 		'www.kodai-industries.com', '官网',
 		'erp.hupun.com/login', '国内-万里牛ERP',
 		'g.hupun.com/login', '国外-万里牛ERP',
