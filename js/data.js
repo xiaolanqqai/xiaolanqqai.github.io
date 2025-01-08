@@ -187,6 +187,7 @@ function data() {
 		'www.ilovepdf.com', 'ilovepdf',
 		'cn.office-converter.com', 'Office-Convert',
 		'tool.browser.qq.com', '帮小忙',
+		'www.pdfdo.com', 'pdf转换器',
 		'123apps.com', '123apps',
 		'jianwai.youdao.com', '网易见外工作台',
 		'cli.im', '草料二维码',
