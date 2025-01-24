@@ -126,7 +126,7 @@ function data() {
 		'www.kodai-industries.com', '官网',
 		'erp.hupun.com/login', '国内-万里牛ERP',
 		'g.hupun.com/login', '国外-万里牛ERP',
-		'web.jackyun.com', '吉客云网页版',
+		'web.jackyun.com/login/login_web.html', '吉客云网页版',
 		'wssq.sbj.cnipa.gov.cn:9443/tmsve/', '国家知识产权局商标局',
 		'ipp.pinduoduo.com', '拼多多知识产权保护平台',
 		'ipp.taobao.com', '淘天知识产权保护平台',
