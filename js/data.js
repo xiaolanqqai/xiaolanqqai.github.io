@@ -252,6 +252,7 @@ function data() {
 		'www.yifeng110.com', '1樱花动漫',//new
 		'www.yhdm.wang', '2樱花动漫',//new
 		'www.whpaiger.com', '风车动漫',
+		'www.dmla7.com', '风车动漫',
 		'www.zzzfun.com', 'zzzfun',
 		'www.puquyy.com', '蒲趣影院',
 		// '80s.tw', '80s',
@@ -291,6 +292,7 @@ function data() {
 		'feisuzy.com', '飞速资源站',
 		'tiankongzy.com', '天空资源站',
 		'www.6uzy.cc', '6U资源站',
+		'mikanani.kas.pub', '蜜柑计划',
 	])
 
 	//漫画
@@ -299,6 +301,7 @@ function data() {
 		'www.mkzhan.com', '漫客栈',
 		'm.pufei.cc', '扑飞动漫',
 		'm.sixmh7.com', '六漫画',
+		'www.manhuazhan.com', '漫画站',
 	])
 
 	//游戏栏目
