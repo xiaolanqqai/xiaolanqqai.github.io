@@ -17,7 +17,7 @@
 		<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>返回</strong></button>
 		<button onclick="window.location.href = 'DD.html'" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong>DD</strong></button>
 		<form class="more-tag d-flex mx-3" role="search">
-			<input id="txt" class="form-control shadow me-2" type="search" placeholder="Search" aria-label="Search" onkeypress="if(event.keyCode == 13){return false}">
+			<input id="txt" class="form-control shadow me-2" type="search" placeholder="Search" aria-label="Search" onkeypress="handleKeyPress(event)">
 			<button id="btn" class="btn btn-outline-success shadow" type="button">Search</button>
 		</form>
 		<button id="more-s" class="more-tag btn btn-info dropdown-toggle shadow" type="button">•••</button>
@@ -46,7 +46,7 @@
 
 		<div class="mt-3 mx-3" id="aav" style="display: none;">
 			<div class="alert alert-secondary shadow" role="alert">小日本ポートエロ</div>
-			<div id="ar20" class="d-flex flex-wrap p-2"></div>
+			<div id="ar21" class="d-flex flex-wrap p-2"></div>
 		</div>
 
 		<div class="fixed-bottom mx-1">
@@ -84,6 +84,17 @@
 
 	<script src="../js/foot.js"></script>
 	<script src="../js/foot_more.js"></script>
+
+	<script>
+		// 添加回车键处理函数
+		function handleKeyPress(event) {
+			if (event.keyCode === 13) {
+				event.preventDefault(); // 防止默认提交行为
+				document.getElementById('btn').click(); // 触发搜索按钮的点击事件
+				return false;
+			}
+		}
+	</script>
 
 	<script>mots()</script><!-- 头部搜索指向记忆加载 -->
 
