@@ -90,7 +90,7 @@ function data() {
 			  '专业工具', '视频下载 • 磁力',
 			  '视频','影视资源链接（链接模式）', '漫画', '游戏栏目', '导航', '软件资源',
 			  'JS资源 • 开发', '其它 • 开发','PCB • 开发',
-			  '树莓派 • 开发', 'Git • 项目', '论坛',
+			  '树莓派 • 开发', 'Git • 项目', 'FPV相关', '论坛',
 			];
 	var ffl = document.getElementById('ff');
     var ffn = 1;
@@ -398,8 +398,15 @@ function data() {
 		'github.com/tychxn/jd-assistant', 'JD抢购脚本',
 	])
 
-	//论坛
+	//FPV相关
 	ww(2,document.getElementById("ar19"), [
+		'uom.caac.gov.cn', '无人机登记',
+		'mklb.xyz', 'FPV工具箱',
+		'app.betaflight.com', 'betaflight调试',
+	])
+
+	//论坛
+	ww(2,document.getElementById("ar20"), [
 		'dkxuanye.cn', '玄烨品果',
 		'www.feng.com', '威锋',
 		'bbs.pcbeta.com', '远景论坛',
@@ -409,7 +416,7 @@ function data() {
 	])
 
 	//工口论坛
-	ww(2,document.getElementById("ar20"), [
+	ww(2,document.getElementById("ar21"), [
 		'www.nidexbb.info', '杏吧',
 		'www.tokyotosho.info', '东京图书馆',
 		'yj2207.click/pw', '1024xp',
