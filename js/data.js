@@ -147,6 +147,7 @@ function data() {
 		'xiezuocat.com', '写作猫',
 		'yiyan.baidu.com', '文心一言',
 		'tongyi.aliyun.com', '通义千问',
+		'www.deepseek.com', 'deepseek',
 		'map.baidu.com', '百度地图',
 		'www.amap.com', '高德地图',
 		'docs.qq.com', '腾讯文档',
@@ -585,3 +586,4 @@ function ww(top, ar1, arr1) {
 var lv = 'v1.0_20240227';
 var bat = 20240227;
 var vol = "Beta:3.7.1";
+
