@@ -126,6 +126,17 @@
             margin-bottom: 20px;
         }
         
+        .edit-form {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
         .form-group {
             display: flex;
             flex-direction: column;
@@ -271,6 +282,11 @@
             background: #e3f2fd;
         }
         
+        .entry-item.editing {
+            background: #e3f2fd;
+            border-left-color: #2ecc71;
+        }
+        
         .entry-info {
             flex: 1;
             font-size: 14px;
@@ -388,6 +404,12 @@
             color: #856404;
         }
         
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
         @media (max-width: 900px) {
             .content-row {
                 flex-direction: column;
@@ -408,6 +430,10 @@
             
             .entry-info {
                 font-size: 13px;
+            }
+            
+            .edit-buttons {
+                flex-direction: column;
             }
         }
     </style>
@@ -491,11 +517,35 @@
                         <button type="submit" class="btn btn-primary">添加条目</button>
                     </form>
                     
+                    <div id="editForm" class="edit-form">
+                        <h3>编辑条目</h3>
+                        <div class="form-group">
+                            <label for="editPlatform">平台</label>
+                            <input type="text" id="editPlatform" placeholder="例如: 工作邮箱、GitHub、QQ" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editAccountType">账号:</label>
+                            <input type="text" id="editAccountType" placeholder="例如: 邮箱、微信、经典" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editPasswordPattern">MM:</label>
+                            <input type="text" id="editPasswordPattern" placeholder="例如: 大经典、错位小@数字">
+                        </div>
+                        
+                        <div class="edit-buttons">
+                            <button id="saveEditBtn" class="btn btn-success">保存修改</button>
+                            <button id="cancelEditBtn" class="btn btn-warning">取消</button>
+                        </div>
+                    </div>
+                    
                     <div class="stats">
                         <strong>使用说明：</strong><br>
                         1. 填写平台、账号类型和密码模式<br>
                         2. 点击"添加条目"按钮添加到右侧列表<br>
-                        3. 在右侧可以拖拽排序或删除条目
+                        3. 在右侧可以拖拽排序或删除条目<br>
+                        4. <strong>双击条目可在左侧编辑</strong>
                     </div>
                 </div>
                 
@@ -534,14 +584,18 @@
             const urlError = document.getElementById('urlError');
             const loading = document.getElementById('loading');
             const entryForm = document.getElementById('entryForm');
+            const editForm = document.getElementById('editForm');
             const entriesList = document.getElementById('entriesList');
             const downloadBtn = document.getElementById('downloadBtn');
             const resetBtn = document.getElementById('resetBtn');
             const listStats = document.getElementById('listStats');
+            const saveEditBtn = document.getElementById('saveEditBtn');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
             
             let entries = [];
             let draggedItem = null;
             let currentFileName = '';
+            let editingIndex = -1;
             
             // 百度按钮的HTML代码
             const baiduButtonHTML = '<a href="../index/MM-generator.html" class="baidu-button">-->>MM-generator</a>\n';
@@ -549,13 +603,13 @@
             // 固定的URL地址
             const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.htm';
             
-            // 上传按钮点击事件 - 修复：确保正确绑定事件
+            // 上传按钮点击事件
             uploadBtn.addEventListener('click', function() {
                 console.log('上传按钮被点击');
                 fileInput.click();
             });
             
-            // 文件选择事件 - 修复：确保正确读取文件
+            // 文件选择事件
             fileInput.addEventListener('change', function(e) {
                 console.log('文件选择变化');
                 const file = e.target.files[0];
@@ -591,7 +645,7 @@
                 }
             });
             
-            // 从固定URL加载文件 - 修复：确保正确绑定事件
+            // 从固定URL加载文件
             loadUrlBtn.addEventListener('click', function() {
                 console.log('加载URL按钮被点击');
                 // 显示加载中
@@ -696,6 +750,35 @@
                 }
             });
             
+            // 保存编辑
+            saveEditBtn.addEventListener('click', function() {
+                if (editingIndex >= 0) {
+                    const platform = document.getElementById('editPlatform').value;
+                    const accountType = document.getElementById('editAccountType').value;
+                    const passwordPattern = document.getElementById('editPasswordPattern').value;
+                    
+                    if (platform && accountType) {
+                        entries[editingIndex] = { platform, accountType, passwordPattern };
+                        renderEntriesList();
+                        cancelEdit();
+                    }
+                }
+            });
+            
+            // 取消编辑
+            cancelEditBtn.addEventListener('click', cancelEdit);
+            
+            function cancelEdit() {
+                editForm.style.display = 'none';
+                entryForm.style.display = 'flex';
+                editingIndex = -1;
+                
+                // 移除所有条目的编辑状态
+                document.querySelectorAll('.entry-item.editing').forEach(item => {
+                    item.classList.remove('editing');
+                });
+            }
+            
             // 下载文件
             downloadBtn.addEventListener('click', function() {
                 const content = generateDownloadContent();
@@ -709,6 +792,7 @@
                 fileInput.value = '';
                 fileInfo.textContent = '';
                 urlError.textContent = '';
+                cancelEdit();
                 
                 // 切换回上传界面
                 mainContent.style.display = 'none';
@@ -760,11 +844,43 @@
                         renderEntriesList();
                     });
                     
+                    // 添加双击编辑事件
+                    entryItem.addEventListener('dblclick', function() {
+                        startEditEntry(index);
+                    });
+                    
                     // 添加拖拽事件
                     setupDragAndDrop(entryItem);
                 });
                 
                 updateStats();
+            }
+            
+            // 开始编辑条目
+            function startEditEntry(index) {
+                // 移除之前可能存在的编辑状态
+                document.querySelectorAll('.entry-item.editing').forEach(item => {
+                    item.classList.remove('editing');
+                });
+                
+                // 设置当前编辑状态
+                editingIndex = index;
+                const entry = entries[index];
+                
+                // 填充编辑表单
+                document.getElementById('editPlatform').value = entry.platform;
+                document.getElementById('editAccountType').value = entry.accountType;
+                document.getElementById('editPasswordPattern').value = entry.passwordPattern || '';
+                
+                // 显示编辑表单，隐藏添加表单
+                editForm.style.display = 'flex';
+                entryForm.style.display = 'none';
+                
+                // 高亮正在编辑的条目
+                const entryItems = document.querySelectorAll('.entry-item');
+                if (entryItems[index]) {
+                    entryItems[index].classList.add('editing');
+                }
             }
             
             // 设置拖拽功能
