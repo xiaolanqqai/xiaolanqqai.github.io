@@ -352,6 +352,7 @@
             text-align: center;
             padding: 10px;
             color: #3498db;
+            font-size: 16px;
         }
         
         .error-message {
@@ -375,6 +376,16 @@
             font-size: 14px;
             margin-bottom: 15px;
             line-height: 1.5;
+        }
+        
+        .baidu-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #856404;
         }
         
         @media (max-width: 900px) {
@@ -413,7 +424,7 @@
             
             <div class="load-options">
                 <div class="option-card">
-                    <div class="option-title">从本地文件上传</div>
+                    <div class="option-title">从本地上传</div>
                     <input type="file" id="fileInput" class="file-input" accept=".htm,.html">
                     <button id="uploadBtn" class="btn btn-upload">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -427,7 +438,7 @@
                 </div>
                 
                 <div class="option-card">
-                    <div class="option-title">从网络加载文件</div>
+                    <div class="option-title">从网络加载</div>
                     <button id="loadUrlBtn" class="btn btn-url">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -463,7 +474,7 @@
                     
                     <form id="entryForm" class="entry-form">
                         <div class="form-group">
-                            <label for="platform">平台:</label>
+                            <label for="platform">平台</label>
                             <input type="text" id="platform" placeholder="例如: 工作邮箱、GitHub、QQ" required>
                         </div>
                         
@@ -498,6 +509,10 @@
                         </div>
                         <div id="listStats" class="stats"></div>
                     </div>
+                    
+                    <div class="baidu-notice">
+                        <strong>注意：</strong> 生成的HTML文件将在开头包含一个跳转的按钮。
+                    </div>
                 </div>
             </div>
             
@@ -527,8 +542,6 @@
             let entries = [];
             let draggedItem = null;
             let currentFileName = '';
-            let hasBaiduButton = false;
-            let isFromUrl = false;
             
             // 百度按钮的HTML代码
             const baiduButtonHTML = '<a href="../index/MM-generator.html" class="baidu-button">-->>MM-generator</a>\n';
@@ -536,22 +549,25 @@
             // 固定的URL地址
             const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.htm';
             
-            // 上传按钮点击事件
+            // 上传按钮点击事件 - 修复：确保正确绑定事件
             uploadBtn.addEventListener('click', function() {
+                console.log('上传按钮被点击');
                 fileInput.click();
             });
             
-            // 文件选择事件
+            // 文件选择事件 - 修复：确保正确读取文件
             fileInput.addEventListener('change', function(e) {
+                console.log('文件选择变化');
                 const file = e.target.files[0];
                 if (file) {
-                    isFromUrl = false;
+                    console.log('文件已选择:', file.name);
                     currentFileName = file.name;
                     fileInfo.textContent = `已选择文件: ${file.name} (${formatFileSize(file.size)})`;
                     
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         try {
+                            console.log('文件读取成功');
                             // 解析文件内容
                             const content = e.target.result;
                             parseFileContent(content);
@@ -560,36 +576,43 @@
                             uploadSection.style.display = 'none';
                             mainContent.style.display = 'flex';
                         } catch (error) {
+                            console.error('文件解析失败:', error);
                             alert('文件解析失败: ' + error.message);
                             fileInfo.textContent = '文件解析失败，请选择有效的HTML文件';
                         }
                     };
                     reader.onerror = function() {
+                        console.error('文件读取错误');
                         fileInfo.textContent = '文件读取错误，请重试';
                     };
                     reader.readAsText(file);
+                } else {
+                    console.log('未选择文件');
                 }
             });
             
-            // 从固定URL加载文件
+            // 从固定URL加载文件 - 修复：确保正确绑定事件
             loadUrlBtn.addEventListener('click', function() {
+                console.log('加载URL按钮被点击');
                 // 显示加载中
                 loading.style.display = 'block';
                 urlError.textContent = '';
-                isFromUrl = true;
                 currentFileName = 'MM.htm';
                 
                 // 添加旋转动画
                 document.querySelector('.spin').style.animation = 'spin 1s linear infinite';
                 
+                console.log('开始从URL加载文件:', FIXED_URL);
                 fetch(FIXED_URL)
                     .then(response => {
+                        console.log('收到响应:', response.status);
                         if (!response.ok) {
                             throw new Error(`HTTP错误! 状态: ${response.status}`);
                         }
                         return response.text();
                     })
                     .then(content => {
+                        console.log('文件加载成功，开始解析');
                         parseFileContent(content);
                         
                         // 切换到主内容界面
@@ -597,10 +620,11 @@
                         mainContent.style.display = 'flex';
                     })
                     .catch(error => {
-                        urlError.textContent = `加载失败: ${error.message}`;
                         console.error('URL加载错误:', error);
+                        urlError.textContent = `加载失败: ${error.message}`;
                     })
                     .finally(() => {
+                        console.log('加载完成');
                         loading.style.display = 'none';
                     });
             });
@@ -614,18 +638,14 @@
             
             // 解析文件内容
             function parseFileContent(content) {
+                console.log('开始解析文件内容');
                 // 清空现有条目
                 entries = [];
-                hasBaiduButton = false;
-                
-                // 检查是否包含百度按钮
-                if (content.includes('class="baidu-button"') || content.includes('../index/MM-generator.html')) {
-                    hasBaiduButton = true;
-                }
                 
                 // 使用更灵活的正则表达式匹配<p>标签内容
                 const pattern = /<p>(.+?)<\/p>/g;
                 let match;
+                let count = 0;
                 
                 while ((match = pattern.exec(content)) !== null) {
                     const line = match[1];
@@ -638,6 +658,7 @@
                         const passwordPattern = parts.length > 2 ? parts.slice(2).join('：').trim() : '';
                         
                         entries.push({ platform, accountType, passwordPattern });
+                        count++;
                     } else {
                         // 尝试其他可能的格式
                         const simplePattern = /([^：:]+)[：:]([^：:]+)/;
@@ -649,10 +670,12 @@
                                 accountType: simpleMatch[2].trim(),
                                 passwordPattern: ''
                             });
+                            count++;
                         }
                     }
                 }
                 
+                console.log(`解析完成，找到 ${count} 个条目`);
                 // 渲染条目列表
                 renderEntriesList();
             }
@@ -686,8 +709,6 @@
                 fileInput.value = '';
                 fileInfo.textContent = '';
                 urlError.textContent = '';
-                hasBaiduButton = false;
-                isFromUrl = false;
                 
                 // 切换回上传界面
                 mainContent.style.display = 'none';
@@ -740,50 +761,55 @@
                     });
                     
                     // 添加拖拽事件
-                    entryItem.addEventListener('dragstart', function(e) {
-                        draggedItem = entryItem;
-                        setTimeout(() => {
-                            entryItem.classList.add('dragging');
-                        }, 0);
-                    });
-                    
-                    entryItem.addEventListener('dragend', function() {
-                        draggedItem = null;
-                        entryItem.classList.remove('dragging');
-                    });
-                    
-                    entryItem.addEventListener('dragover', function(e) {
-                        e.preventDefault();
-                    });
-                    
-                    entryItem.addEventListener('dragenter', function(e) {
-                        e.preventDefault();
-                        this.style.backgroundColor = '#e3f2fd';
-                    });
-                    
-                    entryItem.addEventListener('dragleave', function() {
-                        this.style.backgroundColor = '';
-                    });
-                    
-                    entryItem.addEventListener('drop', function(e) {
-                        e.preventDefault();
-                        this.style.backgroundColor = '';
-                        
-                        if (draggedItem && draggedItem !== this) {
-                            const fromIndex = parseInt(draggedItem.dataset.index);
-                            const toIndex = parseInt(this.dataset.index);
-                            
-                            // 移动数组元素
-                            const movedItem = entries.splice(fromIndex, 1)[0];
-                            entries.splice(toIndex, 0, movedItem);
-                            
-                            // 重新渲染列表
-                            renderEntriesList();
-                        }
-                    });
+                    setupDragAndDrop(entryItem);
                 });
                 
                 updateStats();
+            }
+            
+            // 设置拖拽功能
+            function setupDragAndDrop(item) {
+                item.addEventListener('dragstart', function(e) {
+                    draggedItem = item;
+                    setTimeout(() => {
+                        item.classList.add('dragging');
+                    }, 0);
+                });
+                
+                item.addEventListener('dragend', function() {
+                    draggedItem = null;
+                    item.classList.remove('dragging');
+                });
+                
+                item.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+                
+                item.addEventListener('dragenter', function(e) {
+                    e.preventDefault();
+                    this.style.backgroundColor = '#e3f2fd';
+                });
+                
+                item.addEventListener('dragleave', function() {
+                    this.style.backgroundColor = '';
+                });
+                
+                item.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.backgroundColor = '';
+                    
+                    if (draggedItem && draggedItem !== this) {
+                        const fromIndex = parseInt(draggedItem.dataset.index);
+                        const toIndex = parseInt(this.dataset.index);
+                        
+                        // 移动数组元素
+                        const movedItem = entries.splice(fromIndex, 1)[0];
+                        entries.splice(toIndex, 0, movedItem);
+                        
+                        // 重新渲染列表
+                        renderEntriesList();
+                    }
+                });
             }
             
             // 更新统计信息
@@ -792,14 +818,12 @@
                 listStats.textContent = `共 ${count} 个条目`;
             }
             
-            // 生成下载内容（包含百度按钮）
+            // 生成下载内容（始终包含百度按钮）
             function generateDownloadContent() {
                 let content = '';
                 
-                // 添加百度按钮（如果原文件没有）
-                if (!hasBaiduButton) {
-                    content += baiduButtonHTML;
-                }
+                // 始终添加百度按钮
+                content += baiduButtonHTML;
                 
                 // 添加所有条目
                 entries.forEach(entry => {
@@ -836,8 +860,22 @@
                 .spin {
                     animation: spin 1s linear infinite;
                 }
+                .baidu-button {
+                    display: block;
+                    text-align: center;
+                    margin: 10px 0;
+                    padding: 10px;
+                    background: #2932e1;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-weight: bold;
+                }
             `;
             document.head.appendChild(style);
+            
+            // 初始化日志
+            console.log('页面加载完成，按钮已绑定事件');
         });
     </script>
 </body>
