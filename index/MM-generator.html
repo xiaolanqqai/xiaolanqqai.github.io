@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>密码模式生成器</title>
+    <title>MM-generator</title>
     <style>
         * {
             box-sizing: border-box;
@@ -24,7 +24,7 @@
         
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             display: flex;
             flex-direction: column;
             gap: 30px;
@@ -61,6 +61,34 @@
             gap: 20px;
         }
         
+        .load-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .option-card {
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #fafafa;
+            transition: all 0.3s;
+        }
+        
+        .option-card:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+        
+        .option-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
         .main-content {
             display: none;
             flex-direction: column;
@@ -73,13 +101,15 @@
             flex-wrap: wrap;
         }
         
-        .input-section, .preview-section {
+        .input-section, .entries-section {
             flex: 1;
-            min-width: 300px;
+            min-width: 400px;
             background: white;
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
         }
         
         .section-title {
@@ -93,6 +123,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            margin-bottom: 20px;
         }
         
         .form-group {
@@ -170,37 +201,63 @@
         .btn-upload {
             background: #9b59b6;
             color: white;
-            padding: 15px 40px;
-            font-size: 18px;
+            padding: 15px 30px;
+            font-size: 16px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
+            width: 100%;
         }
         
         .btn-upload:hover {
             background: #8e44ad;
         }
         
-        .entries-list {
+        .btn-url {
+            background: #e67e22;
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .btn-url:hover {
+            background: #d35400;
+        }
+        
+        .entries-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-            max-height: 300px;
+        }
+        
+        .entries-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             overflow-y: auto;
             padding: 5px;
+            margin-bottom: 15px;
+            max-height: 500px;
         }
         
         .entry-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
+            padding: 8px 12px;
             background: #f8f9fa;
             border-radius: 5px;
             border-left: 4px solid #3498db;
             cursor: grab;
             transition: transform 0.2s, box-shadow 0.2s;
+            min-height: 45px;
         }
         
         .entry-item:active {
@@ -216,29 +273,28 @@
         
         .entry-info {
             flex: 1;
+            font-size: 14px;
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .entry-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
         .drag-handle {
-            padding: 8px;
+            padding: 6px;
             cursor: move;
             color: #7f8c8d;
+            font-size: 14px;
         }
         
-        .preview-content {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            min-height: 350px;
-            max-height: 400px;
-            overflow-y: auto;
-            font-family: monospace;
-            white-space: pre-wrap;
-            line-height: 1.8;
+        .delete-btn {
+            padding: 6px 12px;
+            font-size: 12px;
         }
         
         .download-section {
@@ -273,9 +329,10 @@
         
         .empty-list {
             text-align: center;
-            padding: 20px;
+            padding: 40px 15px;
             color: #7f8c8d;
             font-style: italic;
+            font-size: 14px;
         }
         
         .file-input {
@@ -284,31 +341,62 @@
         
         .file-info {
             margin-top: 10px;
-            padding: 10px;
+            padding: 8px;
             background: #f8f9fa;
             border-radius: 5px;
+            font-size: 13px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #3498db;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
             font-size: 14px;
         }
         
-        .baidu-button {
-            display: block;
-            text-align: center;
-            margin: 10px 0;
+        .stats {
             padding: 10px;
-            background: #2932e1;
-            color: white;
-            text-decoration: none;
+            background: #e8f4fc;
             border-radius: 5px;
-            font-weight: bold;
+            font-size: 14px;
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 10px;
         }
         
-        @media (max-width: 768px) {
+        .section-description {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 900px) {
             .content-row {
                 flex-direction: column;
             }
             
+            .input-section, .entries-section {
+                min-width: 100%;
+            }
+            
             .download-section {
                 flex-direction: column;
+            }
+            
+            .entry-item {
+                padding: 6px 10px;
+                min-height: 40px;
+            }
+            
+            .entry-info {
+                font-size: 13px;
             }
         }
     </style>
@@ -316,65 +404,106 @@
 <body>
     <div class="container">
         <header>
-            <h1>MM模式生成器</h1>
-            <p class="subtitle">上传、编辑并下载MM-HTML文件</p>
+            <h1>MM-generator</h1>
+            <p class="subtitle">上传、编辑并下载HTML文件</p>
         </header>
         
         <div class="upload-section" id="uploadSection">
-            <h2>请上传HTML文件</h2>
-            <p>支持MM.htm格式的文件</p>
-            <input type="file" id="fileInput" class="file-input" accept=".htm,.html">
-            <button id="uploadBtn" class="btn btn-upload">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
+            <h2>请选择加载方式</h2>
+            
+            <div class="load-options">
+                <div class="option-card">
+                    <div class="option-title">从本地文件上传</div>
+                    <input type="file" id="fileInput" class="file-input" accept=".htm,.html">
+                    <button id="uploadBtn" class="btn btn-upload">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        选择文件并上传
+                    </button>
+                    <div id="fileInfo" class="file-info"></div>
+                </div>
+                
+                <div class="option-card">
+                    <div class="option-title">从网络加载文件</div>
+                    <button id="loadUrlBtn" class="btn btn-url">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        加载文件
+                    </button>
+                    <div id="urlError" class="error-message"></div>
+                </div>
+            </div>
+            
+            <div id="loading" class="loading">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin">
+                    <line x1="12" y1="2" x2="12" y2="6"></line>
+                    <line x1="12" y1="18" x2="12" y2="22"></line>
+                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                    <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                    <line x1="2" y1="12" x2="6" y2="12"></line>
+                    <line x1="18" y1="12" x2="22" y2="12"></line>
+                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                    <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
                 </svg>
-                选择文件并上传
-            </button>
-            <div id="fileInfo" class="file-info"></div>
+                正在加载文件...
+            </div>
         </div>
         
         <div class="main-content" id="mainContent">
             <div class="content-row">
                 <div class="input-section">
                     <h2 class="section-title">添加新条目</h2>
+                    <p class="section-description">在此处添加新的密码模式条目，添加后将在右侧列表中显示</p>
+                    
                     <form id="entryForm" class="entry-form">
                         <div class="form-group">
-                            <label for="platform">平台/服务:</label>
+                            <label for="platform">平台:</label>
                             <input type="text" id="platform" placeholder="例如: 工作邮箱、GitHub、QQ" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="accountType">账号类型:</label>
+                            <label for="accountType">账号:</label>
                             <input type="text" id="accountType" placeholder="例如: 邮箱、微信、经典" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="passwordPattern">MM模式:</label>
+                            <label for="passwordPattern">MM:</label>
                             <input type="text" id="passwordPattern" placeholder="例如: 大经典、错位小@数字">
                         </div>
                         
                         <button type="submit" class="btn btn-primary">添加条目</button>
                     </form>
                     
-                    <h2 class="section-title" style="margin-top: 30px;">已添加条目 <small>(拖拽排序)</small></h2>
-                    <div id="entriesList" class="entries-list">
-                        <!-- 条目将在这里动态添加 -->
+                    <div class="stats">
+                        <strong>使用说明：</strong><br>
+                        1. 填写平台、账号类型和密码模式<br>
+                        2. 点击"添加条目"按钮添加到右侧列表<br>
+                        3. 在右侧可以拖拽排序或删除条目
                     </div>
                 </div>
                 
-                <div class="preview-section">
-                    <h2 class="section-title">预览 <small>(不显示百度按钮)</small></h2>
-                    <div id="previewContent" class="preview-content">
-                        <!-- 预览内容将在这里显示 -->
+                <div class="entries-section">
+                    <h2 class="section-title">已添加条目 <small>(拖拽排序)</small></h2>
+                    <p class="section-description">所有已添加的条目列表，支持拖拽排序和删除操作</p>
+                    
+                    <div class="entries-container">
+                        <div id="entriesList" class="entries-list">
+                            <!-- 条目将在这里动态添加 -->
+                        </div>
+                        <div id="listStats" class="stats"></div>
                     </div>
                 </div>
             </div>
             
             <div class="download-section">
                 <button id="downloadBtn" class="btn btn-download">下载HTML文件</button>
-                <button id="resetBtn" class="btn btn-reset">重置上传文件</button>
+                <button id="resetBtn" class="btn btn-reset">重置</button>
             </div>
         </div>
     </div>
@@ -386,19 +515,26 @@
             const fileInput = document.getElementById('fileInput');
             const uploadBtn = document.getElementById('uploadBtn');
             const fileInfo = document.getElementById('fileInfo');
+            const loadUrlBtn = document.getElementById('loadUrlBtn');
+            const urlError = document.getElementById('urlError');
+            const loading = document.getElementById('loading');
             const entryForm = document.getElementById('entryForm');
             const entriesList = document.getElementById('entriesList');
-            const previewContent = document.getElementById('previewContent');
             const downloadBtn = document.getElementById('downloadBtn');
             const resetBtn = document.getElementById('resetBtn');
+            const listStats = document.getElementById('listStats');
             
             let entries = [];
             let draggedItem = null;
             let currentFileName = '';
             let hasBaiduButton = false;
+            let isFromUrl = false;
             
             // 百度按钮的HTML代码
-            const baiduButtonHTML = '<a href="../index/MM-generator.html" class="baidu-button">MM-generator</a>\n';
+            const baiduButtonHTML = '<a href="../index/MM-generator.html" class="baidu-button">-->>MM-generator</a>\n';
+            
+            // 固定的URL地址
+            const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.htm';
             
             // 上传按钮点击事件
             uploadBtn.addEventListener('click', function() {
@@ -409,6 +545,7 @@
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
+                    isFromUrl = false;
                     currentFileName = file.name;
                     fileInfo.textContent = `已选择文件: ${file.name} (${formatFileSize(file.size)})`;
                     
@@ -432,6 +569,40 @@
                     };
                     reader.readAsText(file);
                 }
+            });
+            
+            // 从固定URL加载文件
+            loadUrlBtn.addEventListener('click', function() {
+                // 显示加载中
+                loading.style.display = 'block';
+                urlError.textContent = '';
+                isFromUrl = true;
+                currentFileName = 'MM.htm';
+                
+                // 添加旋转动画
+                document.querySelector('.spin').style.animation = 'spin 1s linear infinite';
+                
+                fetch(FIXED_URL)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP错误! 状态: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(content => {
+                        parseFileContent(content);
+                        
+                        // 切换到主内容界面
+                        uploadSection.style.display = 'none';
+                        mainContent.style.display = 'flex';
+                    })
+                    .catch(error => {
+                        urlError.textContent = `加载失败: ${error.message}`;
+                        console.error('URL加载错误:', error);
+                    })
+                    .finally(() => {
+                        loading.style.display = 'none';
+                    });
             });
             
             // 格式化文件大小
@@ -482,14 +653,8 @@
                     }
                 }
                 
-                // 如果没有找到任何条目，显示原始内容
-                if (entries.length === 0) {
-                    previewContent.textContent = content;
-                } else {
-                    // 渲染条目列表
-                    renderEntriesList();
-                    updatePreview();
-                }
+                // 渲染条目列表
+                renderEntriesList();
             }
             
             // 添加新条目
@@ -502,7 +667,6 @@
                 
                 if (platform && accountType) {
                     addEntry({ platform, accountType, passwordPattern });
-                    updatePreview();
                     
                     // 清空表单
                     entryForm.reset();
@@ -512,23 +676,25 @@
             // 下载文件
             downloadBtn.addEventListener('click', function() {
                 const content = generateDownloadContent();
-                downloadFile(content, currentFileName || 'MM.htm', 'text/html');
+                downloadFile(content, currentFileName, 'text/html');
             });
             
-            // 重置上传文件
+            // 重置
             resetBtn.addEventListener('click', function() {
                 // 清空所有数据
                 entries = [];
                 fileInput.value = '';
                 fileInfo.textContent = '';
+                urlError.textContent = '';
                 hasBaiduButton = false;
+                isFromUrl = false;
                 
                 // 切换回上传界面
                 mainContent.style.display = 'none';
                 uploadSection.style.display = 'flex';
                 
-                // 清空预览
-                previewContent.textContent = '';
+                // 更新统计信息
+                updateStats();
             });
             
             // 添加条目函数
@@ -542,7 +708,8 @@
                 entriesList.innerHTML = '';
                 
                 if (entries.length === 0) {
-                    entriesList.innerHTML = '<div class="empty-list">暂无条目，请添加</div>';
+                    entriesList.innerHTML = '<div class="empty-list">暂无条目，请先在左侧添加条目</div>';
+                    updateStats();
                     return;
                 }
                 
@@ -570,7 +737,6 @@
                     entryItem.querySelector('.delete-btn').addEventListener('click', function() {
                         entries.splice(index, 1);
                         renderEntriesList();
-                        updatePreview();
                     });
                     
                     // 添加拖拽事件
@@ -613,31 +779,17 @@
                             
                             // 重新渲染列表
                             renderEntriesList();
-                            updatePreview();
                         }
                     });
                 });
+                
+                updateStats();
             }
             
-            // 更新预览（不显示百度按钮）
-            function updatePreview() {
-                previewContent.textContent = generatePreviewContent();
-            }
-            
-            // 生成预览内容（不包含百度按钮）
-            function generatePreviewContent() {
-                let content = '';
-                
-                // 只添加所有条目，不添加百度按钮
-                entries.forEach(entry => {
-                    if (entry.passwordPattern) {
-                        content += `<p>${entry.platform}：${entry.accountType}：${entry.passwordPattern}</p>\n`;
-                    } else {
-                        content += `<p>${entry.platform}：${entry.accountType}</p>\n`;
-                    }
-                });
-                
-                return content;
+            // 更新统计信息
+            function updateStats() {
+                const count = entries.length;
+                listStats.textContent = `共 ${count} 个条目`;
             }
             
             // 生成下载内容（包含百度按钮）
@@ -673,6 +825,19 @@
                 
                 URL.revokeObjectURL(url);
             }
+            
+            // 添加旋转动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                .spin {
+                    animation: spin 1s linear infinite;
+                }
+            `;
+            document.head.appendChild(style);
         });
     </script>
 </body>
