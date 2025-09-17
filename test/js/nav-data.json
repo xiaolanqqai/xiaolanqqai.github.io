@@ -97,26 +97,6 @@
             "name": "谷歌HK",
             "url": "https://www.google.com.hk",
             "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.google.com.hk"
-          },
-          {
-            "name": "可视化维基百科",
-            "url": "https://explorer.globe.engineer",
-            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://explorer.globe.engineer"
-          },
-          {
-            "name": "信用中国",
-            "url": "https://www.creditchina.gov.cn",
-            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.creditchina.gov.cn"
-          },
-          {
-            "name": "黑猫投诉",
-            "url": "https://tousu.sina.com.cn",
-            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://tousu.sina.com.cn"
-          },
-          {
-            "name": "车质网",
-            "url": "https://www.12365auto.com",
-            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.12365auto.com"
           }
         ]
       },
@@ -142,6 +122,461 @@
             "name": "阿里企业邮箱",
             "url": "https://qiye.aliyun.com",
             "icon": "https://api.afmax.cn/so/ico/index.php?r=https://qiye.aliyun.com"
+          }
+        ]
+      },
+      {
+        "name": "工具",
+        "items": [
+          {
+            "name": "微信网页版",
+            "url": "https://wx.qq.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://wx.qq.com"
+          },
+          {
+            "name": "微信传输",
+            "url": "https://szfilehelper.weixin.qq.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://szfilehelper.weixin.qq.com"
+          },
+          {
+            "name": "百度直链",
+            "url": "https://baidu.kinh.cc",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://baidu.kinh.cc"
+          },
+          {
+            "name": "快递100",
+            "url": "https://www.kuaidi100.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.kuaidi100.com"
+          },
+          {
+            "name": "黑域",
+            "url": "https://brevent.sh",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://brevent.sh"
+          }
+        ]
+      },
+      {
+        "name": "图片处理",
+        "items": [
+          {
+            "name": "TinyPNG",
+            "url": "https://tinypng.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://tinypng.com"
+          },
+          {
+            "name": "iconfont",
+            "url": "https://www.iconfont.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.iconfont.cn"
+          },
+          {
+            "name": "泼辣修图",
+            "url": "https://www.polaxiong.com/web",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.polaxiong.com/web"
+          },
+          {
+            "name": "改图鸭",
+            "url": "https://www.gaituya.com/ps",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.gaituya.com/ps"
+          },
+          {
+            "name": "即时设计",
+            "url": "https://js.design",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://js.design"
+          },
+          {
+            "name": "Pixlr",
+            "url": "https://pixlr.com.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://pixlr.com.cn"
+          },
+          {
+            "name": "美图秀秀",
+            "url": "https://pc.meitu.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://pc.meitu.com"
+          },
+          {
+            "name": "稿定设计",
+            "url": "https://www.gaoding.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.gaoding.com"
+          },
+          {
+            "name": "Pixso",
+            "url": "https://www.gaoding.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.gaoding.com"
+          }
+        ]
+      },
+      {
+        "name": "其它处理 • PDF • 文字 • 视频",
+        "items": [
+          {
+            "name": "ilovepdf",
+            "url": "https://www.ilovepdf.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.ilovepdf.com"
+          },
+          {
+            "name": "Office-Convert",
+            "url": "https://cn.office-converter.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://cn.office-converter.com"
+          },
+          {
+            "name": "帮小忙",
+            "url": "https://tool.browser.qq.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://tool.browser.qq.com"
+          }
+        ]
+      },
+      {
+        "name": "专业工具",
+        "items": [
+          {
+            "name": "csdn下载",
+            "url": "https://servicedev.tpddns.cn:8181",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://servicedev.tpddns.cn:8181"
+          },
+          {
+            "name": "AI工具集",
+            "url": "https://ai-bot.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://ai-bot.cn"
+          },
+          {
+            "name": "在线小工具",
+            "url": "https://zxxgj.net",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://zxxgj.net"
+          }
+        ]
+      },
+      {
+        "name": "视频下载 • 磁力",
+        "items": [
+          {
+            "name": "BT之家",
+            "url": "https://zxxgj.net",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://zxxgj.net"
+          }
+        ]
+      },
+      {
+        "name": "视频",
+        "items": [
+          {
+            "name": "Bilibili",
+            "url": "https://www.bilibili.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.bilibili.com"
+          },
+          {
+            "name": "腾讯视频",
+            "url": "https://v.qq.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://v.qq.com"
+          },
+          {
+            "name": "爱奇艺",
+            "url": "https://www.iqiyi.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.iqiyi.com"
+          },
+          {
+            "name": "优酷",
+            "url": "https://www.youku.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.youku.com"
+          },
+          {
+            "name": "芒果TV",
+            "url": "https://www.mgtv.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.mgtv.com"
+          },
+          {
+            "name": "斗音（海外）",
+            "url": "https://www.tiktok.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.tiktok.com"
+          },
+          {
+            "name": "斗音",
+            "url": "https://www.tiktok.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.tiktok.com"
+          }
+        ]
+      },
+      {
+        "name": "影视资源链接（链接模式）",
+        "items": [
+          {
+            "name": "无尽资源采集",
+            "url": "https://www.wujinzy.net",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.wujinzy.net"
+          },
+          {
+            "name": "优质资源库",
+            "url": "https://www.hdzyk.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.hdzyk.com"
+          },
+          {
+            "name": "暴风资源",
+            "url": "https://bfzy1.tv",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://bfzy1.tv"
+          },
+          {
+            "name": "飞速资源站",
+            "url": "https://feisuzy.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://feisuzy.com"
+          },
+          {
+            "name": "天空资源站",
+            "url": "https://tiankongzy.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://tiankongzy.com"
+          },
+          {
+            "name": "6U资源站",
+            "url": "https://www.6uzy.cc",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.6uzy.cc"
+          }
+        ]
+      },
+      {
+        "name": "漫画",
+        "items": [
+          {
+            "name": "漫画人",
+            "url": "https://www.6uzy.cc",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.6uzy.cc"
+          }
+        ]
+      },
+      {
+        "name": "游戏栏目",
+        "items": [
+          {
+            "name": "3DM-GAME",
+            "url": "https://www.3dmgame.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.3dmgame.com"
+          }
+        ]
+      },
+      {
+        "name": "导航",
+        "items": [
+          {
+            "name": "酷站导航",
+            "url": "https://www.coolzhanweb.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.coolzhanweb.com"
+          },
+          {
+            "name": "电影导航",
+            "url": "https://movie.coolzhanweb.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://movie.coolzhanweb.com"
+          },
+          {
+            "name": "奇心导航",
+            "url": "https://qxnav.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://qxnav.com"
+          },
+          {
+            "name": "安逸影视",
+            "url": "https://anee.cc",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://anee.cc"
+          },
+          {
+            "name": "可乐影视",
+            "url": "https://klyingshi.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://klyingshi.com"
+          },
+          {
+            "name": "辣条杂货铺",
+            "url": "https://ltzhp.ysepan.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://ltzhp.ysepan.com"
+          },
+          {
+            "name": "bileizhen的收纳箱",
+            "url": "https://bileizhen.ysepan.com?xzpd=1",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://bileizhen.ysepan.com?xzpd=1"
+          },
+          {
+            "name": "👪怸歪的网盘🔞",
+            "url": "https://ago.ysepan.com?xzpd=1",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://ago.ysepan.com?xzpd=1"
+          }
+        ]
+      },
+      {
+        "name": "软件资源",
+        "items": [
+          {
+            "name": "当游软件",
+            "url": "https://www.3h3.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.3h3.com"
+          },
+          {
+            "name": "易破解",
+            "url": "https://www.ypojie.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.ypojie.com"
+          },
+          {
+            "name": "小众软件",
+            "url": "https://www.appinn.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.appinn.com"
+          },
+          {
+            "name": "果壳剥壳",
+            "url": "https://www.ghxi.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.ghxi.com"
+          },
+          {
+            "name": "异星软件",
+            "url": "https://www.ghxi.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.ghxi.com"
+          }
+        ]
+      },
+      {
+        "name": "JS资源 • 开发",
+        "items": [
+          {
+            "name": "OwlCarousel2",
+            "url": "https://owlcarousel2.github.io/OwlCarousel2",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://owlcarousel2.github.io/OwlCarousel2"
+          },
+          {
+            "name": "SSCMS",
+            "url": "https://sscms.comdocs/v7",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://sscms.comdocs/v7"
+          },
+          {
+            "name": "Vue.js",
+            "url": "https://cn.vuejs.org",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://cn.vuejs.org"
+          },
+          {
+            "name": "jquery",
+            "url": "https://github.com/jquery/jquery",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://github.com/jquery/jquery"
+          },
+          {
+            "name": "Bootstrap",
+            "url": "https://getbootstrap.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://getbootstrap.com"
+          },
+          {
+            "name": "W3School",
+            "url": "https://www.w3school.com.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.w3school.com.cn"
+          },
+          {
+            "name": "jQuery.js",
+            "url": "https://jquery.asprain.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://jquery.asprain.cn"
+          },
+          {
+            "name": "codyhouse",
+            "url": "https://codyhouse.co",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://codyhouse.co"
+          },
+          {
+            "name": "Lodash.js",
+            "url": "https://www.lodashjs.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.lodashjs.com"
+          },
+          {
+            "name": "Swiper.js",
+            "url": "https://www.lodashjs.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.lodashjs.com"
+          }
+        ]
+      },
+      {
+        "name": "其它 • 开发",
+        "items": [
+          {
+            "name": "Greasy Fork",
+            "url": "https://greasyfork.org/zh-Cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://greasyfork.org/zh-Cn"
+          }
+        ]
+      },
+      {
+        "name": "PCB • 开发",
+        "items": [
+          {
+            "name": "立创开源广场",
+            "url": "https://greasyfork.org/zh-Cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://greasyfork.org/zh-Cn"
+          }
+        ]
+      },
+      {
+        "name": "树莓派 • 开发",
+        "items": [
+          {
+            "name": "树莓派实验室",
+            "url": "https://shumeipai.nxez.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://shumeipai.nxez.com"
+          },
+          {
+            "name": "NanoPi_NEO",
+            "url": "https://wiki.friendlyelec.com/wiki/index.php/NanoPi_NEO2/zh",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://wiki.friendlyelec.com/wiki/index.php/NanoPi_NEO2/zh"
+          }
+        ]
+      },
+      {
+        "name": "Git • 项目",
+        "items": [
+          {
+            "name": "Alist",
+            "url": "https://alist.nn.ci",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://alist.nn.ci"
+          },
+          {
+            "name": "openhaystack",
+            "url": "https://github.com/seemoo-lab/openhaystack",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://github.com/seemoo-lab/openhaystack"
+          },
+          {
+            "name": "GKD",
+            "url": "https://github.com/seemoo-lab/openhaystack",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://github.com/seemoo-lab/openhaystack"
+          }
+        ]
+      },
+      {
+        "name": "FPV相关",
+        "items": [
+          {
+            "name": "无人机登记",
+            "url": "https://uom.caac.gov.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://uom.caac.gov.cn"
+          },
+          {
+            "name": "FPV工具箱",
+            "url": "https://uom.caac.gov.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://uom.caac.gov.cn"
+          }
+        ]
+      },
+      {
+        "name": "论坛",
+        "items": [
+          {
+            "name": "玄烨品果",
+            "url": "https://dkxuanye.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://dkxuanye.cn"
+          },
+          {
+            "name": "威锋",
+            "url": "https://www.feng.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.feng.com"
+          },
+          {
+            "name": "远景论坛",
+            "url": "https://bbs.pcbeta.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://bbs.pcbeta.com"
+          },
+          {
+            "name": "卡饭论坛",
+            "url": "https://bbs.kafan.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://bbs.kafan.cn"
+          },
+          {
+            "name": "chiphell",
+            "url": "https://bbs.kafan.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://bbs.kafan.cn"
           }
         ]
       }
