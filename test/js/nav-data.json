@@ -1,0 +1,150 @@
+{
+  "index": {
+    "tabs": [
+      {
+        "name": "Home",
+        "items": [
+          {
+            "name": "Bilibili",
+            "url": "https://www.bilibili.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.bilibili.com"
+          },
+          {
+            "name": "樱花动漫",
+            "url": "https://www.dmh8.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.dmh8.com"
+          },
+          {
+            "name": "腾讯视频",
+            "url": "https://v.qq.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://v.qq.com"
+          },
+          {
+            "name": "爱奇艺",
+            "url": "https://www.iqiyi.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.iqiyi.com"
+          },
+          {
+            "name": "淘宝",
+            "url": "https://www.taobao.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.taobao.com"
+          },
+          {
+            "name": "京东",
+            "url": "https://www.jd.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.jd.com"
+          },
+          {
+            "name": "简书",
+            "url": "https://www.jianshu.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.jianshu.com"
+          }
+        ]
+      },
+      {
+        "name": "Tools",
+        "items": [
+          {
+            "name": "Google翻译",
+            "url": "https://translate.google.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://translate.google.com"
+          },
+          {
+            "name": "PDF转换器",
+            "url": "https://smallpdf.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://smallpdf.com"
+          }
+        ]
+      }
+    ]
+  },
+  "more-ai": {
+    "tabs": [
+      {
+        "name": "平台",
+        "items": [
+          {
+            "name": "淘宝",
+            "url": "https://www.taobao.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.taobao.com"
+          },
+          {
+            "name": "京东",
+            "url": "https://www.jd.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.jd.com"
+          },
+          {
+            "name": "百度网盘",
+            "url": "https://pan.baidu.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://pan.baidu.com"
+          },
+          {
+            "name": "163邮箱",
+            "url": "https://mail.163.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://mail.163.com"
+          },
+          {
+            "name": "QQ邮箱",
+            "url": "https://mail.qq.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://mail.qq.com"
+          },
+          {
+            "name": "简书",
+            "url": "https://www.jianshu.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.jianshu.com"
+          },
+          {
+            "name": "谷歌HK",
+            "url": "https://www.google.com.hk",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.google.com.hk"
+          },
+          {
+            "name": "可视化维基百科",
+            "url": "https://explorer.globe.engineer",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://explorer.globe.engineer"
+          },
+          {
+            "name": "信用中国",
+            "url": "https://www.creditchina.gov.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.creditchina.gov.cn"
+          },
+          {
+            "name": "黑猫投诉",
+            "url": "https://tousu.sina.com.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://tousu.sina.com.cn"
+          },
+          {
+            "name": "车质网",
+            "url": "https://www.12365auto.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.12365auto.com"
+          }
+        ]
+      },
+      {
+        "name": "技术平台",
+        "items": [
+          {
+            "name": "阿里云",
+            "url": "https://www.aliyun.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.aliyun.com"
+          },
+          {
+            "name": "万网主机管理控制台",
+            "url": "https://cp.aliyun.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://cp.aliyun.com"
+          },
+          {
+            "name": "京东物流工作台",
+            "url": "https://wl.jdl.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://wl.jdl.com"
+          },
+          {
+            "name": "阿里企业邮箱",
+            "url": "https://qiye.aliyun.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://qiye.aliyun.com"
+          }
+        ]
+      }
+    ]
+  }
+}
