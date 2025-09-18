@@ -238,7 +238,10 @@
     <div class="container container-main">
         <div class="page-selector"><h5 class="mb-3">选择要管理的页面:</h5><div class="d-flex flex-wrap">
             <button class="btn btn-outline-primary page-btn active" data-page="index">主页 (index.html)</button>
-            <button class="btn btn-outline-primary page-btn" data-page="more-ai">更多页面 (More.html)</button>
+            <button class="btn btn-outline-primary page-btn" data-page="more">更多页面 (More.html)</button>
+            <button class="btn btn-outline-primary page-btn" data-page="dd">DD页面 (DD.html)</button>
+            <button class="btn btn-outline-primary page-btn" data-page="download">下载页面 (Download.html)</button>
+            <button class="btn btn-outline-primary page-btn" data-page="develop">开发页面 (Develop.html)</button>
         </div></div>
         <div class="row mb-4">
             <div class="col-md-3"><div class="card feature-card h-100"><div class="card-body text-center">
@@ -418,7 +421,11 @@
             pageButtons.forEach(btn => {btn.addEventListener('click', function() {
                 pageButtons.forEach(b => b.classList.remove('active'));this.classList.add('active');
                 currentPage = this.getAttribute('data-page');
-                if (currentPage === 'index') {pageTitle.textContent = '主页 - 导航选项卡管理';} else if (currentPage === 'more-ai') {pageTitle.textContent = '更多页面 - 导航选项卡管理';}
+                if (currentPage === 'index') {pageTitle.textContent = 'Index页面';} 
+                else if (currentPage === 'more') {pageTitle.textContent = 'More页面';}
+                else if (currentPage === 'dd') {pageTitle.textContent = 'DD页面';}
+                else if (currentPage === 'download') {pageTitle.textContent = 'Download页面';}
+                else if (currentPage === 'develop') {pageTitle.textContent = 'Develop页面';}
                 renderTabs();
             });});
             
@@ -431,7 +438,9 @@
         
         function showClearConfirmModal() {
             // 更新确认对话框中的当前页面名称
-            currentPageName.textContent = currentPage === 'index' ? '主页' : '更多页面';
+            currentPageName.textContent = currentPage === 'index' ? '主页' : 
+                                        currentPage === 'more' ? '更多页面' : 
+                                        currentPage === 'dd' ? 'DD页面' : '下载页面';
             confirmClearModal.show();
         }
         
@@ -439,7 +448,9 @@
             // 清空当前页面的数据
             if (navData[currentPage]) {
                 navData[currentPage] = { tabs: [] };
-                showAlert('已清空 ' + (currentPage === 'index' ? '主页' : '更多页面') + ' 的数据', 'success');
+                showAlert('已清空 ' + (currentPage === 'index' ? '主页' : 
+                                    currentPage === 'more' ? '更多页面' : 
+                                    currentPage === 'dd' ? 'DD页面' : '下载页面') + ' 的数据', 'success');
                 renderTabs();
             } else {
                 showAlert('当前页面没有数据可清空', 'warning');
@@ -606,14 +617,15 @@
                 const dataStr = JSON.stringify(navData, null, 2);const dataBlob = new Blob([dataStr], {type: 'application/json'});
                 const link = document.createElement('a');link.href = URL.createObjectURL(dataBlob);link.download = 'nav-data.json';
                 document.body.appendChild(link);link.click();document.body.removeChild(link);
-                showAlert('数据已成功保存到本地存储并下载', 'success');} catch (e) {console.error('保存数据失败:', e);showAlert('保存数据失败: '+e.message, 'danger');}
+                showAlert('导航数据已保存到本地存储并准备好下载', 'success');} catch (e) {console.error('保存数据时出错:', e);showAlert('保存数据时出错', 'danger');}
         }
         
         function showAlert(message, type) {
-            const alertDiv = document.createElement('div');alertDiv.className = 'alert alert-'+type+' alert-dismissible fade show position-fixed';
-            alertDiv.style.top = '20px';alertDiv.style.right = '20px';alertDiv.style.zIndex = '1050';alertDiv.style.minWidth = '300px';
-            alertDiv.innerHTML = '<span>'+message+'</span><button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
-            document.body.appendChild(alertDiv);setTimeout(() => {if (alertDiv.parentNode) {alertDiv.classList.remove('show');setTimeout(() => alertDiv.remove(), 500);}}, 3000);
+            const existingAlert = document.querySelector('.alert-floating');if (existingAlert) {existingAlert.remove();}
+            const alert = document.createElement('div');alert.className = 'alert alert-'+type+' alert-floating position-fixed';
+            alert.style.top = '20px';alert.style.right = '20px';alert.style.zIndex = '1050';alert.style.minWidth = '300px';alert.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            alert.innerHTML = '<div class="d-flex align-items-center"><i class="fas '+(type === 'success' ? 'fa-check-circle' : type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle')+' me-2"></i><div>'+message+'</div><button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button></div>';
+            document.body.appendChild(alert);setTimeout(() => {if (alert.parentNode) {alert.remove();}}, 5000);
         }
     </script>
 </body>
