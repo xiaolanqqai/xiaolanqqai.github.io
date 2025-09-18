@@ -238,9 +238,10 @@
     <div class="container container-main">
         <div class="page-selector"><h5 class="mb-3">选择要管理的页面:</h5><div class="d-flex flex-wrap">
             <button class="btn btn-outline-primary page-btn active" data-page="index">主页 (index.html)</button>
-            <button class="btn btn-outline-primary page-btn" data-page="more-ai">更多页面 (More.html)</button>
+            <button class="btn btn-outline-primary page-btn" data-page="more">更多页面 (More.html)</button>
             <button class="btn btn-outline-primary page-btn" data-page="dd">DD页面 (DD.html)</button>
             <button class="btn btn-outline-primary page-btn" data-page="download">下载页面 (Download.html)</button>
+            <button class="btn btn-outline-primary page-btn" data-page="develop">开发页面 (Develop.html)</button>
         </div></div>
         <div class="row mb-4">
             <div class="col-md-3"><div class="card feature-card h-100"><div class="card-body text-center">
@@ -420,10 +421,11 @@
             pageButtons.forEach(btn => {btn.addEventListener('click', function() {
                 pageButtons.forEach(b => b.classList.remove('active'));this.classList.add('active');
                 currentPage = this.getAttribute('data-page');
-                if (currentPage === 'index') {pageTitle.textContent = '主页 - 导航选项卡管理';} 
-                else if (currentPage === 'more-ai') {pageTitle.textContent = '更多页面 - 导航选项卡管理';}
-                else if (currentPage === 'dd') {pageTitle.textContent = 'DD页面 - 导航选项卡管理';}
-                else if (currentPage === 'download') {pageTitle.textContent = '下载页面 - 导航选项卡管理';}
+                if (currentPage === 'index') {pageTitle.textContent = 'Index页面';} 
+                else if (currentPage === 'more') {pageTitle.textContent = 'More页面';}
+                else if (currentPage === 'dd') {pageTitle.textContent = 'DD页面';}
+                else if (currentPage === 'download') {pageTitle.textContent = 'Download页面';}
+                else if (currentPage === 'develop') {pageTitle.textContent = 'Develop页面';}
                 renderTabs();
             });});
             
@@ -437,7 +439,7 @@
         function showClearConfirmModal() {
             // 更新确认对话框中的当前页面名称
             currentPageName.textContent = currentPage === 'index' ? '主页' : 
-                                        currentPage === 'more-ai' ? '更多页面' : 
+                                        currentPage === 'more' ? '更多页面' : 
                                         currentPage === 'dd' ? 'DD页面' : '下载页面';
             confirmClearModal.show();
         }
@@ -447,7 +449,7 @@
             if (navData[currentPage]) {
                 navData[currentPage] = { tabs: [] };
                 showAlert('已清空 ' + (currentPage === 'index' ? '主页' : 
-                                    currentPage === 'more-ai' ? '更多页面' : 
+                                    currentPage === 'more' ? '更多页面' : 
                                     currentPage === 'dd' ? 'DD页面' : '下载页面') + ' 的数据', 'success');
                 renderTabs();
             } else {

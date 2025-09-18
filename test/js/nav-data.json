@@ -58,7 +58,7 @@
       }
     ]
   },
-  "more-ai": {
+  "more": {
     "tabs": [
       {
         "name": "平台",
@@ -660,6 +660,65 @@
             "name": "ZD423",
             "url": "https://www.zdfans.com",
             "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.zdfans.com"
+          }
+        ]
+      }
+    ]
+  },
+   "develop": {
+    "tabs": [
+      {
+        "name": "开发工具",
+        "items": [
+          {
+            "name": "GitHub",
+            "url": "https://github.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://github.com"
+          },
+          {
+            "name": "Stack Overflow",
+            "url": "https://stackoverflow.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://stackoverflow.com"
+          },
+          {
+            "name": "MDN Web Docs",
+            "url": "https://developer.mozilla.org",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://developer.mozilla.org"
+          },
+          {
+            "name": "CodePen",
+            "url": "https://codepen.io",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://codepen.io"
+          },
+          {
+            "name": "JSFiddle",
+            "url": "https://jsfiddle.net",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://jsfiddle.net"
+          }
+        ]
+      },
+      {
+        "name": "框架文档",
+        "items": [
+          {
+            "name": "Bootstrap",
+            "url": "https://getbootstrap.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://getbootstrap.com"
+          },
+          {
+            "name": "Vue.js",
+            "url": "https://vuejs.org",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://vuejs.org"
+          },
+          {
+            "name": "React",
+            "url": "https://reactjs.org",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://reactjs.org"
+          },
+          {
+            "name": "jQuery",
+            "url": "https://jquery.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://jquery.com"
           }
         ]
       }
