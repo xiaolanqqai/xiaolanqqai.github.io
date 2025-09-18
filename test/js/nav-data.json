@@ -581,5 +581,88 @@
         ]
       }
     ]
+  },
+  "dd": {
+    "tabs": [
+      {
+        "name": "DD导航",
+        "items": [
+          {
+            "name": "Bilibili",
+            "url": "https://www.bilibili.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.bilibili.com"
+          },
+          {
+            "name": "AcFun",
+            "url": "https://www.acfun.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.acfun.cn"
+          },
+          {
+            "name": "Niconico",
+            "url": "https://www.nicovideo.jp",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.nicovideo.jp"
+          },
+          {
+            "name": "YouTube",
+            "url": "https://www.youtube.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.youtube.com"
+          }
+        ]
+      }
+    ]
+  },
+  "download": {
+    "tabs": [
+      {
+        "name": "软件下载",
+        "items": [
+          {
+            "name": "GitHub",
+            "url": "https://github.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://github.com"
+          },
+          {
+            "name": "SourceForge",
+            "url": "https://sourceforge.net",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://sourceforge.net"
+          },
+          {
+            "name": "Softpedia",
+            "url": "https://www.softpedia.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.softpedia.com"
+          },
+          {
+            "name": "FileHippo",
+            "url": "https://filehippo.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://filehippo.com"
+          }
+        ]
+      },
+      {
+        "name": "资源站点",
+        "items": [
+          {
+            "name": "MSDN我告诉你",
+            "url": "https://msdn.itellyou.cn",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://msdn.itellyou.cn"
+          },
+          {
+            "name": "异星软件空间",
+            "url": "https://www.yxssp.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.yxssp.com"
+          },
+          {
+            "name": "小众软件",
+            "url": "https://www.appinn.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.appinn.com"
+          },
+          {
+            "name": "ZD423",
+            "url": "https://www.zdfans.com",
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https://www.zdfans.com"
+          }
+        ]
+      }
+    ]
   }
 }
