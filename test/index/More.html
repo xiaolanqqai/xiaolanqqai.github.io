@@ -73,7 +73,7 @@
 			fetch('../js/nav-data.json')
 				.then(response => response.json())
 				.then(data => {
-					renderNavigation(data['more-ai']);
+					renderNavigation(data['more']);
 				})
 				.catch(error => {
 					console.error('加载导航数据时出错:', error);
