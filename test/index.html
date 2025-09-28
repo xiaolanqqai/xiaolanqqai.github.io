@@ -82,7 +82,7 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			// 修改这里：从js文件夹加载nav-data.json
-			fetch('js/nav-data.json')
+			fetch('../js/nav-data.json')
 				.then(response => response.json())
 				.then(data => {
 					renderNavigation(data.index);
