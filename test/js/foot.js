@@ -23,8 +23,7 @@ window.onload = function () {
 var uptime1 = document.getElementById('uptime1');
 uptime1.innerHTML = vol;
 console.log("web_vol=" + uptime1.innerHTML);
-console.log("web_update time=" + bat);
-
+console.log('web_data=' + lv);//列表数据版本
 
 //网页物理地址状态显示
 function isLocalPage() {
@@ -42,5 +41,3 @@ if (isLocalPage()) {
 	console.log('Web page status:Server');
 	// state2.style.display = 'none';
 };
-
-console.log('web_data=' + lv);//列表数据版本
