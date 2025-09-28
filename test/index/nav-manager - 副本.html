@@ -48,22 +48,6 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #5a0db8 0%, #1c67e3 100%);
         }
-        /* 版本信息样式 */
-        .version-info {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 0.8rem 1.2rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-        }
-        .version-info h5 {
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        .version-info .badge {
-            font-size: 0.75rem;
-            padding: 0.3rem 0.6rem;
-        }
         /* 更窄的选项卡样式 */
         .nav-tabs {
             border-bottom: 1px solid var(--border-color);
@@ -252,20 +236,6 @@
 <body>
     <div class="header"><div class="container"><h1 class="text-center">导航数据管理系统</h1><p class="text-center">管理您的网站导航选项卡内容</p></div></div>
     <div class="container container-main">
-        <div class="version-info">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h5><i class="fas fa-code-branch me-2"></i>版本信息</h5>
-                    <div>
-                        <span class="badge bg-light text-dark me-2">Web版本: <span id="currentWebVol">-</span></span>
-                        <span class="badge bg-light text-dark">数据版本: <span id="currentWebData">-</span></span>
-                    </div>
-                </div>
-                <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#versionModal">
-                    <i class="fas fa-edit me-1"></i>编辑版本
-                </button>
-            </div>
-        </div>
         <div class="page-selector"><h5 class="mb-3">选择要管理的页面:</h5><div class="d-flex flex-wrap">
             <button class="btn btn-outline-primary page-btn active" data-page="index">主页 (index.html)</button>
             <button class="btn btn-outline-primary page-btn" data-page="more">更多页面 (More.html)</button>
@@ -305,31 +275,6 @@
     </div>
     <div class="footer"><div class="container"><p>导航数据管理系统 &copy; 2023 Xiaolan</p><p><a href="index.html" class="text-decoration-none">返回主页</a></p></div></div>
     
-<!-- 版本信息编辑模态框 -->
-    <div class="modal fade" id="versionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">编辑版本信息</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <form id="versionForm">
-                    <div class="mb-3">
-                        <label for="webVol" class="form-label">Web版本 (web_vol)</label>
-                        <input type="text" class="form-control" id="webVol" placeholder="例如: 1.2.0" required>
-                        <div class="form-text">网站编译版本号</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="webData" class="form-label">数据版本 (web_data)</label>
-                        <input type="text" class="form-control" id="webData" placeholder="例如: 2024.03.15" required>
-                        <div class="form-text">列表数据版本号</div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="saveVersionBtn">保存版本信息</button>
-            </div>
-        </div></div>
-    </div>
-
     <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg"><div class="modal-content">
             <div class="modal-header"><h5 class="modal-title">上传JSON文件</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
@@ -436,38 +381,20 @@
         </div></div>
     </div>
     
-    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let navData = {
-            version: {
-                web_vol: "1.0.0",
-                web_data: "2024.01.01"
-            }
-        };
-        let currentTabIndex = 0;let currentPage = 'index';
+        let navData = {};let currentTabIndex = 0;let currentPage = 'index';
         const navTabs = document.getElementById('navTabs');const navTabContent = document.getElementById('navTabContent');
         const saveBtn = document.getElementById('saveBtn');const addTabBtn = document.getElementById('addTabBtn');
         const loadFromLocalBtn = document.getElementById('loadFromLocalBtn');const pageTitle = document.getElementById('currentPageTitle');
-        const pageButtons = document.querySelectorAll('.page-btn');
-        const currentWebVol = document.getElementById('currentWebVol');
-        const currentWebData = document.getElementById('currentWebData');
-        const saveVersionBtn = document.getElementById('saveVersionBtn');
-        const versionModal = new bootstrap.Modal(document.getElementById('versionModal'));
-
-        // 其他变量声明保持不变...
-        const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));
+        const pageButtons = document.querySelectorAll('.page-btn');const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));
         const editSiteModal = new bootstrap.Modal(document.getElementById('editSiteModal'));
-        const addTabModal = new bootstrap.Modal(document.getElementById('addTabModal'));
-        const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
-        const confirmAddSite = document.getElementById('confirmAddSite');
-        const confirmAddTab = document.getElementById('confirmAddTab');
+        const addTabModal = new bootstrap.Modal(document.getElementById('addTabModal'));const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
+        const confirmAddSite = document.getElementById('confirmAddSite');const confirmAddTab = document.getElementById('confirmAddTab');
         const confirmEditSite = document.getElementById('confirmEditSite');
-        const confirmUpload = document.getElementById('confirmUpload');
-        const jsonFileInput = document.getElementById('jsonFile');
-        const dropArea = document.getElementById('dropArea');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const jsonPreview = document.getElementById('jsonPreview');
+        const confirmUpload = document.getElementById('confirmUpload');const jsonFileInput = document.getElementById('jsonFile');
+        const dropArea = document.getElementById('dropArea');const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');const jsonPreview = document.getElementById('jsonPreview');
         const clearDataBtn = document.getElementById('clearDataBtn');
         const confirmClearModal = new bootstrap.Modal(document.getElementById('confirmClearModal'));
         const confirmClearBtn = document.getElementById('confirmClear');
@@ -480,101 +407,33 @@
             // 页面加载时尝试从本地JSON文件加载数据
             loadFromJsonFile();
             setupEventListeners();
-            updateVersionDisplay();
         });
         
         function setupEventListeners() {
-            saveBtn.addEventListener('click', saveNavData);
-            addTabBtn.addEventListener('click', showAddTabModal);
-            loadFromLocalBtn.addEventListener('click', loadFromJsonFile);
-            confirmAddSite.addEventListener('click', addNewSite);
-            confirmAddTab.addEventListener('click', addNewTab);
-            confirmUpload.addEventListener('click', processUploadedFile);
+            saveBtn.addEventListener('click', saveNavData);addTabBtn.addEventListener('click', showAddTabModal);
+            loadFromLocalBtn.addEventListener('click', loadFromJsonFile);confirmAddSite.addEventListener('click', addNewSite);
+            confirmAddTab.addEventListener('click', addNewTab);confirmUpload.addEventListener('click', processUploadedFile);
             clearDataBtn.addEventListener('click', showClearConfirmModal);
             confirmClearBtn.addEventListener('click', clearAllData);
             confirmEditSite.addEventListener('click', saveEditedSite);
             confirmDeleteBtn.addEventListener('click', deleteSite);
-            saveVersionBtn.addEventListener('click', saveVersionInfo);
             
-            // 版本信息编辑
-            document.querySelector('.version-info .btn').addEventListener('click', function() {
-                document.getElementById('webVol').value = navData.version.web_vol;
-                document.getElementById('webData').value = navData.version.web_data;
-            });
-            
-            pageButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    pageButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentPage = this.getAttribute('data-page');
-                    updatePageTitle();
-                    renderTabs();
-                });
-            });
+            pageButtons.forEach(btn => {btn.addEventListener('click', function() {
+                pageButtons.forEach(b => b.classList.remove('active'));this.classList.add('active');
+                currentPage = this.getAttribute('data-page');
+                if (currentPage === 'index') {pageTitle.textContent = 'Index页面';} 
+                else if (currentPage === 'more') {pageTitle.textContent = 'More页面';}
+                else if (currentPage === 'dd') {pageTitle.textContent = 'DD页面';}
+                else if (currentPage === 'download') {pageTitle.textContent = 'Download页面';}
+                else if (currentPage === 'develop') {pageTitle.textContent = 'Develop页面';}
+                renderTabs();
+            });});
             
             jsonFileInput.addEventListener('change', handleFileSelect);
-            dropArea.addEventListener('dragover', function(e) {
-                e.preventDefault();e.stopPropagation();
-                dropArea.style.borderColor = '#6a11cb';
-                dropArea.style.backgroundColor = '#e9ecef';
-            });
-            dropArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();e.stopPropagation();
-                dropArea.style.borderColor = '#dee2e6';
-                dropArea.style.backgroundColor = '#f8f9fa';
-            });
-            dropArea.addEventListener('drop', function(e) {
-                e.preventDefault();e.stopPropagation();
-                dropArea.style.borderColor = '#dee2e6';
-                dropArea.style.backgroundColor = '#f8f9fa';
-                const files = e.dataTransfer.files;
-                if (files.length && files[0].type === 'application/json') {
-                    jsonFileInput.files = files;
-                    handleFileSelect(e);
-                } else {
-                    alert('请拖放有效的JSON文件');
-                }
-            });
-        }
-        
-        function updatePageTitle() {
-            const titles = {
-                'index': '主页 - 导航选项卡管理',
-                'more': '更多页面 - 导航选项卡管理', 
-                'dd': 'DD页面 - 导航选项卡管理',
-                'download': '下载页面 - 导航选项卡管理',
-                'develop': '开发页面 - 导航选项卡管理'
-            };
-            pageTitle.textContent = titles[currentPage] || '导航选项卡管理';
-        }
-        
-        function updateVersionDisplay() {
-            if (navData.version) {
-                currentWebVol.textContent = navData.version.web_vol;
-                currentWebData.textContent = navData.version.web_data;
-            }
-        }
-        
-        function saveVersionInfo() {
-            const webVol = document.getElementById('webVol').value.trim();
-            const webData = document.getElementById('webData').value.trim();
-            
-            if (!webVol || !webData) {
-                alert('请填写所有版本字段');
-                return;
-            }
-            
-            // 确保version对象存在
-            if (!navData.version) {
-                navData.version = {};
-            }
-            
-            navData.version.web_vol = webVol;
-            navData.version.web_data = webData;
-            
-            versionModal.hide();
-            updateVersionDisplay();
-            showAlert('版本信息已更新', 'success');
+            dropArea.addEventListener('dragover', function(e) {e.preventDefault();e.stopPropagation();dropArea.style.borderColor = '#6a11cb';dropArea.style.backgroundColor = '#e9ecef';});
+            dropArea.addEventListener('dragleave', function(e) {e.preventDefault();e.stopPropagation();dropArea.style.borderColor = '#dee2e6';dropArea.style.backgroundColor = '#f8f9fa';});
+            dropArea.addEventListener('drop', function(e) {e.preventDefault();e.stopPropagation();dropArea.style.borderColor = '#dee2e6';dropArea.style.backgroundColor = '#f8f9fa';
+                const files = e.dataTransfer.files;if (files.length && files[0].type === 'application/json') {jsonFileInput.files = files;handleFileSelect(e);} else {alert('请拖放有效的JSON文件');}});
         }
         
         // 从本地JSON文件加载数据
@@ -587,60 +446,35 @@
                     return response.json();
                 })
                 .then(data => {
-                    // 确保版本信息存在
-                    if (!data.version) {
-                        data.version = {
-                            web_vol: "1.0.0",
-                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
-                        };
-                    }
-                    
                     navData = data;
                     renderTabs();
-                    updateVersionDisplay();
                     showAlert('数据已从本地JSON文件加载', 'success');
                 })
                 .catch(error => {
                     console.error('加载本地JSON文件失败:', error);
                     showAlert('加载本地JSON文件失败: ' + error.message, 'danger');
                     
-                    // 如果没有本地数据，使用默认结构
-                    navData = {
-                        version: {
-                            web_vol: "1.0.0",
-                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
-                        },
-                        index: { tabs: [] },
-                        more: { tabs: [] },
-                        dd: { tabs: [] },
-                        download: { tabs: [] },
-                        develop: { tabs: [] }
-                    };
-                    
-                    document.getElementById('navTabContent').innerHTML = '<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>暂无数据，请先上传JSON文件或添加内容</p></div>';
+                    // 如果没有本地数据，显示空状态
+                    document.getElementById('navTabContent').innerHTML = '<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>暂无数据，请先上传JSON文件</p></div>';
                 });
         }
         
+        // 其他函数保持不变...
         function showClearConfirmModal() {
-            currentPageName.textContent = getPageDisplayName(currentPage);
+            currentPageName.textContent = currentPage === 'index' ? '主页' : 
+                                        currentPage === 'more-ai' ? '更多页面' : 
+                                        currentPage === 'dd' ? 'DD页面' : 
+                                        currentPage === 'download' ? '下载页面' : '开发页面';
             confirmClearModal.show();
-        }
-        
-        function getPageDisplayName(page) {
-            const names = {
-                'index': '主页',
-                'more': '更多页面',
-                'dd': 'DD页面', 
-                'download': '下载页面',
-                'develop': '开发页面'
-            };
-            return names[page] || page;
         }
         
         function clearAllData() {
             if (navData[currentPage]) {
                 navData[currentPage] = { tabs: [] };
-                showAlert('已清空 ' + getPageDisplayName(currentPage) + ' 的数据', 'success');
+                showAlert('已清空 ' + (currentPage === 'index' ? '主页' : 
+                                    currentPage === 'more-ai' ? '更多页面' : 
+                                    currentPage === 'dd' ? 'DD页面' : 
+                                    currentPage === 'download' ? '下载页面' : '开发页面') + ' 的数据', 'success');
                 renderTabs();
             } else {
                 showAlert('当前页面没有数据可清空', 'warning');
@@ -649,99 +483,48 @@
         }
         
         function handleFileSelect(event) {
-            const file = jsonFileInput.files[0];
-            if (!file) return;
-            
-            if (file.type !== 'application/json') {
-                alert('请选择JSON文件');
-                return;
-            }
-            
-            fileName.textContent = `已选择文件：${file.name}`;
-            fileInfo.classList.remove('d-none');
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const content = e.target.result;
-                    const jsonData = JSON.parse(content);
-                    
-                    // 验证JSON结构并确保版本信息存在
-                    if (!jsonData.version) {
-                        jsonData.version = {
-                            web_vol: jsonData.version?.web_vol || "1.0.0",
-                            web_data: jsonData.version?.web_data || new Date().toISOString().split('T')[0].replace(/-/g, '.')
-                        };
-                    }
-                    
-                    jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
-                    confirmUpload.disabled = false;
-                    window.uploadedData = jsonData;
-                } catch (e) {
-                    jsonPreview.textContent = `错误：${e.message}`;
-                    confirmUpload.disabled = true;
-                }
-            };
-            reader.readAsText(file);
+            const file = jsonFileInput.files[0];if (!file) return;
+            if (file.type !== 'application/json') {alert('请选择JSON文件');return;}
+            fileName.textContent = `已选择文件：${file.name}`;fileInfo.classList.remove('d-none');
+            const reader = new FileReader();reader.onload = function(e) {
+                try {const content = e.target.result;const jsonData = JSON.parse(content);
+                    if (!jsonData.index || !jsonData.index.tabs) {throw new Error('无效的JSON结构：缺少index页面数据');}
+                    jsonPreview.textContent = JSON.stringify(jsonData, null, 2);confirmUpload.disabled = false;
+                    window.uploadedData = jsonData;} catch (e) {jsonPreview.textContent = `错误：${e.message}`;confirmUpload.disabled = true;}
+            };reader.readAsText(file);
         }
         
         function processUploadedFile() {
-            if (window.uploadedData) {
-                navData = window.uploadedData;
-                updateVersionDisplay();
-                renderTabs();
-                uploadModal.hide();
-                showAlert('JSON文件已成功上传并加载', 'success');
-                delete window.uploadedData;
-                jsonFileInput.value = '';
-                fileInfo.classList.add('d-none');
-                confirmUpload.disabled = true;
-            }
+            if (window.uploadedData) {navData = window.uploadedData;renderTabs();uploadModal.hide();showAlert('JSON文件已成功上传并加载', 'success');
+                delete window.uploadedData;jsonFileInput.value = '';fileInfo.classList.add('d-none');confirmUpload.disabled = true;}
         }
         
-        // 其他函数保持不变（renderTabs, renderSites, bindSiteActions, editSite, saveEditedSite等）
         function renderTabs() {
-            navTabs.innerHTML = '';
-            navTabContent.innerHTML = '';
-            
+            navTabs.innerHTML = '';navTabContent.innerHTML = '';
             if (!navData[currentPage] || !navData[currentPage].tabs || navData[currentPage].tabs.length === 0) {
-                navTabContent.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>'+getPageDisplayName(currentPage)+'中没有导航数据</p><button class="btn btn-primary mt-2" id="addFirstTab"><i class="fas fa-plus me-1"></i>添加第一个选项卡</button></div>';
-                document.getElementById('addFirstTab').addEventListener('click', showAddTabModal);
-                return;
+                navTabContent.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>'+currentPage+'页面中没有导航数据</p><button class="btn btn-primary mt-2" id="addFirstTab"><i class="fas fa-plus me-1"></i>添加第一个选项卡</button></div>';
+                document.getElementById('addFirstTab').addEventListener('click', showAddTabModal);return;
             }
-            
             navData[currentPage].tabs.forEach((tab, index) => {
-                const tabNav = document.createElement('li');
-                tabNav.className = 'nav-item';
+                const tabNav = document.createElement('li');tabNav.className = 'nav-item';
                 tabNav.innerHTML = '<a class="nav-link '+(index === 0 ? 'active' : '')+'" id="tab-'+index+'-nav" data-bs-toggle="tab" href="#tab-'+index+'" role="tab" aria-controls="tab-'+index+'" aria-selected="'+(index === 0 ? 'true' : 'false')+'">'+tab.name+'</a>';
                 navTabs.appendChild(tabNav);
-                
-                const tabContent = document.createElement('div');
-                tabContent.className = 'tab-pane fade '+(index === 0 ? 'show active' : '');
-                tabContent.id = 'tab-'+index;
-                tabContent.setAttribute('role', 'tabpanel');
+                const tabContent = document.createElement('div');tabContent.className = 'tab-pane fade '+(index === 0 ? 'show active' : '');tabContent.id = 'tab-'+index;tabContent.setAttribute('role', 'tabpanel');
                 tabContent.innerHTML = '<div class="d-flex justify-content-between align-items-center mb-3"><h5>'+tab.name+' 选项卡中的网站</h5><button class="btn btn-sm btn-primary add-site-btn" data-tab-index="'+index+'"><i class="fas fa-plus me-1"></i>添加网站</button></div><div class="sites-container" id="sites-container-'+index+'">'+renderSites(tab.items, index)+'</div>';
                 navTabContent.appendChild(tabContent);
             });
             
             // 绑定添加网站按钮事件
-            document.querySelectorAll('.add-site-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    currentTabIndex = parseInt(this.getAttribute('data-tab-index'));
-                    document.getElementById('addSiteForm').reset();
-                    addSiteModal.show();
-                });
-            });
+            document.querySelectorAll('.add-site-btn').forEach(btn => {btn.addEventListener('click', function() {
+                currentTabIndex = parseInt(this.getAttribute('data-tab-index'));document.getElementById('addSiteForm').reset();addSiteModal.show();
+            });});
             
             // 绑定编辑和删除按钮事件
             bindSiteActions();
         }
         
         function renderSites(sites, tabIndex) {
-            if (!sites || sites.length === 0) {
-                return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>此选项卡中没有网站</p></div>';
-            }
-            
+            if (!sites || sites.length === 0) {return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>此选项卡中没有网站</p></div>';}
             return sites.map((site, siteIndex) => 
                 '<div class="site-card" data-site-index="'+siteIndex+'" data-tab-index="'+tabIndex+'">' +
                     '<div class="delete-corner" data-tab-index="'+tabIndex+'" data-site-index="'+siteIndex+'">' +
@@ -757,6 +540,7 @@
             // 绑定卡片点击事件（编辑）
             document.querySelectorAll('.site-card').forEach(card => {
                 card.addEventListener('click', function(e) {
+                    // 如果点击的是删除按钮，不触发编辑
                     if (e.target.closest('.delete-corner')) return;
                     
                     const tabIndex = parseInt(this.getAttribute('data-tab-index'));
@@ -768,7 +552,7 @@
             // 绑定删除按钮事件
             document.querySelectorAll('.delete-corner').forEach(btn => {
                 btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
+                    e.stopPropagation(); // 阻止事件冒泡到卡片
                     const tabIndex = parseInt(this.getAttribute('data-tab-index'));
                     const siteIndex = parseInt(this.getAttribute('data-site-index'));
                     showDeleteConfirm(tabIndex, siteIndex);
@@ -822,6 +606,7 @@
             const siteIndex = parseInt(document.getElementById('deleteSiteIndex').value);
             const siteName = navData[currentPage].tabs[tabIndex].items[siteIndex].name;
             
+            // 从数组中删除网站
             navData[currentPage].tabs[tabIndex].items.splice(siteIndex, 1);
             
             deleteConfirmModal.hide();
@@ -829,58 +614,20 @@
             showAlert('已删除网站: ' + siteName, 'success');
         }
         
-        function showAddTabModal() {
-            document.getElementById('addTabForm').reset();
-            addTabModal.show();
-        }
+        function showAddTabModal() {document.getElementById('addTabForm').reset();addTabModal.show();}
         
         function addNewTab() {
-            const tabName = document.getElementById('tabName').value.trim();
-            if (!tabName) {
-                alert('请输入选项卡名称');
-                return;
-            }
-            
-            if (!navData[currentPage]) {
-                navData[currentPage] = { tabs: [] };
-            }
-            if (!navData[currentPage].tabs) {
-                navData[currentPage].tabs = [];
-            }
-            
-            navData[currentPage].tabs.push({
-                name: tabName,
-                items: []
-            });
-            
-            addTabModal.hide();
-            renderTabs();
-            showAlert('已添加选项卡: '+tabName, 'success');
+            const tabName = document.getElementById('tabName').value.trim();if (!tabName) {alert('请输入选项卡名称');return;}
+            if (!navData[currentPage]) {navData[currentPage] = { tabs: [] };}if (!navData[currentPage].tabs) {navData[currentPage].tabs = [];}
+            navData[currentPage].tabs.push({name: tabName,items: []});addTabModal.hide();renderTabs();showAlert('已添加选项卡: '+tabName, 'success');
         }
         
         function addNewSite() {
-            const siteName = document.getElementById('siteName').value.trim();
-            const siteUrl = document.getElementById('siteUrl').value.trim();
-            const siteIcon = document.getElementById('siteIcon').value.trim();
-            
-            if (!siteName || !siteUrl || !siteIcon) {
-                alert('请填写所有字段');
-                return;
-            }
-            
-            if (!navData[currentPage].tabs[currentTabIndex].items) {
-                navData[currentPage].tabs[currentTabIndex].items = [];
-            }
-            
-            navData[currentPage].tabs[currentTabIndex].items.push({
-                name: siteName,
-                url: siteUrl,
-                icon: siteIcon
-            });
-            
-            addSiteModal.hide();
-            renderTabs();
-            showAlert('已添加网站: '+siteName, 'success');
+            const siteName = document.getElementById('siteName').value.trim();const siteUrl = document.getElementById('siteUrl').value.trim();const siteIcon = document.getElementById('siteIcon').value.trim();
+            if (!siteName || !siteUrl || !siteIcon) {alert('请填写所有字段');return;}
+            if (!navData[currentPage].tabs[currentTabIndex].items) {navData[currentPage].tabs[currentTabIndex].items = [];}
+            navData[currentPage].tabs[currentTabIndex].items.push({name: siteName,url: siteUrl,icon: siteIcon});
+            addSiteModal.hide();renderTabs();showAlert('已添加网站: '+siteName, 'success');
         }
         
         function saveNavData() {
@@ -906,26 +653,11 @@
         }
         
         function showAlert(message, type) {
-            const existingAlert = document.querySelector('.alert-floating');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
-            
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-'+type+' alert-floating position-fixed';
-            alert.style.top = '20px';
-            alert.style.right = '20px';
-            alert.style.zIndex = '1050';
-            alert.style.minWidth = '300px';
-            alert.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            const existingAlert = document.querySelector('.alert-floating');if (existingAlert) {existingAlert.remove();}
+            const alert = document.createElement('div');alert.className = 'alert alert-'+type+' alert-floating position-fixed';
+            alert.style.top = '20px';alert.style.right = '20px';alert.style.zIndex = '1050';alert.style.minWidth = '300px';alert.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
             alert.innerHTML = '<div class="d-flex align-items-center"><i class="fas '+(type === 'success' ? 'fa-check-circle' : type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle')+' me-2"></i><div>'+message+'</div><button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button></div>';
-            document.body.appendChild(alert);
-            
-            setTimeout(() => {
-                if (alert.parentNode) {
-                    alert.remove();
-                }
-            }, 5000);
+            document.body.appendChild(alert);setTimeout(() => {if (alert.parentNode) {alert.remove();}}, 5000);
         }
     </script>
 </body>
