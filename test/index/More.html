@@ -60,8 +60,8 @@
 				<div class="float-end">
 					<span class="badge text-black-50"><a
 							href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow"
-							target="_blank">Dev</a> • <a id="uptime1" href="Develop.html">Beta:error</a></span>
-					<span id="state1" class="badge text-bg-success">Error</span>
+							target="_blank">Dev</a> • <a id="uptime1" href="Develop.html">加载中...</a></span>
+					<span id="state1" class="badge text-bg-success">加载中...</span>
 					<a><div class="spinner-grow spinner-grow-sm text-info" role="status"></div></a>
 				</div>
 			</div>
@@ -73,10 +73,13 @@
 				.then(response => response.json())
 				.then(data => {
 					renderNavigation(data['more']);
+					loadVersionInfo(data);
 				})
 				.catch(error => {
 					console.error('加载导航数据时出错:', error);
 					document.getElementById('nav-content-container').innerHTML = '<div class="alert alert-info mx-3">暂无导航数据，请先上传JSON文件</div>';
+					document.getElementById('uptime1').textContent = 'Beta:error';
+            		document.getElementById('state1').textContent = 'Error';
 				});
 		});
 		function renderNavigation(navData) {
