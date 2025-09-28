@@ -48,4 +48,3 @@ function checkPageStatus() {
         console.log('Web page status:Server');
     }
 }
-}
