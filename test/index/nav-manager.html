@@ -70,7 +70,7 @@
             color: white;
             padding: 1rem;
             border-radius: 8px;
-            margin-bottom: 1rem;
+            margin: 1rem 0;
         }
         .special-section h5 {
             margin-bottom: 0.5rem;
@@ -243,26 +243,6 @@
             padding: 0.3rem 0.6rem;
             font-size: 0.85rem;
         }
-        /* 紧凑布局调整 */
-        .compact-view .card-body {
-            padding: 1rem;
-        }
-        .compact-view .site-card {
-            padding: 8px;
-            margin: 0 8px 8px 0;
-        }
-        .compact-view .tab-content {
-            padding-top: 0.5rem;
-        }
-        .compact-view h5 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
-        .compact-view .alert {
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
     </style>
 </head>
 <body>
@@ -308,24 +288,6 @@
                     <i class="fas fa-broom me-1"></i>清空数据</button></div></div></div>
         </div>
         
-        <!-- 特殊栏目管理区域 -->
-        <div id="specialSection" class="special-section" style="display: none;">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h5><i class="fas fa-lock me-2"></i>特殊隐藏栏目管理</h5>
-                    <div>
-                        <span class="badge me-2">栏目名称: 小日本ポートエロ</span>
-                        <span class="badge">触发代码: 001</span>
-                    </div>
-                </div>
-                <div>
-                    <button id="manageSpecialBtn" class="btn btn-light btn-sm">
-                        <i class="fas fa-cog me-1"></i>管理此栏目
-                    </button>
-                </div>
-            </div>
-        </div>
-        
         <div class="row"><div class="col-md-12"><div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span id="currentPageTitle">主页 - 导航选项卡管理</span>
@@ -335,6 +297,27 @@
                 <div class="alert alert-info"><strong>使用说明：</strong> 您可以在此页面管理导航选项卡和其中的网站链接。修改后请点击"保存数据"按钮。</div>
                 <ul class="nav nav-tabs mb-4" id="navTabs" role="tablist"></ul>
                 <div class="tab-content" id="navTabContent"></div>
+                
+                <!-- 特殊栏目管理区域 -->
+                <div id="specialSection" style="display: none;">
+                    <div class="special-section">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5><i class="fas fa-lock me-2"></i>特殊隐藏栏目管理 - 小日本ポートエロ</h5>
+                                <div>
+                                    <span class="badge me-2">触发代码: 001</span>
+                                    <span class="badge">在More页面中默认隐藏</span>
+                                </div>
+                            </div>
+                            <div>
+                                <button id="addSpecialSiteBtn" class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>添加网站
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sites-container mt-3" id="specialSitesContainer"></div>
+                </div>
             </div>
         </div></div></div>
     </div>
@@ -471,28 +454,6 @@
         </div></div>
     </div>
     
-    <!-- 特殊栏目管理模态框 -->
-    <div class="modal fade" id="specialSectionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">管理特殊隐藏栏目</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-info-circle me-2"></i>此栏目为特殊隐藏栏目，在More页面中默认隐藏，需要通过搜索框输入"001"触发显示。
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5>小日本ポートエロ - 网站列表</h5>
-                    <button class="btn btn-sm btn-primary" id="addSpecialSiteBtn">
-                        <i class="fas fa-plus me-1"></i>添加网站
-                    </button>
-                </div>
-                <div class="sites-container" id="specialSitesContainer"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-            </div>
-        </div></div>
-    </div>
-    
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script>
         let navData = {
@@ -501,22 +462,24 @@
                 web_data: "2024.01.01"
             }
         };
-        let currentTabIndex = 0;let currentPage = 'index';
-        const navTabs = document.getElementById('navTabs');const navTabContent = document.getElementById('navTabContent');
-        const saveBtn = document.getElementById('saveBtn');const addTabBtn = document.getElementById('addTabBtn');
-        const loadFromLocalBtn = document.getElementById('loadFromLocalBtn');const pageTitle = document.getElementById('currentPageTitle');
+        let currentTabIndex = 0;
+        let currentPage = 'index';
+        const navTabs = document.getElementById('navTabs');
+        const navTabContent = document.getElementById('navTabContent');
+        const saveBtn = document.getElementById('saveBtn');
+        const addTabBtn = document.getElementById('addTabBtn');
+        const loadFromLocalBtn = document.getElementById('loadFromLocalBtn');
+        const pageTitle = document.getElementById('currentPageTitle');
         const pageButtons = document.querySelectorAll('.page-btn');
         const currentWebVol = document.getElementById('currentWebVol');
         const currentWebData = document.getElementById('currentWebData');
         const saveVersionBtn = document.getElementById('saveVersionBtn');
         const versionModal = new bootstrap.Modal(document.getElementById('versionModal'));
         const specialSection = document.getElementById('specialSection');
-        const manageSpecialBtn = document.getElementById('manageSpecialBtn');
-        const specialSectionModal = new bootstrap.Modal(document.getElementById('specialSectionModal'));
-        const specialSitesContainer = document.getElementById('specialSitesContainer');
         const addSpecialSiteBtn = document.getElementById('addSpecialSiteBtn');
+        const specialSitesContainer = document.getElementById('specialSitesContainer');
 
-        // 其他变量声明保持不变...
+        // 其他变量声明
         const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));
         const editSiteModal = new bootstrap.Modal(document.getElementById('editSiteModal'));
         const addTabModal = new bootstrap.Modal(document.getElementById('addTabModal'));
@@ -559,7 +522,6 @@
             saveVersionBtn.addEventListener('click', saveVersionInfo);
             
             // 特殊栏目管理
-            manageSpecialBtn.addEventListener('click', manageSpecialSection);
             addSpecialSiteBtn.addEventListener('click', showAddSpecialSiteModal);
             
             // 版本信息编辑
@@ -672,6 +634,7 @@
                     
                     navData = data;
                     renderTabs();
+                    renderSpecialSites();
                     updateVersionDisplay();
                     updateSpecialSectionVisibility();
                     showAlert('数据已从本地JSON文件加载', 'success');
@@ -739,12 +702,22 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const jsonContent = e.target.result;
-                    const parsedData = JSON.parse(jsonContent);
-                    jsonPreview.textContent = JSON.stringify(parsedData, null, 2);
+                    const content = e.target.result;
+                    const jsonData = JSON.parse(content);
+                    
+                    // 验证JSON结构并确保版本信息存在
+                    if (!jsonData.version) {
+                        jsonData.version = {
+                            web_vol: jsonData.version?.web_vol || "1.0.0",
+                            web_data: jsonData.version?.web_data || new Date().toISOString().split('T')[0].replace(/-/g, '.')
+                        };
+                    }
+                    
+                    jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
                     confirmUpload.disabled = false;
-                } catch (error) {
-                    jsonPreview.textContent = '错误：无法解析JSON文件';
+                    window.uploadedData = jsonData;
+                } catch (e) {
+                    jsonPreview.textContent = `错误：${e.message}`;
                     confirmUpload.disabled = true;
                 }
             };
@@ -752,66 +725,19 @@
         }
         
         function processUploadedFile() {
-            const file = jsonFileInput.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsedData = JSON.parse(e.target.result);
-                    
-                    // 确保版本信息存在
-                    if (!parsedData.version) {
-                        parsedData.version = {
-                            web_vol: "1.0.0",
-                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
-                        };
-                    }
-                    
-                    navData = parsedData;
-                    renderTabs();
-                    updateVersionDisplay();
-                    updateSpecialSectionVisibility();
-                    uploadModal.hide();
-                    showAlert('JSON文件已成功上传并加载', 'success');
-                } catch (error) {
-                    alert('解析JSON文件时出错: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-        
-        function showAddTabModal() {
-            document.getElementById('tabName').value = '';
-            addTabModal.show();
-        }
-        
-        function addNewTab() {
-            const tabName = document.getElementById('tabName').value.trim();
-            if (!tabName) {
-                alert('请输入选项卡名称');
-                return;
+            if (window.uploadedData) {
+                navData = window.uploadedData;
+                updateVersionDisplay();
+                renderTabs();
+                renderSpecialSites();
+                updateSpecialSectionVisibility();
+                uploadModal.hide();
+                showAlert('JSON文件已成功上传并加载', 'success');
+                delete window.uploadedData;
+                jsonFileInput.value = '';
+                fileInfo.classList.add('d-none');
+                confirmUpload.disabled = true;
             }
-            
-            // 确保当前页面的数据结构存在
-            if (!navData[currentPage]) {
-                navData[currentPage] = { tabs: [] };
-            }
-            
-            // 检查是否已存在同名选项卡
-            if (navData[currentPage].tabs.some(tab => tab.name === tabName)) {
-                alert('已存在同名的选项卡');
-                return;
-            }
-            
-            navData[currentPage].tabs.push({
-                name: tabName,
-                sites: []
-            });
-            
-            addTabModal.hide();
-            renderTabs();
-            showAlert('选项卡已添加', 'success');
         }
         
         function renderTabs() {
@@ -819,137 +745,79 @@
             navTabContent.innerHTML = '';
             
             if (!navData[currentPage] || !navData[currentPage].tabs || navData[currentPage].tabs.length === 0) {
-                navTabContent.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>暂无选项卡，请先添加选项卡</p></div>';
+                navTabContent.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>'+getPageDisplayName(currentPage)+'中没有导航数据</p><button class="btn btn-primary mt-2" id="addFirstTab"><i class="fas fa-plus me-1"></i>添加第一个选项卡</button></div>';
+                document.getElementById('addFirstTab').addEventListener('click', showAddTabModal);
                 return;
             }
             
-            navData[currentPage].tabs.forEach((tab, tabIndex) => {
-                // 创建选项卡导航
-                const tabNavItem = document.createElement('li');
-                tabNavItem.className = 'nav-item';
-                tabNavItem.innerHTML = `
-                    <a class="nav-link ${tabIndex === 0 ? 'active' : ''}" id="tab-${tabIndex}" data-bs-toggle="tab" 
-                       href="#content-${tabIndex}" role="tab">${tab.name}</a>
-                `;
-                navTabs.appendChild(tabNavItem);
+            navData[currentPage].tabs.forEach((tab, index) => {
+                const tabNav = document.createElement('li');
+                tabNav.className = 'nav-item';
+                tabNav.innerHTML = '<a class="nav-link '+(index === 0 ? 'active' : '')+'" id="tab-'+index+'-nav" data-bs-toggle="tab" href="#tab-'+index+'" role="tab" aria-controls="tab-'+index+'" aria-selected="'+(index === 0 ? 'true' : 'false')+'">'+tab.name+'</a>';
+                navTabs.appendChild(tabNav);
                 
-                // 创建选项卡内容
                 const tabContent = document.createElement('div');
-                tabContent.className = `tab-pane fade ${tabIndex === 0 ? 'show active' : ''}`;
-                tabContent.id = `content-${tabIndex}`;
-                tabContent.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5>${tab.name} - 网站列表</h5>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary add-site-btn" data-tab-index="${tabIndex}">
-                                <i class="fas fa-plus me-1"></i>添加网站
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger delete-tab-btn" data-tab-index="${tabIndex}">
-                                <i class="fas fa-trash me-1"></i>删除选项卡
-                            </button>
-                        </div>
-                    </div>
-                    <div class="sites-container" id="sites-container-${tabIndex}"></div>
-                `;
+                tabContent.className = 'tab-pane fade '+(index === 0 ? 'show active' : '');
+                tabContent.id = 'tab-'+index;
+                tabContent.setAttribute('role', 'tabpanel');
+                tabContent.innerHTML = '<div class="d-flex justify-content-between align-items-center mb-3"><h5>'+tab.name+' 选项卡中的网站</h5><button class="btn btn-sm btn-primary add-site-btn" data-tab-index="'+index+'"><i class="fas fa-plus me-1"></i>添加网站</button></div><div class="sites-container" id="sites-container-'+index+'">'+renderSites(tab.items, index)+'</div>';
                 navTabContent.appendChild(tabContent);
-                
-                // 渲染网站卡片
-                renderSites(tabIndex);
             });
             
-            // 添加事件监听器
+            // 绑定添加网站按钮事件
             document.querySelectorAll('.add-site-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    showAddSiteModal(parseInt(this.getAttribute('data-tab-index')));
+                    currentTabIndex = parseInt(this.getAttribute('data-tab-index'));
+                    document.getElementById('addSiteForm').reset();
+                    addSiteModal.show();
                 });
             });
             
-            document.querySelectorAll('.delete-tab-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+            // 绑定编辑和删除按钮事件
+            bindSiteActions();
+        }
+        
+        function renderSites(sites, tabIndex) {
+            if (!sites || sites.length === 0) {
+                return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>此选项卡中没有网站</p></div>';
+            }
+            
+            return sites.map((site, siteIndex) => 
+                '<div class="site-card" data-site-index="'+siteIndex+'" data-tab-index="'+tabIndex+'">' +
+                    '<div class="delete-corner" data-tab-index="'+tabIndex+'" data-site-index="'+siteIndex+'">' +
+                        '<i class="fas fa-times"></i>' +
+                    '</div>' +
+                    '<img src="'+site.icon+'" class="site-icon" alt="'+site.name+'" onerror="this.src=\'../img/index.png\'">' +
+                    '<div class="site-name">'+site.name+'</div>' +
+                '</div>'
+            ).join('');
+        }
+        
+        function bindSiteActions() {
+            // 绑定卡片点击事件（编辑）
+            document.querySelectorAll('.site-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.delete-corner')) return;
+                    
                     const tabIndex = parseInt(this.getAttribute('data-tab-index'));
-                    deleteTab(tabIndex);
+                    const siteIndex = parseInt(this.getAttribute('data-site-index'));
+                    editSite(tabIndex, siteIndex);
                 });
             });
-        }
-        
-        function renderSites(tabIndex) {
-            const sitesContainer = document.getElementById(`sites-container-${tabIndex}`);
-            const tab = navData[currentPage].tabs[tabIndex];
             
-            if (!tab.sites || tab.sites.length === 0) {
-                sitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无网站，请添加网站</p></div>';
-                return;
-            }
-            
-            sitesContainer.innerHTML = '';
-            
-            tab.sites.forEach((site, siteIndex) => {
-                const siteCard = document.createElement('div');
-                siteCard.className = 'site-card';
-                siteCard.innerHTML = `
-                    <div class="delete-corner" data-tab-index="${tabIndex}" data-site-index="${siteIndex}">
-                        <i class="fas fa-times"></i>
-                    </div>
-                    <img src="${site.icon}" alt="${site.name}" class="site-icon" onerror="this.src='https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(site.url)}'">
-                    <div class="site-name">${site.name}</div>
-                `;
-                sitesContainer.appendChild(siteCard);
-                
-                // 添加点击编辑事件
-                siteCard.addEventListener('click', function(e) {
-                    if (!e.target.closest('.delete-corner')) {
-                        showEditSiteModal(tabIndex, siteIndex);
-                    }
-                });
-                
-                // 添加删除事件
-                siteCard.querySelector('.delete-corner').addEventListener('click', function(e) {
+            // 绑定删除按钮事件
+            document.querySelectorAll('.delete-corner').forEach(btn => {
+                btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const tabIdx = this.getAttribute('data-tab-index');
-                    const siteIdx = this.getAttribute('data-site-index');
-                    showDeleteConfirmModal(tabIdx, siteIdx);
+                    const tabIndex = parseInt(this.getAttribute('data-tab-index'));
+                    const siteIndex = parseInt(this.getAttribute('data-site-index'));
+                    showDeleteConfirm(tabIndex, siteIndex);
                 });
             });
         }
         
-        function showAddSiteModal(tabIndex) {
-            document.getElementById('siteName').value = '';
-            document.getElementById('siteUrl').value = '';
-            document.getElementById('siteIcon').value = '';
-            document.getElementById('addSiteForm').setAttribute('data-tab-index', tabIndex);
-            addSiteModal.show();
-        }
-        
-        function addNewSite() {
-            const tabIndex = parseInt(document.getElementById('addSiteForm').getAttribute('data-tab-index'));
-            const siteName = document.getElementById('siteName').value.trim();
-            const siteUrl = document.getElementById('siteUrl').value.trim();
-            const siteIcon = document.getElementById('siteIcon').value.trim();
-            
-            if (!siteName || !siteUrl) {
-                alert('请填写网站名称和地址');
-                return;
-            }
-            
-            // 确保URL格式正确
-            if (!siteUrl.startsWith('http://') && !siteUrl.startsWith('https://')) {
-                alert('网站地址必须以 http:// 或 https:// 开头');
-                return;
-            }
-            
-            navData[currentPage].tabs[tabIndex].sites.push({
-                name: siteName,
-                url: siteUrl,
-                icon: siteIcon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(siteUrl)}`
-            });
-            
-            addSiteModal.hide();
-            renderSites(tabIndex);
-            showAlert('网站已添加', 'success');
-        }
-        
-        function showEditSiteModal(tabIndex, siteIndex) {
-            const site = navData[currentPage].tabs[tabIndex].sites[siteIndex];
+        function editSite(tabIndex, siteIndex) {
+            const site = navData[currentPage].tabs[tabIndex].items[siteIndex];
             document.getElementById('editSiteTabIndex').value = tabIndex;
             document.getElementById('editSiteIndex').value = siteIndex;
             document.getElementById('editSiteName').value = site.name;
@@ -965,96 +833,97 @@
             const siteUrl = document.getElementById('editSiteUrl').value.trim();
             const siteIcon = document.getElementById('editSiteIcon').value.trim();
             
-            if (!siteName || !siteUrl) {
-                alert('请填写网站名称和地址');
+            if (!siteName || !siteUrl || !siteIcon) {
+                alert('请填写所有字段');
                 return;
             }
             
-            // 确保URL格式正确
-            if (!siteUrl.startsWith('http://') && !siteUrl.startsWith('https://')) {
-                alert('网站地址必须以 http:// 或 https:// 开头');
-                return;
-            }
-            
-            navData[currentPage].tabs[tabIndex].sites[siteIndex] = {
+            navData[currentPage].tabs[tabIndex].items[siteIndex] = {
                 name: siteName,
                 url: siteUrl,
-                icon: siteIcon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(siteUrl)}`
+                icon: siteIcon
             };
             
             editSiteModal.hide();
-            renderSites(tabIndex);
-            showAlert('网站已更新', 'success');
+            renderTabs();
+            showAlert('网站信息已更新: ' + siteName, 'success');
         }
         
-        function showDeleteConfirmModal(tabIndex, siteIndex) {
-            const site = navData[currentPage].tabs[tabIndex].sites[siteIndex];
-            deleteSiteName.textContent = site.name;
+        function showDeleteConfirm(tabIndex, siteIndex) {
+            const site = navData[currentPage].tabs[tabIndex].items[siteIndex];
             document.getElementById('deleteTabIndex').value = tabIndex;
             document.getElementById('deleteSiteIndex').value = siteIndex;
+            document.getElementById('deleteSiteName').textContent = site.name;
             deleteConfirmModal.show();
         }
         
         function deleteSite() {
             const tabIndex = parseInt(document.getElementById('deleteTabIndex').value);
             const siteIndex = parseInt(document.getElementById('deleteSiteIndex').value);
+            const siteName = navData[currentPage].tabs[tabIndex].items[siteIndex].name;
             
-            navData[currentPage].tabs[tabIndex].sites.splice(siteIndex, 1);
+            navData[currentPage].tabs[tabIndex].items.splice(siteIndex, 1);
+            
             deleteConfirmModal.hide();
-            renderSites(tabIndex);
-            showAlert('网站已删除', 'success');
+            renderTabs();
+            showAlert('已删除网站: ' + siteName, 'success');
         }
         
-        function deleteTab(tabIndex) {
-            if (confirm('确定要删除这个选项卡吗？这将删除选项卡中的所有网站。')) {
-                navData[currentPage].tabs.splice(tabIndex, 1);
-                renderTabs();
-                showAlert('选项卡已删除', 'success');
+        function showAddTabModal() {
+            document.getElementById('addTabForm').reset();
+            addTabModal.show();
+        }
+        
+        function addNewTab() {
+            const tabName = document.getElementById('tabName').value.trim();
+            if (!tabName) {
+                alert('请输入选项卡名称');
+                return;
             }
+            
+            if (!navData[currentPage]) {
+                navData[currentPage] = { tabs: [] };
+            }
+            if (!navData[currentPage].tabs) {
+                navData[currentPage].tabs = [];
+            }
+            
+            navData[currentPage].tabs.push({
+                name: tabName,
+                items: []
+            });
+            
+            addTabModal.hide();
+            renderTabs();
+            showAlert('已添加选项卡: '+tabName, 'success');
         }
         
-        function saveNavData() {
-            // 保存到本地存储
-            localStorage.setItem('navData', JSON.stringify(navData));
+        function addNewSite() {
+            const siteName = document.getElementById('siteName').value.trim();
+            const siteUrl = document.getElementById('siteUrl').value.trim();
+            const siteIcon = document.getElementById('siteIcon').value.trim();
             
-            // 创建下载链接
-            const dataStr = JSON.stringify(navData, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'nav-data.json';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            if (!siteName || !siteUrl || !siteIcon) {
+                alert('请填写所有字段');
+                return;
+            }
             
-            showAlert('数据已保存并下载', 'success');
-        }
-        
-        function showAlert(message, type) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
+            if (!navData[currentPage].tabs[currentTabIndex].items) {
+                navData[currentPage].tabs[currentTabIndex].items = [];
+            }
             
-            document.querySelector('.container-main').insertBefore(alertDiv, document.querySelector('.container-main').firstChild);
+            navData[currentPage].tabs[currentTabIndex].items.push({
+                name: siteName,
+                url: siteUrl,
+                icon: siteIcon
+            });
             
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
-            }, 5000);
+            addSiteModal.hide();
+            renderTabs();
+            showAlert('已添加网站: '+siteName, 'success');
         }
         
         // 特殊栏目管理功能
-        function manageSpecialSection() {
-            renderSpecialSites();
-            specialSectionModal.show();
-        }
-        
         function renderSpecialSites() {
             specialSitesContainer.innerHTML = '';
             
@@ -1065,14 +934,14 @@
                 if (!navData.more.special) navData.more.special = {};
                 navData.more.special.sites = [];
                 
-                specialSitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无网站，请添加网站</p></div>';
+                specialSitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无特殊栏目网站，请添加网站</p></div>';
                 return;
             }
             
             const sites = navData.more.special.sites;
             
             if (sites.length === 0) {
-                specialSitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无网站，请添加网站</p></div>';
+                specialSitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无特殊栏目网站，请添加网站</p></div>';
                 return;
             }
             
@@ -1080,10 +949,10 @@
                 const siteCard = document.createElement('div');
                 siteCard.className = 'site-card';
                 siteCard.innerHTML = `
-                    <div class="delete-corner" data-site-index="${index}">
+                    <div class="delete-corner" data-site-index="${index}" data-special="true">
                         <i class="fas fa-times"></i>
                     </div>
-                    <img src="${site.icon}" alt="${site.name}" class="site-icon" onerror="this.src='https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(site.url)}'">
+                    <img src="${site.icon}" alt="${site.name}" class="site-icon" onerror="this.src='../img/index.png'">
                     <div class="site-name">${site.name}</div>
                 `;
                 specialSitesContainer.appendChild(siteCard);
@@ -1105,7 +974,6 @@
         }
         
         function showAddSpecialSiteModal() {
-            // 使用现有的添加网站模态框
             document.getElementById('siteName').value = '';
             document.getElementById('siteUrl').value = '';
             document.getElementById('siteIcon').value = '';
@@ -1122,6 +990,14 @@
             editSiteModal.show();
         }
         
+        function deleteSpecialSite(siteIndex) {
+            if (confirm('确定要删除这个特殊栏目网站吗？')) {
+                navData.more.special.sites.splice(siteIndex, 1);
+                renderSpecialSites();
+                showAlert('特殊栏目网站已删除', 'success');
+            }
+        }
+        
         // 修改添加网站函数以支持特殊栏目
         function addNewSite() {
             const isSpecial = document.getElementById('addSiteForm').hasAttribute('data-special');
@@ -1129,14 +1005,8 @@
             const siteUrl = document.getElementById('siteUrl').value.trim();
             const siteIcon = document.getElementById('siteIcon').value.trim();
             
-            if (!siteName || !siteUrl) {
-                alert('请填写网站名称和地址');
-                return;
-            }
-            
-            // 确保URL格式正确
-            if (!siteUrl.startsWith('http://') && !siteUrl.startsWith('https://')) {
-                alert('网站地址必须以 http:// 或 https:// 开头');
+            if (!siteName || !siteUrl || !siteIcon) {
+                alert('请填写所有字段');
                 return;
             }
             
@@ -1149,24 +1019,27 @@
                 navData.more.special.sites.push({
                     name: siteName,
                     url: siteUrl,
-                    icon: siteIcon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(siteUrl)}`
+                    icon: siteIcon
                 });
                 
                 addSiteModal.hide();
                 renderSpecialSites();
-                showAlert('网站已添加到特殊栏目', 'success');
+                showAlert('网站已添加到特殊栏目: '+siteName, 'success');
             } else {
                 // 普通添加网站逻辑
-                const tabIndex = parseInt(document.getElementById('addSiteForm').getAttribute('data-tab-index'));
-                navData[currentPage].tabs[tabIndex].sites.push({
+                if (!navData[currentPage].tabs[currentTabIndex].items) {
+                    navData[currentPage].tabs[currentTabIndex].items = [];
+                }
+                
+                navData[currentPage].tabs[currentTabIndex].items.push({
                     name: siteName,
                     url: siteUrl,
-                    icon: siteIcon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(siteUrl)}`
+                    icon: siteIcon
                 });
                 
                 addSiteModal.hide();
-                renderSites(tabIndex);
-                showAlert('网站已添加', 'success');
+                renderTabs();
+                showAlert('已添加网站: '+siteName, 'success');
             }
         }
         
@@ -1177,14 +1050,8 @@
             const siteUrl = document.getElementById('editSiteUrl').value.trim();
             const siteIcon = document.getElementById('editSiteIcon').value.trim();
             
-            if (!siteName || !siteUrl) {
-                alert('请填写网站名称和地址');
-                return;
-            }
-            
-            // 确保URL格式正确
-            if (!siteUrl.startsWith('http://') && !siteUrl.startsWith('https://')) {
-                alert('网站地址必须以 http:// 或 https:// 开头');
+            if (!siteName || !siteUrl || !siteIcon) {
+                alert('请填写所有字段');
                 return;
             }
             
@@ -1194,34 +1061,71 @@
                 navData.more.special.sites[siteIndex] = {
                     name: siteName,
                     url: siteUrl,
-                    icon: siteIcon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(siteUrl)}`
+                    icon: siteIcon
                 };
                 
                 editSiteModal.hide();
                 renderSpecialSites();
-                showAlert('特殊栏目网站已更新', 'success');
+                showAlert('特殊栏目网站已更新: '+siteName, 'success');
             } else {
                 // 普通编辑网站逻辑
                 const tabIndex = parseInt(document.getElementById('editSiteTabIndex').value);
                 const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
-                navData[currentPage].tabs[tabIndex].sites[siteIndex] = {
+                navData[currentPage].tabs[tabIndex].items[siteIndex] = {
                     name: siteName,
                     url: siteUrl,
-                    icon: siteIcon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(siteUrl)}`
+                    icon: siteIcon
                 };
                 
                 editSiteModal.hide();
-                renderSites(tabIndex);
-                showAlert('网站已更新', 'success');
+                renderTabs();
+                showAlert('网站已更新: '+siteName, 'success');
             }
         }
         
-        function deleteSpecialSite(siteIndex) {
-            if (confirm('确定要删除这个网站吗？')) {
-                navData.more.special.sites.splice(siteIndex, 1);
-                renderSpecialSites();
-                showAlert('网站已从特殊栏目删除', 'success');
+        function saveNavData() {
+            try {
+                // 保存到localStorage
+                localStorage.setItem('navData', JSON.stringify(navData));
+                
+                // 创建下载链接
+                const dataStr = JSON.stringify(navData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = 'nav-data.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showAlert('导航数据已保存到本地存储并准备好下载', 'success');
+            } catch (e) {
+                console.error('保存数据时出错:', e);
+                showAlert('保存数据时出错', 'danger');
             }
+        }
+        
+        function showAlert(message, type) {
+            const existingAlert = document.querySelector('.alert-floating');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-'+type+' alert-floating position-fixed';
+            alert.style.top = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '1050';
+            alert.style.minWidth = '300px';
+            alert.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            alert.innerHTML = '<div class="d-flex align-items-center"><i class="fas '+(type === 'success' ? 'fa-check-circle' : type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle')+' me-2"></i><div>'+message+'</div><button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button></div>';
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
         }
     </script>
 </body>
