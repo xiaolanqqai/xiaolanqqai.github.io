@@ -614,7 +614,23 @@
           }
         ]
       }
-    ]
+    ],
+    "special": {
+      "name": "小日本ポートエロ",
+      "trigger": "001",
+      "sites": [
+        {
+          "name": "示例网站1",
+          "url": "https://example1.com",
+          "icon": "https://api.afmax.cn/so/ico/index.php?r=https://example1.com"
+        },
+        {
+          "name": "示例网站2", 
+          "url": "https://example2.com",
+          "icon": "https://api.afmax.cn/so/ico/index.php?r=https://example2.com"
+        }
+      ]
+    }
   },
   "dd": {
     "tabs": [
