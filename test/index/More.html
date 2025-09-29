@@ -51,11 +51,9 @@
 			</div>
 		</div>
 		<div class="d-flex flex-column" id="nav-content-container"></div>
-		<div id="aav" class="nav-section" style="display: none;">
-			<h3>小日本ポートエロ</h3>
-			<div class="sites-container" id="special-sites-container">
-				<!-- 特殊栏目的网站将通过JavaScript动态渲染 -->
-			</div>
+		<div class="mt-3 mx-3" id="aav" style="display: none;">
+			<div class="alert alert-secondary shadow" role="alert">小日本ポートエロ</div>
+			<div id="ar21" class="d-flex flex-wrap p-2"></div>
 		</div>
 		<div class="fixed-bottom mx-1">
 			<div class=" container-fluid">
@@ -76,6 +74,8 @@
 				.then(data => {
 					renderNavigation(data['more']);
 					loadVersionInfo(data);
+					// 加载特殊栏目数据
+					loadSpecialSection(data['more']);
 				})
 				.catch(error => {
 					console.error('加载导航数据时出错:', error);
@@ -84,9 +84,16 @@
             		document.getElementById('state1').textContent = 'Error';
 				});
 		});
+		
 		function renderNavigation(navData) {
 			const navContentContainer = document.getElementById('nav-content-container');
 			navContentContainer.innerHTML = '';
+			
+			if (!navData || !navData.tabs) {
+				navContentContainer.innerHTML = '<div class="alert alert-info mx-3">暂无导航数据</div>';
+				return;
+			}
+			
 			navData.tabs.forEach((tab, index) => {
 				const section = document.createElement('div');
 				section.className = 'mt-3 mx-3';
@@ -95,7 +102,7 @@
 					<div id="ar${index + 1}" class="d-flex flex-wrap p-2">
 						${tab.items.map(item => `
 							<a href="${item.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1">
-								<img class="border rounded-circle w" src="${item.icon}" loading="lazy" onerror="this.src='img/index.png'">
+								<img class="border rounded-circle w" src="${item.icon}" loading="lazy" onerror="this.src='../img/index.png'">
 								<h6 class="t1">${item.name}</h6>
 							</a>
 						`).join('')}
@@ -103,6 +110,41 @@
 				`;
 				navContentContainer.appendChild(section);
 			});
+		}
+		
+		// 加载特殊栏目数据
+		function loadSpecialSection(moreData) {
+			const specialContainer = document.getElementById('ar21');
+			
+			if (!moreData || !moreData.special || !moreData.special.sites) {
+				console.log('未找到特殊栏目数据');
+				return;
+			}
+			
+			const specialSites = moreData.special.sites;
+			
+			if (specialSites.length === 0) {
+				specialContainer.innerHTML = '<div class="alert alert-info">暂无特殊栏目数据</div>';
+				return;
+			}
+			
+			// 渲染特殊栏目的网站
+			specialContainer.innerHTML = specialSites.map(site => `
+				<a href="${site.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1">
+					<img class="border rounded-circle w" src="${site.icon}" loading="lazy" onerror="this.src='../img/index.png'">
+					<h6 class="t1">${site.name}</h6>
+				</a>
+			`).join('');
+			
+			console.log('特殊栏目数据加载完成，共加载', specialSites.length, '个网站');
+		}
+		
+		// 版本信息加载函数
+		function loadVersionInfo(data) {
+			if (data.version) {
+				document.getElementById('uptime1').textContent = `Beta:${data.version.web_vol}`;
+				document.getElementById('state1').textContent = 'Online';
+			}
 		}
 	</script>
 	<div class="z-1">
