@@ -16,7 +16,6 @@ function loadVersionInfo(data) {
         const uptime1 = document.getElementById('uptime1');
         if (uptime1) {
             uptime1.textContent = `Beta:${data.version.web_vol || 'Unknown'}`;
-            uptime1.href = 'index/Develop.html';
         }
         
         // 更新控制台输出
