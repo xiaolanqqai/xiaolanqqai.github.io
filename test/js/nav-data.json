@@ -261,6 +261,74 @@
           {
             "name": "黑域",
             "url": "https://brevent.sh"
+          },
+          {
+            "name": "谷歌翻译",
+            "url": "https://translate.google.cn"
+          },
+          {
+            "name": "百度翻译",
+            "url": "https://fanyi.baidu.com"
+          },
+          {
+            "name": "有道翻译",
+            "url": "https://fanyi.youdao.com"
+          },
+          {
+            "name": "flowus息流",
+            "url": "https://flowus.cn"
+          },
+          {
+            "name": "Notion",
+            "url": "https://www.notion.so"
+          },
+          {
+            "name": "写作猫",
+            "url": "https://xiezuocat.com"
+          },
+          {
+            "name": "文心一言",
+            "url": "https://yiyan.baidu.com"
+          },
+          {
+            "name": "通义千问",
+            "url": "https://tongyi.aliyun.com"
+          },
+          {
+            "name": "deepseek",
+            "url": "https://www.deepseek.com"
+          },
+          {
+            "name": "百度地图",
+            "url": "https://map.baidu.com"
+          },
+          {
+            "name": "高德地图",
+            "url": "https://www.amap.com"
+          },
+          {
+            "name": "腾讯文档",
+            "url": "https://docs.qq.com"
+          },
+          {
+            "name": "yandex识图",
+            "url": "https://yandex.com"
+          },
+          {
+            "name": "动漫识图",
+            "url": "https://trace.moe"
+          },
+          {
+            "name": "易搜",
+            "url": "https://yiso.fun"
+          },
+          {
+            "name": "优聚搜",
+            "url": "https://jujuso.com"
+          },
+          {
+            "name": "唧唧-b站下载",
+            "url": "https://www.jijidown.com"
           }
         ]
       },
@@ -301,7 +369,63 @@
           },
           {
             "name": "Pixso",
-            "url": "https://www.gaoding.com"
+            "url": "https://pixso.cn"
+          },
+          {
+            "name": "Bigjpg",
+            "url": "https://bigjpg.com"
+          },
+          {
+            "name": "tiomg",
+            "url": "https://tiomg.org"
+          },
+          {
+            "name": "可画",
+            "url": "https://www.canva.cn"
+          },
+          {
+            "name": "U钙",
+            "url": "https://www.uugai.com"
+          },
+          {
+            "name": "Clipping Magic",
+            "url": "https://zh.clippingmagic.com"
+          },
+          {
+            "name": "Remove.bg",
+            "url": "https://www.remove.bg/zh"
+          },
+          {
+            "name": "imagecompressor",
+            "url": "https://imagecompressor.com/zh"
+          },
+          {
+            "name": "Recompressor",
+            "url": "https://zh.recompressor.com"
+          },
+          {
+            "name": "aconvert",
+            "url": "https://www.aconvert.com.cn"
+          },
+          {
+            "name": "zamzar",
+            "url": "https://www.zamzar.com"
+          },
+          {
+            "name": "聚合图床",
+            "url": "https://www.superbed.cn"
+          },
+          {
+            "name": "iloveimg",
+            "url": "https://www.iloveimg.com"
+          },
+          {
+            "name": "图片格式转换",
+            "url": "https://onlineconvertfree.com/zh/"
+          },
+          {
+            "name": "ico图片格式转换",
+            "url": "https://www.bitbug.net"
           }
         ]
       },
@@ -319,6 +443,34 @@
           {
             "name": "帮小忙",
             "url": "https://tool.browser.qq.com"
+          },
+          {
+            "name": "pdf转换器",
+            "url": "https://www.pdfdo.com"
+          },
+          {
+            "name": "123apps",
+            "url": "https://123apps.com"
+          },
+          {
+            "name": "网易见外工作台",
+            "url": "https://jianwai.youdao.com"
+          },
+          {
+            "name": "草料二维码",
+            "url": "https://cli.im"
+          },
+          {
+            "name": "在线工具",
+            "url": "https://tool.lu"
+          },
+          {
+            "name": "菜鸟工具",
+            "url": "https://c.runoob.com"
+          },
+          {
+            "name": "一个工具箱",
+            "url": "https://www.atoolbox.net"
           }
         ]
       },
@@ -336,6 +488,62 @@
           {
             "name": "在线小工具",
             "url": "https://zxxgj.net"
+          },
+          {
+            "name": "刘明野的工具箱",
+            "url": "https://tools.liumingye.cn"
+          },
+          {
+            "name": "ai绘画",
+            "url": "https://modelscope.cn/studios/damo/ai_artist/summary?from=baidu_sem"
+          },
+          {
+            "name": "在线查毒",
+            "url": "https://www.virustotal.com/gui/home/upload"
+          },
+          {
+            "name": "在线MD5解密",
+            "url": "https://api.hkfx.net"
+          },
+          {
+            "name": "免费短信接码",
+            "url": "https://www.rvso.com"
+          },
+          {
+            "name": "免费短信平台",
+            "url": "https://www.zsrq.net"
+          },
+          {
+            "name": "FOFA网站测绘",
+            "url": "https://fofa.info"
+          },
+          {
+            "name": "网站框架识别",
+            "url": "https://www.wappalyzer.com"
+          },
+          {
+            "name": "IT狗-在线ping",
+            "url": "https://www.itdog.cn"
+          },
+          {
+            "name": "站长工具",
+            "url": "https://tool.chinaz.com"
+          },
+          {
+            "name": "semrush网站数据统计",
+            "url": "https://zh.semrush.com"
+          },
+          {
+            "name": "中科大测速",
+            "url": "https://test.ustc.edu.cn"
+          },
+          {
+            "name": "虫洞（文件暂存）",
+            "url": "https://wormhole.app"
+          },
+          {
+            "name": "POE免费chgpt3.5",
+            "url": "https://poe.com"
           }
         ]
       },
@@ -344,7 +552,51 @@
         "items": [
           {
             "name": "BT之家",
-            "url": "https://zxxgj.net"
+            "url": "https://btbtt16.com"
+          },
+          {
+            "name": "磁力多",
+            "url": "https://duo123.best"
+          },
+          {
+            "name": "BT联盟",
+            "url": "https://so.btlm.site"
+          },
+          {
+            "name": "磁力宝",
+            "url": "https://clb0.top"
+          },
+          {
+            "name": "磁力狗",
+            "url": "https://clg0.biz"
+          },
+          {
+            "name": "磁力天堂",
+            "url": "https://www.cilitiantang.online"
+          },
+          {
+            "name": "磁力蜘蛛",
+            "url": "https://www.eclzz.info"
+          },
+          {
+            "name": "东京图书馆",
+            "url": "https://www.tokyotosho.info"
+          },
+          {
+            "name": "磁力狐",
+            "url": "https://sk.btfox.pw"
+          },
+          {
+            "name": "搜磁力",
+            "url": "https://lianjie.cilimiaomiao.xyz"
+          },
+          {
+            "name": "老牛BT",
+            "url": "https://m.laoniubt.in"
+          },
+          {
+            "name": "电影天堂",
+            "url": "https://www.dytt8.net"
           }
         ]
       },
@@ -377,7 +629,143 @@
           },
           {
             "name": "斗音",
-            "url": "https://www.tiktok.com"
+            "url": "https://www.douyin.com"
+          },
+          {
+            "name": "ACfan",
+            "url": "https://www.acfun.cn"
+          },
+          {
+            "name": "M站",
+            "url": "https://www.bimiacg4.net"
+          },
+          {
+            "name": "怡萱动漫",
+            "url": "https://www.yxdmlove.com"
+          },
+          {
+            "name": "1樱花动漫",
+            "url": "https://www.yifeng110.com"
+          },
+          {
+            "name": "2樱花动漫",
+            "url": "https://www.yhdm.wang"
+          },
+          {
+            "name": "风车动漫",
+            "url": "https://www.whpaiger.com"
+          },
+          {
+            "name": "风车动漫",
+            "url": "https://www.dmla7.com"
+          },
+          {
+            "name": "zzzfun",
+            "url": "https://www.zzzfun.com"
+          },
+          {
+            "name": "蒲趣影院",
+            "url": "https://www.puquyy.com"
+          },
+          {
+            "name": "电影天堂",
+            "url": "https://dytt.dytt8.net"
+          },
+          {
+            "name": "电影天堂",
+            "url": "https://www.dytt50.com"
+          },
+          {
+            "name": "茶杯狐",
+            "url": "https://cupfox.app"
+          },
+          {
+            "name": "低端影视",
+            "url": "https://ddys.pro"
+          },
+          {
+            "name": "在线之家",
+            "url": "https://www.zxzja.com"
+          },
+          {
+            "name": "AucFox影视",
+            "url": "https://aucfox.fun"
+          },
+          {
+            "name": "潦草网",
+            "url": "https://www.liaocao88.net"
+          },
+          {
+            "name": "新视觉影院",
+            "url": "https://www.5060w.cc"
+          },
+          {
+            "name": "飞飞影院",
+            "url": "https://www.feifei6.com"
+          },
+          {
+            "name": "豌豆Pro",
+            "url": "https://wandou.la"
+          },
+          {
+            "name": "动漫花园资源网",
+            "url": "https://share.dmhy.org"
+          },
+          {
+            "name": "LIBVIO影视",
+            "url": "https://libvio.top"
+          },
+          {
+            "name": "小小影视",
+            "url": "https://www.xiaoxiaoy.com"
+          },
+          {
+            "name": "多剧蓝光影院",
+            "url": "https://duoju.vip"
+          },
+          {
+            "name": "月亮电影网",
+            "url": "https://www.woaimoon.com"
+          },
+          {
+            "name": "大师兄影视",
+            "url": "https://dsxys.pro"
+          },
+          {
+            "name": "4k电影网",
+            "url": "https://4k电影网.com"
+          },
+          {
+            "name": "奇心解析",
+            "url": "https://jx.xmflv.com/?url="
+          },
+          {
+            "name": "7k789",
+            "url": "https://www.7k789.com"
+          },
+          {
+            "name": "闪电影视",
+            "url": "https://www.ak1080.me"
+          },
+          {
+            "name": "奈落影院",
+            "url": "https://www.newfii.com"
+          },
+          {
+            "name": "60影视",
+            "url": "https://www.760kan.com"
+          },
+          {
+            "name": "天天美剧网",
+            "url": "https://ttmja.com"
+          },
+          {
+            "name": "追影猫",
+            "url": "https://zhuiyingmao2.com"
+          },
+          {
+            "name": "悠云影视",
+            "url": "https://yoyys1.com"
           }
         ]
       },
@@ -407,6 +795,10 @@
           {
             "name": "6U资源站",
             "url": "https://www.6uzy.cc"
+          },
+          {
+            "name": "蜜柑计划",
+            "url": "https://mikanani.kas.pub"
           }
         ]
       },
@@ -415,7 +807,23 @@
         "items": [
           {
             "name": "漫画人",
-            "url": "https://www.6uzy.cc"
+            "url": "https://www.1kkk.com"
+          },
+          {
+            "name": "漫客栈",
+            "url": "https://www.mkzhan.com"
+          },
+          {
+            "name": "扑飞动漫",
+            "url": "https://m.pufei.cc"
+          },
+          {
+            "name": "六漫画",
+            "url": "https://m.sixmh7.com"
+          },
+          {
+            "name": "漫画站",
+            "url": "https://www.manhuazhan.com"
           }
         ]
       },
@@ -425,6 +833,14 @@
           {
             "name": "3DM-GAME",
             "url": "https://www.3dmgame.com"
+          },
+          {
+            "name": "gamer520",
+            "url": "https://www.gamer520.com"
+          },
+          {
+            "name": "苦力怕bbs",
+            "url": "https://klpbbs.com"
           }
         ]
       },
@@ -486,7 +902,71 @@
           },
           {
             "name": "异星软件",
-            "url": "https://www.ghxi.com"
+            "url": "https://www.yxssp.com"
+          },
+          {
+            "name": "MSDN",
+            "url": "https://msdn.itellyou.cn"
+          },
+          {
+            "name": "NEW-MSDN",
+            "url": "https://next.itellyou.cn"
+          },
+          {
+            "name": "殁漂遥",
+            "url": "https://www.mpyit.com"
+          },
+          {
+            "name": "精脑汇",
+            "url": "https://www.uxpc.com"
+          },
+          {
+            "name": "挖软否",
+            "url": "https://www.wrfou.com"
+          },
+          {
+            "name": "克隆窝",
+            "url": "https://www.kelongwo.com"
+          },
+          {
+            "name": "克隆窝",
+            "url": "https://www.uy5.net"
+          },
+          {
+            "name": "牛麦子",
+            "url": "https://niumaizi.cn"
+          },
+          {
+            "name": "ZD423",
+            "url": "https://www.zdfans.com"
+          },
+          {
+            "name": "PC6",
+            "url": "https://www.pc6.com"
+          },
+          {
+            "name": "IT技术之家",
+            "url": "https://www.ittel.cn"
+          },
+          {
+            "name": "MOD迷",
+            "url": "https://www.mimods.com"
+          },
+          {
+            "name": "迪友社区",
+            "url": "https://www.bydmax.com"
+          },
+          {
+            "name": "Downloadly",
+            "url": "https://downloadlynet.ir"
+          },
+          {
+            "name": "MacApp分享频道",
+            "url": "https://macapp.org.cn"
+          },
+          {
+            "name": "科技师",
+            "url": "https://www.3kjs.com"
           }
         ]
       },
@@ -499,7 +979,7 @@
           },
           {
             "name": "SSCMS",
-            "url": "https://sscms.comdocs/v7"
+            "url": "https://sscms.com/docs/v7"
           },
           {
             "name": "Vue.js",
@@ -531,7 +1011,11 @@
           },
           {
             "name": "Swiper.js",
-            "url": "https://www.lodashjs.com"
+            "url": "https://www.swiper.com.cn"
+          },
+          {
+            "name": "SASS",
+            "url": "https://www.sass.hk"
           }
         ]
       },
@@ -541,6 +1025,18 @@
           {
             "name": "Greasy Fork",
             "url": "https://greasyfork.org/zh-Cn"
+          },
+          {
+            "name": "红客防线（网络安全）",
+            "url": "https://hkfx.net"
+          },
+          {
+            "name": "充电头网",
+            "url": "https://www.chongdiantou.com"
+          },
+          {
+            "name": "巨魔商店",
+            "url": "https://trollstore.app"
           }
         ]
       },
@@ -549,7 +1045,11 @@
         "items": [
           {
             "name": "立创开源广场",
-            "url": "https://greasyfork.org/zh-Cn"
+            "url": "https://oshwhub.com"
+          },
+          {
+            "name": "捷配",
+            "url": "https://www.jiepei.com"
           }
         ]
       },
@@ -579,7 +1079,31 @@
           },
           {
             "name": "GKD",
-            "url": "https://github.com/seemoo-lab/openhaystack"
+            "url": "https://github.com/gkd-kit/gkd"
+          },
+          {
+            "name": "core-js",
+            "url": "https://github.com/zloirock/core-js"
+          },
+          {
+            "name": "邪恶苹果汁ESP32",
+            "url": "https://github.com/ckcr4lyf/EvilAppleJuice-ESP32"
+          },
+          {
+            "name": "v2rayNG",
+            "url": "https://github.com/2dust/v2rayNG"
+          },
+          {
+            "name": "VuePress",
+            "url": "https://vuepress.vuejs.org"
+          },
+          {
+            "name": "MobaXterm汉化",
+            "url": "https://github.com/RipplePiam/MobaXterm-Chinese-Simplified"
+          },
+          {
+            "name": "JD抢购脚本",
+            "url": "https://github.com/tychxn/jd-assistant"
           }
         ]
       },
@@ -592,7 +1116,11 @@
           },
           {
             "name": "FPV工具箱",
-            "url": "https://uom.caac.gov.cn"
+            "url": "https://mklb.xyz"
+          },
+          {
+            "name": "betaflight调试",
+            "url": "https://app.betaflight.com"
           }
         ]
       },
@@ -617,7 +1145,11 @@
           },
           {
             "name": "chiphell",
-            "url": "https://bbs.kafan.cn"
+            "url": "https://www.chiphell.com"
+          },
+          {
+            "name": "恩山无线论坛",
+            "url": "https://www.right.com.cn"
           }
         ]
       }
@@ -627,12 +1159,40 @@
       "trigger": "001",
       "sites": [
         {
-          "name": "示例网站1",
-          "url": "https://example1.com"
+          "name": "杏吧",
+          "url": "www.nidexbb.info'"
         },
         {
-          "name": "示例网站2",
-          "url": "https://example2.com"
+          "name": "东京图书馆",
+          "url": "www.tokyotosho.info"
+        },
+        {
+          "name": "1024xp",
+          "url": "yj2207.click/pw"
+        },
+        {
+          "name": "Ave",
+          "url": "www.aventertainments.com"
+        },
+        {
+          "name": "JAVbee",
+          "url": "javbee.net"
+        },
+        {
+          "name": "2048xp",
+          "url": "s6y7f8.xyz"
+        },
+        {
+          "name": "2048xp",
+          "url": "snmp3x.xyz"
+        },
+        {
+          "name": "xvideos",
+          "url": "www.xvideos.com"
+        },
+        {
+          "name": "missav",
+          "url": "www.missav.com"
         }
       ]
     }

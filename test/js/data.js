@@ -250,13 +250,12 @@ function data() {
 		'www.acfun.cn', 'ACfan',
 		'www.bimiacg4.net', 'M站',
 		'www.yxdmlove.com', '怡萱动漫',
-		'www.yifeng110.com', '1樱花动漫',//new
-		'www.yhdm.wang', '2樱花动漫',//new
+		'www.yifeng110.com', '1樱花动漫',
+		'www.yhdm.wang', '2樱花动漫',
 		'www.whpaiger.com', '风车动漫',
 		'www.dmla7.com', '风车动漫',
 		'www.zzzfun.com', 'zzzfun',
 		'www.puquyy.com', '蒲趣影院',
-		// '80s.tw', '80s',
 		'dytt.dytt8.net', '电影天堂',
 		'www.dytt50.com', '电影天堂',
 		'cupfox.app', '茶杯狐',
@@ -269,7 +268,6 @@ function data() {
 		'wandou.la', '豌豆Pro',
 		'share.dmhy.org', '动漫花园资源网',
 		'libvio.top', 'LIBVIO影视',
-		//新更新
 		'www.xiaoxiaoy.com', '小小影视',
 		'duoju.vip', '多剧蓝光影院',
 		'www.woaimoon.com', '月亮电影网',
