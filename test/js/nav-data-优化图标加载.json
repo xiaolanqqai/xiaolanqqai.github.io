@@ -42,74 +42,12 @@
         "name": "Tools",
         "items": [
           {
-            "name": "有道翻译",
-            "url": "https://fanyi.youdao.com"
+            "name": "Google翻译",
+            "url": "https://translate.google.com"
           },
           {
             "name": "PDF转换器",
             "url": "https://smallpdf.com"
-          },
-          {
-            "name": "163",
-            "url": "https://mail.163.com"
-          },
-          {
-            "name": "TinyPNG",
-            "url": "https://tinypng.com"
-          },
-          {
-            "name": "ilovepdf",
-            "url": "https://www.ilovepdf.com/zh-cn"
-          },
-          {
-            "name": "小众软件",
-            "url": "https://www.appinn.com"
-          },
-          {
-            "name": "果壳剥壳",
-            "url": "https://www.ghxi.com"
-          }
-        ]
-      },
-      {
-        "name": "Work",
-        "items": [
-          {
-            "name": "阿里云",
-            "url": "www.aliyun.com"
-          },
-          {
-            "name": "万网主机管理控制台",
-            "url": "cp.aliyun.com"
-          },
-          {
-            "name": "官网",
-            "url": "https://www.kodai-industries.com"
-          },
-          {
-            "name": "国外-万里牛ERP",
-            "url": "https://g.hupun.com/login"
-          }
-        ]
-      },
-      {
-        "name": "Network",
-        "items": [
-          {
-            "name": "主路由",
-            "url": "192.168.2.1"
-          },
-          {
-            "name": "光猫",
-            "url": "192.168.1.1"
-          },
-          {
-            "name": "小米路由",
-            "url": "192.168.31.1"
-          },
-          {
-            "name": "鲲鹏路由",
-            "url": "192.168.66.1"
           }
         ]
       }
@@ -147,22 +85,6 @@
           {
             "name": "谷歌HK",
             "url": "https://www.google.com.hk"
-          },
-          {
-            "name": "可视化维基百科",
-            "url": "https://explorer.globe.engineer"
-          },
-          {
-            "name": "信用中国",
-            "url": "www.creditchina.gov.cn"
-          },
-          {
-            "name": "黑猫投诉",
-            "url": "tousu.sina.com.cn"
-          },
-          {
-            "name": "车质网",
-            "url": "www.12365auto.com"
           }
         ]
       },
@@ -184,58 +106,6 @@
           {
             "name": "阿里企业邮箱",
             "url": "https://qiye.aliyun.com"
-          },
-          {
-            "name": "shopify",
-            "url": "www.shopify.com"
-          },
-          {
-            "name": "kickstarter",
-            "url": "www.kickstarter.com"
-          },
-          {
-            "name": "pledgebox",
-            "url": "manage.pledgebox.com"
-          },
-          {
-            "name": "wix",
-            "url": "manage.wix.com"
-          },
-          {
-            "name": "shoplazza",
-            "url": "myaccount.shoplazza.com"
-          },
-          {
-            "name": "shopline",
-            "url": "kodai-industries.myshopline.com/admin/"
-          },
-          {
-            "name": "官网",
-            "url": "www.kodai-industries.com"
-          },
-          {
-            "name": "国内-万里牛ERP",
-            "url": "erp.hupun.com/login"
-          },
-          {
-            "name": "国外-万里牛ERP",
-            "url": "g.hupun.com/login"
-          },
-          {
-            "name": "吉客云网页版",
-            "url": "web.jackyun.com/login/login_web.html"
-          },
-          {
-            "name": "国家知识产权局商标局",
-            "url": "wssq.sbj.cnipa.gov.cn:9443/tmsve/"
-          },
-          {
-            "name": "拼多多知识产权保护平台",
-            "url": "ipp.pinduoduo.com"
-          },
-          {
-            "name": "淘天知识产权保护平台",
-            "url": "ipp.taobao.com"
           }
         ]
       },
@@ -631,7 +501,7 @@
           "url": "https://example1.com"
         },
         {
-          "name": "示例网站2",
+          "name": "示例网站2", 
           "url": "https://example2.com"
         }
       ]
@@ -708,7 +578,7 @@
       }
     ]
   },
-  "develop": {
+   "develop": {
     "tabs": [
       {
         "name": "开发工具",
