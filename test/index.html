@@ -80,80 +80,82 @@
 		</div>
 	</div>
 	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			// 修改这里：从js文件夹加载nav-data.json
-			fetch('js/nav-data.json')
-				.then(response => response.json())
-				.then(data => {
-					renderNavigation(data.index);
-					loadVersionInfo(data);
-				})
-				.catch(error => {
-					console.error('加载导航数据时出错:', error);
-					document.getElementById('nav-tabs-container').innerHTML = '<div class="alert alert-info">暂无导航数据，请先上传JSON文件</div>';
-					document.getElementById('uptime1').textContent = 'Beta:error';
-            		document.getElementById('state1').textContent = 'Error';
-				});
+	document.addEventListener('DOMContentLoaded', function () {
+		// 修改这里：从js文件夹加载nav-data.json
+		fetch('js/nav-data.json')
+			.then(response => response.json())
+			.then(data => {
+				renderNavigation(data.index);
+				loadVersionInfo(data);
+			})
+			.catch(error => {
+				console.error('加载导航数据时出错:', error);
+				document.getElementById('nav-tabs-container').innerHTML = '<div class="alert alert-info">暂无导航数据，请先上传JSON文件</div>';
+				document.getElementById('uptime1').textContent = 'Beta:error';
+				document.getElementById('state1').textContent = 'Error';
+			});
+	});
+
+	function renderNavigation(navData) {
+		const navTabsContainer = document.getElementById('nav-tabs-container');
+		const navContentContainer = document.getElementById('nav-content-container');
+		navTabsContainer.innerHTML = '';
+		navContentContainer.innerHTML = '';
+
+		// 渲染主要标签页
+		navData.tabs.forEach((tab, index) => {
+			const tabElement = document.createElement('a');
+			tabElement.className = `nav-link btn nav-top ${index === 0 ? 'active' : ''}`;
+			tabElement.textContent = tab.name;
+			tabElement.setAttribute('data-tab', tab.name.toLowerCase().replace(/\s+/g, '-'));
+			tabElement.href = '#';
+			tabElement.addEventListener('click', function (e) {
+				e.preventDefault();
+				switchTab(tab.name.toLowerCase().replace(/\s+/g, '-'));
+			});
+			navTabsContainer.appendChild(tabElement);
+
+			const contentElement = document.createElement('div');
+			contentElement.className = `nav-ban ${index === 0 ? '' : 'd-none'}`;
+			contentElement.id = `tab-${tab.name.toLowerCase().replace(/\s+/g, '-')}`;
+			const row = document.createElement('div');
+			row.className = 'row row-cols-4 p-2';
+			tab.items.forEach(item => {
+				// 修改这里：使用与more页面相同的图标逻辑
+				const iconUrl = item.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}`;
+				const col = document.createElement('a');
+				col.href = item.url;
+				col.rel = 'nofollow';
+				col.target = '_blank';
+				col.className = 'col my-2 p-1 text-center text-black-50 kuaijie-a';
+				col.innerHTML = `
+					<img class="border rounded-circle w" src="${iconUrl}" loading="lazy" onerror="this.src='img/index.png'">
+					<h6 class="t1">${item.name}</h6>`;
+				row.appendChild(col);
+			});
+			contentElement.appendChild(row);
+			navContentContainer.appendChild(contentElement);
 		});
 
-		function renderNavigation(navData) {
-			const navTabsContainer = document.getElementById('nav-tabs-container');
-			const navContentContainer = document.getElementById('nav-content-container');
-			navTabsContainer.innerHTML = '';
-			navContentContainer.innerHTML = '';
+		// 在最后添加More链接
+		const moreTabElement = document.createElement('a');
+		moreTabElement.className = 'nav-link btn nav-top';
+		moreTabElement.href = 'index/More.html';
+		moreTabElement.textContent = '...';
+		navTabsContainer.appendChild(moreTabElement);
+	}
 
-			// 渲染主要标签页
-			navData.tabs.forEach((tab, index) => {
-				const tabElement = document.createElement('a');
-				tabElement.className = `nav-link btn nav-top ${index === 0 ? 'active' : ''}`;
-				tabElement.textContent = tab.name;
-				tabElement.setAttribute('data-tab', tab.name.toLowerCase().replace(/\s+/g, '-'));
-				tabElement.href = '#';
-				tabElement.addEventListener('click', function (e) {
-					e.preventDefault();
-					switchTab(tab.name.toLowerCase().replace(/\s+/g, '-'));
-				});
-				navTabsContainer.appendChild(tabElement);
-
-				const contentElement = document.createElement('div');
-				contentElement.className = `nav-ban ${index === 0 ? '' : 'd-none'}`;
-				contentElement.id = `tab-${tab.name.toLowerCase().replace(/\s+/g, '-')}`;
-				const row = document.createElement('div');
-				row.className = 'row row-cols-4 p-2';
-				tab.items.forEach(item => {
-					const col = document.createElement('a');
-					col.href = item.url;
-					col.rel = 'nofollow';
-					col.target = '_blank';
-					col.className = 'col my-2 p-1 text-center text-black-50 kuaijie-a';
-					col.innerHTML = `
-						<img class="border rounded-circle w" src="${item.icon}" loading="lazy" onerror="this.src='img/index.png'">
-						<h6 class="t1">${item.name}</h6>`;
-					row.appendChild(col);
-				});
-				contentElement.appendChild(row);
-				navContentContainer.appendChild(contentElement);
-			});
-
-			// 在最后添加More链接
-			const moreTabElement = document.createElement('a');
-			moreTabElement.className = 'nav-link btn nav-top';
-			moreTabElement.href = 'index/More.html';
-			moreTabElement.textContent = '...';
-			navTabsContainer.appendChild(moreTabElement);
-		}
-
-		function switchTab(tabName) {
-			document.querySelectorAll('.nav-ban').forEach(tab => {
-				tab.classList.add('d-none');
-			});
-			document.querySelectorAll('.nav-top').forEach(tab => {
-				tab.classList.remove('active');
-			});
-			document.getElementById(`tab-${tabName}`).classList.remove('d-none');
-			document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-		}
-	</script>
+	function switchTab(tabName) {
+		document.querySelectorAll('.nav-ban').forEach(tab => {
+			tab.classList.add('d-none');
+		});
+		document.querySelectorAll('.nav-top').forEach(tab => {
+			tab.classList.remove('active');
+		});
+		document.getElementById(`tab-${tabName}`).classList.remove('d-none');
+		document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+	}
+</script>
 	<div class="z-1">
 		<div class="z-4">
 			<div id="jsi-flying-fish-container" class="w-100"></div>

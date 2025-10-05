@@ -144,14 +144,6 @@
 
 			console.log('特殊栏目已渲染（隐藏状态），共', specialSites.length, '个网站');
 		}
-
-		// 版本信息加载函数
-		function loadVersionInfo(data) {
-			if (data.version) {
-				document.getElementById('uptime1').textContent = `Beta:${data.version.web_vol}`;
-				document.getElementById('state1').textContent = 'Online';
-			}
-		}
 	</script>
 	<div class="z-1">
 		<div class="z-4">
