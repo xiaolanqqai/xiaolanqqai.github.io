@@ -97,19 +97,19 @@
         "items": [
           {
             "name": "主路由",
-            "url": "192.168.2.1"
+            "url": "http://192.168.2.1"
           },
           {
             "name": "光猫",
-            "url": "192.168.1.1"
+            "url": "http://192.168.1.1"
           },
           {
             "name": "小米路由",
-            "url": "192.168.31.1"
+            "url": "http://192.168.31.1"
           },
           {
             "name": "鲲鹏路由",
-            "url": "192.168.66.1"
+            "url": "http://192.168.66.1"
           }
         ]
       }
@@ -154,15 +154,15 @@
           },
           {
             "name": "信用中国",
-            "url": "www.creditchina.gov.cn"
+            "url": "https://www.creditchina.gov.cn"
           },
           {
             "name": "黑猫投诉",
-            "url": "tousu.sina.com.cn"
+            "url": "https://tousu.sina.com.cn"
           },
           {
             "name": "车质网",
-            "url": "www.12365auto.com"
+            "url": "https://www.12365auto.com"
           }
         ]
       },
@@ -187,55 +187,55 @@
           },
           {
             "name": "shopify",
-            "url": "www.shopify.com"
+            "url": "https://www.shopify.com"
           },
           {
             "name": "kickstarter",
-            "url": "www.kickstarter.com"
+            "url": "https://www.kickstarter.com"
           },
           {
             "name": "pledgebox",
-            "url": "manage.pledgebox.com"
+            "url": "https://manage.pledgebox.com"
           },
           {
             "name": "wix",
-            "url": "manage.wix.com"
+            "url": "https://manage.wix.com"
           },
           {
             "name": "shoplazza",
-            "url": "myaccount.shoplazza.com"
+            "url": "https://myaccount.shoplazza.com"
           },
           {
             "name": "shopline",
-            "url": "kodai-industries.myshopline.com/admin/"
+            "url": "https://kodai-industries.myshopline.com/admin/"
           },
           {
             "name": "官网",
-            "url": "www.kodai-industries.com"
+            "url": "https://www.kodai-industries.com"
           },
           {
             "name": "国内-万里牛ERP",
-            "url": "erp.hupun.com/login"
+            "url": "https://erp.hupun.com/login"
           },
           {
             "name": "国外-万里牛ERP",
-            "url": "g.hupun.com/login"
+            "url": "https://g.hupun.com/login"
           },
           {
             "name": "吉客云网页版",
-            "url": "web.jackyun.com/login/login_web.html"
+            "url": "https://web.jackyun.com/login/login_web.html"
           },
           {
             "name": "国家知识产权局商标局",
-            "url": "wssq.sbj.cnipa.gov.cn:9443/tmsve/"
+            "url": "https://wssq.sbj.cnipa.gov.cn:9443/tmsve/"
           },
           {
             "name": "拼多多知识产权保护平台",
-            "url": "ipp.pinduoduo.com"
+            "url": "https://ipp.pinduoduo.com"
           },
           {
             "name": "淘天知识产权保护平台",
-            "url": "ipp.taobao.com"
+            "url": "https://ipp.taobao.com"
           }
         ]
       },
@@ -1160,39 +1160,39 @@
       "sites": [
         {
           "name": "杏吧",
-          "url": "www.nidexbb.info'"
+          "url": "https://www.nidexbb.info'"
         },
         {
           "name": "东京图书馆",
-          "url": "www.tokyotosho.info"
+          "url": "https://www.tokyotosho.info"
         },
         {
           "name": "1024xp",
-          "url": "yj2207.click/pw"
+          "url": "https://yj2207.click/pw"
         },
         {
           "name": "Ave",
-          "url": "www.aventertainments.com"
+          "url": "https://www.aventertainments.com"
         },
         {
           "name": "JAVbee",
-          "url": "javbee.net"
+          "url": "https://javbee.net"
         },
         {
           "name": "2048xp",
-          "url": "s6y7f8.xyz"
+          "url": "https://s6y7f8.xyz"
         },
         {
           "name": "2048xp",
-          "url": "snmp3x.xyz"
+          "url": "https://snmp3x.xyz"
         },
         {
           "name": "xvideos",
-          "url": "www.xvideos.com"
+          "url": "https://www.xvideos.com"
         },
         {
           "name": "missav",
-          "url": "www.missav.com"
+          "url": "https://www.missav.com"
         }
       ]
     }
