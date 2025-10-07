@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>导航数据管理系统</title>
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -321,7 +321,7 @@
             </div>
         </div></div></div>
     </div>
-    <div class="footer"><div class="container"><p>导航数据管理系统 &copy; 2023 Xiaolan</p><p><a href="index.html" class="text-decoration-none">返回主页</a></p></div></div>
+    <div class="footer"><div class="container"><p>导航数据管理系统 &copy; 2023 Xiaolan</p><p><a href="../../index.html" class="text-decoration-none">返回主页</a></p></div></div>
     
 <!-- 版本信息编辑模态框 -->
     <div class="modal fade" id="versionModal" tabindex="-1" aria-hidden="true">
@@ -460,7 +460,7 @@
         </div></div>
     </div>
     
-    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
         // 图标前缀常量
         const ICON_PREFIX = 'https://api.afmax.cn/so/ico/index.php?r=';
@@ -625,7 +625,7 @@
         
         // 从本地JSON文件加载数据
         function loadFromJsonFile() {
-            fetch('../js/nav-data.json')
+            fetch('../../js/nav-data.json')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('网络响应不正常');
