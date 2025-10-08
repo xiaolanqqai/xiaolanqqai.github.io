@@ -10,124 +10,51 @@
         :root {
             --primary-color: #6a11cb;
             --secondary-color: #2575fc;
-            --light-bg: #f8f9fa;
-            --border-color: #dee2e6;
         }
+        
         body {
-            background-color: var(--light-bg);
+            background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
         .header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
-            padding: 1.5rem 0;
-            margin-bottom: 1.5rem;
             border-radius: 0 0 10px 10px;
         }
-        .container-main {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        .card {
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-bottom: 15px;
-            border: none;
-        }
-        .card-header {
-            background-color: #f1f3f5;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
-            padding: 0.8rem 1.2rem;
-            font-size: 0.95rem;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a0db8 0%, #1c67e3 100%);
-        }
-        /* 版本信息样式 */
+        
         .version-info {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            padding: 0.8rem 1.2rem;
             border-radius: 6px;
-            margin-bottom: 1rem;
         }
-        .version-info h5 {
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        .version-info .badge {
-            font-size: 0.75rem;
-            padding: 0.3rem 0.6rem;
-        }
-        /* 特殊栏目样式 */
+        
         .special-section {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
             color: white;
-            padding: 1rem;
             border-radius: 8px;
-            margin: 1rem 0;
         }
-        .special-section h5 {
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
+        
         .special-section .badge {
             background-color: rgba(255, 255, 255, 0.2);
             color: white;
         }
-        /* 更窄的选项卡样式 */
-        .nav-tabs {
-            border-bottom: 1px solid var(--border-color);
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-        .nav-tabs .nav-link {
-            padding: 0.5rem 0.8rem;
-            font-size: 0.85rem;
-            border: 1px solid transparent;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-            margin-bottom: -1px;
-            white-space: nowrap;
-            color: #6c757d;
-            transition: all 0.2s ease;
-        }
-        .nav-tabs .nav-link:hover {
-            border-color: #e9ecef #e9ecef #dee2e6;
-            isolation: isolate;
-        }
-        .nav-tabs .nav-link.active {
-            color: var(--primary-color);
-            font-weight: 600;
-            border-bottom: 3px solid var(--primary-color);
-            background-color: transparent;
-            border-color: #dee2e6 #dee2e6 #fff;
-        }
-        /* 新的网站卡片样式 */
+        
         .site-card {
             width: 100px;
             height: 110px;
-            border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 10px;
-            margin: 0 12px 12px 0;
-            background: white;
             transition: all 0.2s ease;
             position: relative;
             display: inline-block;
             text-align: center;
             cursor: pointer;
         }
+        
         .site-card:hover {
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
             transform: translateY(-2px);
         }
+        
         .site-card .delete-corner {
             position: absolute;
             top: -8px;
@@ -146,9 +73,11 @@
             transition: opacity 0.2s ease;
             z-index: 10;
         }
+        
         .site-card:hover .delete-corner {
             opacity: 1;
         }
+        
         .site-card .site-icon {
             width: 48px;
             height: 48px;
@@ -157,6 +86,7 @@
             margin: 0 auto 8px;
             display: block;
         }
+        
         .site-card .site-name {
             font-size: 0.75rem;
             font-weight: 500;
@@ -168,90 +98,94 @@
             line-height: 1.2;
             height: 28px;
         }
-        .sites-container {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-        }
-        .action-buttons .btn {
-            margin-left: 4px;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.15);
-        }
-        .footer {
-            text-align: center;
-            padding: 1.2rem 0;
-            margin-top: 1.5rem;
-            color: #6c757d;
-            font-size: 0.85rem;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 1.5rem;
-            color: #6c757d;
-        }
-        .empty-state i {
-            font-size: 2.5rem;
-            margin-bottom: 0.8rem;
-            color: #ced4da;
-        }
+        
         .upload-area {
             border: 2px dashed #dee2e6;
             border-radius: 6px;
-            padding: 1.5rem;
             text-align: center;
-            margin-bottom: 1.2rem;
             background-color: #f8f9fa;
             transition: all 0.2s ease;
         }
+        
         .upload-area:hover {
             border-color: var(--primary-color);
             background-color: #e9ecef;
         }
+        
         .upload-icon {
             font-size: 2.5rem;
             color: #6c757d;
-            margin-bottom: 0.8rem;
         }
+        
         .json-preview {
             font-family: 'Courier New', Courier, monospace;
             background-color: #f8f9fa;
             border-radius: 4px;
-            padding: 0.8rem;
             max-height: 250px;
             overflow-y: auto;
             font-size: 0.8rem;
         }
+        
         .feature-card {
             transition: transform 0.2s ease;
         }
+        
         .feature-card:hover {
             transform: translateY(-3px);
         }
-        .page-selector {
-            background-color: #e9ecef;
-            border-radius: 6px;
-            padding: 0.8rem;
-            margin-bottom: 1.2rem;
+        
+        .nav-tabs {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
-        .page-btn {
-            margin: 0.2rem;
-            padding: 0.3rem 0.6rem;
+        
+        .nav-tabs .nav-link {
             font-size: 0.85rem;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 3px solid var(--primary-color);
+            background-color: transparent;
+        }
+        
+        .page-btn {
+            font-size: 0.85rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a0db8 0%, #1c67e3 100%);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.15);
         }
     </style>
 </head>
 <body>
-    <div class="header"><div class="container"><h1 class="text-center">导航数据管理系统</h1><p class="text-center">管理您的网站导航选项卡内容</p></div></div>
+    <div class="header py-4 mb-4">
+        <div class="container">
+            <h1 class="text-center mb-2">导航数据管理系统</h1>
+            <p class="text-center mb-0">管理您的网站导航选项卡内容</p>
+        </div>
+    </div>
+    
     <div class="container container-main">
-        <div class="version-info">
+        <!-- 版本信息 -->
+        <div class="version-info p-3 mb-3">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h5><i class="fas fa-code-branch me-2"></i>版本信息</h5>
+                    <h5 class="mb-2"><i class="fas fa-code-branch me-2"></i>版本信息</h5>
                     <div>
                         <span class="badge bg-light text-dark me-2">Web版本: <span id="currentWebVol">-</span></span>
                         <span class="badge bg-light text-dark">数据版本: <span id="currentWebData">-</span></span>
@@ -262,48 +196,95 @@
                 </button>
             </div>
         </div>
-        <div class="page-selector"><h5 class="mb-3">选择要管理的页面:</h5><div class="d-flex flex-wrap">
-            <button class="btn btn-outline-primary page-btn active" data-page="index">主页 (index.html)</button>
-            <button class="btn btn-outline-primary page-btn" data-page="more">更多页面 (More.html)</button>
-            <button class="btn btn-outline-primary page-btn" data-page="dd">DD页面 (DD.html)</button>
-            <button class="btn btn-outline-primary page-btn" data-page="download">下载页面 (Download.html)</button>
-            <button class="btn btn-outline-primary page-btn" data-page="develop">开发页面 (Develop.html)</button>
-        </div></div>
-        <div class="row mb-4">
-            <div class="col-md-3"><div class="card feature-card h-100"><div class="card-body text-center">
-                <div class="text-primary mb-3"><i class="fas fa-file-upload fa-3x"></i></div><h5>上传JSON文件</h5>
-                <p>从您的设备上传导航数据JSON文件</p><button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                    <i class="fas fa-upload me-1"></i>上传JSON</button></div></div></div>
-            <div class="col-md-3"><div class="card feature-card h-100"><div class="card-body text-center">
-                <div class="text-success mb-3"><i class="fas fa-database fa-3x"></i></div><h5>从本地加载</h5>
-                <p>从本地JSON文件加载数据</p><button id="loadFromLocalBtn" class="btn btn-success mt-2">
-                    <i class="fas fa-download me-1"></i>从本地加载</button></div></div></div>
-            <div class="col-md-3"><div class="card feature-card h-100"><div class="card-body text-center">
-                <div class="text-info mb-3"><i class="fas fa-save fa-3x"></i></div><h5>保存数据</h5>
-                <p>将当前数据保存到本地存储并下载JSON文件</p><button id="saveBtn" class="btn btn-info mt-2">
-                    <i class="fas fa-save me-1"></i>保存数据</button></div></div></div>
-            <div class="col-md-3"><div class="card feature-card h-100"><div class="card-body text-center">
-                <div class="text-warning mb-3"><i class="fas fa-trash-alt fa-3x"></i></div><h5>清空数据</h5>
-                <p>清除当前已加载的所有导航数据</p><button id="clearDataBtn" class="btn btn-warning mt-2">
-                    <i class="fas fa-broom me-1"></i>清空数据</button></div></div></div>
+        
+        <!-- 页面选择器 -->
+        <div class="bg-light rounded p-3 mb-4">
+            <h5 class="mb-3">选择要管理的页面:</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-outline-primary page-btn active" data-page="index">主页 (index.html)</button>
+                <button class="btn btn-outline-primary page-btn" data-page="more">更多页面 (More.html)</button>
+                <button class="btn btn-outline-primary page-btn" data-page="dd">DD页面 (DD.html)</button>
+                <button class="btn btn-outline-primary page-btn" data-page="download">下载页面 (Download.html)</button>
+                <button class="btn btn-outline-primary page-btn" data-page="develop">开发页面 (Develop.html)</button>
+            </div>
         </div>
         
-        <div class="row"><div class="col-md-12"><div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span id="currentPageTitle">主页 - 导航选项卡管理</span>
-                <div><button id="addTabBtn" class="btn btn-sm btn-outline-secondary ms-1"><i class="fas fa-plus me-1"></i>添加选项卡</button></div>
+        <!-- 功能卡片 -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-primary mb-3"><i class="fas fa-file-upload fa-3x"></i></div>
+                        <h5>上传JSON文件</h5>
+                        <p class="flex-grow-1">从您的设备上传导航数据JSON文件</p>
+                        <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="fas fa-upload me-1"></i>上传JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-success mb-3"><i class="fas fa-database fa-3x"></i></div>
+                        <h5>从本地加载</h5>
+                        <p class="flex-grow-1">从本地JSON文件加载数据</p>
+                        <button id="loadFromLocalBtn" class="btn btn-success mt-2">
+                            <i class="fas fa-download me-1"></i>从本地加载
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-info mb-3"><i class="fas fa-save fa-3x"></i></div>
+                        <h5>保存数据</h5>
+                        <p class="flex-grow-1">将当前数据保存到本地存储并下载JSON文件</p>
+                        <button id="saveBtn" class="btn btn-info mt-2 text-white">
+                            <i class="fas fa-save me-1"></i>保存数据
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-warning mb-3"><i class="fas fa-trash-alt fa-3x"></i></div>
+                        <h5>清空数据</h5>
+                        <p class="flex-grow-1">清除当前已加载的所有导航数据</p>
+                        <button id="clearDataBtn" class="btn btn-warning mt-2">
+                            <i class="fas fa-broom me-1"></i>清空数据
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主要管理区域 -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                <span id="currentPageTitle" class="fw-bold">主页 - 导航选项卡管理</span>
+                <div>
+                    <button id="addTabBtn" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-plus me-1"></i>添加选项卡
+                    </button>
+                </div>
             </div>
             <div class="card-body">
-                <div class="alert alert-info"><strong>使用说明：</strong> 您可以在此页面管理导航选项卡和其中的网站链接。修改后请点击"保存数据"按钮。</div>
+                <div class="alert alert-info mb-4">
+                    <strong>使用说明：</strong> 您可以在此页面管理导航选项卡和其中的网站链接。修改后请点击"保存数据"按钮。
+                </div>
+                
                 <ul class="nav nav-tabs mb-4" id="navTabs" role="tablist"></ul>
                 <div class="tab-content" id="navTabContent"></div>
                 
                 <!-- 特殊栏目管理区域 -->
-                <div id="specialSection" style="display: none;">
-                    <div class="special-section">
+                <div id="specialSection" class="d-none">
+                    <div class="special-section p-3 mb-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5><i class="fas fa-lock me-2"></i>特殊隐藏栏目管理 - 小日本ポートエロ</h5>
+                                <h5 class="mb-2"><i class="fas fa-lock me-2"></i>特殊隐藏栏目管理 - 小日本ポートエロ</h5>
                                 <div>
                                     <span class="badge me-2">触发代码: 001</span>
                                     <span class="badge">在More页面中默认隐藏</span>
@@ -319,35 +300,48 @@
                     <div class="sites-container mt-3" id="specialSitesContainer"></div>
                 </div>
             </div>
-        </div></div></div>
+        </div>
     </div>
-    <div class="footer"><div class="container"><p>导航数据管理系统 &copy; 2023 Xiaolan</p><p><a href="../../index.html" class="text-decoration-none">返回主页</a></p></div></div>
     
-<!-- 版本信息编辑模态框 -->ln  <p>          </p>
-    <div class="modal fade" id="versionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">编辑版本信息</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <form id="versionForm">
-                    <div class="mb-3">
-                        <label for="webVol" class="form-label">Web版本 (web_vol)</label>
-                        <input type="text" class="form-control" id="webVol" placeholder="例如: 1.2.0" required>
-                        <div class="form-text">网站编译版本号</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="webData" class="form-label">数据版本 (web_data)</label>
-                        <input type="text" class="form-control" id="webData" placeholder="例如: 2024.03.15" required>
-                        <div class="form-text">列表数据版本号</div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="saveVersionBtn">保存版本信息</button>
-            </div>
-        </div></div>
+    <!-- 页脚 -->
+    <div class="footer py-3 mt-4">
+        <div class="container text-center">
+            <p class="mb-1 text-muted">导航数据管理系统 &copy; 2023 Xiaolan</p>
+            <p class="mb-0"><a href="../../index.html" class="text-decoration-none">返回主页</a></p>
+        </div>
     </div>
-
+    
+    <!-- 模态框部分保持不变 -->
+    <!-- 版本信息编辑模态框 -->
+    <div class="modal fade" id="versionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑版本信息</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="versionForm">
+                        <div class="mb-3">
+                            <label for="webVol" class="form-label">Web版本 (web_vol)</label>
+                            <input type="text" class="form-control" id="webVol" placeholder="例如: 1.2.0" required>
+                            <div class="form-text">网站编译版本号</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="webData" class="form-label">数据版本 (web_data)</label>
+                            <input type="text" class="form-control" id="webData" placeholder="例如: 2024.03.15" required>
+                            <div class="form-text">列表数据版本号</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveVersionBtn">保存版本信息</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg"><div class="modal-content">
             <div class="modal-header"><h5 class="modal-title">上传JSON文件</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
