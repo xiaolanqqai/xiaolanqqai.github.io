@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>导航数据管理系统</title>
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -321,9 +321,9 @@
             </div>
         </div></div></div>
     </div>
-    <div class="footer"><div class="container"><p>导航数据管理系统 &copy; 2023 Xiaolan</p><p><a href="index.html" class="text-decoration-none">返回主页</a></p></div></div>
+    <div class="footer"><div class="container"><p>导航数据管理系统 &copy; 2023 Xiaolan</p><p><a href="../../index.html" class="text-decoration-none">返回主页</a></p></div></div>
     
-<!-- 版本信息编辑模态框 -->
+<!-- 版本信息编辑模态框 -->ln  <p>          </p>
     <div class="modal fade" id="versionModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog"><div class="modal-content">
             <div class="modal-header"><h5 class="modal-title">编辑版本信息</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
@@ -377,8 +377,11 @@
                 <form id="addSiteForm">
                     <div class="mb-3"><label for="siteName" class="form-label">网站名称</label><input type="text" class="form-control" id="siteName" required></div>
                     <div class="mb-3"><label for="siteUrl" class="form-label">网站地址</label><input type="url" class="form-control" id="siteUrl" required></div>
-                    <div class="mb-3"><label for="siteIcon" class="form-label">图标地址</label><input type="url" class="form-control" id="siteIcon" required>
-                    <div class="form-text">可以使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</div></div>
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <small><i class="fas fa-info-circle me-1"></i>图标将自动使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -396,8 +399,11 @@
                     <input type="hidden" id="editSiteIndex">
                     <div class="mb-3"><label for="editSiteName" class="form-label">网站名称</label><input type="text" class="form-control" id="editSiteName" required></div>
                     <div class="mb-3"><label for="editSiteUrl" class="form-label">网站地址</label><input type="url" class="form-control" id="editSiteUrl" required></div>
-                    <div class="mb-3"><label for="editSiteIcon" class="form-label">图标地址</label><input type="url" class="form-control" id="editSiteIcon" required>
-                    <div class="form-text">可以使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</div></div>
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <small><i class="fas fa-info-circle me-1"></i>图标将自动使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -454,8 +460,11 @@
         </div></div>
     </div>
     
-    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
+        // 图标前缀常量
+        const ICON_PREFIX = 'https://api.afmax.cn/so/ico/index.php?r=';
+        
         let navData = {
             version: {
                 web_vol: "1.0.0",
@@ -616,7 +625,7 @@
         
         // 从本地JSON文件加载数据
         function loadFromJsonFile() {
-            fetch('../js/nav-data.json')
+            fetch('../../js/nav-data.json')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('网络响应不正常');
@@ -782,15 +791,16 @@
                 return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>此选项卡中没有网站</p></div>';
             }
             
-            return sites.map((site, siteIndex) => 
-                '<div class="site-card" data-site-index="'+siteIndex+'" data-tab-index="'+tabIndex+'">' +
+            return sites.map((site, siteIndex) => {
+                const iconUrl = site.icon || ICON_PREFIX + encodeURIComponent(site.url);
+                return '<div class="site-card" data-site-index="'+siteIndex+'" data-tab-index="'+tabIndex+'">' +
                     '<div class="delete-corner" data-tab-index="'+tabIndex+'" data-site-index="'+siteIndex+'">' +
                         '<i class="fas fa-times"></i>' +
                     '</div>' +
-                    '<img src="'+site.icon+'" class="site-icon" alt="'+site.name+'" onerror="this.src=\'../img/index.png\'">' +
+                    '<img src="'+iconUrl+'" class="site-icon" alt="'+site.name+'" onerror="this.src=\'../img/index.png\'">' +
                     '<div class="site-name">'+site.name+'</div>' +
-                '</div>'
-            ).join('');
+                '</div>';
+            }).join('');
         }
         
         function bindSiteActions() {
@@ -822,7 +832,6 @@
             document.getElementById('editSiteIndex').value = siteIndex;
             document.getElementById('editSiteName').value = site.name;
             document.getElementById('editSiteUrl').value = site.url;
-            document.getElementById('editSiteIcon').value = site.icon;
             editSiteModal.show();
         }
         
@@ -831,17 +840,16 @@
             const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
             const siteName = document.getElementById('editSiteName').value.trim();
             const siteUrl = document.getElementById('editSiteUrl').value.trim();
-            const siteIcon = document.getElementById('editSiteIcon').value.trim();
             
-            if (!siteName || !siteUrl || !siteIcon) {
+            if (!siteName || !siteUrl) {
                 alert('请填写所有字段');
                 return;
             }
             
             navData[currentPage].tabs[tabIndex].items[siteIndex] = {
                 name: siteName,
-                url: siteUrl,
-                icon: siteIcon
+                url: siteUrl
+                // 不保存icon字段，渲染时自动生成
             };
             
             editSiteModal.hide();
@@ -901,9 +909,8 @@
         function addNewSite() {
             const siteName = document.getElementById('siteName').value.trim();
             const siteUrl = document.getElementById('siteUrl').value.trim();
-            const siteIcon = document.getElementById('siteIcon').value.trim();
             
-            if (!siteName || !siteUrl || !siteIcon) {
+            if (!siteName || !siteUrl) {
                 alert('请填写所有字段');
                 return;
             }
@@ -914,8 +921,8 @@
             
             navData[currentPage].tabs[currentTabIndex].items.push({
                 name: siteName,
-                url: siteUrl,
-                icon: siteIcon
+                url: siteUrl
+                // 不保存icon字段，渲染时自动生成
             });
             
             addSiteModal.hide();
@@ -946,13 +953,14 @@
             }
             
             sites.forEach((site, index) => {
+                const iconUrl = site.icon || ICON_PREFIX + encodeURIComponent(site.url);
                 const siteCard = document.createElement('div');
                 siteCard.className = 'site-card';
                 siteCard.innerHTML = `
                     <div class="delete-corner" data-site-index="${index}" data-special="true">
                         <i class="fas fa-times"></i>
                     </div>
-                    <img src="${site.icon}" alt="${site.name}" class="site-icon" onerror="this.src='../img/index.png'">
+                    <img src="${iconUrl}" alt="${site.name}" class="site-icon" onerror="this.src='../img/index.png'">
                     <div class="site-name">${site.name}</div>
                 `;
                 specialSitesContainer.appendChild(siteCard);
@@ -976,7 +984,6 @@
         function showAddSpecialSiteModal() {
             document.getElementById('siteName').value = '';
             document.getElementById('siteUrl').value = '';
-            document.getElementById('siteIcon').value = '';
             document.getElementById('addSiteForm').setAttribute('data-special', 'true');
             addSiteModal.show();
         }
@@ -985,7 +992,6 @@
             const site = navData.more.special.sites[siteIndex];
             document.getElementById('editSiteName').value = site.name;
             document.getElementById('editSiteUrl').value = site.url;
-            document.getElementById('editSiteIcon').value = site.icon;
             document.getElementById('editSiteForm').setAttribute('data-special-index', siteIndex);
             editSiteModal.show();
         }
@@ -1003,9 +1009,8 @@
             const isSpecial = document.getElementById('addSiteForm').hasAttribute('data-special');
             const siteName = document.getElementById('siteName').value.trim();
             const siteUrl = document.getElementById('siteUrl').value.trim();
-            const siteIcon = document.getElementById('siteIcon').value.trim();
             
-            if (!siteName || !siteUrl || !siteIcon) {
+            if (!siteName || !siteUrl) {
                 alert('请填写所有字段');
                 return;
             }
@@ -1018,8 +1023,8 @@
                 
                 navData.more.special.sites.push({
                     name: siteName,
-                    url: siteUrl,
-                    icon: siteIcon
+                    url: siteUrl
+                    // 不保存icon字段，渲染时自动生成
                 });
                 
                 addSiteModal.hide();
@@ -1033,8 +1038,8 @@
                 
                 navData[currentPage].tabs[currentTabIndex].items.push({
                     name: siteName,
-                    url: siteUrl,
-                    icon: siteIcon
+                    url: siteUrl
+                    // 不保存icon字段，渲染时自动生成
                 });
                 
                 addSiteModal.hide();
@@ -1048,9 +1053,8 @@
             const isSpecial = document.getElementById('editSiteForm').hasAttribute('data-special-index');
             const siteName = document.getElementById('editSiteName').value.trim();
             const siteUrl = document.getElementById('editSiteUrl').value.trim();
-            const siteIcon = document.getElementById('editSiteIcon').value.trim();
             
-            if (!siteName || !siteUrl || !siteIcon) {
+            if (!siteName || !siteUrl) {
                 alert('请填写所有字段');
                 return;
             }
@@ -1060,8 +1064,8 @@
                 const siteIndex = parseInt(document.getElementById('editSiteForm').getAttribute('data-special-index'));
                 navData.more.special.sites[siteIndex] = {
                     name: siteName,
-                    url: siteUrl,
-                    icon: siteIcon
+                    url: siteUrl
+                    // 不保存icon字段，渲染时自动生成
                 };
                 
                 editSiteModal.hide();
@@ -1073,8 +1077,8 @@
                 const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
                 navData[currentPage].tabs[tabIndex].items[siteIndex] = {
                     name: siteName,
-                    url: siteUrl,
-                    icon: siteIcon
+                    url: siteUrl
+                    // 不保存icon字段，渲染时自动生成
                 };
                 
                 editSiteModal.hide();
@@ -1085,9 +1089,6 @@
         
         function saveNavData() {
             try {
-                // 保存到localStorage
-                localStorage.setItem('navData', JSON.stringify(navData));
-                
                 // 创建下载链接
                 const dataStr = JSON.stringify(navData, null, 2);
                 const dataBlob = new Blob([dataStr], {type: 'application/json'});
@@ -1098,7 +1099,7 @@
                 link.click();
                 document.body.removeChild(link);
                 
-                showAlert('导航数据已保存到本地存储并准备好下载', 'success');
+                showAlert('导航数据已保存并准备好下载', 'success');
             } catch (e) {
                 console.error('保存数据时出错:', e);
                 showAlert('保存数据时出错', 'danger');

@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航数据管理系统</title>
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .version-info {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 6px;
+        }
+        
+        .special-section {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        .special-section .badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .site-card {
+            width: 100px;
+            height: 110px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .site-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .site-card .delete-corner {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background-color: #dc3545;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 10;
+        }
+        
+        .site-card:hover .delete-corner {
+            opacity: 1;
+        }
+        
+        .site-card .site-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin: 0 auto 8px;
+            display: block;
+        }
+        
+        .site-card .site-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.2;
+            height: 28px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 6px;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: #e9ecef;
+        }
+        
+        .upload-icon {
+            font-size: 2.5rem;
+            color: #6c757d;
+        }
+        
+        .json-preview {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+        }
+        
+        .feature-card {
+            transition: transform 0.2s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .nav-tabs {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        
+        .nav-tabs .nav-link {
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 3px solid var(--primary-color);
+            background-color: transparent;
+        }
+        
+        .page-btn {
+            font-size: 0.85rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a0db8 0%, #1c67e3 100%);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="header py-4 mb-4">
+        <div class="container">
+            <h1 class="text-center mb-2">导航数据管理系统</h1>
+            <p class="text-center mb-0">管理您的网站导航选项卡内容</p>
+        </div>
+    </div>
+    
+    <div class="container container-main">
+        <!-- 版本信息 -->
+        <div class="version-info p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-2"><i class="fas fa-code-branch me-2"></i>版本信息</h5>
+                    <div>
+                        <span class="badge bg-light text-dark me-2">Web版本: <span id="currentWebVol">-</span></span>
+                        <span class="badge bg-light text-dark">数据版本: <span id="currentWebData">-</span></span>
+                    </div>
+                </div>
+                <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#versionModal">
+                    <i class="fas fa-edit me-1"></i>编辑版本
+                </button>
+            </div>
+        </div>
+        
+        <!-- 页面选择器 -->
+        <div class="bg-light rounded p-3 mb-4">
+            <h5 class="mb-3">选择要管理的页面:</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-outline-primary page-btn active" data-page="index">主页 (index.html)</button>
+                <button class="btn btn-outline-primary page-btn" data-page="more">更多页面 (More.html)</button>
+                <button class="btn btn-outline-primary page-btn" data-page="dd">DD页面 (DD.html)</button>
+                <button class="btn btn-outline-primary page-btn" data-page="download">下载页面 (Download.html)</button>
+                <button class="btn btn-outline-primary page-btn" data-page="develop">开发页面 (Develop.html)</button>
+            </div>
+        </div>
+        
+        <!-- 功能卡片 -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-primary mb-3"><i class="fas fa-file-upload fa-3x"></i></div>
+                        <h5>上传JSON文件</h5>
+                        <p class="flex-grow-1">从您的设备上传导航数据JSON文件</p>
+                        <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="fas fa-upload me-1"></i>上传JSON
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-success mb-3"><i class="fas fa-database fa-3x"></i></div>
+                        <h5>从本地加载</h5>
+                        <p class="flex-grow-1">从本地JSON文件加载数据</p>
+                        <button id="loadFromLocalBtn" class="btn btn-success mt-2">
+                            <i class="fas fa-download me-1"></i>从本地加载
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-info mb-3"><i class="fas fa-save fa-3x"></i></div>
+                        <h5>保存数据</h5>
+                        <p class="flex-grow-1">将当前数据保存到本地存储并下载JSON文件</p>
+                        <button id="saveBtn" class="btn btn-info mt-2 text-white">
+                            <i class="fas fa-save me-1"></i>保存数据
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card feature-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-warning mb-3"><i class="fas fa-trash-alt fa-3x"></i></div>
+                        <h5>清空数据</h5>
+                        <p class="flex-grow-1">清除当前已加载的所有导航数据</p>
+                        <button id="clearDataBtn" class="btn btn-warning mt-2">
+                            <i class="fas fa-broom me-1"></i>清空数据
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主要管理区域 -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                <span id="currentPageTitle" class="fw-bold">主页 - 导航选项卡管理</span>
+                <div>
+                    <button id="addTabBtn" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-plus me-1"></i>添加选项卡
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-4">
+                    <strong>使用说明：</strong> 您可以在此页面管理导航选项卡和其中的网站链接。修改后请点击"保存数据"按钮。
+                </div>
+                
+                <ul class="nav nav-tabs mb-4" id="navTabs" role="tablist"></ul>
+                <div class="tab-content" id="navTabContent"></div>
+                
+                <!-- 特殊栏目管理区域 -->
+                <div id="specialSection" class="d-none">
+                    <div class="special-section p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-2"><i class="fas fa-lock me-2"></i>特殊隐藏栏目管理 - 小日本ポートエロ</h5>
+                                <div>
+                                    <span class="badge me-2">触发代码: 001</span>
+                                    <span class="badge">在More页面中默认隐藏</span>
+                                </div>
+                            </div>
+                            <div>
+                                <button id="addSpecialSiteBtn" class="btn btn-light btn-sm">
+                                    <i class="fas fa-plus me-1"></i>添加网站
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sites-container mt-3" id="specialSitesContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <div class="footer py-3 mt-4">
+        <div class="container text-center">
+            <p class="mb-1 text-muted">导航数据管理系统 &copy; 2023 Xiaolan</p>
+            <p class="mb-0"><a href="../../index.html" class="text-decoration-none">返回主页</a></p>
+        </div>
+    </div>
+    
+    <!-- 模态框部分保持不变 -->
+    <!-- 版本信息编辑模态框 -->
+    <div class="modal fade" id="versionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑版本信息</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="versionForm">
+                        <div class="mb-3">
+                            <label for="webVol" class="form-label">Web版本 (web_vol)</label>
+                            <input type="text" class="form-control" id="webVol" placeholder="例如: 1.2.0" required>
+                            <div class="form-text">网站编译版本号</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="webData" class="form-label">数据版本 (web_data)</label>
+                            <input type="text" class="form-control" id="webData" placeholder="例如: 2024.03.15" required>
+                            <div class="form-text">列表数据版本号</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveVersionBtn">保存版本信息</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">上传JSON文件</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <div class="upload-area" id="dropArea">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <h5>拖放JSON文件到这里</h5><p class="text-muted">或者</p>
+                    <label for="jsonFile" class="btn btn-primary"><i class="fas fa-folder-open me-1"></i>选择文件</label>
+                    <input type="file" id="jsonFile" accept=".json" class="d-none">
+                    <div class="mt-3"><small class="text-muted">支持标准的JSON格式文件</small></div>
+                </div>
+                <div id="fileInfo" class="d-none">
+                    <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i><span id="fileName">已选择文件：</span></div>
+                    <h6 class="mt-4">JSON预览：</h6><div class="json-preview" id="jsonPreview"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmUpload" disabled>确认上传</button>
+            </div>
+        </div></div>
+    </div>
+    <div class="modal fade" id="addSiteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">添加新网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <form id="addSiteForm">
+                    <div class="mb-3"><label for="siteName" class="form-label">网站名称</label><input type="text" class="form-control" id="siteName" required></div>
+                    <div class="mb-3"><label for="siteUrl" class="form-label">网站地址</label><input type="url" class="form-control" id="siteUrl" required></div>
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <small><i class="fas fa-info-circle me-1"></i>图标将自动使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmAddSite">添加</button>
+            </div>
+        </div></div>
+    </div>
+    <div class="modal fade" id="editSiteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">编辑网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <form id="editSiteForm">
+                    <input type="hidden" id="editSiteTabIndex">
+                    <input type="hidden" id="editSiteIndex">
+                    <div class="mb-3"><label for="editSiteName" class="form-label">网站名称</label><input type="text" class="form-control" id="editSiteName" required></div>
+                    <div class="mb-3"><label for="editSiteUrl" class="form-label">网站地址</label><input type="url" class="form-control" id="editSiteUrl" required></div>
+                    <div class="mb-3">
+                        <div class="alert alert-info">
+                            <small><i class="fas fa-info-circle me-1"></i>图标将自动使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmEditSite">保存</button>
+            </div>
+        </div></div>
+    </div>
+    <div class="modal fade" id="addTabModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">添加新选项卡</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <form id="addTabForm">
+                    <div class="mb-3"><label for="tabName" class="form-label">选项卡名称</label><input type="text" class="form-control" id="tabName" required></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmAddTab">添加</button>
+            </div>
+        </div></div>
+    </div>
+    <div class="modal fade" id="confirmClearModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">确认清空数据</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>您确定要清空所有已加载的导航数据吗？此操作不可撤销！
+                </div>
+                <p class="mt-3">当前页面: <span id="currentPageName">主页</span></p>
+                <p>将删除所有选项卡和网站数据</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-warning" id="confirmClear">确认清空</button>
+            </div>
+        </div></div>
+    </div>
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">确认删除</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>您确定要删除这个网站吗？此操作不可撤销！
+                </div>
+                <p class="mt-3">网站名称: <span id="deleteSiteName"></span></p>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="deleteTabIndex">
+                <input type="hidden" id="deleteSiteIndex">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">确认删除</button>
+            </div>
+        </div></div>
+    </div>
+    
+    <script src="../../js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 图标前缀常量
+        const ICON_PREFIX = 'https://api.afmax.cn/so/ico/index.php?r=';
+        
+        let navData = {
+            version: {
+                web_vol: "1.0.0",
+                web_data: "2024.01.01"
+            }
+        };
+        let currentTabIndex = 0;
+        let currentPage = 'index';
+        const navTabs = document.getElementById('navTabs');
+        const navTabContent = document.getElementById('navTabContent');
+        const saveBtn = document.getElementById('saveBtn');
+        const addTabBtn = document.getElementById('addTabBtn');
+        const loadFromLocalBtn = document.getElementById('loadFromLocalBtn');
+        const pageTitle = document.getElementById('currentPageTitle');
+        const pageButtons = document.querySelectorAll('.page-btn');
+        const currentWebVol = document.getElementById('currentWebVol');
+        const currentWebData = document.getElementById('currentWebData');
+        const saveVersionBtn = document.getElementById('saveVersionBtn');
+        const versionModal = new bootstrap.Modal(document.getElementById('versionModal'));
+        const specialSection = document.getElementById('specialSection');
+        const addSpecialSiteBtn = document.getElementById('addSpecialSiteBtn');
+        const specialSitesContainer = document.getElementById('specialSitesContainer');
+
+        // 其他变量声明
+        const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));
+        const editSiteModal = new bootstrap.Modal(document.getElementById('editSiteModal'));
+        const addTabModal = new bootstrap.Modal(document.getElementById('addTabModal'));
+        const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
+        const confirmAddSite = document.getElementById('confirmAddSite');
+        const confirmAddTab = document.getElementById('confirmAddTab');
+        const confirmEditSite = document.getElementById('confirmEditSite');
+        const confirmUpload = document.getElementById('confirmUpload');
+        const jsonFileInput = document.getElementById('jsonFile');
+        const dropArea = document.getElementById('dropArea');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const jsonPreview = document.getElementById('jsonPreview');
+        const clearDataBtn = document.getElementById('clearDataBtn');
+        const confirmClearModal = new bootstrap.Modal(document.getElementById('confirmClearModal'));
+        const confirmClearBtn = document.getElementById('confirmClear');
+        const currentPageName = document.getElementById('currentPageName');
+        const deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        const confirmDeleteBtn = document.getElementById('confirmDelete');
+        const deleteSiteName = document.getElementById('deleteSiteName');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载时尝试从本地JSON文件加载数据
+            loadFromJsonFile();
+            setupEventListeners();
+            updateVersionDisplay();
+        });
+        
+        function setupEventListeners() {
+            saveBtn.addEventListener('click', saveNavData);
+            addTabBtn.addEventListener('click', showAddTabModal);
+            loadFromLocalBtn.addEventListener('click', loadFromJsonFile);
+            confirmAddSite.addEventListener('click', addNewSite);
+            confirmAddTab.addEventListener('click', addNewTab);
+            confirmUpload.addEventListener('click', processUploadedFile);
+            clearDataBtn.addEventListener('click', showClearConfirmModal);
+            confirmClearBtn.addEventListener('click', clearAllData);
+            confirmEditSite.addEventListener('click', saveEditedSite);
+            confirmDeleteBtn.addEventListener('click', deleteSite);
+            saveVersionBtn.addEventListener('click', saveVersionInfo);
+            
+            // 特殊栏目管理
+            addSpecialSiteBtn.addEventListener('click', showAddSpecialSiteModal);
+            
+            // 版本信息编辑
+            document.querySelector('.version-info .btn').addEventListener('click', function() {
+                document.getElementById('webVol').value = navData.version.web_vol;
+                document.getElementById('webData').value = navData.version.web_data;
+            });
+            
+            pageButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    pageButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentPage = this.getAttribute('data-page');
+                    updatePageTitle();
+                    updateSpecialSectionVisibility();
+                    renderTabs();
+                });
+            });
+            
+            jsonFileInput.addEventListener('change', handleFileSelect);
+            dropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();e.stopPropagation();
+                dropArea.style.borderColor = '#6a11cb';
+                dropArea.style.backgroundColor = '#e9ecef';
+            });
+            dropArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();e.stopPropagation();
+                dropArea.style.borderColor = '#dee2e6';
+                dropArea.style.backgroundColor = '#f8f9fa';
+            });
+            dropArea.addEventListener('drop', function(e) {
+                e.preventDefault();e.stopPropagation();
+                dropArea.style.borderColor = '#dee2e6';
+                dropArea.style.backgroundColor = '#f8f9fa';
+                const files = e.dataTransfer.files;
+                if (files.length && files[0].type === 'application/json') {
+                    jsonFileInput.files = files;
+                    handleFileSelect(e);
+                } else {
+                    alert('请拖放有效的JSON文件');
+                }
+            });
+        }
+        
+        function updatePageTitle() {
+            const titles = {
+                'index': '主页 - 导航选项卡管理',
+                'more': '更多页面 - 导航选项卡管理', 
+                'dd': 'DD页面 - 导航选项卡管理',
+                'download': '下载页面 - 导航选项卡管理',
+                'develop': '开发页面 - 导航选项卡管理'
+            };
+            pageTitle.textContent = titles[currentPage] || '导航选项卡管理';
+        }
+        
+        function updateSpecialSectionVisibility() {
+            if (currentPage === 'more') {
+                specialSection.style.display = 'block';
+            } else {
+                specialSection.style.display = 'none';
+            }
+        }
+        
+        function updateVersionDisplay() {
+            if (navData.version) {
+                currentWebVol.textContent = navData.version.web_vol;
+                currentWebData.textContent = navData.version.web_data;
+            }
+        }
+        
+        function saveVersionInfo() {
+            const webVol = document.getElementById('webVol').value.trim();
+            const webData = document.getElementById('webData').value.trim();
+            
+            if (!webVol || !webData) {
+                alert('请填写所有版本字段');
+                return;
+            }
+            
+            // 确保version对象存在
+            if (!navData.version) {
+                navData.version = {};
+            }
+            
+            navData.version.web_vol = webVol;
+            navData.version.web_data = webData;
+            
+            versionModal.hide();
+            updateVersionDisplay();
+            showAlert('版本信息已更新', 'success');
+        }
+        
+        // 从本地JSON文件加载数据
+        function loadFromJsonFile() {
+            fetch('../../js/nav-data.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('网络响应不正常');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 确保版本信息存在
+                    if (!data.version) {
+                        data.version = {
+                            web_vol: "1.0.0",
+                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
+                        };
+                    }
+                    
+                    navData = data;
+                    renderTabs();
+                    renderSpecialSites();
+                    updateVersionDisplay();
+                    updateSpecialSectionVisibility();
+                    showAlert('数据已从本地JSON文件加载', 'success');
+                })
+                .catch(error => {
+                    console.error('加载本地JSON文件失败:', error);
+                    showAlert('加载本地JSON文件失败: ' + error.message, 'danger');
+                    
+                    // 如果没有本地数据，使用默认结构
+                    navData = {
+                        version: {
+                            web_vol: "1.0.0",
+                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
+                        },
+                        index: { tabs: [] },
+                        more: { tabs: [] },
+                        dd: { tabs: [] },
+                        download: { tabs: [] },
+                        develop: { tabs: [] }
+                    };
+                    
+                    document.getElementById('navTabContent').innerHTML = '<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>暂无数据，请先上传JSON文件或添加内容</p></div>';
+                });
+        }
+        
+        function showClearConfirmModal() {
+            currentPageName.textContent = getPageDisplayName(currentPage);
+            confirmClearModal.show();
+        }
+        
+        function getPageDisplayName(page) {
+            const names = {
+                'index': '主页',
+                'more': '更多页面',
+                'dd': 'DD页面', 
+                'download': '下载页面',
+                'develop': '开发页面'
+            };
+            return names[page] || page;
+        }
+        
+        function clearAllData() {
+            if (navData[currentPage]) {
+                navData[currentPage] = { tabs: [] };
+                showAlert('已清空 ' + getPageDisplayName(currentPage) + ' 的数据', 'success');
+                renderTabs();
+            } else {
+                showAlert('当前页面没有数据可清空', 'warning');
+            }
+            confirmClearModal.hide();
+        }
+        
+        function handleFileSelect(event) {
+            const file = jsonFileInput.files[0];
+            if (!file) return;
+            
+            if (file.type !== 'application/json') {
+                alert('请选择JSON文件');
+                return;
+            }
+            
+            fileName.textContent = `已选择文件：${file.name}`;
+            fileInfo.classList.remove('d-none');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    const jsonData = JSON.parse(content);
+                    
+                    // 验证JSON结构并确保版本信息存在
+                    if (!jsonData.version) {
+                        jsonData.version = {
+                            web_vol: jsonData.version?.web_vol || "1.0.0",
+                            web_data: jsonData.version?.web_data || new Date().toISOString().split('T')[0].replace(/-/g, '.')
+                        };
+                    }
+                    
+                    jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
+                    confirmUpload.disabled = false;
+                    window.uploadedData = jsonData;
+                } catch (e) {
+                    jsonPreview.textContent = `错误：${e.message}`;
+                    confirmUpload.disabled = true;
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function processUploadedFile() {
+            if (window.uploadedData) {
+                navData = window.uploadedData;
+                updateVersionDisplay();
+                renderTabs();
+                renderSpecialSites();
+                updateSpecialSectionVisibility();
+                uploadModal.hide();
+                showAlert('JSON文件已成功上传并加载', 'success');
+                delete window.uploadedData;
+                jsonFileInput.value = '';
+                fileInfo.classList.add('d-none');
+                confirmUpload.disabled = true;
+            }
+        }
+        
+        function renderTabs() {
+            navTabs.innerHTML = '';
+            navTabContent.innerHTML = '';
+            
+            if (!navData[currentPage] || !navData[currentPage].tabs || navData[currentPage].tabs.length === 0) {
+                navTabContent.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>'+getPageDisplayName(currentPage)+'中没有导航数据</p><button class="btn btn-primary mt-2" id="addFirstTab"><i class="fas fa-plus me-1"></i>添加第一个选项卡</button></div>';
+                document.getElementById('addFirstTab').addEventListener('click', showAddTabModal);
+                return;
+            }
+            
+            navData[currentPage].tabs.forEach((tab, index) => {
+                const tabNav = document.createElement('li');
+                tabNav.className = 'nav-item';
+                tabNav.innerHTML = '<a class="nav-link '+(index === 0 ? 'active' : '')+'" id="tab-'+index+'-nav" data-bs-toggle="tab" href="#tab-'+index+'" role="tab" aria-controls="tab-'+index+'" aria-selected="'+(index === 0 ? 'true' : 'false')+'">'+tab.name+'</a>';
+                navTabs.appendChild(tabNav);
+                
+                const tabContent = document.createElement('div');
+                tabContent.className = 'tab-pane fade '+(index === 0 ? 'show active' : '');
+                tabContent.id = 'tab-'+index;
+                tabContent.setAttribute('role', 'tabpanel');
+                tabContent.innerHTML = '<div class="d-flex justify-content-between align-items-center mb-3"><h5>'+tab.name+' 选项卡中的网站</h5><button class="btn btn-sm btn-primary add-site-btn" data-tab-index="'+index+'"><i class="fas fa-plus me-1"></i>添加网站</button></div><div class="sites-container" id="sites-container-'+index+'">'+renderSites(tab.items, index)+'</div>';
+                navTabContent.appendChild(tabContent);
+            });
+            
+            // 绑定添加网站按钮事件
+            document.querySelectorAll('.add-site-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentTabIndex = parseInt(this.getAttribute('data-tab-index'));
+                    document.getElementById('addSiteForm').reset();
+                    addSiteModal.show();
+                });
+            });
+            
+            // 绑定编辑和删除按钮事件
+            bindSiteActions();
+        }
+        
+        function renderSites(sites, tabIndex) {
+            if (!sites || sites.length === 0) {
+                return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>此选项卡中没有网站</p></div>';
+            }
+            
+            return sites.map((site, siteIndex) => {
+                const iconUrl = site.icon || ICON_PREFIX + encodeURIComponent(site.url);
+                return '<div class="site-card" data-site-index="'+siteIndex+'" data-tab-index="'+tabIndex+'">' +
+                    '<div class="delete-corner" data-tab-index="'+tabIndex+'" data-site-index="'+siteIndex+'">' +
+                        '<i class="fas fa-times"></i>' +
+                    '</div>' +
+                    '<img src="'+iconUrl+'" class="site-icon" alt="'+site.name+'" onerror="this.src=\'../img/index.png\'">' +
+                    '<div class="site-name">'+site.name+'</div>' +
+                '</div>';
+            }).join('');
+        }
+        
+        function bindSiteActions() {
+            // 绑定卡片点击事件（编辑）
+            document.querySelectorAll('.site-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.delete-corner')) return;
+                    
+                    const tabIndex = parseInt(this.getAttribute('data-tab-index'));
+                    const siteIndex = parseInt(this.getAttribute('data-site-index'));
+                    editSite(tabIndex, siteIndex);
+                });
+            });
+            
+            // 绑定删除按钮事件
+            document.querySelectorAll('.delete-corner').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const tabIndex = parseInt(this.getAttribute('data-tab-index'));
+                    const siteIndex = parseInt(this.getAttribute('data-site-index'));
+                    showDeleteConfirm(tabIndex, siteIndex);
+                });
+            });
+        }
+        
+        function editSite(tabIndex, siteIndex) {
+            const site = navData[currentPage].tabs[tabIndex].items[siteIndex];
+            document.getElementById('editSiteTabIndex').value = tabIndex;
+            document.getElementById('editSiteIndex').value = siteIndex;
+            document.getElementById('editSiteName').value = site.name;
+            document.getElementById('editSiteUrl').value = site.url;
+            editSiteModal.show();
+        }
+        
+        function saveEditedSite() {
+            const tabIndex = parseInt(document.getElementById('editSiteTabIndex').value);
+            const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
+            const siteName = document.getElementById('editSiteName').value.trim();
+            const siteUrl = document.getElementById('editSiteUrl').value.trim();
+            
+            if (!siteName || !siteUrl) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            navData[currentPage].tabs[tabIndex].items[siteIndex] = {
+                name: siteName,
+                url: siteUrl
+                // 不保存icon字段，渲染时自动生成
+            };
+            
+            editSiteModal.hide();
+            renderTabs();
+            showAlert('网站信息已更新: ' + siteName, 'success');
+        }
+        
+        function showDeleteConfirm(tabIndex, siteIndex) {
+            const site = navData[currentPage].tabs[tabIndex].items[siteIndex];
+            document.getElementById('deleteTabIndex').value = tabIndex;
+            document.getElementById('deleteSiteIndex').value = siteIndex;
+            document.getElementById('deleteSiteName').textContent = site.name;
+            deleteConfirmModal.show();
+        }
+        
+        function deleteSite() {
+            const tabIndex = parseInt(document.getElementById('deleteTabIndex').value);
+            const siteIndex = parseInt(document.getElementById('deleteSiteIndex').value);
+            const siteName = navData[currentPage].tabs[tabIndex].items[siteIndex].name;
+            
+            navData[currentPage].tabs[tabIndex].items.splice(siteIndex, 1);
+            
+            deleteConfirmModal.hide();
+            renderTabs();
+            showAlert('已删除网站: ' + siteName, 'success');
+        }
+        
+        function showAddTabModal() {
+            document.getElementById('addTabForm').reset();
+            addTabModal.show();
+        }
+        
+        function addNewTab() {
+            const tabName = document.getElementById('tabName').value.trim();
+            if (!tabName) {
+                alert('请输入选项卡名称');
+                return;
+            }
+            
+            if (!navData[currentPage]) {
+                navData[currentPage] = { tabs: [] };
+            }
+            if (!navData[currentPage].tabs) {
+                navData[currentPage].tabs = [];
+            }
+            
+            navData[currentPage].tabs.push({
+                name: tabName,
+                items: []
+            });
+            
+            addTabModal.hide();
+            renderTabs();
+            showAlert('已添加选项卡: '+tabName, 'success');
+        }
+        
+        function addNewSite() {
+            const siteName = document.getElementById('siteName').value.trim();
+            const siteUrl = document.getElementById('siteUrl').value.trim();
+            
+            if (!siteName || !siteUrl) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            if (!navData[currentPage].tabs[currentTabIndex].items) {
+                navData[currentPage].tabs[currentTabIndex].items = [];
+            }
+            
+            navData[currentPage].tabs[currentTabIndex].items.push({
+                name: siteName,
+                url: siteUrl
+                // 不保存icon字段，渲染时自动生成
+            });
+            
+            addSiteModal.hide();
+            renderTabs();
+            showAlert('已添加网站: '+siteName, 'success');
+        }
+        
+        // 特殊栏目管理功能
+        function renderSpecialSites() {
+            specialSitesContainer.innerHTML = '';
+            
+            // 检查特殊栏目是否存在
+            if (!navData.more || !navData.more.special || !navData.more.special.sites) {
+                // 如果不存在，创建默认结构
+                if (!navData.more) navData.more = {};
+                if (!navData.more.special) navData.more.special = {};
+                navData.more.special.sites = [];
+                
+                specialSitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无特殊栏目网站，请添加网站</p></div>';
+                return;
+            }
+            
+            const sites = navData.more.special.sites;
+            
+            if (sites.length === 0) {
+                specialSitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无特殊栏目网站，请添加网站</p></div>';
+                return;
+            }
+            
+            sites.forEach((site, index) => {
+                const iconUrl = site.icon || ICON_PREFIX + encodeURIComponent(site.url);
+                const siteCard = document.createElement('div');
+                siteCard.className = 'site-card';
+                siteCard.innerHTML = `
+                    <div class="delete-corner" data-site-index="${index}" data-special="true">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <img src="${iconUrl}" alt="${site.name}" class="site-icon" onerror="this.src='../img/index.png'">
+                    <div class="site-name">${site.name}</div>
+                `;
+                specialSitesContainer.appendChild(siteCard);
+                
+                // 添加点击编辑事件
+                siteCard.addEventListener('click', function(e) {
+                    if (!e.target.closest('.delete-corner')) {
+                        showEditSpecialSiteModal(index);
+                    }
+                });
+                
+                // 添加删除事件
+                siteCard.querySelector('.delete-corner').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const siteIndex = this.getAttribute('data-site-index');
+                    deleteSpecialSite(siteIndex);
+                });
+            });
+        }
+        
+        function showAddSpecialSiteModal() {
+            document.getElementById('siteName').value = '';
+            document.getElementById('siteUrl').value = '';
+            document.getElementById('addSiteForm').setAttribute('data-special', 'true');
+            addSiteModal.show();
+        }
+        
+        function showEditSpecialSiteModal(siteIndex) {
+            const site = navData.more.special.sites[siteIndex];
+            document.getElementById('editSiteName').value = site.name;
+            document.getElementById('editSiteUrl').value = site.url;
+            document.getElementById('editSiteForm').setAttribute('data-special-index', siteIndex);
+            editSiteModal.show();
+        }
+        
+        function deleteSpecialSite(siteIndex) {
+            if (confirm('确定要删除这个特殊栏目网站吗？')) {
+                navData.more.special.sites.splice(siteIndex, 1);
+                renderSpecialSites();
+                showAlert('特殊栏目网站已删除', 'success');
+            }
+        }
+        
+        // 修改添加网站函数以支持特殊栏目
+        function addNewSite() {
+            const isSpecial = document.getElementById('addSiteForm').hasAttribute('data-special');
+            const siteName = document.getElementById('siteName').value.trim();
+            const siteUrl = document.getElementById('siteUrl').value.trim();
+            
+            if (!siteName || !siteUrl) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            if (isSpecial) {
+                // 添加到特殊栏目
+                if (!navData.more.special.sites) {
+                    navData.more.special.sites = [];
+                }
+                
+                navData.more.special.sites.push({
+                    name: siteName,
+                    url: siteUrl
+                    // 不保存icon字段，渲染时自动生成
+                });
+                
+                addSiteModal.hide();
+                renderSpecialSites();
+                showAlert('网站已添加到特殊栏目: '+siteName, 'success');
+            } else {
+                // 普通添加网站逻辑
+                if (!navData[currentPage].tabs[currentTabIndex].items) {
+                    navData[currentPage].tabs[currentTabIndex].items = [];
+                }
+                
+                navData[currentPage].tabs[currentTabIndex].items.push({
+                    name: siteName,
+                    url: siteUrl
+                    // 不保存icon字段，渲染时自动生成
+                });
+                
+                addSiteModal.hide();
+                renderTabs();
+                showAlert('已添加网站: '+siteName, 'success');
+            }
+        }
+        
+        // 修改保存编辑网站函数以支持特殊栏目
+        function saveEditedSite() {
+            const isSpecial = document.getElementById('editSiteForm').hasAttribute('data-special-index');
+            const siteName = document.getElementById('editSiteName').value.trim();
+            const siteUrl = document.getElementById('editSiteUrl').value.trim();
+            
+            if (!siteName || !siteUrl) {
+                alert('请填写所有字段');
+                return;
+            }
+            
+            if (isSpecial) {
+                // 编辑特殊栏目网站
+                const siteIndex = parseInt(document.getElementById('editSiteForm').getAttribute('data-special-index'));
+                navData.more.special.sites[siteIndex] = {
+                    name: siteName,
+                    url: siteUrl
+                    // 不保存icon字段，渲染时自动生成
+                };
+                
+                editSiteModal.hide();
+                renderSpecialSites();
+                showAlert('特殊栏目网站已更新: '+siteName, 'success');
+            } else {
+                // 普通编辑网站逻辑
+                const tabIndex = parseInt(document.getElementById('editSiteTabIndex').value);
+                const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
+                navData[currentPage].tabs[tabIndex].items[siteIndex] = {
+                    name: siteName,
+                    url: siteUrl
+                    // 不保存icon字段，渲染时自动生成
+                };
+                
+                editSiteModal.hide();
+                renderTabs();
+                showAlert('网站已更新: '+siteName, 'success');
+            }
+        }
+        
+        function saveNavData() {
+            try {
+                // 创建下载链接
+                const dataStr = JSON.stringify(navData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = 'nav-data.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showAlert('导航数据已保存并准备好下载', 'success');
+            } catch (e) {
+                console.error('保存数据时出错:', e);
+                showAlert('保存数据时出错', 'danger');
+            }
+        }
+        
+        function showAlert(message, type) {
+            const existingAlert = document.querySelector('.alert-floating');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-'+type+' alert-floating position-fixed';
+            alert.style.top = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '1050';
+            alert.style.minWidth = '300px';
+            alert.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            alert.innerHTML = '<div class="d-flex align-items-center"><i class="fas '+(type === 'success' ? 'fa-check-circle' : type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle')+' me-2"></i><div>'+message+'</div><button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button></div>';
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
