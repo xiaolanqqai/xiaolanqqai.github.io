@@ -107,18 +107,3 @@ function fly(myJson) {
 	}
 	oList.innerHTML = str;
 }
-		{
-			for (j=0;Oul1.length>j;j++) {
-				if (j==i) {
-					continue;
-				}
-				Odiv2[j].className='top11';
-				Odiv2[j].style.display='none';
-			}
-			
-			Odiv2[this.index].className='';
-			Odiv2[this.index].style.display='block';
-		}
-	}
-
-}
