@@ -7,27 +7,23 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>Xiaolan</title>
 	<link rel="Shortcut icon" href="favicon.ico" loading="lazy">
-	<!-- 优化：使用合并后的CSS文件 -->
-	<link rel="stylesheet" href="css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="css/optimized-main.css" />
+	<!-- 预加载关键CSS -->
+	<link rel="preload" href="css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="css/bootstrap.min.css"></noscript>
+	<link rel="preload" href="css/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="css/index.css"></noscript>
+	<link rel="stylesheet" type="text/css" href="css/search-form.css" media="print" onload="this.media='all'">
+	
+	<!-- 异步加载JS -->
+	<script src="js/jquery-3.5.1.min.js" defer></script>
+	<script src="performance-config.js" defer></script>
 </head>
 
 <body style="overflow-y: hidden">
+	<!-- 管理入口按钮 -->
 	<div class="z-5 oh">
 		<div id="tc" class="tc">
-			<button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-				aria-controls="offcanvasRight">导航管理</button>
-			<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
-				aria-labelledby="offcanvasRightLabel">
-				<div class="offcanvas-header">
-					<h5 class="offcanvas-title" id="offcanvasRightLabel">导航管理</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-				</div>
-				<div class="offcanvas-body">
-					<p>您可以在这里管理导航数据</p>
-					<a href="nav-manager.html" class="btn btn-primary">打开导航管理器</a>
-				</div>
-			</div>
+			<a href="cms.html" class="btn btn-primary" target="_blank">管理</a>
 		</div>
 	</div>
 	<div class="z-2 d-flex flex-column mx-auto">
@@ -48,7 +44,8 @@
 					<div id="search_ajx">
 						<ul id="list" style="display:none;"></ul>
 					</div>
-				</form></div>
+				</form>
+				<script type="text/javascript" src="js/search_ajx.js"></script>
 			</div>
 		</div>
 		<div class="d-flex flex-column" style="height: 60%;">
@@ -61,9 +58,7 @@
 		</div>
 		<div class="fixed-bottom mx-1">
 			<div class="container-fluid">
-				<div class="float-start fw-light"><span id="jinrishici-sentence">正在加载今日诗词....</span>
-					<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-				</div>
+				<div class="float-start fw-light"><span id="jinrishici-sentence">正在加载今日诗词....</span></div>
 				<div class="float-end">
 					<span class="badge text-black-50">
 						<a href="test/index.html" rel="nofollow" target="_blank">Ts</a> •
@@ -76,188 +71,187 @@
 			</div>
 		</div>
 	</div>
-	<script src="js/data-manager.js"></script>
 	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			// 使用数据管理模块加载和渲染导航数据
-			dataManager.loadNavigationData('index')
-				.then(navData => {
-					renderNavigation(navData);
+	// 异步加载关键JS
+	function loadScript(src, callback) {
+		var script = document.createElement('script');
+		script.src = src;
+		script.onload = callback;
+		document.head.appendChild(script);
+	}
+
+	// 延迟加载非关键资源
+	document.addEventListener('DOMContentLoaded', function () {
+		// 加载Bootstrap
+		loadScript('js/bootstrap.bundle.min.js', function() {
+			// 加载诗词API
+			loadScript('https://sdk.jinrishici.com/v2/browser/jinrishici.js', function() {
+				jinrishici.load(function(result) {
+					document.getElementById('jinrishici-sentence').innerHTML = result.data.content;
+				});
+			});
+			
+			// 加载导航数据
+			fetch('js/nav-data.json')
+				.then(response => response.json())
+				.then(data => {
+					renderNavigation(data.index);
+					loadVersionInfo(data);
 				})
 				.catch(error => {
 					console.error('加载导航数据时出错:', error);
 					document.getElementById('nav-tabs-container').innerHTML = '<div class="alert alert-info">暂无导航数据，请先上传JSON文件</div>';
-				});
-
-			// 加载版本信息
-			dataManager.loadVersionInfo()
-				.then(versionInfo => {
-					if (window.pageManager && typeof window.pageManager.updateVersionInfo === 'function') {
-						window.pageManager.updateVersionInfo(versionInfo);
-					} else {
-						// 降级处理
-						document.getElementById('uptime1').textContent = `Beta:${versionInfo.web_vol || 'unknown'}`;
-						document.getElementById('state1').textContent = 'Ready';
-					}
-				})
-				.catch(error => {
-					console.error('加载版本信息时出错:', error);
 					document.getElementById('uptime1').textContent = 'Beta:error';
 					document.getElementById('state1').textContent = 'Error';
 				});
 		});
+	});
 
-		function renderNavigation(navData) {
-			const navTabsContainer = document.getElementById('nav-tabs-container');
-			const navContentContainer = document.getElementById('nav-content-container');
-			navTabsContainer.innerHTML = '';
-			navContentContainer.innerHTML = '';
+	function renderNavigation(navData) {
+		const navTabsContainer = document.getElementById('nav-tabs-container');
+		const navContentContainer = document.getElementById('nav-content-container');
+		navTabsContainer.innerHTML = '';
+		navContentContainer.innerHTML = '';
 
-			// 渲染主要标签页
-			navData.tabs.forEach((tab, index) => {
-				const tabElement = document.createElement('a');
-				tabElement.className = `nav-link btn nav-top ${index === 0 ? 'active' : ''}`;
-				tabElement.textContent = tab.name;
-				tabElement.setAttribute('data-tab', tab.name.toLowerCase().replace(/\s+/g, '-'));
-				tabElement.href = '#';
-				tabElement.addEventListener('click', function (e) {
-					e.preventDefault();
-					switchTab(tab.name.toLowerCase().replace(/\s+/g, '-'));
-				});
-				navTabsContainer.appendChild(tabElement);
-
-				const contentElement = document.createElement('div');
-				contentElement.className = `nav-ban ${index === 0 ? '' : 'd-none'}`;
-				contentElement.id = `tab-${tab.name.toLowerCase().replace(/\s+/g, '-')}`;
-				const row = document.createElement('div');
-				row.className = 'row row-cols-4 p-2';
-				tab.items.forEach(item => {
-					const col = document.createElement('a');
-					col.href = item.url;
-					col.rel = 'nofollow';
-					col.target = '_blank';
-					col.className = 'col my-2 p-1 text-center text-black-50 kuaijie-a';
-					// 使用数据管理模块获取优化后的图标URL
-					const iconUrl = dataManager.getOptimizedIconUrl(item.icon);
-					col.innerHTML = `
-						<img class="border rounded-circle w" src="${iconUrl}" loading="lazy" onerror="this.src='img/index.png'">
-						<h6 class="t1">${item.name}</h6>`;
-					row.appendChild(col);
-				});
-				contentElement.appendChild(row);
-				navContentContainer.appendChild(contentElement);
+		// 渲染主要标签页
+		navData.tabs.forEach((tab, index) => {
+			const tabElement = document.createElement('a');
+			tabElement.className = `nav-link btn nav-top ${index === 0 ? 'active' : ''}`;
+			tabElement.textContent = tab.name;
+			tabElement.setAttribute('data-tab', tab.name.toLowerCase().replace(/\s+/g, '-'));
+			tabElement.href = '#';
+			tabElement.addEventListener('click', function (e) {
+				e.preventDefault();
+				switchTab(tab.name.toLowerCase().replace(/\s+/g, '-'));
 			});
+			navTabsContainer.appendChild(tabElement);
 
-			// 在最后添加More链接
-			const moreTabElement = document.createElement('a');
-			moreTabElement.className = 'nav-link btn nav-top';
-			moreTabElement.href = 'index/More.html';
-			moreTabElement.textContent = '...';
-			navTabsContainer.appendChild(moreTabElement);
-		}
+			const contentElement = document.createElement('div');
+			contentElement.className = `nav-ban ${index === 0 ? '' : 'd-none'}`;
+			contentElement.id = `tab-${tab.name.toLowerCase().replace(/\s+/g, '-')}`;
+			const row = document.createElement('div');
+			row.className = 'row row-cols-4 p-2';
+			tab.items.forEach(item => {
+				// 修改这里：使用与more页面相同的图标逻辑
+				const iconUrl = item.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}`;
+				const col = document.createElement('a');
+				col.href = item.url;
+				col.rel = 'nofollow';
+				col.target = '_blank';
+				col.className = 'col my-2 p-1 text-center text-black-50 kuaijie-a';
+				col.innerHTML = `
+					<img class="border rounded-circle w" src="${iconUrl}" loading="lazy" onerror="this.src='img/index.png'">
+					<h6 class="t1">${item.name}</h6>`;
+				row.appendChild(col);
+			});
+			contentElement.appendChild(row);
+			navContentContainer.appendChild(contentElement);
+		});
 
-		function switchTab(tabName) {
-			document.querySelectorAll('.nav-ban').forEach(tab => {
-				tab.classList.add('d-none');
-			});
-			document.querySelectorAll('.nav-top').forEach(tab => {
-				tab.classList.remove('active');
-			});
-			document.getElementById(`tab-${tabName}`).classList.remove('d-none');
-			document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-		}
-	</script>
+		// 在最后添加More链接
+		const moreTabElement = document.createElement('a');
+		moreTabElement.className = 'nav-link btn nav-top';
+		moreTabElement.href = 'index/More.html';
+		moreTabElement.textContent = '...';
+		navTabsContainer.appendChild(moreTabElement);
+	}
+
+	function switchTab(tabName) {
+		document.querySelectorAll('.nav-ban').forEach(tab => {
+			tab.classList.add('d-none');
+		});
+		document.querySelectorAll('.nav-top').forEach(tab => {
+			tab.classList.remove('active');
+		});
+		document.getElementById(`tab-${tabName}`).classList.remove('d-none');
+		document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+	}
+</script>
 	<div class="z-1">
 		<div class="z-4">
 			<div id="jsi-flying-fish-container" class="w-100"></div>
+			<script src="js/fish.js"></script>
 		</div>
 		<canvas class="background"></canvas>
 	</div>
-	<!-- 合并JavaScript文件引用，并移至底部 -->
-	<script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="js/search_ajx.js"></script>
 	<script src="js/particles.min.js"></script>
 	<script src="js/foot.js"></script>
-	<script src="js/fish.js"></script>
 	<script>
-		// 优化：将页面交互逻辑整合到一个事件监听器中
-		window.addEventListener('DOMContentLoaded', function() {
-			//首页栏目切换算法
-			var aTop = document.getElementsByClassName('nav-top');
-			var aBan = document.getElementsByClassName('nav-ban');
-			var i = 0;
-			for (i = 0; i < aTop.length - 1; i++) {
-				aTop[i].index = i;
-				aTop[i].onmouseenter = function () {
-					for (i = 0; i < aBan.length; i++) {
-						aTop[i].className = 'nav-link btn nav-top';
-						aBan[i].style.display = 'none';
-					};
-					aBan[this.index].style.display = 'block';
-					this.className = 'nav-link btn nav-top active';
+		//首页栏目切换算法
+		var aTop = document.getElementsByClassName('nav-top');
+		var aBan = document.getElementsByClassName('nav-ban');
+		var i = 0;
+		for (i = 0; i < aTop.length - 1; i++) {
+			aTop[i].index = i;
+			aTop[i].onmouseenter = function () {
+				for (i = 0; i < aBan.length; i++) {
+					aTop[i].className = 'nav-link btn nav-top';
+					aBan[i].style.display = 'none';
 				};
+				aBan[this.index].style.display = 'block';
+				this.className = 'nav-link btn nav-top active';
 			};
+		};
 
-			//首页搜索框跳转指向算法
-			var indexing = document.getElementById("indexing");
-			var oMoreB = localStorage.getItem("oMoreB");
+		//--------------------------------------------------------------
 
-			//浏览器缓存不存在情况
-			if (oMoreB == undefined) {
-				oMoreB = 3;
-				console.log("没有检查到缓存oMoreB");
-			} else {
-				oMoreB = parseInt(oMoreB);
-				console.log("检查到缓存oMoreB=" + oMoreB);
-			};
+		//首页搜索框跳转指向算法
+		var indexing = document.getElementById("indexing");
+		var oMoreB = localStorage.getItem("oMoreB");
 
-			// 图片源映射 - 使用对象映射代替多个if-else
-			const imageSources = {
-				0: "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg",
-				1: "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg",
-				2: "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg",
-				3: "https://pic.imgdb.cn/item/659e4f5a871b83018ae316a3.gif",
-				4: "https://pic.imgdb.cn/item/659e4f5a871b83018ae31849.webp",
-				5: "https://pic.imgdb.cn/item/659e4f59871b83018ae31580.gif",
-				6: "https://pic.imgdb.cn/item/659e501d871b83018ae61acb.webp",
-				7: "https://pic.imgdb.cn/item/659e4f5a871b83018ae317c6.gif",
-				8: "https://pic.imgdb.cn/item/659e501d871b83018ae61a59.png"
-			};
+		//浏览器缓存不存在情况
+		if (oMoreB == undefined) {
+			oMoreB = 3;
+			console.log("没有检查到缓存oMoreB");
+		} else {
+			oMoreB = parseInt(oMoreB);
+			console.log("检查到缓存oMoreB=" + oMoreB);
+		};
 
-			// 使用映射设置图片源
-			if (imageSources[oMoreB]) {
-				indexing.setAttribute("src", imageSources[oMoreB]);
-			}
+		if (oMoreB == 0) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg");
+		} else if (oMoreB == 1) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg");
+		} else if (oMoreB == 2) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae315f6.jpg");
+		} else if (oMoreB == 3) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae316a3.gif");
+		} else if (oMoreB == 4) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae31849.webp");
+		} else if (oMoreB == 5) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f59871b83018ae31580.gif");
+		} else if (oMoreB == 6) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e501d871b83018ae61acb.webp");
+		} else if (oMoreB == 7) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e4f5a871b83018ae317c6.gif");
+		} else if (oMoreB == 8) {
+			indexing.setAttribute("src", "https://pic.imgdb.cn/item/659e501d871b83018ae61a59.png");
+		};
 
-			//加载错误图片替换
-			$('img').on("error", function () {
-				$(this).attr('src', 'img/index.png');  // 替换为默认图片
+		//--------------------------------------------------------------
+
+		//加载错误图片替换
+		$('img').on("error", function () {
+			$(this).attr('src', 'img/index.png');  // 替换为默认图片
+		});
+
+		//--------------------------------------------------------------
+
+		//剪贴板内容跳转百度搜索
+		function getClipboardText() {
+			return new Promise((resolve, reject) => {
+				navigator.clipboard.readText().then(text => {
+					resolve(text);
+				}).catch(err => {
+					reject(err);
+				});
 			});
+		}
 
-			// 初始化粒子背景（如果particles.js可用）
-			if (window.particlesJS) {
-				try {
-					particlesJS('jsi-flying-fish-container', {
-						particles: {
-							number: { value: 80, density: { enable: true, value_area: 800 } },
-							color: { value: "#ffffff" },
-							shape: { type: "circle" },
-							opacity: { value: 0.5, random: true },
-							size: { value: 3, random: true },
-							line_linked: {
-								enable: true,
-								distance: 150,
-								color: "#ffffff",
-								opacity: 0.4,
-								width: 1
-							}
-						}
-					});
-				} catch (e) {
-					console.warn('粒子背景初始化失败:', e);
-				}
-			}
+		getClipboardText().then(text => {
+			window.open("https://www.baidu.com/s?word=" + text, "_self");
+		}).catch(err => {
+			console.error('获取剪贴板文本失败：', err);
 		});
 	</script>
 	<div style="display: none;">111</div>

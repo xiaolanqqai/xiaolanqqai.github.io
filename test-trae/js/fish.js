@@ -1,332 +1,334 @@
-// 优化版鱼动画效果 - 降低资源占用
-class OptimizedFishAnimation {
-	constructor() {
-		// 优化参数，降低复杂度
-		this.POINT_INTERVAL = 15; // 增加点间距，减少计算量
-		this.FISH_COUNT = 2;     // 减少鱼的数量
-		this.isActive = false;   // 控制动画开关
-		this.frameRate = 25;     // 限制帧率
-		this.lastRenderTime = 0;
-		this.isLowPerformance = false;
-	}
+var RENDERER = {
+	POINT_INTERVAL : 5,
+	FISH_COUNT : 3,
+	MAX_INTERVAL_COUNT : 50,
+	INIT_HEIGHT_RATE : 0.5,
+	THRESHOLD : 50,
 	
-	init() {
-		// 检测设备性能
-		this.checkPerformance();
-		
-		// 低性能设备不加载动画
-		if(this.isLowPerformance) {
-			console.log('低性能设备，已禁用鱼动画');
-			$('#jsi-flying-fish-container').hide();
-			return;
-		}
-		
+	init : function(){
 		this.setParameters();
+		this.reconstructMethods();
 		this.setup();
-		this.bindEvents();
-		
-		// 延迟启动动画，提高页面加载速度
-		setTimeout(() => {
-			this.isActive = true;
-			this.render();
-			console.log('鱼动画已启动');
-		}, 1500);
-	}
-	
-	checkPerformance() {
-		// 检测是否为移动设备或低性能设备
-		this.isLowPerformance = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-								(navigator.hardwareConcurrency && navigator.hardwareConcurrency < 2);
-	}
-	
-	setParameters() {
+		this.bindEvent();
+		this.render();
+	},
+	setParameters : function(){
 		this.$window = $(window);
 		this.$container = $('#jsi-flying-fish-container');
 		this.$canvas = $('<canvas />');
 		this.context = this.$canvas.appendTo(this.$container).get(0).getContext('2d');
 		this.points = [];
 		this.fishes = [];
-	}
-	
-	setup() {
-		// 清空数组
-		this.points.length = 0;
-		this.fishes.length = 0;
-		
-		// 获取容器尺寸
-		this.width = this.$container.width();
-		this.height = this.$container.height();
-		this.$canvas.attr({width: this.width, height: this.height});
-		
-		// 创建鱼（减少数量）
-		for(let i = 0; i < this.FISH_COUNT; i++) {
-			this.fishes.push(this.createFish());
-		}
-		
-		// 创建水面点（减少点数量）
-		this.createSurfacePoints();
-	}
-	
-	createSurfacePoints() {
-		const count = Math.round(this.width / this.POINT_INTERVAL);
+		this.watchIds = [];
+	},
+	createSurfacePoints : function(){
+		var count = Math.round(this.width / this.POINT_INTERVAL);
 		this.pointInterval = this.width / (count - 1);
+		this.points.push(new SURFACE_POINT(this, 0));
 		
-		// 只创建必要的点
-		for(let i = 0; i < count; i++) {
-			const point = {
-				x: i * this.pointInterval,
-				y: this.height * 0.5,
-				initY: this.height * 0.5,
-				variation: 0,
-				force: 0
-			};
+		for(var i = 1; i < count; i++){
+			var point = new SURFACE_POINT(this, i * this.pointInterval),
+				previous = this.points[i - 1];
+				
+			point.setPreviousPoint(previous);
+			previous.setNextPoint(point);
 			this.points.push(point);
 		}
-	}
-	
-	createFish() {
-		// 简化鱼的属性
-		const direction = Math.random() < 0.5;
-		const reverse = false; // 简化逻辑，移除反转功能
+	},
+	reconstructMethods : function(){
+		this.watchWindowSize = this.watchWindowSize.bind(this);
+		this.jdugeToStopResize = this.jdugeToStopResize.bind(this);
+		this.startEpicenter = this.startEpicenter.bind(this);
+		this.moveEpicenter = this.moveEpicenter.bind(this);
+		this.reverseVertical = this.reverseVertical.bind(this);
+		this.render = this.render.bind(this);
+	},
+	setup : function(){
+		this.points.length = 0;
+		this.fishes.length = 0;
+		this.watchIds.length = 0;
+		this.intervalCount = this.MAX_INTERVAL_COUNT;
+		this.width = this.$container.width();
+		this.height = this.$container.height();
+		this.fishCount = this.FISH_COUNT * this.width / 500 * this.height / 500;
+		this.$canvas.attr({width : this.width, height : this.height});
+		this.reverse = false;
+		
+		this.fishes.push(new FISH(this));
+		this.createSurfacePoints();
+	},
+	watchWindowSize : function(){
+		this.clearTimer();
+		this.tmpWidth = this.$window.width();
+		this.tmpHeight = this.$window.height();
+		this.watchIds.push(setTimeout(this.jdugeToStopResize, this.WATCH_INTERVAL));
+	},
+	clearTimer : function(){
+		while(this.watchIds.length > 0){
+			clearTimeout(this.watchIds.pop());
+		}
+	},
+	jdugeToStopResize : function(){
+		var width = this.$window.width(),
+			height = this.$window.height(),
+			stopped = (width == this.tmpWidth && height == this.tmpHeight);
+			
+		this.tmpWidth = width;
+		this.tmpHeight = height;
+		
+		if(stopped){
+			this.setup();
+		}
+	},
+	bindEvent : function(){
+		this.$window.on('resize', this.watchWindowSize);
+		this.$container.on('mouseenter', this.startEpicenter);
+		this.$container.on('mousemove', this.moveEpicenter);
+		this.$container.on('click', this.reverseVertical);
+	},
+	getAxis : function(event){
+		var offset = this.$container.offset();
+		
 		return {
-			direction: direction,
-			x: direction ? (this.width + 100) : -100,
-			y: reverse ? 
-				this.getRandomValue(this.height * 0.1, this.height * 0.4) : 
-				this.getRandomValue(this.height * 0.6, this.height * 0.9),
-			vx: this.getRandomValue(3, 8) * (direction ? -1 : 1),
-			vy: reverse ? 
-				this.getRandomValue(1, 3) : 
-				this.getRandomValue(-3, -1),
-			ay: reverse ? 
-				this.getRandomValue(0.03, 0.15) : 
-				this.getRandomValue(-0.15, -0.03),
-			isOut: false,
-			theta: 0,
-			phi: 0,
-			previousY: 0
+			x : event.clientX - offset.left + this.$window.scrollLeft(),
+			y : event.clientY - offset.top + this.$window.scrollTop()
 		};
-	}
-	
-	getRandomValue(min, max) {
-		return min + (max - min) * Math.random();
-	}
-	
-	bindEvents() {
-		// 窗口调整大小时重新设置（增加防抖）
-		let resizeTimeout;
-		this.$window.on('resize', () => {
-			clearTimeout(resizeTimeout);
-			resizeTimeout = setTimeout(() => {
-				this.setup();
-			}, 500); // 增加延迟时间
-		});
+	},
+	startEpicenter : function(event){
+		this.axis = this.getAxis(event);
+	},
+	moveEpicenter : function(event){
+		var axis = this.getAxis(event);
 		
-		// 鼠标移动时产生波浪效果（简化计算）
-		this.$container.on('mousemove', (event) => {
-			if(!this.isActive) return;
-			this.createWave(event);
-		});
+		if(!this.axis){
+			this.axis = axis;
+		}
+		this.generateEpicenter(axis.x, axis.y, axis.y - this.axis.y);
+		this.axis = axis;
+	},
+	generateEpicenter : function(x, y, velocity){
+		if(y < this.height / 2 - this.THRESHOLD || y > this.height / 2 + this.THRESHOLD){
+			return;
+		}
+		var index = Math.round(x / this.pointInterval);
 		
-		// 页面可见性变化时控制动画
-		document.addEventListener('visibilitychange', () => {
-			this.toggleActive(!document.hidden);
-		});
-	}
-	
-	createWave(event) {
-		const rect = this.$container[0].getBoundingClientRect();
-		const x = event.clientX - rect.left;
-		const y = event.clientY - rect.top;
-		const THRESHOLD = 120;
+		if(index < 0 || index >= this.points.length){
+			return;
+		}
+		this.points[index].interfere(y, velocity);
+	},
+	reverseVertical : function(){
+		this.reverse = !this.reverse;
 		
-		// 简化波浪计算，只影响附近的点
-		const nearestIndex = Math.round(x / this.pointInterval);
-		const influenceRange = 2; // 只影响附近几个点
-		
-		for(let i = Math.max(0, nearestIndex - influenceRange); 
-			i < Math.min(this.points.length, nearestIndex + influenceRange); 
-			i++) {
-			const point = this.points[i];
-			const distance = Math.abs(point.x - x);
-			if(distance < THRESHOLD) {
-				const ratio = (THRESHOLD - distance) / THRESHOLD;
-				point.force += ratio * ratio * 15 * (this.height - y) / this.height;
+		for(var i = 0, count = this.fishes.length; i < count; i++){
+			this.fishes[i].reverseVertical();
+		}
+	},
+	controlStatus : function(){
+		for(var i = 0, count = this.points.length; i < count; i++){
+			this.points[i].updateSelf();
+		}
+		for(var i = 0, count = this.points.length; i < count; i++){
+			this.points[i].updateNeighbors();
+		}
+		if(this.fishes.length < this.fishCount){
+			if(--this.intervalCount == 0){
+				this.intervalCount = this.MAX_INTERVAL_COUNT;
+				this.fishes.push(new FISH(this));
 			}
 		}
-	}
-	
-	update() {
-		// 更新水面点（简化计算）
-		this.points.forEach(point => {
-			if(point.force !== 0) {
-				point.variation += point.force;
-				point.force *= 0.75; // 更快地衰减
-				point.variation *= 0.75;
-			}
-			point.y = point.initY + point.variation;
-		});
-		
-		// 更新鱼的位置
-		this.fishes.forEach(fish => {
-			this.updateFish(fish);
-		});
-	}
-	
-	updateFish(fish) {
-		const GRAVITY = 0.3;
-		const INIT_HEIGHT_RATE = 0.5;
-		
-		fish.previousY = fish.y;
-		fish.x += fish.vx;
-		fish.y += fish.vy;
-		fish.vy += fish.ay;
-		
-		// 简化边界检查
-		const surfaceY = this.height * INIT_HEIGHT_RATE;
-		if(fish.y < surfaceY) {
-			fish.vy += GRAVITY;
-			fish.isOut = true;
-		} else {
-			if(fish.isOut) {
-				fish.ay = this.getRandomValue(-0.15, -0.03);
-			}
-			fish.isOut = false;
-		}
-		
-		// 简化动画计算
-		if(!fish.isOut) {
-			fish.theta += Math.PI / 30; // 降低旋转速度
-			fish.theta %= Math.PI * 2;
-			fish.phi += Math.PI / 40;
-			fish.phi %= Math.PI * 2;
-		}
-		
-		// 边界重置
-		if(fish.vx > 0 && fish.x > this.width + 100 || fish.vx < 0 && fish.x < -100) {
-			// 复用现有鱼对象，减少内存分配
-			const direction = Math.random() < 0.5;
-			fish.direction = direction;
-			fish.x = direction ? (this.width + 100) : -100;
-			fish.y = this.getRandomValue(this.height * 0.6, this.height * 0.9);
-			fish.vx = this.getRandomValue(3, 8) * (direction ? -1 : 1);
-			fish.vy = this.getRandomValue(-3, -1);
-			fish.ay = this.getRandomValue(-0.15, -0.03);
-		}
-	}
-	
-	draw() {
-		// 清空画布
+	},
+	render : function(){
+		requestAnimationFrame(this.render);
+		this.controlStatus();
 		this.context.clearRect(0, 0, this.width, this.height);
+		this.context.fillStyle = 'hsl(0, 0%, 95%)';
 		
-		// 绘制鱼（简化版）
-		this.fishes.forEach(fish => {
-			this.drawFish(fish);
-		});
+		for(var i = 0, count = this.fishes.length; i < count; i++){
+			this.fishes[i].render(this.context);
+		}
+		this.context.save();
+		this.context.globalCompositeOperation = 'xor';
+		this.context.beginPath();
+		this.context.moveTo(0, this.reverse ? 0 : this.height);
 		
-		// 绘制水面（简化版，降低透明度）
-		this.drawWaterSurface();
+		for(var i = 0, count = this.points.length; i < count; i++){
+			this.points[i].render(this.context);
+		}
+		this.context.lineTo(this.width, this.reverse ? 0 : this.height);
+		this.context.closePath();
+		this.context.fill();
+		this.context.restore();
 	}
+};
+var SURFACE_POINT = function(renderer, x){
+	this.renderer = renderer;
+	this.x = x;
+	this.init();
+};
+SURFACE_POINT.prototype = {
+	SPRING_CONSTANT : 0.03,
+	SPRING_FRICTION : 0.9,
+	WAVE_SPREAD : 0.3,
+	ACCELARATION_RATE : 0.01,
 	
-	drawFish(fish) {
-		const {context} = this;
+	init : function(){
+		this.initHeight = this.renderer.height * this.renderer.INIT_HEIGHT_RATE;
+		this.height = this.initHeight;
+		this.fy = 0;
+		this.force = {previous : 0, next : 0};
+	},
+	setPreviousPoint : function(previous){
+		this.previous = previous;
+	},
+	setNextPoint : function(next){
+		this.next = next;
+	},
+	interfere : function(y, velocity){
+		this.fy = this.renderer.height * this.ACCELARATION_RATE * ((this.renderer.height - this.height - y) >= 0 ? -1 : 1) * Math.abs(velocity);
+	},
+	updateSelf : function(){
+		this.fy += this.SPRING_CONSTANT * (this.initHeight - this.height);
+		this.fy *= this.SPRING_FRICTION;
+		this.height += this.fy;
+	},
+	updateNeighbors : function(){
+		if(this.previous){
+			this.force.previous = this.WAVE_SPREAD * (this.height - this.previous.height);
+		}
+		if(this.next){
+			this.force.next = this.WAVE_SPREAD * (this.height - this.next.height);
+		}
+	},
+	render : function(context){
+		if(this.previous){
+			this.previous.height += this.force.previous;
+			this.previous.fy += this.force.previous;
+		}
+		if(this.next){
+			this.next.height += this.force.next;
+			this.next.fy += this.force.next;
+		}
+		context.lineTo(this.x, this.renderer.height - this.height);
+	}
+};
+var FISH = function(renderer){
+	this.renderer = renderer;
+	this.init();
+};
+FISH.prototype = {
+	GRAVITY : 0.4,
+	
+	init : function(){
+		this.direction = Math.random() < 0.5;
+		this.x = this.direction ? (this.renderer.width + this.renderer.THRESHOLD) : -this.renderer.THRESHOLD;
+		this.previousY = this.y;
+		this.vx = this.getRandomValue(4, 10) * (this.direction ? -1 : 1);
 		
+		if(this.renderer.reverse){
+			this.y = this.getRandomValue(this.renderer.height * 1 / 10, this.renderer.height * 4 / 10);
+			this.vy = this.getRandomValue(2, 5);
+			this.ay = this.getRandomValue(0.05, 0.2);
+		}else{
+			this.y = this.getRandomValue(this.renderer.height * 6 / 10, this.renderer.height * 9 / 10);
+			this.vy = this.getRandomValue(-5, -2);
+			this.ay = this.getRandomValue(-0.2, -0.05);
+		}
+		this.isOut = false;
+		this.theta = 0;
+		this.phi = 0;
+	},
+	getRandomValue : function(min, max){
+		return min + (max - min) * Math.random();
+	},
+	reverseVertical : function(){
+		this.isOut = !this.isOut;
+		this.ay *= -1;
+	},
+	controlStatus : function(context){
+		this.previousY = this.y;
+		this.x += this.vx;
+		this.y += this.vy;
+		this.vy += this.ay;
+		
+		if(this.renderer.reverse){
+			if(this.y > this.renderer.height * this.renderer.INIT_HEIGHT_RATE){
+				this.vy -= this.GRAVITY;
+				this.isOut = true;
+			}else{
+				if(this.isOut){
+					this.ay = this.getRandomValue(0.05, 0.2);
+				}
+				this.isOut = false;
+			}
+		}else{
+			if(this.y < this.renderer.height * this.renderer.INIT_HEIGHT_RATE){
+				this.vy += this.GRAVITY;
+				this.isOut = true;
+			}else{
+				if(this.isOut){
+					this.ay = this.getRandomValue(-0.2, -0.05);
+				}
+				this.isOut = false;
+			}
+		}
+		if(!this.isOut){
+			this.theta += Math.PI / 20;
+			this.theta %= Math.PI * 2;
+			this.phi += Math.PI / 30;
+			this.phi %= Math.PI * 2;
+		}
+		this.renderer.generateEpicenter(this.x + (this.direction ? -1 : 1) * this.renderer.THRESHOLD, this.y, this.y - this.previousY);
+		
+		if(this.vx > 0 && this.x > this.renderer.width + this.renderer.THRESHOLD || this.vx < 0 && this.x < -this.renderer.THRESHOLD){
+			this.init();
+		}
+	},
+	render : function(context){
 		context.save();
-		context.translate(fish.x, fish.y);
-		context.rotate(Math.PI + Math.atan2(fish.vy, fish.vx));
-		context.scale(1, fish.direction ? 1 : -1);
-		
-		// 使用简单的形状代替复杂的贝塞尔曲线
+		context.translate(this.x, this.y);
+		context.rotate(Math.PI + Math.atan2(this.vy, this.vx));
+		context.scale(1, this.direction ? 1 : -1);
 		context.beginPath();
-		context.moveTo(-25, 0);
-		context.quadraticCurveTo(-10, 12, 30, 0);
-		context.quadraticCurveTo(-10, -12, -25, 0);
-		context.fillStyle = 'rgba(100, 180, 220, 0.8)';
+		context.moveTo(-30, 0);
+		context.bezierCurveTo(-20, 15, 15, 10, 40, 0);
+		context.bezierCurveTo(15, -10, -20, -15, -30, 0);
 		context.fill();
 		
-		// 简化尾部绘制
 		context.save();
-		context.translate(30, 0);
-		context.scale(0.8 + 0.15 * Math.sin(fish.theta), 1);
+		context.translate(40, 0);
+		context.scale(0.9 + 0.2 * Math.sin(this.theta), 1);
 		context.beginPath();
 		context.moveTo(0, 0);
-		context.quadraticCurveTo(4, 8, 15, 6);
-		context.quadraticCurveTo(8, 3, 7, 0);
-		context.quadraticCurveTo(8, -3, 15, -6);
-		context.quadraticCurveTo(4, -8, 0, 0);
-		context.fillStyle = 'rgba(80, 160, 200, 0.8)';
+		context.quadraticCurveTo(5, 10, 20, 8);
+		context.quadraticCurveTo(12, 5, 10, 0);
+		context.quadraticCurveTo(12, -5, 20, -8);
+		context.quadraticCurveTo(5, -10, 0, 0);
 		context.fill();
 		context.restore();
 		
-		context.restore();
-	}
-	
-	drawWaterSurface() {
-		const {context} = this;
-		
-		// 降低透明度，减少绘制开销
 		context.save();
-		context.fillStyle = 'rgba(135, 206, 235, 0.2)';
+		context.translate(-3, 0);
+		context.rotate((Math.PI / 3 + Math.PI / 10 * Math.sin(this.phi)) * (this.renderer.reverse ? -1 : 1));
+		
 		context.beginPath();
-		context.moveTo(0, this.height);
-		context.lineTo(this.points[0].x, this.height - this.points[0].y);
 		
-		// 每隔一个点绘制一次，减少绘制点数
-		for(let i = 1; i < this.points.length; i += 2) {
-			context.lineTo(this.points[i].x, this.height - this.points[i].y);
+		if(this.renderer.reverse){
+			context.moveTo(5, 0);
+			context.bezierCurveTo(10, 10, 10, 30, 0, 40);
+			context.bezierCurveTo(-12, 25, -8, 10, 0, 0);
+		}else{
+			context.moveTo(-5, 0);
+			context.bezierCurveTo(-10, -10, -10, -30, 0, -40);
+			context.bezierCurveTo(12, -25, 8, -10, 0, 0);
 		}
-		
-		// 确保最后一个点被绘制
-		if(this.points.length > 0) {
-			const lastPoint = this.points[this.points.length - 1];
-			context.lineTo(lastPoint.x, this.height - lastPoint.y);
-		}
-		
-		context.lineTo(this.width, this.height);
 		context.closePath();
 		context.fill();
 		context.restore();
+		context.restore();
+		this.controlStatus(context);
 	}
-	
-	// 限制帧率的渲染函数
-	render(timestamp) {
-		if(!this.isActive) {
-			// 如果动画暂停，仍然需要请求下一帧以响应状态变化
-			requestAnimationFrame(this.render.bind(this));
-			return;
-		}
-		
-		// 控制帧率
-		const deltaTime = timestamp - this.lastRenderTime;
-		const frameInterval = 1000 / this.frameRate;
-		
-		if(deltaTime > frameInterval) {
-			this.lastRenderTime = timestamp - (deltaTime % frameInterval);
-			this.update();
-			this.draw();
-		}
-		
-		requestAnimationFrame(this.render.bind(this));
-	}
-	
-	// 暂停/恢复动画的方法
-	toggleActive(active) {
-		if(active !== undefined) {
-			this.isActive = active;
-		} else {
-			this.isActive = !this.isActive;
-		}
-	}
-}
-
-// 初始化优化版鱼动画
-$(function() {
-	try {
-		const fishAnimation = new OptimizedFishAnimation();
-		fishAnimation.init();
-	} catch (error) {
-		console.error('鱼动画初始化失败:', error);
-		// 发生错误时隐藏容器
-		$('#jsi-flying-fish-container').hide();
-	}
+};
+$(function(){
+	RENDERER.init();
 });

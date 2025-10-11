@@ -25,7 +25,12 @@
 		</form>
 		<button id="more-s" class="more-tag btn btn-info dropdown-toggle shadow" type="button">•••</button>
 		<button id="more-c" class="more-tag btn btn-info shadow mx-2 oh" type="button">清空</button>
-		<button id="more-mm" class="more-tag btn btn-info shadow oh" style="display: none;" onclick="window.location.href = 'MM.htm'" type="button">M-M</button>
+		<div id="more-mm" style="display: none;">
+			<button class="more-tag btn btn-info shadow oh" onclick="window.location.href = 'MM.htm'" type="button">M-M</button>
+			<button class="more-tag btn btn-info shadow oh" onclick="window.location.href = 'manager/nav-manager.html'" type="button">nav-manager</button>
+			<button class="more-tag btn btn-info shadow oh" onclick="window.location.href = 'manager/vol-manager.html'" type="button">vol-manager</button>
+		</div>
+		
 	</div>
 	<div class="z-2 d-flex flex-column mx-auto mt-5 pt-2">
 		<div class="d-flex flex-column">
@@ -80,70 +85,69 @@
 					console.error('加载导航数据时出错:', error);
 					document.getElementById('nav-content-container').innerHTML = '<div class="alert alert-info mx-3">暂无导航数据，请先上传JSON文件</div>';
 					document.getElementById('uptime1').textContent = 'Beta:error';
-            		document.getElementById('state1').textContent = 'Error';
+					document.getElementById('state1').textContent = 'Error';
 				});
 		});
-		
+
+		// 在renderNavigation函数中修改图标生成
 		function renderNavigation(navData) {
 			const navContentContainer = document.getElementById('nav-content-container');
 			navContentContainer.innerHTML = '';
-			
+
 			if (!navData || !navData.tabs) {
 				navContentContainer.innerHTML = '<div class="alert alert-info mx-3">暂无导航数据</div>';
 				return;
 			}
-			
+
 			navData.tabs.forEach((tab, index) => {
 				const section = document.createElement('div');
 				section.className = 'mt-3 mx-3';
 				section.innerHTML = `
-					<div class="alert alert-secondary shadow" role="alert">${tab.name}</div>
-					<div id="ar${index + 1}" class="d-flex flex-wrap p-2">
-						${tab.items.map(item => `
-							<a href="${item.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1">
-								<img class="border rounded-circle w" src="${item.icon}" loading="lazy" onerror="this.src='../img/index.png'">
-								<h6 class="t1">${item.name}</h6>
-							</a>
-						`).join('')}
-					</div>
-				`;
+	            <div class="alert alert-secondary shadow" role="alert">${tab.name}</div>
+	            <div id="ar${index + 1}" class="d-flex flex-wrap p-2">
+	                ${tab.items.map(item => {
+					const iconUrl = item.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}`;
+					return `
+	                        <a href="${item.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1">
+	                            <img class="border rounded-circle w" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
+	                            <h6 class="t1">${item.name}</h6>
+	                        </a>
+	                    `;
+				}).join('')}
+	            </div>
+	        `;
 				navContentContainer.appendChild(section);
 			});
 		}
-		
-		// 渲染特殊栏目（页面加载时就渲染，但保持display: none）
+
+		// 在renderSpecialSection函数中修改图标生成
 		function renderSpecialSection(moreData) {
 			const specialContainer = document.getElementById('ar21');
-			
+
 			if (!moreData || !moreData.special || !moreData.special.sites) {
 				console.log('未找到特殊栏目数据');
 				return;
 			}
-			
+
 			const specialSites = moreData.special.sites;
-			
+
 			if (specialSites.length === 0) {
 				specialContainer.innerHTML = '<div class="alert alert-info">暂无特殊栏目数据</div>';
 				return;
 			}
-			
+
 			// 渲染特殊栏目的网站
-			specialContainer.innerHTML = specialSites.map(site => `
-				<a href="${site.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1">
-					<img class="border rounded-circle w" src="${site.icon}" loading="lazy" onerror="this.src='../img/index.png'">
-					<h6 class="t1">${site.name}</h6>
-				</a>
-			`).join('');
-			
+			specialContainer.innerHTML = specialSites.map(site => {
+				const iconUrl = site.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(site.url)}`;
+				return `
+	            <a href="${site.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1">
+	                <img class="border rounded-circle w" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
+	                <h6 class="t1">${site.name}</h6>
+	            </a>
+	        `;
+			}).join('');
+
 			console.log('特殊栏目已渲染（隐藏状态），共', specialSites.length, '个网站');
-		}
-		
-		// 版本信息加载函数
-		function loadVersionInfo(data) {
-			if (data.version) {
-				document.getElementById('uptime1').textContent = `Beta:${data.version.web_vol}`;
-				document.getElementById('state1').textContent = 'Online';
-			}
 		}
 	</script>
 	<div class="z-1">
