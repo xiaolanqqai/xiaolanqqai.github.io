@@ -50,43 +50,71 @@
 /* 管理页面导航栏 */
 .manager-nav {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 90px;  /* 在返回首页按钮下方 */
+    left: 20px;
     z-index: 1000;
     display: flex;
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 8px 12px;
-    border-radius: 25px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    gap: 15px;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .manager-nav-button {
-    padding: 8px 16px;
+    width: 50px;
+    height: 50px;
     border: none;
-    border-radius: 20px;
-    background: transparent;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
     color: var(--text-color);
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 20px;
     transition: all 0.3s ease;
     cursor: pointer;
-    white-space: nowrap;
     text-decoration: none;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    text-indent: -9999px; /* 隐藏文本 */
+    position: relative;
 }
 
 .manager-nav-button:hover {
+    transform: scale(1.1);
     background: var(--accent-color);
     color: var(--text-color);
     text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .manager-nav-button.active {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: white;
+}
+
+/* 导航按钮提示 */
+.manager-nav-button::after {
+    content: attr(title);
+    position: absolute;
+    left: 65px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+}
+
+.manager-nav-button:hover::after {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* 响应式设计 - 导航栏 */
@@ -100,15 +128,22 @@
     }
     
     .manager-nav {
-        top: 10px;
-        right: 10px;
-        flex-wrap: wrap;
-        padding: 6px 10px;
+        top: 60px;
+        left: 10px;
+        gap: 10px;
     }
     
     .manager-nav-button {
-        padding: 6px 12px;
-        font-size: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    /* 移动设备上导航按钮提示位置调整 */
+    .manager-nav-button::after {
+        left: 55px;
+        font-size: 11px;
+        padding: 4px 8px;
     }
 }
 
