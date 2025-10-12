@@ -229,9 +229,7 @@
                             <div id="listStats" class="bg-light p-2 rounded text-center"></div>
                         </div>
                         
-                        <div class="baidu-notice p-3 rounded mt-3">
-                            <strong>注意：</strong> 生成的HTML文件将在开头包含一个跳转的按钮。
-                        </div>
+                        <!-- 生成的HTML文件不再包含跳转按钮 -->
                     </div>
                 </div>
             </div>
@@ -269,9 +267,6 @@
             let draggedItem = null;
             let currentFileName = '';
             let editingIndex = -1;
-            
-            // 百度按钮的HTML代码
-            const baiduButtonHTML = '<a href="../index/MM-generator.html" class="baidu-button">-->>MM-generator</a>\n';
             
             // 固定的URL地址
             const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.htm';
@@ -606,12 +601,9 @@
                 listStats.textContent = `共 ${count} 个条目`;
             }
             
-            // 生成下载内容（始终包含百度按钮）
+            // 生成下载内容
             function generateDownloadContent() {
                 let content = '';
-                
-                // 始终添加百度按钮
-                content += baiduButtonHTML;
                 
                 // 添加所有条目
                 entries.forEach(entry => {
