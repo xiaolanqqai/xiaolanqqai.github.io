@@ -6,32 +6,9 @@
     <title>MM-generator</title>
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/manager-styles.css">
     <style>
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            position: relative;
-        }
-        
-        .home-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .home-button:hover {
-            transform: scale(1.1);
-        }
-        
+        /* 页面特定样式 */
         .header-gradient {
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
         }
@@ -120,14 +97,14 @@
         }
     </style>
 </head>
-<body class="d-flex flex-column min-vh-100 p-3">
+<body class="manager-body d-flex flex-column min-vh-100 p-3">
     <!-- 返回首页按钮 -->
     <a href="../../index.html" class="home-button bg-dark text-white" title="返回首页">
         <i class="fas fa-home"></i>
     </a>
     
     <div class="container flex-grow-1 d-flex flex-column">
-        <header class="text-center text-white p-4 rounded mb-4 header-gradient">
+        <header class="manager-header text-center text-white p-4 rounded mb-4">
             <h1 class="mb-2">MM-generator</h1>
             <p class="lead mb-0">上传、编辑并下载HTML文件</p>
         </header>
@@ -140,7 +117,7 @@
                     <div class="option-card p-4 rounded bg-light h-100">
                         <div class="option-title h5 mb-3 text-dark">从本地上传</div>
                         <input type="file" id="fileInput" class="d-none" accept=".htm,.html">
-                        <button id="uploadBtn" class="btn btn-primary w-100 py-3">
+                        <button id="uploadBtn" class="btn manager-btn-primary w-100 py-3">
                             <i class="fas fa-upload me-2"></i>
                             选择文件并上传
                         </button>
@@ -151,7 +128,7 @@
                 <div class="col-md-6">
                     <div class="option-card p-4 rounded bg-light h-100">
                         <div class="option-title h5 mb-3 text-dark">从网络加载</div>
-                        <button id="loadUrlBtn" class="btn btn-warning text-white w-100 py-3">
+                        <button id="loadUrlBtn" class="btn manager-btn-warning w-100 py-3">
                             <i class="fas fa-link me-2"></i>
                             加载文件
                         </button>
@@ -191,7 +168,7 @@
                                 <input type="text" class="form-control" id="passwordPattern" placeholder="例如: 大经典、错位小@数字">
                             </div>
                             
-                            <button type="submit" class="btn btn-primary w-100">添加条目</button>
+                            <button type="submit" class="btn manager-btn-primary w-100">添加条目</button>
                         </form>
                         
                         <div id="editForm" class="d-none bg-light p-3 rounded border-start border-primary">
@@ -212,8 +189,8 @@
                             </div>
                             
                             <div class="d-grid gap-2 d-md-flex">
-                                <button id="saveEditBtn" class="btn btn-success flex-fill">保存修改</button>
-                                <button id="cancelEditBtn" class="btn btn-warning flex-fill">取消</button>
+                                <button id="saveEditBtn" class="btn manager-btn-success flex-fill">保存修改</button>
+                                <button id="cancelEditBtn" class="btn manager-btn-warning flex-fill">取消</button>
                             </div>
                         </div>
                         
@@ -248,7 +225,7 @@
             
             <div class="download-section text-center">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <button id="downloadBtn" class="btn btn-success btn-lg px-4">下载HTML文件</button>
+                    <button id="downloadBtn" class="btn manager-btn-success btn-lg px-4">下载HTML文件</button>
                     <button id="resetBtn" class="btn btn-secondary btn-lg px-4">重置</button>
                 </div>
             </div>

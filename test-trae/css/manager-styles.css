@@ -1,0 +1,275 @@
+/* 统一管理页面样式 */
+:root {
+    --primary-color: #6a11cb;
+    --secondary-color: #2575fc;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --text-color: #212529;
+    --border-radius: 8px;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+/* 基础样式 */
+.manager-body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+/* 头部样式 */
+.manager-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.manager-header h1 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.manager-header p {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+/* 卡片样式 */
+.manager-card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.manager-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.manager-card-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    font-weight: 600;
+}
+
+/* 功能卡片 */
+.feature-card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-3px);
+}
+
+.feature-card .card-body {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* 按钮样式 */
+.manager-btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.manager-btn-primary:hover {
+    background: linear-gradient(135deg, #5a0db8 0%, #1c67e3 100%);
+    transform: translateY(-1px);
+}
+
+.manager-btn-success {
+    background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.manager-btn-success:hover {
+    background: linear-gradient(135deg, #218838 0%, #1e9e8a 100%);
+    transform: translateY(-1px);
+}
+
+.manager-btn-warning {
+    background: linear-gradient(135deg, var(--warning-color) 0%, #ffd54f 100%);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.manager-btn-warning:hover {
+    background: linear-gradient(135deg, #e0a800 0%, #ffca28 100%);
+    transform: translateY(-1px);
+}
+
+.manager-btn-danger {
+    background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.manager-btn-danger:hover {
+    background: linear-gradient(135deg, #c82333 0%, #c0392b 100%);
+    transform: translateY(-1px);
+}
+
+/* 表单样式 */
+.manager-form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.15);
+}
+
+/* 上传区域 */
+.upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: var(--border-radius);
+    text-align: center;
+    background-color: var(--light-color);
+    transition: var(--transition);
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background-color: #e9ecef;
+}
+
+.upload-icon {
+    font-size: 2.5rem;
+    color: #6c757d;
+}
+
+/* 特殊区域样式 */
+.special-section {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    color: white;
+    border-radius: var(--border-radius);
+}
+
+.version-info {
+    background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);
+    color: white;
+    border-radius: var(--border-radius);
+}
+
+/* 导航标签页 */
+.manager-nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.manager-nav-tabs .nav-link {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+
+.manager-nav-tabs .nav-link.active {
+    color: var(--primary-color);
+    font-weight: 600;
+    border-bottom: 3px solid var(--primary-color);
+    background-color: transparent;
+}
+
+/* 状态指示器 */
+.data-status {
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.data-status.no-data {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+}
+
+.data-status.has-data {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+}
+
+/* 返回首页按钮 */
+.home-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    background: var(--dark-color);
+    color: white;
+    text-decoration: none;
+}
+
+.home-button:hover {
+    transform: scale(1.1);
+    color: white;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .home-button {
+        top: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .manager-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .manager-header p {
+        font-size: 1rem;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* 加载动画 */
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

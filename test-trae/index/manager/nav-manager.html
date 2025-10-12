@@ -6,40 +6,9 @@
     <title>导航数据管理系统</title>
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="../../css/manager-styles.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #6a11cb;
-            --secondary-color: #2575fc;
-        }
-        
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            border-radius: 0 0 10px 10px;
-        }
-        
-        .version-info {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            border-radius: 6px;
-        }
-        
-        .special-section {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            color: white;
-            border-radius: 8px;
-        }
-        
-        .special-section .badge {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-        
+        /* 页面特定样式 */
         .site-card {
             width: 100px;
             height: 110px;
@@ -99,24 +68,6 @@
             height: 28px;
         }
         
-        .upload-area {
-            border: 2px dashed #dee2e6;
-            border-radius: 6px;
-            text-align: center;
-            background-color: #f8f9fa;
-            transition: all 0.2s ease;
-        }
-        
-        .upload-area:hover {
-            border-color: var(--primary-color);
-            background-color: #e9ecef;
-        }
-        
-        .upload-icon {
-            font-size: 2.5rem;
-            color: #6c757d;
-        }
-        
         .json-preview {
             font-family: 'Courier New', Courier, monospace;
             background-color: #f8f9fa;
@@ -126,54 +77,18 @@
             font-size: 0.8rem;
         }
         
-        .feature-card {
-            transition: transform 0.2s ease;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-3px);
-        }
-        
-        .nav-tabs {
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-        
-        .nav-tabs .nav-link {
-            font-size: 0.85rem;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
-        
-        .nav-tabs .nav-link.active {
-            color: var(--primary-color);
-            font-weight: 600;
-            border-bottom: 3px solid var(--primary-color);
-            background-color: transparent;
-        }
-        
         .page-btn {
             font-size: 0.85rem;
         }
         
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a0db8 0%, #1c67e3 100%);
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.15);
+        .special-section .badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
         }
     </style>
 </head>
-<body>
-    <div class="header py-4 mb-4">
+<body class="manager-body">
+    <div class="manager-header py-4 mb-4">
         <div class="container">
             <h1 class="text-center mb-2">导航数据管理系统</h1>
             <p class="text-center mb-0">管理您的网站导航选项卡内容</p>
@@ -212,48 +127,48 @@
         <!-- 功能卡片 -->
         <div class="row mb-4 g-3">
             <div class="col-md-3">
-                <div class="card feature-card h-100 border-0 shadow-sm">
+                <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="text-primary mb-3"><i class="fas fa-file-upload fa-3x"></i></div>
+                        <div class="text-primary mb-3 feature-icon"><i class="fas fa-file-upload"></i></div>
                         <h5>上传JSON文件</h5>
                         <p class="flex-grow-1">从您的设备上传导航数据JSON文件</p>
-                        <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <button class="btn manager-btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
                             <i class="fas fa-upload me-1"></i>上传JSON
                         </button>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card feature-card h-100 border-0 shadow-sm">
+                <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="text-success mb-3"><i class="fas fa-database fa-3x"></i></div>
+                        <div class="text-success mb-3 feature-icon"><i class="fas fa-database"></i></div>
                         <h5>从本地加载</h5>
                         <p class="flex-grow-1">从本地JSON文件加载数据</p>
-                        <button id="loadFromLocalBtn" class="btn btn-success mt-2">
+                        <button id="loadFromLocalBtn" class="btn manager-btn-success mt-2">
                             <i class="fas fa-download me-1"></i>从本地加载
                         </button>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card feature-card h-100 border-0 shadow-sm">
+                <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="text-info mb-3"><i class="fas fa-save fa-3x"></i></div>
+                        <div class="text-info mb-3 feature-icon"><i class="fas fa-save"></i></div>
                         <h5>保存数据</h5>
                         <p class="flex-grow-1">将当前数据保存到本地存储并下载JSON文件</p>
-                        <button id="saveBtn" class="btn btn-info mt-2 text-white">
+                        <button id="saveBtn" class="btn manager-btn-primary mt-2">
                             <i class="fas fa-save me-1"></i>保存数据
                         </button>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card feature-card h-100 border-0 shadow-sm">
+                <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="text-warning mb-3"><i class="fas fa-trash-alt fa-3x"></i></div>
+                        <div class="text-warning mb-3 feature-icon"><i class="fas fa-trash-alt"></i></div>
                         <h5>清空数据</h5>
                         <p class="flex-grow-1">清除当前已加载的所有导航数据</p>
-                        <button id="clearDataBtn" class="btn btn-warning mt-2">
+                        <button id="clearDataBtn" class="btn manager-btn-warning mt-2">
                             <i class="fas fa-broom me-1"></i>清空数据
                         </button>
                     </div>
@@ -262,11 +177,11 @@
         </div>
         
         <!-- 主要管理区域 -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+        <div class="card manager-card mb-4">
+            <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
                 <span id="currentPageTitle" class="fw-bold">主页 - 导航选项卡管理</span>
                 <div>
-                    <button id="addTabBtn" class="btn btn-sm btn-outline-secondary">
+                    <button id="addTabBtn" class="btn btn-sm btn-outline-light">
                         <i class="fas fa-plus me-1"></i>添加选项卡
                     </button>
                 </div>
@@ -276,7 +191,7 @@
                     <strong>使用说明：</strong> 您可以在此页面管理导航选项卡和其中的网站链接。修改后请点击"保存数据"按钮。
                 </div>
                 
-                <ul class="nav nav-tabs mb-4" id="navTabs" role="tablist"></ul>
+                <ul class="nav nav-tabs manager-nav-tabs mb-4" id="navTabs" role="tablist"></ul>
                 <div class="tab-content" id="navTabContent"></div>
                 
                 <!-- 特殊栏目管理区域 -->
@@ -304,7 +219,7 @@
     </div>
     
     <!-- 页脚 -->
-    <div class="footer py-3 mt-4">
+    <div class="manager-footer py-3 mt-4">
         <div class="container text-center">
             <p class="mb-1 text-muted">导航数据管理系统 &copy; 2023 Xiaolan</p>
             <p class="mb-0"><a href="../../index.html" class="text-decoration-none">返回主页</a></p>
@@ -336,7 +251,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="saveVersionBtn">保存版本信息</button>
+                    <button type="button" class="btn manager-btn-primary" id="saveVersionBtn">保存版本信息</button>
                 </div>
             </div>
         </div>
@@ -349,7 +264,7 @@
                 <div class="upload-area" id="dropArea">
                     <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                     <h5>拖放JSON文件到这里</h5><p class="text-muted">或者</p>
-                    <label for="jsonFile" class="btn btn-primary"><i class="fas fa-folder-open me-1"></i>选择文件</label>
+                    <label for="jsonFile" class="btn manager-btn-primary"><i class="fas fa-folder-open me-1"></i>选择文件</label>
                     <input type="file" id="jsonFile" accept=".json" class="d-none">
                     <div class="mt-3"><small class="text-muted">支持标准的JSON格式文件</small></div>
                 </div>
@@ -360,7 +275,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="confirmUpload" disabled>确认上传</button>
+                <button type="button" class="btn manager-btn-primary" id="confirmUpload" disabled>确认上传</button>
             </div>
         </div></div>
     </div>
@@ -380,7 +295,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="confirmAddSite">添加</button>
+                <button type="button" class="btn manager-btn-primary" id="confirmAddSite">添加</button>
             </div>
         </div></div>
     </div>
