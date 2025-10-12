@@ -70,13 +70,15 @@
     color: var(--text-color);
     font-size: 20px;
     transition: all 0.3s ease;
+    /* 确保图标在按钮中正确显示 */
+    line-height: 1;
+    overflow: visible;
     cursor: pointer;
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    text-indent: -9999px; /* 隐藏文本 */
     position: relative;
 }
 
