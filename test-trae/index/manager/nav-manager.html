@@ -110,8 +110,15 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .home-button.bg-warning {
-            right: 80px; /* 调整位置，避免与返回首页按钮重叠 */
+        /* 管理页面导航栏中的感叹号按钮样式 */
+        .manager-nav-button.bg-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+            color: white !important;
+        }
+        
+        .manager-nav-button.bg-warning:hover {
+            background: linear-gradient(135deg, #ffb300 0%, #ffa000 100%) !important;
+            color: white !important;
         }
         
         /* 日志条目样式 */
@@ -168,11 +175,6 @@
         <i class="fas fa-home"></i>
     </a>
     
-    <!-- 操作日志按钮 -->
-    <button class="home-button bg-warning text-white" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
-        <i class="fas fa-exclamation-circle"></i>
-    </button>
-    
     <!-- 管理页面导航栏 -->
     <div class="manager-nav">
         <a href="nav-manager.html" class="manager-nav-button active" title="导航数据管理">
@@ -184,6 +186,10 @@
         <a href="vol-manager.html" class="manager-nav-button" title="版本管理">
             <i class="fas fa-code-branch"></i>
         </a>
+        <!-- 操作日志按钮 -->
+        <button class="manager-nav-button bg-warning text-white" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
+            <i class="fas fa-exclamation-circle"></i>
+        </button>
     </div>
     <div class="manager-header py-4 mb-4">
         <div class="container">
