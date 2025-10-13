@@ -95,6 +95,64 @@
                 height: 40px;
             }
         }
+        
+        /* 管理页面导航栏中的感叹号按钮样式 */
+        .manager-nav-button.bg-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+            color: white !important;
+        }
+        
+        .manager-nav-button.bg-warning:hover {
+            background: linear-gradient(135deg, #ffb300 0%, #ffa000 100%) !important;
+            color: white !important;
+        }
+        
+        /* 日志条目样式 */
+        .log-entry {
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+            font-size: 0.875rem;
+        }
+        
+        .log-entry.success {
+            border-left-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background-color: #fff5f5;
+        }
+        
+        .log-entry.warning {
+            border-left-color: #ffc107;
+            background-color: #fffef0;
+        }
+        
+        .log-entry.info {
+            border-left-color: #17a2b8;
+            background-color: #f0f9ff;
+        }
+        
+        .log-time {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+        
+        .log-message {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .log-details {
+            font-size: 0.8rem;
+            color: #6c757d;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body class="manager-body d-flex flex-column min-vh-100 p-3">
@@ -114,6 +172,10 @@
         <a href="vol-manager.html" class="manager-nav-button" title="版本管理">
             <i class="fas fa-code-branch"></i>
         </a>
+        <!-- 操作日志按钮 -->
+        <button class="manager-nav-button bg-warning text-white" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
+            <i class="fas fa-exclamation-circle"></i>
+        </button>
     </div>
     
     <div class="container flex-grow-1 d-flex flex-column">
@@ -246,6 +308,9 @@
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化');
+            
+            // 获取DOM元素
             const uploadSection = document.getElementById('uploadSection');
             const mainContent = document.getElementById('mainContent');
             const fileInput = document.getElementById('fileInput');
@@ -262,7 +327,11 @@
             const listStats = document.getElementById('listStats');
             const saveEditBtn = document.getElementById('saveEditBtn');
             const cancelEditBtn = document.getElementById('cancelEditBtn');
+            const clearLogsBtn = document.getElementById('clearLogsBtn');
+            const logContainer = document.getElementById('logContainer');
+            const emptyLogMessage = document.getElementById('emptyLogMessage');
             
+            // 全局变量
             let entries = [];
             let draggedItem = null;
             let currentFileName = '';
@@ -271,10 +340,75 @@
             // 固定的URL地址
             const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.htm';
             
+            // 操作日志系统
+            const operationLogs = [];
+            const LOG_TYPES = {
+                SUCCESS: 'success',
+                ERROR: 'error',
+                WARNING: 'warning',
+                INFO: 'info'
+            };
+            
+            // 添加日志条目
+            function addLogEntry(type, message, details = '') {
+                const logEntry = {
+                    timestamp: new Date().toLocaleString('zh-CN'),
+                    type: type,
+                    message: message,
+                    details: details
+                };
+                
+                operationLogs.unshift(logEntry); // 最新的日志在最前面
+                
+                // 限制日志数量
+                if (operationLogs.length > 100) {
+                    operationLogs.pop();
+                }
+                
+                renderLogs();
+            }
+            
+            // 渲染日志
+            function renderLogs() {
+                if (operationLogs.length === 0) {
+                    emptyLogMessage.style.display = 'block';
+                    logContainer.innerHTML = '';
+                    return;
+                }
+                
+                emptyLogMessage.style.display = 'none';
+                logContainer.innerHTML = '';
+                
+                operationLogs.forEach(log => {
+                    const logElement = document.createElement('div');
+                    logElement.className = `log-entry ${log.type}`;
+                    logElement.innerHTML = `
+                        <div class="log-time">${log.timestamp}</div>
+                        <div class="log-message">${log.message}</div>
+                        ${log.details ? `<div class="log-details">${log.details}</div>` : ''}
+                    `;
+                    logContainer.appendChild(logElement);
+                });
+            }
+            
+            // 清空所有日志
+            function clearAllLogs() {
+                operationLogs.length = 0;
+                renderLogs();
+                addLogEntry(LOG_TYPES.INFO, '操作日志已清空');
+            }
+            
+            // 绑定日志清除按钮事件
+            clearLogsBtn.addEventListener('click', clearAllLogs);
+            
+            // 页面加载时添加初始日志
+            addLogEntry(LOG_TYPES.INFO, '密码生成器系统启动');
+            
             // 上传按钮点击事件
             uploadBtn.addEventListener('click', function() {
                 console.log('上传按钮被点击');
                 fileInput.click();
+                addLogEntry(LOG_TYPES.INFO, '点击了文件上传按钮');
             });
             
             // 文件选择事件
@@ -285,6 +419,7 @@
                     console.log('文件已选择:', file.name);
                     currentFileName = file.name;
                     fileInfo.textContent = `已选择文件: ${file.name} (${formatFileSize(file.size)})`;
+                    addLogEntry(LOG_TYPES.INFO, `选择了文件: ${file.name}`, `大小: ${formatFileSize(file.size)}`);
                     
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -298,15 +433,18 @@
                             uploadSection.classList.add('d-none');
                             mainContent.classList.remove('d-none');
                             mainContent.classList.add('d-flex');
+                            addLogEntry(LOG_TYPES.SUCCESS, `文件上传成功: ${file.name}`, `解析出 ${entries.length} 个条目`);
                         } catch (error) {
                             console.error('文件解析失败:', error);
                             alert('文件解析失败: ' + error.message);
                             fileInfo.textContent = '文件解析失败，请选择有效的HTML文件';
+                            addLogEntry(LOG_TYPES.ERROR, `文件解析失败: ${file.name}`, error.message);
                         }
                     };
                     reader.onerror = function() {
                         console.error('文件读取错误');
                         fileInfo.textContent = '文件读取错误，请重试';
+                        addLogEntry(LOG_TYPES.ERROR, '文件读取失败', '无法读取选定的文件');
                     };
                     reader.readAsText(file);
                 } else {
@@ -425,9 +563,11 @@
                     const passwordPattern = document.getElementById('editPasswordPattern').value;
                     
                     if (platform && accountType) {
+                        const oldEntry = entries[editingIndex];
                         entries[editingIndex] = { platform, accountType, passwordPattern };
                         renderEntriesList();
                         cancelEdit();
+                        addLogEntry(LOG_TYPES.SUCCESS, '保存了条目编辑', `平台: ${oldEntry.platform} → ${platform}, 账号: ${oldEntry.accountType} → ${accountType}`);
                     }
                 }
             });
@@ -450,6 +590,7 @@
             downloadBtn.addEventListener('click', function() {
                 const content = generateDownloadContent();
                 downloadFile(content, currentFileName, 'text/html');
+                addLogEntry(LOG_TYPES.INFO, '点击了下载按钮');
             });
             
             // 重置
@@ -467,12 +608,14 @@
                 
                 // 更新统计信息
                 updateStats();
+                addLogEntry(LOG_TYPES.WARNING, '点击了重置按钮', '将清空所有条目数据');
             });
             
             // 添加条目函数
             function addEntry(entry) {
                 entries.push(entry);
                 renderEntriesList();
+                addLogEntry(LOG_TYPES.SUCCESS, '添加了新条目', `平台: ${entry.platform}, 账号: ${entry.accountType}`);
             }
             
             // 渲染条目列表
@@ -507,13 +650,16 @@
                     
                     // 添加删除事件
                     entryItem.querySelector('.btn-danger').addEventListener('click', function() {
+                        const deletedEntry = entries[index];
                         entries.splice(index, 1);
                         renderEntriesList();
+                        addLogEntry(LOG_TYPES.WARNING, '删除了条目', `平台: ${deletedEntry.platform}, 账号: ${deletedEntry.accountType}`);
                     });
                     
                     // 添加双击编辑事件
                     entryItem.addEventListener('dblclick', function() {
                         startEditEntry(index);
+                        addLogEntry(LOG_TYPES.INFO, '开始编辑条目', `平台: ${entries[index].platform}, 账号: ${entries[index].accountType}`);
                     });
                     
                     // 添加拖拽事件
@@ -591,6 +737,9 @@
                         
                         // 重新渲染列表
                         renderEntriesList();
+                        
+                        // 记录拖拽操作
+                        addLogEntry(LOG_TYPES.INFO, '拖拽移动了条目', `平台: ${movedItem.platform} 从位置 ${fromIndex + 1} 移动到位置 ${toIndex + 1}`);
                     }
                 });
             }
@@ -634,5 +783,31 @@
             console.log('页面加载完成，按钮已绑定事件');
         });
     </script>
+    
+    <!-- 操作日志 offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="logOffcanvasLabel">操作日志</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted small">记录主要操作和错误信息</span>
+                <button id="clearLogsBtn" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-trash me-1"></i>清空日志
+                </button>
+            </div>
+            <div id="logContainer" class="mb-3">
+                <div id="emptyLogMessage" class="text-center text-muted p-4">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i>
+                    <p>暂无操作记录</p>
+                </div>
+            </div>
+            <div class="small text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                日志记录文件上传、下载、编辑等操作
+            </div>
+        </div>
+    </div>
 </body>
 </html>

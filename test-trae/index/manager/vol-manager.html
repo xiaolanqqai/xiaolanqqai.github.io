@@ -83,6 +83,64 @@
             overflow-y: auto;
             font-size: 0.8rem;
         }
+        
+        /* 管理页面导航栏中感叹号按钮样式 */
+        .manager-nav-button.bg-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+            color: white !important;
+            border: none;
+        }
+        
+        .manager-nav-button.bg-warning:hover {
+            background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%) !important;
+            transform: translateY(-1px);
+        }
+        
+        /* 日志条目样式 */
+        .log-entry {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #6c757d;
+            background-color: #f8f9fa;
+        }
+        
+        .log-entry.success {
+            border-left-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background-color: #fff5f5;
+        }
+        
+        .log-entry.warning {
+            border-left-color: #ffc107;
+            background-color: #fffef0;
+        }
+        
+        .log-entry.info {
+            border-left-color: #17a2b8;
+            background-color: #f0f9ff;
+        }
+        
+        .log-time {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+        }
+        
+        .log-message {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .log-details {
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-style: italic;
+        }
     </style>
 </head>
 <body class="manager-body">
@@ -93,16 +151,19 @@
     
     <!-- 管理页面导航栏 -->
     <div class="manager-nav">
-        <a href="nav-manager.html" class="manager-nav-button" title="导航数据管理">
-            <i class="fas fa-sitemap"></i>
-        </a>
-        <a href="MM-generator.html" class="manager-nav-button" title="密码生成器">
-            <i class="fas fa-key"></i>
-        </a>
-        <a href="vol-manager.html" class="manager-nav-button active" title="版本管理">
-            <i class="fas fa-code-branch"></i>
-        </a>
-    </div>
+            <a href="nav-manager.html" class="manager-nav-button" title="导航数据管理">
+                <i class="fas fa-sitemap"></i>
+            </a>
+            <a href="MM-generator.html" class="manager-nav-button" title="密码生成器">
+                <i class="fas fa-key"></i>
+            </a>
+            <a href="vol-manager.html" class="manager-nav-button active" title="版本管理">
+                <i class="fas fa-code-branch"></i>
+            </a>
+            <button class="manager-nav-button bg-warning" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas" title="操作日志">
+                <i class="fas fa-exclamation-circle"></i>
+            </button>
+        </div>
     <div class="manager-header py-4 mb-4">
         <div class="container">
             <h1 class="text-center mb-2">版本管理系统</h1>
@@ -119,7 +180,7 @@
         
         <!-- 功能卡片区域 -->
         <div class="row mb-4 g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card manager-feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-primary mb-3"><i class="fas fa-plus-circle"></i></div>
@@ -131,7 +192,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card manager-feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-success mb-3"><i class="fas fa-file-import"></i></div>
@@ -143,7 +204,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card manager-feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-info mb-3"><i class="fas fa-file-export"></i></div>
@@ -151,6 +212,30 @@
                         <p class="flex-grow-1">将版本数据导出为JSON文件</p>
                         <button id="exportBtn" class="btn manager-btn-info mt-2" disabled>
                             <i class="fas fa-file-export me-1"></i>导出数据
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card manager-feature-card h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-info mb-3"><i class="fas fa-save"></i></div>
+                        <h5>保存数据</h5>
+                        <p class="flex-grow-1">将当前数据保存到本地存储</p>
+                        <button id="saveDataBtn" class="btn manager-btn-primary mt-2" disabled>
+                            <i class="fas fa-save me-1"></i>保存数据
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card manager-feature-card h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-warning mb-3"><i class="fas fa-broom"></i></div>
+                        <h5>清空数据</h5>
+                        <p class="flex-grow-1">清除当前已加载的所有版本数据</p>
+                        <button id="clearDataBtn" class="btn manager-btn-warning mt-2" disabled>
+                            <i class="fas fa-broom me-1"></i>清空数据
                         </button>
                     </div>
                 </div>
@@ -288,6 +373,8 @@
         const confirmImport = document.getElementById('confirmImport');
         const exportBtn = document.getElementById('exportBtn');
         const sortByDateBtn = document.getElementById('sortByDateBtn');
+        const saveDataBtn = document.getElementById('saveDataBtn');
+        const clearDataBtn = document.getElementById('clearDataBtn');
         const jsonFileInput = document.getElementById('jsonFile');
         const dropArea = document.getElementById('dropArea');
         const fileInfo = document.getElementById('fileInfo');
@@ -295,9 +382,98 @@
         const jsonPreview = document.getElementById('jsonPreview');
         
         document.addEventListener('DOMContentLoaded', function() {
-            // 页面加载时渲染版本数据（初始为空）
+            // 尝试从localStorage加载数据
+            try {
+                const savedData = localStorage.getItem('versionData');
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    if (parsedData.versions && Array.isArray(parsedData.versions)) {
+                        versionData = parsedData;
+                        if (window.addLogEntry) {
+                            window.addLogEntry(window.LOG_TYPES.SUCCESS, '从本地存储加载数据', `成功加载 ${versionData.versions.length} 个版本记录`);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('加载本地数据失败:', e);
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.ERROR, '加载本地数据失败', e.message);
+                }
+            }
+            
+            // 页面加载时渲染版本数据
             updateDataStatus();
             setupEventListeners();
+            
+            // 初始化日志系统
+            const logContainer = document.getElementById('logContainer');
+            const emptyLogMessage = document.getElementById('emptyLogMessage');
+            const clearLogsBtn = document.getElementById('clearLogsBtn');
+            let logEntries = [];
+            
+            // 日志类型常量
+            const LOG_TYPES = {
+                SUCCESS: 'success',
+                ERROR: 'error',
+                WARNING: 'warning',
+                INFO: 'info'
+            };
+            
+            // 添加日志条目
+            function addLogEntry(type, message, details = '') {
+                const timestamp = new Date().toLocaleTimeString('zh-CN');
+                const logEntry = {
+                    type: type,
+                    message: message,
+                    details: details,
+                    timestamp: timestamp
+                };
+                
+                logEntries.unshift(logEntry); // 最新的在前面
+                renderLogs();
+            }
+            
+            // 渲染日志
+            function renderLogs() {
+                if (logEntries.length === 0) {
+                    emptyLogMessage.style.display = 'block';
+                    logContainer.innerHTML = '';
+                    return;
+                }
+                
+                emptyLogMessage.style.display = 'none';
+                logContainer.innerHTML = '';
+                
+                logEntries.forEach(entry => {
+                    const logElement = document.createElement('div');
+                    logElement.className = `log-entry ${entry.type}`;
+                    logElement.innerHTML = `
+                        <div class="log-time">${entry.timestamp}</div>
+                        <div class="log-message">${entry.message}</div>
+                        ${entry.details ? `<div class="log-details">${entry.details}</div>` : ''}
+                    `;
+                    logContainer.appendChild(logElement);
+                });
+            }
+            
+            // 清空日志
+            function clearAllLogs() {
+                logEntries = [];
+                renderLogs();
+                addLogEntry(LOG_TYPES.INFO, '清空了所有操作日志');
+            }
+            
+            // 绑定清空日志按钮事件
+            if (clearLogsBtn) {
+                clearLogsBtn.addEventListener('click', clearAllLogs);
+            }
+            
+            // 添加初始日志
+            addLogEntry(LOG_TYPES.INFO, '版本管理系统启动', '页面加载完成');
+            
+            // 将日志函数暴露给全局作用域
+            window.addLogEntry = addLogEntry;
+            window.LOG_TYPES = LOG_TYPES;
         });
         
         function setupEventListeners() {
@@ -305,6 +481,8 @@
             confirmImport.addEventListener('click', processImportedFile);
             exportBtn.addEventListener('click', exportVersionData);
             sortByDateBtn.addEventListener('click', sortVersionsByDate);
+            saveDataBtn.addEventListener('click', saveDataToStorage);
+            clearDataBtn.addEventListener('click', clearAllData);
             
             jsonFileInput.addEventListener('change', handleFileSelect);
             dropArea.addEventListener('dragover', function(e) {
@@ -327,9 +505,15 @@
                 const files = e.dataTransfer.files;
                 if (files.length && files[0].type === 'application/json') {
                     jsonFileInput.files = files;
+                    if (window.addLogEntry) {
+                        window.addLogEntry(window.LOG_TYPES.INFO, '拖放上传文件', `文件名: ${files[0].name}, 大小: ${(files[0].size / 1024).toFixed(2)} KB`);
+                    }
                     handleFileSelect(e);
                 } else {
                     alert('请拖放有效的JSON文件');
+                    if (window.addLogEntry) {
+                        window.addLogEntry(window.LOG_TYPES.ERROR, '拖放上传失败', '文件类型不是有效的JSON格式');
+                    }
                 }
             });
         }
@@ -343,11 +527,67 @@
                 dataStatus.innerHTML = `<i class="fas fa-check-circle me-2"></i><span>已加载 ${versionData.versions.length} 个版本记录</span>`;
                 exportBtn.disabled = false;
                 sortByDateBtn.disabled = false;
+                saveDataBtn.disabled = false;
+                clearDataBtn.disabled = false;
             } else {
                 dataStatus.className = 'data-status no-data p-3 mb-4';
                 dataStatus.innerHTML = `<i class="fas fa-info-circle me-2"></i><span>当前没有加载任何版本数据，请先导入JSON文件或添加新版本</span>`;
                 exportBtn.disabled = true;
                 sortByDateBtn.disabled = true;
+                saveDataBtn.disabled = true;
+                clearDataBtn.disabled = true;
+            }
+        }
+        
+        // 保存数据到localStorage
+        function saveDataToStorage() {
+            try {
+                localStorage.setItem('versionData', JSON.stringify(versionData));
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.INFO, '数据已保存到本地存储', `保存了 ${versionData.versions.length} 个版本记录`);
+                }
+            } catch (e) {
+                console.error('保存数据到本地存储失败:', e);
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.ERROR, '保存数据到本地存储失败', e.message);
+                }
+            }
+        }
+        
+        // 清空所有数据
+        function clearAllData() {
+            if (!versionData.versions || versionData.versions.length === 0) {
+                showAlert('当前没有数据可清空', 'warning');
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.WARNING, '清空数据失败', '当前没有数据可清空');
+                }
+                return;
+            }
+            
+            const deletedCount = versionData.versions.length;
+            
+            if (confirm(`确定要清空所有版本数据吗？此操作将删除 ${deletedCount} 个版本记录，且不可撤销！`)) {
+                // 清空数据
+                versionData.versions = [];
+                
+                // 清除localStorage
+                localStorage.removeItem('versionData');
+                
+                // 重新渲染
+                renderVersions();
+                renderTimeline();
+                updateDataStatus();
+                
+                showAlert(`已清空 ${deletedCount} 个版本记录`, 'success');
+                
+                // 记录清空数据日志
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.WARNING, '清空了所有数据', `删除了 ${deletedCount} 个版本记录`);
+                }
+            } else {
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.INFO, '取消了清空数据操作', '用户取消了确认对话框');
+                }
             }
         }
         
@@ -437,6 +677,9 @@
             
             if (!name || !date || !changesText) {
                 alert('请填写所有字段');
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.ERROR, '添加版本失败', '请填写所有必填字段');
+                }
                 return;
             }
             
@@ -455,15 +698,30 @@
             renderVersions();
             renderTimeline();
             updateDataStatus();
+            saveDataToStorage(); // 自动保存数据
             showAlert('版本已添加: ' + name, 'success');
+            
+            // 记录添加版本日志
+            if (window.addLogEntry) {
+                window.addLogEntry(window.LOG_TYPES.SUCCESS, '添加了新版本', `版本名称: ${name}, 发布日期: ${date}, 更新内容: ${changes.length} 条`);
+            }
         }
         
         // 按日期排序
         function sortVersionsByDate() {
+            const originalOrder = versionData.versions.map(v => v.name);
             versionData.versions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const newOrder = versionData.versions.map(v => v.name);
+            
             renderVersions();
             renderTimeline();
+            saveDataToStorage(); // 自动保存数据
             showAlert('版本已按日期排序', 'success');
+            
+            // 记录排序日志
+            if (window.addLogEntry) {
+                window.addLogEntry(window.LOG_TYPES.INFO, '版本排序完成', `按日期重新排序了 ${versionData.versions.length} 个版本记录`);
+            }
         }
         
         // 导出版本数据
@@ -479,9 +737,19 @@
                 document.body.removeChild(link);
                 
                 showAlert('版本数据已导出', 'success');
+                
+                // 记录导出日志
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.SUCCESS, '数据导出完成', `导出了 ${versionData.versions.length} 个版本记录，文件大小: ${(dataStr.length / 1024).toFixed(2)} KB`);
+                }
             } catch (e) {
                 console.error('导出数据时出错:', e);
                 showAlert('导出数据时出错', 'danger');
+                
+                // 记录导出失败日志
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.ERROR, '数据导出失败', e.message);
+                }
             }
         }
         
@@ -492,11 +760,18 @@
             
             if (file.type !== 'application/json') {
                 alert('请选择JSON文件');
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.ERROR, '文件选择失败', '选择的文件不是JSON格式');
+                }
                 return;
             }
             
             fileName.textContent = `已选择文件：${file.name}`;
             fileInfo.classList.remove('d-none');
+            
+            if (window.addLogEntry) {
+                window.addLogEntry(window.LOG_TYPES.INFO, '选择了JSON文件', `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
+            }
             
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -512,9 +787,16 @@
                     jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
                     confirmImport.disabled = false;
                     window.importedData = jsonData;
+                    
+                    if (window.addLogEntry) {
+                        window.addLogEntry(window.LOG_TYPES.SUCCESS, 'JSON文件解析成功', `包含 ${jsonData.versions.length} 个版本记录`);
+                    }
                 } catch (e) {
                     jsonPreview.textContent = `错误：${e.message}`;
                     confirmImport.disabled = true;
+                    if (window.addLogEntry) {
+                        window.addLogEntry(window.LOG_TYPES.ERROR, 'JSON文件解析失败', e.message);
+                    }
                 }
             };
             reader.readAsText(file);
@@ -523,12 +805,23 @@
         // 处理导入的文件
         function processImportedFile() {
             if (window.importedData) {
+                const originalCount = versionData.versions.length;
+                const newCount = window.importedData.versions.length;
+                const addedCount = newCount - originalCount;
+                
                 versionData = window.importedData;
                 renderVersions();
                 renderTimeline();
                 updateDataStatus();
+                saveDataToStorage(); // 自动保存数据
                 importModal.hide();
                 showAlert('JSON文件已成功导入，加载了 ' + versionData.versions.length + ' 个版本记录', 'success');
+                
+                // 记录导入日志
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.SUCCESS, '数据导入完成', `原有 ${originalCount} 条记录，新增 ${addedCount} 条记录，总计 ${newCount} 条记录`);
+                }
+                
                 delete window.importedData;
                 jsonFileInput.value = '';
                 fileInfo.classList.add('d-none');
@@ -563,6 +856,16 @@
             alert.innerHTML = '<div class="d-flex align-items-center"><i class="fas ' + (type === 'success' ? 'fa-check-circle' : type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle') + ' me-2"></i><div>' + message + '</div><button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button></div>';
             document.body.appendChild(alert);
             
+            // 记录日志
+            if (window.addLogEntry) {
+                let logType = window.LOG_TYPES.INFO;
+                if (type === 'success') logType = window.LOG_TYPES.SUCCESS;
+                else if (type === 'danger') logType = window.LOG_TYPES.ERROR;
+                else if (type === 'warning') logType = window.LOG_TYPES.WARNING;
+                
+                window.addLogEntry(logType, message);
+            }
+            
             setTimeout(() => {
                 if (alert.parentNode) {
                     alert.remove();
@@ -570,5 +873,31 @@
             }, 5000);
         }
     </script>
+    
+    <!-- 操作日志 offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="logOffcanvasLabel">操作日志</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted small">记录主要操作和错误信息</span>
+                <button id="clearLogsBtn" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-trash me-1"></i>清空日志
+                </button>
+            </div>
+            <div id="logContainer" class="mb-3">
+                <div id="emptyLogMessage" class="text-center text-muted p-4">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i>
+                    <p>暂无操作记录</p>
+                </div>
+            </div>
+            <div class="small text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                日志记录文件上传、下载、编辑等操作
+            </div>
+        </div>
+    </div>
 </body>
 </html>
