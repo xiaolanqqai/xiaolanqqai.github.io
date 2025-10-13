@@ -85,6 +85,81 @@
             background-color: rgba(255, 255, 255, 0.2);
             color: white;
         }
+        
+        /* 操作日志按钮样式 */
+        .home-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .home-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .home-button.bg-warning {
+            right: 80px; /* 调整位置，避免与返回首页按钮重叠 */
+        }
+        
+        /* 日志条目样式 */
+        .log-entry {
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+            background-color: #f8f9fa;
+            font-size: 0.875rem;
+        }
+        
+        .log-entry.success {
+            border-left-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background-color: #fff5f5;
+        }
+        
+        .log-entry.warning {
+            border-left-color: #ffc107;
+            background-color: #fffef0;
+        }
+        
+        .log-entry.info {
+            border-left-color: #17a2b8;
+            background-color: #f0f9ff;
+        }
+        
+        .log-time {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+        
+        .log-message {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .log-details {
+            font-size: 0.8rem;
+            color: #6c757d;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body class="manager-body">
@@ -92,6 +167,11 @@
     <a href="../../index.html" class="home-button bg-dark text-white" title="返回首页">
         <i class="fas fa-home"></i>
     </a>
+    
+    <!-- 操作日志按钮 -->
+    <button class="home-button bg-warning text-white" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
+        <i class="fas fa-exclamation-circle"></i>
+    </button>
     
     <!-- 管理页面导航栏 -->
     <div class="manager-nav">
@@ -386,6 +466,38 @@
         </div></div>
     </div>
     
+    <!-- 操作日志 Offcanvas 组件 -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="logOffcanvasLabel">
+                <i class="fas fa-history me-2"></i>操作日志
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">系统操作记录</span>
+                <button class="btn btn-sm btn-outline-secondary" id="clearLogsBtn">
+                    <i class="fas fa-trash me-1"></i>清空日志
+                </button>
+            </div>
+            
+            <div class="log-container" id="logContainer" style="max-height: 400px; overflow-y: auto;">
+                <div class="text-center text-muted py-4" id="emptyLogMessage">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i>
+                    <p>暂无操作记录</p>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <div class="d-flex align-items-center text-muted">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <small>记录JSON文件加载、保存操作及错误信息</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
         // 图标前缀常量
@@ -399,9 +511,23 @@
         };
         let currentTabIndex = 0;
         let currentPage = 'index';
+        
+        // 操作日志数组
+        let operationLogs = [];
+        
+        // 日志类型常量
+        const LOG_TYPES = {
+            SUCCESS: 'success',
+            ERROR: 'error',
+            WARNING: 'warning',
+            INFO: 'info'
+        };
         const navTabs = document.getElementById('navTabs');
         const navTabContent = document.getElementById('navTabContent');
         const saveBtn = document.getElementById('saveBtn');
+        const clearLogsBtn = document.getElementById('clearLogsBtn');
+        const logContainer = document.getElementById('logContainer');
+        const emptyLogMessage = document.getElementById('emptyLogMessage');
         const addTabBtn = document.getElementById('addTabBtn');
         const loadFromLocalBtn = document.getElementById('loadFromLocalBtn');
         const pageTitle = document.getElementById('currentPageTitle');
@@ -455,6 +581,9 @@
             confirmEditSite.addEventListener('click', saveEditedSite);
             confirmDeleteBtn.addEventListener('click', deleteSite);
             saveVersionBtn.addEventListener('click', saveVersionInfo);
+            
+            // 日志管理
+            clearLogsBtn.addEventListener('click', clearAllLogs);
             
             // 特殊栏目管理
             addSpecialSiteBtn.addEventListener('click', showAddSpecialSiteModal);
@@ -1048,12 +1177,201 @@
             alert.innerHTML = '<div class="d-flex align-items-center"><i class="fas '+(type === 'success' ? 'fa-check-circle' : type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle')+' me-2"></i><div>'+message+'</div><button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button></div>';
             document.body.appendChild(alert);
             
+            // 记录到操作日志
+            addLogEntry(message, type);
+            
             setTimeout(() => {
                 if (alert.parentNode) {
                     alert.remove();
                 }
             }, 5000);
         }
+        
+        // 日志管理功能
+        function addLogEntry(message, type = LOG_TYPES.INFO, details = '') {
+            const logEntry = {
+                timestamp: new Date().toLocaleString('zh-CN'),
+                message: message,
+                type: type,
+                details: details
+            };
+            
+            operationLogs.unshift(logEntry); // 添加到开头，最新的在最上面
+            
+            // 限制日志数量，最多保留100条
+            if (operationLogs.length > 100) {
+                operationLogs = operationLogs.slice(0, 100);
+            }
+            
+            renderLogs();
+        }
+        
+        function renderLogs() {
+            logContainer.innerHTML = '';
+            
+            if (operationLogs.length === 0) {
+                emptyLogMessage.style.display = 'block';
+                return;
+            }
+            
+            emptyLogMessage.style.display = 'none';
+            
+            operationLogs.forEach(log => {
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry ${log.type}`;
+                
+                const iconClass = {
+                    'success': 'fa-check-circle text-success',
+                    'error': 'fa-exclamation-circle text-danger',
+                    'warning': 'fa-exclamation-triangle text-warning',
+                    'info': 'fa-info-circle text-info'
+                }[log.type] || 'fa-info-circle text-info';
+                
+                logEntry.innerHTML = `
+                    <div class="log-time">
+                        <i class="fas fa-clock me-1"></i>${log.timestamp}
+                    </div>
+                    <div class="log-message">
+                        <i class="fas ${iconClass} me-2"></i>${log.message}
+                    </div>
+                    ${log.details ? `<div class="log-details">${log.details}</div>` : ''}
+                `;
+                
+                logContainer.appendChild(logEntry);
+            });
+        }
+        
+        function clearAllLogs() {
+            if (confirm('确定要清空所有操作日志吗？此操作不可撤销！')) {
+                operationLogs = [];
+                renderLogs();
+                addLogEntry('操作日志已清空', LOG_TYPES.INFO);
+            }
+        }
+        
+        // 修改现有的关键函数以记录日志
+        function loadFromJsonFile() {
+            fetch('../../js/nav-data.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('网络响应不正常');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 确保版本信息存在
+                    if (!data.version) {
+                        data.version = {
+                            web_vol: "1.0.0",
+                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
+                        };
+                    }
+                    
+                    navData = data;
+                    renderTabs();
+                    renderSpecialSites();
+                    updateVersionDisplay();
+                    updateSpecialSectionVisibility();
+                    showAlert('数据已从本地JSON文件加载', 'success');
+                    
+                    // 记录成功加载
+                    addLogEntry('JSON文件加载成功', LOG_TYPES.SUCCESS, '从本地文件加载导航数据');
+                })
+                .catch(error => {
+                    console.error('加载本地JSON文件失败:', error);
+                    showAlert('加载本地JSON文件失败: ' + error.message, 'danger');
+                    
+                    // 记录加载失败
+                    addLogEntry('JSON文件加载失败', LOG_TYPES.ERROR, error.message);
+                    
+                    // 如果没有本地数据，使用默认结构
+                    navData = {
+                        version: {
+                            web_vol: "1.0.0",
+                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
+                        },
+                        index: { tabs: [] },
+                        more: { tabs: [] },
+                        dd: { tabs: [] },
+                        download: { tabs: [] },
+                        develop: { tabs: [] }
+                    };
+                    
+                    document.getElementById('navTabContent').innerHTML = '<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>暂无数据，请先上传JSON文件或添加内容</p></div>';
+                });
+        }
+        
+        function saveNavData() {
+            try {
+                // 创建下载链接
+                const dataStr = JSON.stringify(navData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = 'nav-data.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showAlert('导航数据已保存并准备好下载', 'success');
+                
+                // 记录保存操作
+                addLogEntry('数据保存成功', LOG_TYPES.SUCCESS, '导航数据已导出为JSON文件');
+            } catch (e) {
+                console.error('保存数据时出错:', e);
+                showAlert('保存数据时出错', 'danger');
+                
+                // 记录保存失败
+                addLogEntry('数据保存失败', LOG_TYPES.ERROR, e.message);
+            }
+        }
+        
+        function processUploadedFile() {
+            const file = jsonFileInput.files[0];
+            if (!file) {
+                showAlert('请先选择文件', 'warning');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const uploadedData = JSON.parse(e.target.result);
+                    
+                    // 验证数据结构
+                    if (!uploadedData.version || !uploadedData.index) {
+                        throw new Error('无效的JSON结构');
+                    }
+                    
+                    navData = uploadedData;
+                    renderTabs();
+                    renderSpecialSites();
+                    updateVersionDisplay();
+                    updateSpecialSectionVisibility();
+                    uploadModal.hide();
+                    showAlert('JSON文件上传成功', 'success');
+                    
+                    // 记录上传成功
+                    addLogEntry('JSON文件上传成功', LOG_TYPES.SUCCESS, `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
+                } catch (error) {
+                    console.error('解析JSON文件失败:', error);
+                    showAlert('解析JSON文件失败: ' + error.message, 'danger');
+                    
+                    // 记录上传失败
+                    addLogEntry('JSON文件上传失败', LOG_TYPES.ERROR, `文件名: ${file.name}, 错误: ${error.message}`);
+                }
+            };
+            
+            reader.onerror = function() {
+                showAlert('读取文件失败', 'danger');
+                addLogEntry('文件读取失败', LOG_TYPES.ERROR, `文件名: ${file.name}`);
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // 页面加载时添加初始日志
+        addLogEntry('导航数据管理系统已启动', LOG_TYPES.INFO, '系统初始化完成');
     </script>
 </body>
 </html>
