@@ -219,27 +219,16 @@
             <div class="col-md-3">
                 <div class="card manager-feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="feature-icon text-info mb-3"><i class="fas fa-save"></i></div>
+                        <div class="feature-icon text-info mb-3"><i class="fas fa-file-export"></i></div>
                         <h5>保存数据</h5>
-                        <p class="flex-grow-1">将当前数据保存到本地存储</p>
+                        <p class="flex-grow-1">将当前数据保存为JSON文件</p>
                         <button id="saveDataBtn" class="btn manager-btn-primary mt-2" disabled>
                             <i class="fas fa-save me-1"></i>保存数据
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card manager-feature-card h-100">
-                    <div class="card-body text-center d-flex flex-column">
-                        <div class="feature-icon text-warning mb-3"><i class="fas fa-broom"></i></div>
-                        <h5>清空数据</h5>
-                        <p class="flex-grow-1">清除当前已加载的所有版本数据</p>
-                        <button id="clearDataBtn" class="btn manager-btn-warning mt-2" disabled>
-                            <i class="fas fa-broom me-1"></i>清空数据
-                        </button>
-                    </div>
-                </div>
-            </div>
+
         </div>
         
         <!-- 版本列表区域 -->
@@ -374,7 +363,6 @@
         const exportBtn = document.getElementById('exportBtn');
         const sortByDateBtn = document.getElementById('sortByDateBtn');
         const saveDataBtn = document.getElementById('saveDataBtn');
-        const clearDataBtn = document.getElementById('clearDataBtn');
         const jsonFileInput = document.getElementById('jsonFile');
         const dropArea = document.getElementById('dropArea');
         const fileInfo = document.getElementById('fileInfo');
@@ -382,24 +370,8 @@
         const jsonPreview = document.getElementById('jsonPreview');
         
         document.addEventListener('DOMContentLoaded', function() {
-            // 尝试从localStorage加载数据
-            try {
-                const savedData = localStorage.getItem('versionData');
-                if (savedData) {
-                    const parsedData = JSON.parse(savedData);
-                    if (parsedData.versions && Array.isArray(parsedData.versions)) {
-                        versionData = parsedData;
-                        if (window.addLogEntry) {
-                            window.addLogEntry(window.LOG_TYPES.SUCCESS, '从本地存储加载数据', `成功加载 ${versionData.versions.length} 个版本记录`);
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error('加载本地数据失败:', e);
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.ERROR, '加载本地数据失败', e.message);
-                }
-            }
+            // 从本地JSON文件加载数据
+            loadVersionDataFromFile();
             
             // 页面加载时渲染版本数据
             updateDataStatus();
@@ -482,7 +454,6 @@
             exportBtn.addEventListener('click', exportVersionData);
             sortByDateBtn.addEventListener('click', sortVersionsByDate);
             saveDataBtn.addEventListener('click', saveDataToStorage);
-            clearDataBtn.addEventListener('click', clearAllData);
             
             jsonFileInput.addEventListener('change', handleFileSelect);
             dropArea.addEventListener('dragover', function(e) {
@@ -518,6 +489,40 @@
             });
         }
         
+        // 从本地JSON文件加载数据
+        function loadVersionDataFromFile() {
+            fetch('../../../js/version-history.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('网络响应不正常');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.versions && Array.isArray(data.versions)) {
+                        versionData = data;
+                        if (window.addLogEntry) {
+                            window.addLogEntry(window.LOG_TYPES.SUCCESS, '从本地文件加载数据', `成功加载 ${versionData.versions.length} 个版本记录`);
+                        }
+                    } else {
+                        throw new Error('JSON文件格式不正确');
+                    }
+                })
+                .catch(error => {
+                    console.error('加载本地文件失败:', error);
+                    versionData = { versions: [] };
+                    if (window.addLogEntry) {
+                        window.addLogEntry(window.LOG_TYPES.ERROR, '加载本地文件失败', error.message);
+                    }
+                })
+                .finally(() => {
+                    // 无论加载成功与否，都进行渲染
+                    renderVersions();
+                    renderTimeline();
+                    updateDataStatus();
+                });
+        }
+        
         // 更新数据状态显示
         function updateDataStatus() {
             const hasData = versionData.versions && versionData.versions.length > 0;
@@ -528,28 +533,40 @@
                 exportBtn.disabled = false;
                 sortByDateBtn.disabled = false;
                 saveDataBtn.disabled = false;
-                clearDataBtn.disabled = false;
             } else {
                 dataStatus.className = 'data-status no-data p-3 mb-4';
                 dataStatus.innerHTML = `<i class="fas fa-info-circle me-2"></i><span>当前没有加载任何版本数据，请先导入JSON文件或添加新版本</span>`;
                 exportBtn.disabled = true;
                 sortByDateBtn.disabled = true;
                 saveDataBtn.disabled = true;
-                clearDataBtn.disabled = true;
             }
         }
         
-        // 保存数据到localStorage
+        // 保存数据为JSON文件
         function saveDataToStorage() {
             try {
-                localStorage.setItem('versionData', JSON.stringify(versionData));
+                const dataStr = JSON.stringify(versionData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = 'version-history.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showAlert('数据已保存为JSON文件', 'success');
+                
+                // 记录保存日志
                 if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.INFO, '数据已保存到本地存储', `保存了 ${versionData.versions.length} 个版本记录`);
+                    window.addLogEntry(window.LOG_TYPES.SUCCESS, '数据保存成功', `保存了 ${versionData.versions.length} 个版本记录为JSON文件，文件大小: ${(dataStr.length / 1024).toFixed(2)} KB`);
                 }
             } catch (e) {
-                console.error('保存数据到本地存储失败:', e);
+                console.error('保存数据为JSON文件失败:', e);
+                showAlert('保存数据为JSON文件失败', 'danger');
+                
+                // 记录保存失败日志
                 if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.ERROR, '保存数据到本地存储失败', e.message);
+                    window.addLogEntry(window.LOG_TYPES.ERROR, '保存数据为JSON文件失败', e.message);
                 }
             }
         }
@@ -569,9 +586,6 @@
             if (confirm(`确定要清空所有版本数据吗？此操作将删除 ${deletedCount} 个版本记录，且不可撤销！`)) {
                 // 清空数据
                 versionData.versions = [];
-                
-                // 清除localStorage
-                localStorage.removeItem('versionData');
                 
                 // 重新渲染
                 renderVersions();
