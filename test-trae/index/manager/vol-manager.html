@@ -207,23 +207,11 @@
             <div class="col-md-3">
                 <div class="card manager-feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="feature-icon text-info mb-3"><i class="fas fa-file-export"></i></div>
-                        <h5>导出版本数据</h5>
-                        <p class="flex-grow-1">将版本数据导出为JSON文件</p>
-                        <button id="exportBtn" class="btn manager-btn-info mt-2" disabled>
-                            <i class="fas fa-file-export me-1"></i>导出数据
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card manager-feature-card h-100">
-                    <div class="card-body text-center d-flex flex-column">
-                        <div class="feature-icon text-info mb-3"><i class="fas fa-file-export"></i></div>
-                        <h5>保存数据</h5>
-                        <p class="flex-grow-1">将当前数据保存为JSON文件</p>
+                        <div class="feature-icon text-primary mb-3"><i class="fas fa-file-export"></i></div>
+                        <h5>保存/导出数据</h5>
+                        <p class="flex-grow-1">将当前版本数据保存为JSON文件</p>
                         <button id="saveDataBtn" class="btn manager-btn-primary mt-2" disabled>
-                            <i class="fas fa-save me-1"></i>保存数据
+                            <i class="fas fa-file-export me-1"></i>保存数据
                         </button>
                     </div>
                 </div>
@@ -360,7 +348,6 @@
         const importModal = new bootstrap.Modal(document.getElementById('importModal'));
         const confirmAddVersion = document.getElementById('confirmAddVersion');
         const confirmImport = document.getElementById('confirmImport');
-        const exportBtn = document.getElementById('exportBtn');
         const sortByDateBtn = document.getElementById('sortByDateBtn');
         const saveDataBtn = document.getElementById('saveDataBtn');
         const jsonFileInput = document.getElementById('jsonFile');
@@ -451,7 +438,6 @@
         function setupEventListeners() {
             confirmAddVersion.addEventListener('click', addNewVersion);
             confirmImport.addEventListener('click', processImportedFile);
-            exportBtn.addEventListener('click', exportVersionData);
             sortByDateBtn.addEventListener('click', sortVersionsByDate);
             saveDataBtn.addEventListener('click', saveDataToStorage);
             
@@ -491,7 +477,14 @@
         
         // 从本地JSON文件加载数据
         function loadVersionDataFromFile() {
-            fetch('../../../js/version-history.json')
+            const filePath = '../../../js/version-history.json';
+            const fullPath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/') + filePath;
+            
+            if (window.addLogEntry) {
+                window.addLogEntry(window.LOG_TYPES.INFO, '开始加载数据', `文件路径: ${filePath}, 完整路径: ${fullPath}, 来源: 本地文件`);
+            }
+            
+            fetch(filePath)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('网络响应不正常');
@@ -502,7 +495,7 @@
                     if (data.versions && Array.isArray(data.versions)) {
                         versionData = data;
                         if (window.addLogEntry) {
-                            window.addLogEntry(window.LOG_TYPES.SUCCESS, '从本地文件加载数据', `成功加载 ${versionData.versions.length} 个版本记录`);
+                            window.addLogEntry(window.LOG_TYPES.SUCCESS, '从本地文件加载数据成功', `成功加载 ${versionData.versions.length} 个版本记录，文件路径: ${filePath}, 来源: 本地文件`);
                         }
                     } else {
                         throw new Error('JSON文件格式不正确');
@@ -512,7 +505,7 @@
                     console.error('加载本地文件失败:', error);
                     versionData = { versions: [] };
                     if (window.addLogEntry) {
-                        window.addLogEntry(window.LOG_TYPES.ERROR, '加载本地文件失败', error.message);
+                        window.addLogEntry(window.LOG_TYPES.ERROR, '从本地文件加载数据失败', `文件路径: ${filePath}, 错误信息: ${error.message}, 来源: 本地文件`);
                     }
                 })
                 .finally(() => {
@@ -530,13 +523,11 @@
             if (hasData) {
                 dataStatus.className = 'data-status has-data p-3 mb-4';
                 dataStatus.innerHTML = `<i class="fas fa-check-circle me-2"></i><span>已加载 ${versionData.versions.length} 个版本记录</span>`;
-                exportBtn.disabled = false;
                 sortByDateBtn.disabled = false;
                 saveDataBtn.disabled = false;
             } else {
                 dataStatus.className = 'data-status no-data p-3 mb-4';
                 dataStatus.innerHTML = `<i class="fas fa-info-circle me-2"></i><span>当前没有加载任何版本数据，请先导入JSON文件或添加新版本</span>`;
-                exportBtn.disabled = true;
                 sortByDateBtn.disabled = true;
                 saveDataBtn.disabled = true;
             }

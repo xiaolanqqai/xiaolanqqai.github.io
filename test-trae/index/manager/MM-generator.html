@@ -419,7 +419,9 @@
                     console.log('文件已选择:', file.name);
                     currentFileName = file.name;
                     fileInfo.textContent = `已选择文件: ${file.name} (${formatFileSize(file.size)})`;
-                    addLogEntry(LOG_TYPES.INFO, `选择了文件: ${file.name}`, `大小: ${formatFileSize(file.size)}`);
+                    
+                    // 记录开始加载
+                    addLogEntry(LOG_TYPES.INFO, '开始加载文件', `文件名: ${file.name}, 文件大小: ${formatFileSize(file.size)}, 来源: 本地上传`);
                     
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -433,18 +435,18 @@
                             uploadSection.classList.add('d-none');
                             mainContent.classList.remove('d-none');
                             mainContent.classList.add('d-flex');
-                            addLogEntry(LOG_TYPES.SUCCESS, `文件上传成功: ${file.name}`, `解析出 ${entries.length} 个条目`);
+                            addLogEntry(LOG_TYPES.SUCCESS, `文件上传成功`, `文件名: ${file.name}, 解析出 ${entries.length} 个条目, 来源: 本地上传`);
                         } catch (error) {
                             console.error('文件解析失败:', error);
                             alert('文件解析失败: ' + error.message);
                             fileInfo.textContent = '文件解析失败，请选择有效的HTML文件';
-                            addLogEntry(LOG_TYPES.ERROR, `文件解析失败: ${file.name}`, error.message);
+                            addLogEntry(LOG_TYPES.ERROR, `文件解析失败`, `文件名: ${file.name}, 错误信息: ${error.message}, 来源: 本地上传`);
                         }
                     };
                     reader.onerror = function() {
                         console.error('文件读取错误');
                         fileInfo.textContent = '文件读取错误，请重试';
-                        addLogEntry(LOG_TYPES.ERROR, '文件读取失败', '无法读取选定的文件');
+                        addLogEntry(LOG_TYPES.ERROR, '文件读取失败', `文件名: ${file.name}, 无法读取选定的文件, 来源: 本地上传`);
                     };
                     reader.readAsText(file);
                 } else {
@@ -459,6 +461,9 @@
                 loading.classList.remove('d-none');
                 urlError.textContent = '';
                 currentFileName = 'MM.htm';
+                
+                // 记录开始加载
+                addLogEntry(LOG_TYPES.INFO, '开始从网络加载文件', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 来源: 网络加载`);
                 
                 console.log('开始从URL加载文件:', FIXED_URL);
                 fetch(FIXED_URL)
@@ -477,10 +482,16 @@
                         uploadSection.classList.add('d-none');
                         mainContent.classList.remove('d-none');
                         mainContent.classList.add('d-flex');
+                        
+                        // 记录成功加载
+                        addLogEntry(LOG_TYPES.SUCCESS, '网络文件加载成功', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 解析出 ${entries.length} 个条目, 来源: 网络加载`);
                     })
                     .catch(error => {
                         console.error('URL加载错误:', error);
                         urlError.textContent = `加载失败: ${error.message}`;
+                        
+                        // 记录加载失败
+                        addLogEntry(LOG_TYPES.ERROR, '网络文件加载失败', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 错误信息: ${error.message}, 来源: 网络加载`);
                     })
                     .finally(() => {
                         console.log('加载完成');

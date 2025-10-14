@@ -1257,7 +1257,13 @@
         
         // 修改现有的关键函数以记录日志
         function loadFromJsonFile() {
-            fetch('../../js/nav-data.json')
+            const filePath = '../../js/nav-data.json';
+            const fullPath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/') + filePath;
+            
+            // 记录开始加载
+            addLogEntry('开始加载导航数据', LOG_TYPES.INFO, `文件路径: ${filePath}, 完整路径: ${fullPath}, 来源: 本地文件`);
+            
+            fetch(filePath)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('网络响应不正常');
@@ -1281,14 +1287,14 @@
                     showAlert('数据已从本地JSON文件加载', 'success');
                     
                     // 记录成功加载
-                    addLogEntry('JSON文件加载成功', LOG_TYPES.SUCCESS, '从本地文件加载导航数据');
+                    addLogEntry('JSON文件加载成功', LOG_TYPES.SUCCESS, `从本地文件加载导航数据成功，文件路径: ${filePath}, 来源: 本地文件`);
                 })
                 .catch(error => {
                     console.error('加载本地JSON文件失败:', error);
                     showAlert('加载本地JSON文件失败: ' + error.message, 'danger');
                     
                     // 记录加载失败
-                    addLogEntry('JSON文件加载失败', LOG_TYPES.ERROR, error.message);
+                    addLogEntry('JSON文件加载失败', LOG_TYPES.ERROR, `文件路径: ${filePath}, 错误信息: ${error.message}, 来源: 本地文件`);
                     
                     // 如果没有本地数据，使用默认结构
                     navData = {
