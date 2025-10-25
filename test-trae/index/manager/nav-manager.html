@@ -654,35 +654,112 @@
                 } else {
                     // 检索功能
                     const url = siteUrlInput.value.trim();
-                    const siteName = extractSiteNameFromUrl(url);
+                    
+                    // 显示加载状态
+                    clipboardBtn.disabled = true;
+                    clipboardBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 检索中...';
                     
                     // 显示网站图标
                     showSiteIcon(url);
                     
-                    if (siteName) {
-                        siteNameInput.value = siteName;
-                        showAlert('已自动填充网站名称', 'success');
-                        // 记录检索成功日志
-                        addLogEntry('网站名称检索成功', LOG_TYPES.SUCCESS, `URL: ${url}, 提取的网站名称: ${siteName}`);
-                    } else {
-                        showAlert('无法自动识别网站名称，请手动输入', 'info');
-                        // 记录检索失败日志
-                        addLogEntry('网站名称检索失败', LOG_TYPES.INFO, `URL: ${url}`);
+                    try {
+                        // 异步获取网站名称
+                        const siteName = await extractSiteNameFromUrl(url);
+                        
+                        if (siteName) {
+                            siteNameInput.value = siteName;
+                            showAlert('已自动填充网站名称', 'success');
+                            // 记录检索成功日志
+                            addLogEntry('网站名称检索成功', LOG_TYPES.SUCCESS, `URL: ${url}, 提取的网站名称: ${siteName}`);
+                        } else {
+                            showAlert('无法自动识别网站名称，请手动输入', 'info');
+                            // 记录检索失败日志
+                            addLogEntry('网站名称检索失败', LOG_TYPES.INFO, `URL: ${url}`);
+                        }
+                    } catch (error) {
+                        showAlert('获取网站名称时出错', 'error');
+                        addLogEntry('网站名称检索异常', LOG_TYPES.ERROR, `URL: ${url}, 错误: ${error.message}`);
+                    } finally {
+                        // 恢复按钮状态
+                        clipboardBtn.disabled = false;
+                        clipboardBtn.textContent = '检索';
                     }
                 }
             });
             
-            // 监听URL输入变化，自动显示图标
-            siteUrlInput.addEventListener('change', function() {
+            // 监听URL输入变化，自动显示图标和获取网站名称
+            siteUrlInput.addEventListener('change', async function() {
                 const url = this.value.trim();
                 if (url && url.match(/^https?:\/\//i)) {
+                    // 显示网站图标
                     showSiteIcon(url);
+                    
+                    // 如果网站名称输入框为空，自动获取网站名称
+                    if (!siteNameInput.value.trim()) {
+                        try {
+                            const siteName = await extractSiteNameFromUrl(url);
+                            if (siteName) {
+                                siteNameInput.value = siteName;
+                                // 记录自动获取成功日志
+                                addLogEntry('自动获取网站名称成功', LOG_TYPES.INFO, `URL: ${url}, 获取的网站名称: ${siteName}`);
+                            }
+                        } catch (error) {
+                            console.error('自动获取网站名称失败:', error);
+                        }
+                    }
                 }
             });
         }
         
-        // 从URL提取网站名称
-        function extractSiteNameFromUrl(url) {
+        // 从网络获取网站标题
+        async function fetchWebsiteTitle(url) {
+            try {
+                // 使用公共CORS代理服务获取网站HTML内容
+                // 注意：这是一个示例代理，实际使用时可能需要更换为可靠的代理服务
+                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    timeout: 5000, // 设置5秒超时
+                    headers: {
+                        'Accept': 'text/html',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const html = await response.text();
+                
+                // 尝试从HTML中提取title标签内容
+                const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+                if (titleMatch && titleMatch[1]) {
+                    // 清理标题文本
+                    return titleMatch[1].trim().replace(/[\t\n\r]+/g, ' ');
+                }
+                
+                return null; // 未找到标题
+            } catch (error) {
+                console.error('获取网站标题失败:', error);
+                return null; // 获取失败
+            }
+        }
+        
+        // 从URL提取网站名称（优先从网络获取标题，失败则使用域名解析）
+        async function extractSiteNameFromUrl(url) {
+            // 首先尝试从网络获取网站标题
+            const title = await fetchWebsiteTitle(url);
+            if (title) {
+                // 如果标题过长，进行适当截断
+                if (title.length > 30) {
+                    return title.substring(0, 30) + '...';
+                }
+                return title;
+            }
+            
+            // 如果网络获取失败，回退到现有的域名解析方法
             try {
                 // 创建URL对象
                 const urlObj = new URL(url);
