@@ -418,59 +418,7 @@
             </div>
         </div></div>
     </div>
-    <script>
-            async function extractSiteNameFromUrl(url) {
-                try {
-                    // 创建URL对象
-                    const urlObj = new URL(url);
-                    // 获取主机名并移除www.前缀
-                    let hostname = urlObj.hostname;
-                    if (hostname.startsWith('www.')) {
-                        hostname = hostname.substring(4);
-                    }
-                    // 分割域名，取主要部分
-                    const parts = hostname.split('.');
-                    if (parts.length >= 2) {
-                        // 对于.com.cn等多级域名，取倒数第三部分
-                        if (parts.length >= 3 && (parts[parts.length-1] === 'cn' || parts[parts.length-1] === 'net' || parts[parts.length-1] === 'org')) {
-                            return parts[parts.length-3];
-                        }
-                        // 其他情况取倒数第二部分
-                        return parts[parts.length-2];
-                    }
-                    return hostname;
-                } catch (e) {
-                    // 如果URL格式不正确，尝试简单处理
-                    let cleanUrl = url.trim();
-                    // 移除协议
-                    cleanUrl = cleanUrl.replace(/^https?:\/\//, '');
-                    // 移除路径
-                    cleanUrl = cleanUrl.split('/')[0];
-                    // 移除www.
-                    cleanUrl = cleanUrl.replace(/^www\./, '');
-                    // 分割域名
-                    const parts = cleanUrl.split('.');
-                    if (parts.length >= 2) {
-                        return parts[0];
-                    }
-                    return cleanUrl;
-                }
-            }
-            
-            // 在模态框显示时初始化
-            document.getElementById('addSiteModal').addEventListener('shown.bs.modal', function() {
-                // 延迟一下确保DOM元素已加载
-                setTimeout(() => {
-                    // 直接调用初始化函数，内部会处理元素存在性检查
-                    initClipboardButton();
-                }, 100);
-            });
-            </script>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="confirmEditSite">保存</button>
-            </div>
+   
         </div></div>
     </div>
     <div class="modal fade" id="editSiteModal" tabindex="-1" aria-hidden="true">
