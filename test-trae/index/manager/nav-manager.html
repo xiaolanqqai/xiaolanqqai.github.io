@@ -418,7 +418,8 @@
             </div>
         </div></div>
     </div>
-            function extractSiteNameFromUrl(url) {
+    <script>
+            async function extractSiteNameFromUrl(url) {
                 try {
                     // 创建URL对象
                     const urlObj = new URL(url);
@@ -460,17 +461,11 @@
             document.getElementById('addSiteModal').addEventListener('shown.bs.modal', function() {
                 // 延迟一下确保DOM元素已加载
                 setTimeout(() => {
-                    if (clipboardBtn && siteUrlInput) {
-                        initClipboardButton();
-                        // 初始化按钮文本
-                        if (siteUrlInput.value.trim() === '') {
-                            clipboardBtn.textContent = '黏贴';
-                        } else {
-                            clipboardBtn.textContent = '检索';
-                        }
-                    }
+                    // 直接调用初始化函数，内部会处理元素存在性检查
+                    initClipboardButton();
                 }, 100);
             });
+            </script>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -590,49 +585,22 @@
             
             if (!siteUrlInput || !clipboardBtn || !siteNameInput) return;
             
-            // 监听输入框变化，切换按钮文本
+            // 初始化按钮文本
+            if (siteUrlInput.value.trim() === '') {
+                clipboardBtn.textContent = '黏贴';
+            } else {
+                clipboardBtn.textContent = '检索';
+            }
+            
+            // 监听输入框实时变化，即时切换按钮文本
+            // 注意：此事件仅处理按钮文本切换，不执行其他操作
             siteUrlInput.addEventListener('input', function() {
                 if (this.value.trim() === '') {
                     clipboardBtn.textContent = '黏贴';
                 } else {
                     clipboardBtn.textContent = '检索';
                 }
-            });
-            
-            // 显示网站图标
-            function showSiteIcon(url) {
-                const siteIconPreview = document.getElementById('siteIconPreview');
-                const siteIconImage = document.getElementById('siteIconImage');
-                const defaultIcon = document.getElementById('defaultIcon');
-                const loadingIcon = document.getElementById('loadingIcon');
-                
-                if (siteIconPreview && siteIconImage && defaultIcon && loadingIcon) {
-                    // 显示加载图标
-                    defaultIcon.style.display = 'none';
-                    siteIconImage.style.display = 'none';
-                    loadingIcon.style.display = 'block';
-                    
-                    const iconUrl = ICON_PREFIX + encodeURIComponent(url);
-                    
-                    // 创建新图片对象来处理加载状态
-                    const img = new Image();
-                    img.src = iconUrl;
-                    
-                    img.onload = function() {
-                        // 加载成功，显示图标
-                        siteIconImage.src = iconUrl;
-                        loadingIcon.style.display = 'none';
-                        siteIconImage.style.display = 'block';
-                    };
-                    
-                    img.onerror = function() {
-                        // 加载失败，显示默认图标
-                        siteIconImage.src = '../img/index.png';
-                        loadingIcon.style.display = 'none';
-                        siteIconImage.style.display = 'block';
-                    };
-                }
-            }
+            })
             
             // 按钮点击事件
             clipboardBtn.addEventListener('click', async function() {
@@ -646,6 +614,19 @@
                         // 如果粘贴的是URL，显示图标
                         if (text.trim().match(/^https?:\/\//i)) {
                             showSiteIcon(text.trim());
+                            
+                            // 自动获取网站名称
+                            if (!siteNameInput.value.trim()) {
+                                try {
+                                    const siteName = await extractSiteNameFromUrl(text.trim());
+                                    if (siteName) {
+                                        siteNameInput.value = siteName;
+                                        addLogEntry('粘贴后自动获取网站名称成功', LOG_TYPES.INFO, `URL: ${text.trim()}, 获取的网站名称: ${siteName}`);
+                                    }
+                                } catch (error) {
+                                    console.error('粘贴后自动获取网站名称失败:', error);
+                                }
+                            }
                         }
                     } catch (err) {
                         showAlert('无法读取剪贴板内容，请手动粘贴', 'error');
@@ -688,6 +669,7 @@
             });
             
             // 监听URL输入变化，自动显示图标和获取网站名称
+            // 注意：此功能与粘贴功能和按钮点击功能有部分重叠，但保留以提供更完整的用户体验
             siteUrlInput.addEventListener('change', async function() {
                 const url = this.value.trim();
                 if (url && url.match(/^https?:\/\//i)) {
@@ -834,6 +816,41 @@
         
         // 图标前缀常量
         const ICON_PREFIX = 'https://api.afmax.cn/so/ico/index.php?r=';
+        
+        // 显示网站图标
+        function showSiteIcon(url) {
+            const siteIconPreview = document.getElementById('siteIconPreview');
+            const siteIconImage = document.getElementById('siteIconImage');
+            const defaultIcon = document.getElementById('defaultIcon');
+            const loadingIcon = document.getElementById('loadingIcon');
+            
+            if (siteIconPreview && siteIconImage && defaultIcon && loadingIcon) {
+                // 显示加载图标
+                defaultIcon.style.display = 'none';
+                siteIconImage.style.display = 'none';
+                loadingIcon.style.display = 'block';
+                
+                const iconUrl = ICON_PREFIX + encodeURIComponent(url);
+                
+                // 创建新图片对象来处理加载状态
+                const img = new Image();
+                img.src = iconUrl;
+                
+                img.onload = function() {
+                    // 加载成功，显示图标
+                    siteIconImage.src = iconUrl;
+                    loadingIcon.style.display = 'none';
+                    siteIconImage.style.display = 'block';
+                };
+                
+                img.onerror = function() {
+                    // 加载失败，显示默认图标
+                    siteIconImage.src = '../../img/index.png';
+                    loadingIcon.style.display = 'none';
+                    siteIconImage.style.display = 'block';
+                };
+            }
+        }
         
         let navData = {
             version: {
