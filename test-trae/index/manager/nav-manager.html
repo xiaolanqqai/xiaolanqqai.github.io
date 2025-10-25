@@ -386,9 +386,19 @@
         <div class="modal-dialog"><div class="modal-content">
             <div class="modal-header"><h5 class="modal-title">添加新网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
             <div class="modal-body">
+                <!-- 网站图标显示区域 -->
+                <div class="text-center mb-3" id="siteIconPreview" style="display: none;">
+                    <img src="" alt="网站图标" id="siteIconImage" class="img-fluid" style="max-width: 64px; max-height: 64px;">
+                </div>
                 <form id="addSiteForm">
                     <div class="mb-3"><label for="siteName" class="form-label">网站名称</label><input type="text" class="form-control" id="siteName" required></div>
-                    <div class="mb-3"><label for="siteUrl" class="form-label">网站地址</label><input type="url" class="form-control" id="siteUrl" required></div>
+                    <div class="mb-3">
+                        <label for="siteUrl" class="form-label">网站地址</label>
+                        <div class="input-group">
+                            <input type="url" class="form-control" id="siteUrl" required>
+                            <button type="button" class="btn btn-outline-secondary" id="clipboardBtn">黏贴</button>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <div class="alert alert-info">
                             <small><i class="fas fa-info-circle me-1"></i>图标将自动使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
@@ -399,6 +409,66 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                 <button type="button" class="btn manager-btn-primary" id="confirmAddSite">添加</button>
+            </div>
+        </div></div>
+    </div>
+            function extractSiteNameFromUrl(url) {
+                try {
+                    // 创建URL对象
+                    const urlObj = new URL(url);
+                    // 获取主机名并移除www.前缀
+                    let hostname = urlObj.hostname;
+                    if (hostname.startsWith('www.')) {
+                        hostname = hostname.substring(4);
+                    }
+                    // 分割域名，取主要部分
+                    const parts = hostname.split('.');
+                    if (parts.length >= 2) {
+                        // 对于.com.cn等多级域名，取倒数第三部分
+                        if (parts.length >= 3 && (parts[parts.length-1] === 'cn' || parts[parts.length-1] === 'net' || parts[parts.length-1] === 'org')) {
+                            return parts[parts.length-3];
+                        }
+                        // 其他情况取倒数第二部分
+                        return parts[parts.length-2];
+                    }
+                    return hostname;
+                } catch (e) {
+                    // 如果URL格式不正确，尝试简单处理
+                    let cleanUrl = url.trim();
+                    // 移除协议
+                    cleanUrl = cleanUrl.replace(/^https?:\/\//, '');
+                    // 移除路径
+                    cleanUrl = cleanUrl.split('/')[0];
+                    // 移除www.
+                    cleanUrl = cleanUrl.replace(/^www\./, '');
+                    // 分割域名
+                    const parts = cleanUrl.split('.');
+                    if (parts.length >= 2) {
+                        return parts[0];
+                    }
+                    return cleanUrl;
+                }
+            }
+            
+            // 在模态框显示时初始化
+            document.getElementById('addSiteModal').addEventListener('shown.bs.modal', function() {
+                // 延迟一下确保DOM元素已加载
+                setTimeout(() => {
+                    if (clipboardBtn && siteUrlInput) {
+                        initClipboardButton();
+                        // 初始化按钮文本
+                        if (siteUrlInput.value.trim() === '') {
+                            clipboardBtn.textContent = '黏贴';
+                        } else {
+                            clipboardBtn.textContent = '检索';
+                        }
+                    }
+                }, 100);
+            });
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmEditSite">保存</button>
             </div>
         </div></div>
     </div>
@@ -506,6 +576,153 @@
     
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
+        // 初始化剪贴板按钮功能
+        function initClipboardButton() {
+            const siteUrlInput = document.getElementById('siteUrl');
+            const clipboardBtn = document.getElementById('clipboardBtn');
+            const siteNameInput = document.getElementById('siteName');
+            
+            if (!siteUrlInput || !clipboardBtn || !siteNameInput) return;
+            
+            // 监听输入框变化，切换按钮文本
+            siteUrlInput.addEventListener('input', function() {
+                if (this.value.trim() === '') {
+                    clipboardBtn.textContent = '黏贴';
+                } else {
+                    clipboardBtn.textContent = '检索';
+                }
+            });
+            
+            // 显示网站图标
+            function showSiteIcon(url) {
+                const siteIconPreview = document.getElementById('siteIconPreview');
+                const siteIconImage = document.getElementById('siteIconImage');
+                
+                if (siteIconPreview && siteIconImage) {
+                    const iconUrl = ICON_PREFIX + encodeURIComponent(url);
+                    siteIconImage.src = iconUrl;
+                    siteIconImage.onerror = function() {
+                        this.src = '../img/index.png';
+                    };
+                    siteIconPreview.style.display = 'block';
+                }
+            }
+            
+            // 按钮点击事件
+            clipboardBtn.addEventListener('click', async function() {
+                if (siteUrlInput.value.trim() === '') {
+                    // 粘贴功能
+                    try {
+                        const text = await navigator.clipboard.readText();
+                        siteUrlInput.value = text;
+                        // 更新按钮文本
+                        clipboardBtn.textContent = '检索';
+                        // 如果粘贴的是URL，显示图标
+                        if (text.trim().match(/^https?:\/\//i)) {
+                            showSiteIcon(text.trim());
+                        }
+                    } catch (err) {
+                        showAlert('无法读取剪贴板内容，请手动粘贴', 'error');
+                        addLogEntry('剪贴板读取失败', LOG_TYPES.ERROR, err.message);
+                    }
+                } else {
+                    // 检索功能
+                    const url = siteUrlInput.value.trim();
+                    const siteName = extractSiteNameFromUrl(url);
+                    
+                    // 显示网站图标
+                    showSiteIcon(url);
+                    
+                    if (siteName) {
+                        siteNameInput.value = siteName;
+                        showAlert('已自动填充网站名称', 'success');
+                        // 记录检索成功日志
+                        addLogEntry('网站名称检索成功', LOG_TYPES.SUCCESS, `URL: ${url}, 提取的网站名称: ${siteName}`);
+                    } else {
+                        showAlert('无法自动识别网站名称，请手动输入', 'info');
+                        // 记录检索失败日志
+                        addLogEntry('网站名称检索失败', LOG_TYPES.INFO, `URL: ${url}`);
+                    }
+                }
+            });
+            
+            // 监听URL输入变化，自动显示图标
+            siteUrlInput.addEventListener('change', function() {
+                const url = this.value.trim();
+                if (url && url.match(/^https?:\/\//i)) {
+                    showSiteIcon(url);
+                }
+            });
+        }
+        
+        // 从URL提取网站名称
+        function extractSiteNameFromUrl(url) {
+            try {
+                // 创建URL对象
+                const urlObj = new URL(url);
+                // 获取主机名并移除www.前缀
+                let hostname = urlObj.hostname;
+                if (hostname.startsWith('www.')) {
+                    hostname = hostname.substring(4);
+                }
+                // 分割域名，取主要部分
+                const parts = hostname.split('.');
+                if (parts.length >= 2) {
+                    // 对于.com.cn等多级域名，取倒数第三部分
+                    if (parts.length >= 3 && (parts[parts.length-1] === 'cn' || parts[parts.length-1] === 'net' || parts[parts.length-1] === 'org')) {
+                        return parts[parts.length-3];
+                    }
+                    // 其他情况取倒数第二部分
+                    return parts[parts.length-2];
+                }
+                return hostname;
+            } catch (e) {
+                // 如果URL格式不正确，尝试简单处理
+                let cleanUrl = url.trim();
+                // 移除协议
+                cleanUrl = cleanUrl.replace(/^https?:\/\//, '');
+                // 移除路径
+                cleanUrl = cleanUrl.split('/')[0];
+                // 移除www.
+                cleanUrl = cleanUrl.replace(/^www\./, '');
+                // 分割域名
+                const parts = cleanUrl.split('.');
+                if (parts.length >= 2) {
+                    return parts[0];
+                }
+                return cleanUrl;
+            }
+        }
+        
+        // 在模态框显示时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const addSiteModal = document.getElementById('addSiteModal');
+            if (addSiteModal) {
+                addSiteModal.addEventListener('shown.bs.modal', function() {
+                    // 延迟一下确保DOM元素已加载
+                    setTimeout(() => {
+                        // 隐藏网站图标预览
+                        const siteIconPreview = document.getElementById('siteIconPreview');
+                        if (siteIconPreview) {
+                            siteIconPreview.style.display = 'none';
+                        }
+                        
+                        initClipboardButton();
+                        // 初始化按钮文本
+                        const siteUrlInput = document.getElementById('siteUrl');
+                        const clipboardBtn = document.getElementById('clipboardBtn');
+                        if (siteUrlInput && clipboardBtn) {
+                            if (siteUrlInput.value.trim() === '') {
+                                clipboardBtn.textContent = '黏贴';
+                            } else {
+                                clipboardBtn.textContent = '检索';
+                            }
+                        }
+                    }, 100);
+                });
+            }
+        });
+        
         // 图标前缀常量
         const ICON_PREFIX = 'https://api.afmax.cn/so/ico/index.php?r=';
         
