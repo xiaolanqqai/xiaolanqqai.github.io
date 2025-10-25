@@ -211,6 +211,51 @@
     margin-bottom: 1rem;
 }
 
+/* 网站卡片样式 */
+.site-card {
+    position: relative;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.site-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.site-icon {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    display: block;
+    margin: 0 auto;
+}
+
+/* 网站图标预览样式 */
+.site-icon-default {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--accent-color);
+    border-radius: var(--border-radius);
+    color: var(--primary-color);
+    margin: 0 auto;
+}
+
+.site-icon-loading {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    margin: 0 auto;
+}
+
 /* 按钮样式 */
 .manager-btn-primary {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);

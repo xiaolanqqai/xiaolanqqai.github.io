@@ -387,8 +387,14 @@
             <div class="modal-header"><h5 class="modal-title">添加新网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
             <div class="modal-body">
                 <!-- 网站图标显示区域 -->
-                <div class="text-center mb-3" id="siteIconPreview" style="display: none;">
-                    <img src="" alt="网站图标" id="siteIconImage" class="img-fluid" style="max-width: 64px; max-height: 64px;">
+                <div class="text-center mb-3" id="siteIconPreview">
+                    <div id="defaultIcon" class="site-icon-default">
+                        <i class="fas fa-globe fa-3x"></i>
+                    </div>
+                    <img src="" alt="网站图标" id="siteIconImage" class="site-icon img-fluid" style="display: none;">
+                    <div id="loadingIcon" class="site-icon-loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    </div>
                 </div>
                 <form id="addSiteForm">
                     <div class="mb-3"><label for="siteName" class="form-label">网站名称</label><input type="text" class="form-control" id="siteName" required></div>
@@ -597,14 +603,34 @@
             function showSiteIcon(url) {
                 const siteIconPreview = document.getElementById('siteIconPreview');
                 const siteIconImage = document.getElementById('siteIconImage');
+                const defaultIcon = document.getElementById('defaultIcon');
+                const loadingIcon = document.getElementById('loadingIcon');
                 
-                if (siteIconPreview && siteIconImage) {
+                if (siteIconPreview && siteIconImage && defaultIcon && loadingIcon) {
+                    // 显示加载图标
+                    defaultIcon.style.display = 'none';
+                    siteIconImage.style.display = 'none';
+                    loadingIcon.style.display = 'block';
+                    
                     const iconUrl = ICON_PREFIX + encodeURIComponent(url);
-                    siteIconImage.src = iconUrl;
-                    siteIconImage.onerror = function() {
-                        this.src = '../img/index.png';
+                    
+                    // 创建新图片对象来处理加载状态
+                    const img = new Image();
+                    img.src = iconUrl;
+                    
+                    img.onload = function() {
+                        // 加载成功，显示图标
+                        siteIconImage.src = iconUrl;
+                        loadingIcon.style.display = 'none';
+                        siteIconImage.style.display = 'block';
                     };
-                    siteIconPreview.style.display = 'block';
+                    
+                    img.onerror = function() {
+                        // 加载失败，显示默认图标
+                        siteIconImage.src = '../img/index.png';
+                        loadingIcon.style.display = 'none';
+                        siteIconImage.style.display = 'block';
+                    };
                 }
             }
             
@@ -701,10 +727,16 @@
                 addSiteModal.addEventListener('shown.bs.modal', function() {
                     // 延迟一下确保DOM元素已加载
                     setTimeout(() => {
-                        // 隐藏网站图标预览
+                        // 重置图标显示状态
                         const siteIconPreview = document.getElementById('siteIconPreview');
-                        if (siteIconPreview) {
-                            siteIconPreview.style.display = 'none';
+                        const siteIconImage = document.getElementById('siteIconImage');
+                        const defaultIcon = document.getElementById('defaultIcon');
+                        const loadingIcon = document.getElementById('loadingIcon');
+                        
+                        if (siteIconPreview && siteIconImage && defaultIcon && loadingIcon) {
+                            defaultIcon.style.display = 'block';
+                            siteIconImage.style.display = 'none';
+                            loadingIcon.style.display = 'none';
                         }
                         
                         initClipboardButton();
