@@ -535,6 +535,12 @@
                 </div>
             </div>
             
+            <!-- URL错误检查结果显示区域 -->
+            <div id="urlErrorsDisplay" class="mt-4 p-3 bg-light rounded d-none">
+                <h6 class="text-muted mb-2"><i class="fas fa-exclamation-triangle me-2"></i>URL错误检查结果</h6>
+                <div id="urlErrorsContent" class="bg-white p-2 rounded"></div>
+            </div>
+            
             <!-- URL修复确认模态框 -->
             <div class="modal fade" id="urlFixModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -1765,10 +1771,14 @@
                 });
             }
             
+            // 显示在工具功能下方
+            displayUrlErrorsInMainArea();
+            
             if (errorCount === 0) {
                 showAlert('未发现URL错误', 'success');
                 addLogEntry('URL检查完成', LOG_TYPES.SUCCESS, '所有URL格式正确');
             } else {
+                // 也显示在模态框中
                 displayUrlErrors();
                 urlFixModal.show();
                 addLogEntry(`发现${errorCount}个URL错误`, LOG_TYPES.WARNING, '请在弹窗中查看详情');
@@ -1827,6 +1837,37 @@
         }
         
         // 显示URL错误
+        // 在工具功能下方显示URL错误结果
+        function displayUrlErrorsInMainArea() {
+            const urlErrorsDisplay = document.getElementById('urlErrorsDisplay');
+            const urlErrorsContent = document.getElementById('urlErrorsContent');
+            
+            if (!urlErrorsDisplay || !urlErrorsContent) return;
+            
+            urlErrorsDisplay.classList.remove('d-none');
+            
+            if (urlErrorsToFix.length === 0) {
+                urlErrorsContent.innerHTML = '<div class="text-center text-success py-2">未发现URL错误</div>';
+                return;
+            }
+            
+            urlErrorsContent.innerHTML = `<div class="mb-2 text-danger">发现 ${urlErrorsToFix.length} 个URL错误</div>`;
+            
+            urlErrorsToFix.forEach((error, index) => {
+                const errorItem = document.createElement('div');
+                errorItem.className = 'p-2 border rounded mb-2 bg-white';
+                errorItem.innerHTML = `
+                    <div class="text-danger font-medium mb-1">错误: ${error.errors.join(', ')}</div>
+                    <div class="text-sm">
+                        <span class="text-muted">原URL:</span> <code class="text-sm">${error.originalUrl}</code><br>
+                        <span class="text-muted">修复后:</span> <code class="text-sm text-success">${error.fixedUrl}</code>
+                    </div>
+                `;
+                urlErrorsContent.appendChild(errorItem);
+            });
+        }
+        
+        // 在模态框中显示URL错误结果
         function displayUrlErrors() {
             const urlCheckResults = document.getElementById('urlCheckResults');
             if (!urlCheckResults) return;
