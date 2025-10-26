@@ -241,6 +241,13 @@
                             <div class="mb-3">
                                 <label for="passwordPattern" class="form-label">MM:</label>
                                 <input type="text" class="form-control" id="passwordPattern" placeholder="例如: 大经典、错位小@数字">
+                                <div class="mt-2 d-flex flex-wrap gap-2">
+                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="大经典">大经典</button>
+                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="小经典">小经典</button>
+                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="错位小">错位小</button>
+                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="@">@</button>
+                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="数字">数字</button>
+                                </div>
                             </div>
                             
                             <button type="submit" class="btn manager-btn-primary w-100">添加条目</button>
@@ -261,6 +268,13 @@
                             <div class="mb-3">
                                 <label for="editPasswordPattern" class="form-label">MM:</label>
                                 <input type="text" class="form-control" id="editPasswordPattern" placeholder="例如: 大经典、错位小@数字">
+                                <div class="mt-2 d-flex flex-wrap gap-2">
+                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="大经典">大经典</button>
+                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="小经典">小经典</button>
+                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="错位小">错位小</button>
+                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="@">@</button>
+                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="数字">数字</button>
+                                </div>
                             </div>
                             
                             <div class="d-grid gap-2 d-md-flex">
@@ -339,6 +353,25 @@
             
             // 固定的URL地址
             const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.htm';
+            
+            // 快捷输入按钮事件处理
+            document.querySelectorAll('.quick-insert-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    const input = document.getElementById('passwordPattern');
+                    input.value = input.value + value;
+                    input.focus();
+                });
+            });
+            
+            document.querySelectorAll('.quick-insert-btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    const input = document.getElementById('editPasswordPattern');
+                    input.value = input.value + value;
+                    input.focus();
+                });
+            });
             
             // 操作日志系统
             const operationLogs = [];
