@@ -441,6 +441,11 @@
             sortByDateBtn.addEventListener('click', sortVersionsByDate);
             saveDataBtn.addEventListener('click', saveDataToStorage);
             
+            // 为添加版本模态框添加显示事件监听器，设置默认值
+            document.getElementById('addVersionModal').addEventListener('show.bs.modal', function() {
+                setDefaultValues();
+            });
+            
             jsonFileInput.addEventListener('change', handleFileSelect);
             dropArea.addEventListener('dragover', function(e) {
                 e.preventDefault();
@@ -672,6 +677,43 @@
             return changes.map(change => {
                 return `<div class="border-bottom py-2">${change}</div>`;
             }).join('');
+        }
+        
+        // 设置添加版本表单的默认值
+        function setDefaultValues() {
+            // 设置发布日期为当前日期
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('versionDate').value = today;
+            
+            // 计算并设置下一个版本号
+            const nextVersion = getNextVersionNumber();
+            document.getElementById('versionName').value = nextVersion;
+        }
+        
+        // 获取下一个版本号
+        function getNextVersionNumber() {
+            if (!versionData.versions || versionData.versions.length === 0) {
+                return 'BETA 1.0.0';
+            }
+            
+            // 找到最新版本
+            const sortedVersions = [...versionData.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const latestVersion = sortedVersions[0].name;
+            
+            // 提取版本号部分
+            const versionMatch = latestVersion.match(/\d+\.\d+\.\d+/);
+            if (!versionMatch) {
+                return 'BETA 1.0.0';
+            }
+            
+            const versionParts = versionMatch[0].split('.').map(Number);
+            
+            // 增加修订号
+            versionParts[2] += 1;
+            
+            // 保持前缀不变，只更新版本号部分
+            const prefix = latestVersion.split(/\d+\.\d+\.\d+/)[0];
+            return prefix + versionParts.join('.');
         }
         
         // 添加新版本
