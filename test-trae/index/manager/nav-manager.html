@@ -507,10 +507,48 @@
                 </button>
             </div>
             
-            <div class="log-container" id="logContainer" style="max-height: 400px; overflow-y: auto;">
-                <div class="text-center text-muted py-4" id="emptyLogMessage">
-                    <i class="fas fa-info-circle fa-2x mb-2"></i>
-                    <p>暂无操作记录</p>
+            <!-- 新增功能按钮区域 -->
+            <div class="mb-3 p-3 bg-light rounded">
+                <h6 class="text-muted mb-2"><i class="fas fa-tools me-2"></i>工具功能</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-primary" id="checkUrlBtn">
+                        <i class="fas fa-link me-1"></i>检查URL错误
+                    </button>
+                    <button class="btn btn-sm btn-success" id="checkAccessibilityBtn">
+                        <i class="fas fa-check-circle me-1"></i>检查可访问性
+                    </button>
+                    <button class="btn btn-sm btn-info" id="pingSearchEnginesBtn">
+                        <i class="fas fa-network-wired me-1"></i>搜索引擎Ping值
+                    </button>
+                </div>
+                
+                <!-- Ping值显示区域 -->
+                <div id="pingResults" class="mt-3 p-2 bg-white rounded d-none">
+                    <h6 class="text-sm font-medium mb-2">搜索引擎Ping值 (毫秒)</h6>
+                    <div class="ping-items"></div>
+                </div>
+            </div>
+            
+            <!-- URL修复确认模态框 -->
+            <div class="modal fade" id="urlFixModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">URL错误检查结果</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="urlCheckResults" class="mb-3"></div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="selectAllUrls">
+                                <label class="form-check-label" for="selectAllUrls">全选所有错误</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="confirmFixUrls">确认修复所选</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -809,6 +847,9 @@
         let currentTabIndex = 0;
         let currentPage = 'index';
         
+        // 全局变量存储需要修复的URL错误信息
+        let urlErrorsToFix = [];
+        
         // 操作日志数组
         let operationLogs = [];
         
@@ -881,6 +922,40 @@
             
             // 日志管理
             clearLogsBtn.addEventListener('click', clearAllLogs);
+        
+        // 绑定新功能按钮事件
+        const checkUrlBtn = document.getElementById('checkUrlBtn');
+        const checkAccessibilityBtn = document.getElementById('checkAccessibilityBtn');
+        const pingSearchEnginesBtn = document.getElementById('pingSearchEnginesBtn');
+        const selectAllUrls = document.getElementById('selectAllUrls');
+        const confirmFixUrls = document.getElementById('confirmFixUrls');
+        const pingResults = document.getElementById('pingResults');
+        const urlFixModal = new bootstrap.Modal(document.getElementById('urlFixModal'));
+        
+        if (checkUrlBtn) {
+            checkUrlBtn.addEventListener('click', checkUrlErrors);
+        }
+        
+        if (checkAccessibilityBtn) {
+            checkAccessibilityBtn.addEventListener('click', checkWebsitesAccessibility);
+        }
+        
+        if (pingSearchEnginesBtn) {
+            pingSearchEnginesBtn.addEventListener('click', pingSearchEngines);
+        }
+        
+        if (selectAllUrls) {
+            selectAllUrls.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('#urlCheckResults input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+        
+        if (confirmFixUrls) {
+            confirmFixUrls.addEventListener('click', applyUrlFixes);
+        }
             
             // 特殊栏目管理
             addSpecialSiteBtn.addEventListener('click', showAddSpecialSiteModal);
@@ -1671,6 +1746,392 @@
             };
             
             reader.readAsText(file);
+        }
+        
+        // URL错误检查函数
+        function checkUrlErrors() {
+            if (!navData || Object.keys(navData).length === 0) {
+                showAlert('请先加载导航数据', 'warning');
+                return;
+            }
+            
+            urlErrorsToFix = [];
+            let errorCount = 0;
+            
+            // 检查所有页面的选项卡中的网站URL
+            Object.keys(navData).forEach(page => {
+                if (navData[page] && navData[page].tabs) {
+                    navData[page].tabs.forEach((tab, tabIndex) => {
+                        if (tab.items) {
+                            tab.items.forEach((site, siteIndex) => {
+                                if (site.url) {
+                                    const errors = checkSingleUrl(site.url);
+                                    if (errors.length > 0) {
+                                        urlErrorsToFix.push({
+                                            page,
+                                            tabIndex,
+                                            siteIndex,
+                                            originalUrl: site.url,
+                                            fixedUrl: fixUrl(site.url),
+                                            errors,
+                                            isSpecial: false
+                                        });
+                                        errorCount++;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // 检查特殊栏目中的网站URL
+            if (navData.more && navData.more.special && navData.more.special.sites) {
+                navData.more.special.sites.forEach((site, siteIndex) => {
+                    if (site.url) {
+                        const errors = checkSingleUrl(site.url);
+                        if (errors.length > 0) {
+                            urlErrorsToFix.push({
+                                page: 'more',
+                                siteIndex,
+                                originalUrl: site.url,
+                                fixedUrl: fixUrl(site.url),
+                                errors,
+                                isSpecial: true
+                            });
+                            errorCount++;
+                        }
+                    }
+                });
+            }
+            
+            if (errorCount === 0) {
+                showAlert('未发现URL错误', 'success');
+                addLogEntry('URL检查完成', LOG_TYPES.SUCCESS, '所有URL格式正确');
+            } else {
+                displayUrlErrors();
+                urlFixModal.show();
+                addLogEntry(`发现${errorCount}个URL错误`, LOG_TYPES.WARNING, '请在弹窗中查看详情');
+            }
+        }
+        
+        // 检查单个URL的错误
+        function checkSingleUrl(url) {
+            const errors = [];
+            
+            // 检查是否为空
+            if (!url || url.trim() === '') {
+                errors.push('URL为空');
+                return errors;
+            }
+            
+            // 检查是否缺少协议
+            if (!url.match(/^https?:\/\//i)) {
+                errors.push('缺少http/https协议');
+            }
+            
+            // 检查是否有多余的空格
+            if (url.trim() !== url) {
+                errors.push('包含多余的空格');
+            }
+            
+            // 检查是否有多余的斜杠
+            if (url.match(/\/{3,}/)) {
+                errors.push('包含连续多个斜杠');
+            }
+            
+            // 检查是否有无效字符
+            if (!url.match(/^[a-zA-Z0-9:\/?#\[\]@!$&'()*+,;=._~-]+$/)) {
+                errors.push('包含无效字符');
+            }
+            
+            return errors;
+        }
+        
+        // 修复URL错误
+        function fixUrl(url) {
+            let fixed = url;
+            
+            // 去除多余的空格
+            fixed = fixed.trim();
+            
+            // 添加协议
+            if (!fixed.match(/^https?:\/\//i)) {
+                fixed = 'https://' + fixed;
+            }
+            
+            // 替换多个斜杠为单个斜杠
+            fixed = fixed.replace(/\/(?=\/)/g, '');
+            
+            return fixed;
+        }
+        
+        // 显示URL错误
+        function displayUrlErrors() {
+            const urlCheckResults = document.getElementById('urlCheckResults');
+            if (!urlCheckResults) return;
+            
+            urlCheckResults.innerHTML = '';
+            
+            urlErrorsToFix.forEach((error, index) => {
+                const errorCard = document.createElement('div');
+                errorCard.className = 'p-3 border rounded mb-2';
+                errorCard.innerHTML = `
+                    <div class="d-flex align-items-center mb-2">
+                        <input type="checkbox" class="form-check-input me-2" id="fixUrl${index}" checked>
+                        <div class="flex-grow-1">
+                            <div class="text-danger mb-1">错误: ${error.errors.join(', ')}</div>
+                            <div class="text-sm text-muted">原URL: <code>${error.originalUrl}</code></div>
+                            <div class="text-sm text-success">修复后: <code>${error.fixedUrl}</code></div>
+                        </div>
+                    </div>
+                `;
+                urlCheckResults.appendChild(errorCard);
+            });
+        }
+        
+        // 应用URL修复
+        function applyUrlFixes() {
+            let fixedCount = 0;
+            
+            urlErrorsToFix.forEach((error, index) => {
+                const checkbox = document.getElementById(`fixUrl${index}`);
+                if (checkbox && checkbox.checked) {
+                    // 应用修复
+                    if (error.isSpecial) {
+                        // 修复特殊栏目网站
+                        navData.more.special.sites[error.siteIndex].url = error.fixedUrl;
+                    } else {
+                        // 修复普通选项卡网站
+                        navData[error.page].tabs[error.tabIndex].items[error.siteIndex].url = error.fixedUrl;
+                    }
+                    fixedCount++;
+                }
+            });
+            
+            if (fixedCount > 0) {
+                showAlert(`成功修复${fixedCount}个URL错误`, 'success');
+                addLogEntry(`修复了${fixedCount}个URL错误`, LOG_TYPES.SUCCESS);
+                // 自动保存修复后的数据
+                saveNavData();
+                // 刷新页面显示
+                renderCurrentPage();
+            }
+            
+            urlFixModal.hide();
+        }
+        
+        // 检查网站可访问性
+        async function checkWebsitesAccessibility() {
+            if (!navData || Object.keys(navData).length === 0) {
+                showAlert('请先加载导航数据', 'warning');
+                return;
+            }
+            
+            showAlert('开始检查网站可访问性，请耐心等待...', 'info');
+            addLogEntry('开始检查网站可访问性', LOG_TYPES.INFO);
+            
+            let totalSites = 0;
+            let accessibleSites = 0;
+            let inaccessibleSites = [];
+            
+            // 收集所有网站URL
+            const allSites = [];
+            
+            // 收集普通选项卡中的网站
+            Object.keys(navData).forEach(page => {
+                if (navData[page] && navData[page].tabs) {
+                    navData[page].tabs.forEach((tab, tabIndex) => {
+                        if (tab.items) {
+                            tab.items.forEach((site, siteIndex) => {
+                                if (site.url) {
+                                    allSites.push({
+                                        ...site,
+                                        page,
+                                        tabIndex,
+                                        siteIndex,
+                                        isSpecial: false
+                                    });
+                                    totalSites++;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // 收集特殊栏目中的网站
+            if (navData.more && navData.more.special && navData.more.special.sites) {
+                navData.more.special.sites.forEach((site, siteIndex) => {
+                    if (site.url) {
+                        allSites.push({
+                            ...site,
+                            page: 'more',
+                            siteIndex,
+                            isSpecial: true
+                        });
+                        totalSites++;
+                    }
+                });
+            }
+            
+            // 批量检查可访问性（控制并发数）
+            const concurrencyLimit = 5;
+            const batches = [];
+            
+            for (let i = 0; i < allSites.length; i += concurrencyLimit) {
+                batches.push(allSites.slice(i, i + concurrencyLimit));
+            }
+            
+            // 逐个批次检查
+            for (const batch of batches) {
+                const batchPromises = batch.map(site => checkSiteAccessibility(site));
+                const batchResults = await Promise.allSettled(batchPromises);
+                
+                batchResults.forEach((result, index) => {
+                    const site = batch[index];
+                    if (result.status === 'fulfilled' && result.value) {
+                        accessibleSites++;
+                    } else {
+                        inaccessibleSites.push(site);
+                    }
+                });
+                
+                // 每批之间等待1秒，避免请求过快
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            
+            // 显示结果
+            const message = `可访问性检查完成: 总计${totalSites}个网站，${accessibleSites}个可访问，${inaccessibleSites.length}个不可访问`;
+            showAlert(message, inaccessibleSites.length > 0 ? 'warning' : 'success');
+            
+            // 记录日志
+            addLogEntry('网站可访问性检查完成', LOG_TYPES.INFO, message);
+            
+            if (inaccessibleSites.length > 0) {
+                let details = '不可访问的网站：\n';
+                inaccessibleSites.forEach(site => {
+                    details += `- ${site.name}: ${site.url}\n`;
+                });
+                addLogEntry(`发现${inaccessibleSites.length}个不可访问的网站`, LOG_TYPES.WARNING, details);
+            }
+        }
+        
+        // 检查单个网站的可访问性
+        async function checkSiteAccessibility(site) {
+            try {
+                // 使用HEAD请求检查网站是否可访问（更轻量）
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
+                
+                const response = await fetch(site.url, {
+                    method: 'HEAD',
+                    mode: 'cors',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+        
+        // 检测搜索引擎Ping值
+        async function pingSearchEngines() {
+            const searchEngines = [
+                { name: '百度', url: 'https://www.baidu.com' },
+                { name: '谷歌', url: 'https://www.google.com' },
+                { name: '必应', url: 'https://www.bing.com' },
+                { name: '搜狗', url: 'https://www.sogou.com' },
+                { name: '360搜索', url: 'https://www.so.com' }
+            ];
+            
+            // 显示加载状态
+            const pingItems = pingResults.querySelector('.ping-items');
+            if (pingItems) {
+                pingItems.innerHTML = '<div class="text-center py-2"><i class="fas fa-spinner fa-spin"></i> 正在检测...</div>';
+            }
+            
+            pingResults.classList.remove('d-none');
+            
+            // 开始检测
+            const pingResultsList = [];
+            
+            for (const engine of searchEngines) {
+                const startTime = performance.now();
+                try {
+                    await fetch(engine.url, {
+                        method: 'HEAD',
+                        mode: 'cors',
+                        signal: AbortSignal.timeout(3000) // 3秒超时
+                    });
+                    const endTime = performance.now();
+                    const pingTime = Math.round(endTime - startTime);
+                    
+                    pingResultsList.push({
+                        ...engine,
+                        ping: pingTime,
+                        success: true
+                    });
+                } catch (error) {
+                    pingResultsList.push({
+                        ...engine,
+                        ping: -1,
+                        success: false
+                    });
+                }
+                
+                // 更新显示
+                updatePingResults(pingResultsList);
+                
+                // 避免请求过快
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            addLogEntry('搜索引擎Ping值检测完成', LOG_TYPES.INFO);
+        }
+        
+        // 更新Ping值显示
+        function updatePingResults(results) {
+            const pingItems = pingResults.querySelector('.ping-items');
+            if (!pingItems) return;
+            
+            pingItems.innerHTML = '';
+            
+            results.forEach(result => {
+                const item = document.createElement('div');
+                item.className = 'd-flex justify-content-between align-items-center py-1 border-b';
+                
+                let pingDisplay;
+                let pingClass;
+                
+                if (result.success) {
+                    pingDisplay = `${result.ping} ms`;
+                    if (result.ping < 100) {
+                        pingClass = 'text-success';
+                    } else if (result.ping < 300) {
+                        pingClass = 'text-warning';
+                    } else {
+                        pingClass = 'text-danger';
+                    }
+                } else {
+                    pingDisplay = '超时';
+                    pingClass = 'text-danger';
+                }
+                
+                item.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-search me-2"></i>
+                        <span>${result.name}</span>
+                    </div>
+                    <span class="${pingClass} font-medium">${pingDisplay}</span>
+                `;
+                pingItems.appendChild(item);
+            });
         }
         
         // 页面加载时添加初始日志
