@@ -1849,20 +1849,110 @@
                 return;
             }
             
-            urlErrorsContent.innerHTML = `<div class="mb-2 text-danger">发现 ${urlErrorsToFix.length} 个URL错误</div>`;
+            // 添加错误统计和操作按钮
+            urlErrorsContent.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="text-danger font-medium">发现 ${urlErrorsToFix.length} 个URL错误</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" id="selectAllUrlErrors">
+                            <i class="fas fa-check-double me-1"></i>全选
+                        </button>
+                        <button class="btn btn-sm btn-primary" id="fixSelectedUrls">
+                            <i class="fas fa-wrench me-1"></i>修复选中
+                        </button>
+                        <button class="btn btn-sm btn-success" id="fixAllUrls">
+                            <i class="fas fa-check-circle me-1"></i>全部修复
+                        </button>
+                    </div>
+                </div>
+            `;
             
+            // 添加每个错误项
             urlErrorsToFix.forEach((error, index) => {
                 const errorItem = document.createElement('div');
-                errorItem.className = 'p-2 border rounded mb-2 bg-white';
+                errorItem.className = 'p-3 border rounded mb-2 bg-white';
                 errorItem.innerHTML = `
-                    <div class="text-danger font-medium mb-1">错误: ${error.errors.join(', ')}</div>
-                    <div class="text-sm">
-                        <span class="text-muted">原URL:</span> <code class="text-sm">${error.originalUrl}</code><br>
-                        <span class="text-muted">修复后:</span> <code class="text-sm text-success">${error.fixedUrl}</code>
+                    <div class="d-flex align-items-start">
+                        <input type="checkbox" class="form-check-input mt-1 me-2 url-error-checkbox" id="urlError${index}" checked>
+                        <div class="flex-grow-1">
+                            <div class="text-danger font-medium mb-1">错误: ${error.errors.join(', ')}</div>
+                            <div class="text-sm">
+                                <span class="text-muted">原URL:</span> <code class="text-sm">${error.originalUrl}</code><br>
+                                <span class="text-muted">修复后:</span> <code class="text-sm text-success">${error.fixedUrl}</code>
+                            </div>
+                        </div>
                     </div>
                 `;
                 urlErrorsContent.appendChild(errorItem);
             });
+            
+            // 绑定全选按钮事件
+            document.getElementById('selectAllUrlErrors').addEventListener('click', function() {
+                const checkboxes = document.querySelectorAll('.url-error-checkbox');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                checkboxes.forEach(cb => cb.checked = !allChecked);
+            });
+            
+            // 绑定修复选中按钮事件
+            document.getElementById('fixSelectedUrls').addEventListener('click', function() {
+                applyUrlFixesFromMainArea();
+            });
+            
+            // 绑定全部修复按钮事件
+            document.getElementById('fixAllUrls').addEventListener('click', function() {
+                // 先选中所有复选框
+                document.querySelectorAll('.url-error-checkbox').forEach(cb => cb.checked = true);
+                applyUrlFixesFromMainArea();
+            });
+        }
+        
+        // 从主界面应用URL修复
+        function applyUrlFixesFromMainArea() {
+            let fixedCount = 0;
+            
+            urlErrorsToFix.forEach((error, index) => {
+                const checkbox = document.getElementById(`urlError${index}`);
+                if (checkbox && checkbox.checked) {
+                    // 应用修复
+                    if (error.isSpecial) {
+                        // 修复特殊栏目网站
+                        navData.more.special.sites[error.siteIndex].url = error.fixedUrl;
+                    } else {
+                        // 修复普通选项卡网站
+                        navData[error.page].tabs[error.tabIndex].items[error.siteIndex].url = error.fixedUrl;
+                    }
+                    fixedCount++;
+                    
+                    // 移除已修复的错误项
+                    const errorItem = checkbox.closest('.p-3.border.rounded.mb-2.bg-white');
+                    if (errorItem) {
+                        errorItem.remove();
+                    }
+                }
+            });
+            
+            if (fixedCount > 0) {
+                showAlert(`成功修复${fixedCount}个URL错误`, 'success');
+                addLogEntry(`修复了${fixedCount}个URL错误`, LOG_TYPES.SUCCESS);
+                
+                // 更新错误计数
+                urlErrorsToFix = urlErrorsToFix.filter((error, index) => {
+                    const checkbox = document.getElementById(`urlError${index}`);
+                    return !(checkbox && checkbox.checked);
+                });
+                
+                // 如果没有错误了，更新显示
+                const urlErrorsContent = document.getElementById('urlErrorsContent');
+                if (urlErrorsToFix.length === 0 && urlErrorsContent) {
+                    urlErrorsContent.innerHTML = '<div class="text-center text-success py-2">未发现URL错误</div>';
+                } else if (urlErrorsContent) {
+                    // 更新错误计数显示
+                    const errorCountElement = urlErrorsContent.querySelector('.text-danger.font-medium');
+                    if (errorCountElement) {
+                        errorCountElement.textContent = `发现 ${urlErrorsToFix.length} 个URL错误`;
+                    }
+                }
+            }
         }
         
         // 在模态框中显示URL错误结果
