@@ -509,6 +509,9 @@
             
             <!-- 日志容器 -->
             <div id="logContainer" class="mb-3"></div>
+            <div id="emptyLogMessage" class="text-center text-muted py-3">
+                <i class="fas fa-history me-2"></i>暂无操作日志
+            </div>
             
             <!-- 新增功能按钮区域 -->
             <div class="mt-4 p-3 bg-light rounded">
@@ -920,6 +923,7 @@
             
             // 日志管理
             clearLogsBtn.addEventListener('click', clearAllLogs);
+        }
         
         // 绑定新功能按钮事件
         const checkUrlBtn = document.getElementById('checkUrlBtn');
@@ -998,7 +1002,7 @@
                     alert('请拖放有效的JSON文件');
                 }
             });
-        }
+        
         
         function updatePageTitle() {
             const titles = {
@@ -1048,51 +1052,7 @@
             showAlert('版本信息已更新', 'success');
         }
         
-        // 从本地JSON文件加载数据
-        function loadFromJsonFile() {
-            fetch('../../js/nav-data.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('网络响应不正常');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // 确保版本信息存在
-                    if (!data.version) {
-                        data.version = {
-                            web_vol: "1.0.0",
-                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
-                        };
-                    }
-                    
-                    navData = data;
-                    renderTabs();
-                    renderSpecialSites();
-                    updateVersionDisplay();
-                    updateSpecialSectionVisibility();
-                    showAlert('数据已从本地JSON文件加载', 'success');
-                })
-                .catch(error => {
-                    console.error('加载本地JSON文件失败:', error);
-                    showAlert('加载本地JSON文件失败: ' + error.message, 'danger');
-                    
-                    // 如果没有本地数据，使用默认结构
-                    navData = {
-                        version: {
-                            web_vol: "1.0.0",
-                            web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
-                        },
-                        index: { tabs: [] },
-                        more: { tabs: [] },
-                        dd: { tabs: [] },
-                        download: { tabs: [] },
-                        develop: { tabs: [] }
-                    };
-                    
-                    document.getElementById('navTabContent').innerHTML = '<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>暂无数据，请先上传JSON文件或添加内容</p></div>';
-                });
-        }
+
         
         function showClearConfirmModal() {
             currentPageName.textContent = getPageDisplayName(currentPage);
@@ -1580,11 +1540,13 @@
             logContainer.innerHTML = '';
             
             if (operationLogs.length === 0) {
-                emptyLogMessage.style.display = 'block';
+                // 创建空状态提示
+                const emptyState = document.createElement('div');
+                emptyState.className = 'text-center text-muted p-3';
+                emptyState.innerHTML = '<i class="fas fa-history mr-2"></i>暂无操作日志';
+                logContainer.appendChild(emptyState);
                 return;
             }
-            
-            emptyLogMessage.style.display = 'none';
             
             operationLogs.forEach(log => {
                 const logEntry = document.createElement('div');
