@@ -1778,10 +1778,8 @@
                 showAlert('未发现URL错误', 'success');
                 addLogEntry('URL检查完成', LOG_TYPES.SUCCESS, '所有URL格式正确');
             } else {
-                // 也显示在模态框中
-                displayUrlErrors();
-                urlFixModal.show();
-                addLogEntry(`发现${errorCount}个URL错误`, LOG_TYPES.WARNING, '请在弹窗中查看详情');
+                // 仅记录日志，不显示模态框
+                addLogEntry(`发现${errorCount}个URL错误`, LOG_TYPES.WARNING, '请在工具功能下方查看详情');
             }
         }
         
