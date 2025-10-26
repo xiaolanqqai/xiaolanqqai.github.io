@@ -1860,9 +1860,6 @@
                         <button class="btn btn-sm btn-primary" id="fixSelectedUrls">
                             <i class="fas fa-wrench me-1"></i>修复选中
                         </button>
-                        <button class="btn btn-sm btn-success" id="fixAllUrls">
-                            <i class="fas fa-check-circle me-1"></i>全部修复
-                        </button>
                     </div>
                 </div>
             `;
@@ -1898,12 +1895,7 @@
                 applyUrlFixesFromMainArea();
             });
             
-            // 绑定全部修复按钮事件
-            document.getElementById('fixAllUrls').addEventListener('click', function() {
-                // 先选中所有复选框
-                document.querySelectorAll('.url-error-checkbox').forEach(cb => cb.checked = true);
-                applyUrlFixesFromMainArea();
-            });
+
         }
         
         // 从主界面应用URL修复
