@@ -2472,7 +2472,8 @@
                 inputElement.className = 'tab-name-input';
                 inputElement.style.cssText = `
                     position: absolute;
-                    left: -180px;
+                    right: 100%;
+                    margin-right: 10px;
                     top: 50%;
                     transform: translateY(-50%);
                     width: 160px;
@@ -2482,9 +2483,14 @@
                     font-size: 14px;
                     outline: none;
                     background-color: #fff;
+                    z-index: 1000;
                 `;
                 
                 // 将输入框添加到按钮容器中
+                // 确保按钮容器有相对定位
+                if (addTabBtn.parentNode.style.position !== 'absolute' && addTabBtn.parentNode.style.position !== 'relative') {
+                    addTabBtn.parentNode.style.position = 'relative';
+                }
                 addTabBtn.parentNode.appendChild(inputElement);
                 
                 // 更改按钮文本为"完成"
