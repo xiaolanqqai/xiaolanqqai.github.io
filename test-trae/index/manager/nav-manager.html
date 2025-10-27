@@ -2131,6 +2131,13 @@
                 { name: '360搜索', url: 'https://www.so.com' }
             ];
             
+            // 获取pingResults元素
+            const pingResults = document.getElementById('pingResults');
+            if (!pingResults) {
+                showAlert('未找到Ping值显示元素', 'error');
+                return;
+            }
+            
             // 显示加载状态
             const pingItems = pingResults.querySelector('.ping-items');
             if (pingItems) {
@@ -2145,11 +2152,22 @@
             for (const engine of searchEngines) {
                 const startTime = performance.now();
                 try {
-                    await fetch(engine.url, {
-                        method: 'HEAD',
-                        mode: 'cors',
-                        signal: AbortSignal.timeout(3000) // 3秒超时
+                    // 使用CORS代理服务来绕过跨域限制
+                    // 注意：实际使用时可能需要更换为更可靠的代理服务
+                    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(engine.url);
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 延长超时时间到5秒
+                    
+                    await fetch(proxyUrl, {
+                        method: 'GET', // 使用GET而不是HEAD，有些代理可能不支持HEAD
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                        },
+                        signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
                     const endTime = performance.now();
                     const pingTime = Math.round(endTime - startTime);
                     
@@ -2158,22 +2176,39 @@
                         ping: pingTime,
                         success: true
                     });
+                    
+                    addLogEntry(`成功检测${engine.name}Ping值`, LOG_TYPES.SUCCESS, `耗时: ${pingTime}ms`);
                 } catch (error) {
+                    let errorMessage = '请求失败';
+                    if (error.name === 'AbortError') {
+                        errorMessage = '请求超时';
+                    }
+                    
                     pingResultsList.push({
                         ...engine,
                         ping: -1,
                         success: false
                     });
+                    
+                    addLogEntry(`检测${engine.name}Ping值失败`, LOG_TYPES.WARNING, errorMessage);
                 }
                 
                 // 更新显示
                 updatePingResults(pingResultsList);
                 
                 // 避免请求过快
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 800));
             }
             
-            addLogEntry('搜索引擎Ping值检测完成', LOG_TYPES.INFO);
+            const successCount = pingResultsList.filter(r => r.success).length;
+            addLogEntry(`搜索引擎Ping值检测完成`, LOG_TYPES.INFO, `${successCount}/${searchEngines.length}个成功`);
+            
+            // 提示用户检查结果
+            if (successCount > 0) {
+                showAlert(`成功检测到${successCount}个搜索引擎的连接速度`, 'success');
+            } else {
+                showAlert('所有搜索引擎连接检测失败，可能是代理服务问题或网络限制', 'warning');
+            }
         }
         
         // 更新Ping值显示
