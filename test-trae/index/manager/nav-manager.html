@@ -1146,6 +1146,8 @@
                 updateSpecialSectionVisibility();
                 uploadModal.hide();
                 showAlert('JSON文件已成功上传并加载', 'success');
+                // 显示上传标识
+                showDataSourceIndicator('upload');
                 delete window.uploadedData;
                 jsonFileInput.value = '';
                 fileInfo.classList.add('d-none');
@@ -2407,6 +2409,9 @@
                     
                     // 记录成功加载
                     addLogEntry('JSON文件加载成功', LOG_TYPES.SUCCESS, `从本地文件加载导航数据成功，文件路径: ${filePath}, 来源: 本地文件`);
+                    
+                    // 显示本地加载标识
+                    showDataSourceIndicator('local');
                 })
                 .catch(error => {
                     console.error('加载本地JSON文件失败:', error);
@@ -2434,11 +2439,12 @@
         
         // 更新数据修改标识
         function updateDataChangeIndicator() {
-            const saveBtn = document.getElementById('saveBtn');
-            if (!saveBtn) return;
+            // 获取保存按钮所在的卡片容器
+            const saveCard = document.getElementById('saveBtn').closest('.feature-card');
+            if (!saveCard) return;
             
             // 移除旧的标识
-            const existingBadge = saveBtn.querySelector('.badge');
+            const existingBadge = saveCard.querySelector('.data-change-badge');
             if (existingBadge) {
                 existingBadge.remove();
             }
@@ -2446,11 +2452,43 @@
             // 如果数据已修改，添加新标识
             if (dataHasChanged) {
                 const badge = document.createElement('span');
-                badge.className = 'badge bg-danger position-absolute top-0 right-0';
+                badge.className = 'badge bg-danger position-absolute top-2 right-2 data-change-badge';
                 badge.textContent = 'NEW';
-                badge.style.transform = 'translate(25%, -25%)';
-                saveBtn.style.position = 'relative';
-                saveBtn.appendChild(badge);
+                badge.style.zIndex = '10';
+                saveCard.style.position = 'relative';
+                saveCard.appendChild(badge);
+            }
+        }
+        
+        // 显示数据加载来源标识
+        function showDataSourceIndicator(source) {
+            // 移除所有卡片上的加载来源标识
+            document.querySelectorAll('.data-source-badge').forEach(badge => badge.remove());
+            
+            let targetCard;
+            let badgeText;
+            let badgeBg;
+            
+            if (source === 'local') {
+                // 本地文件加载
+                targetCard = document.getElementById('loadFromLocalBtn').closest('.feature-card');
+                badgeText = '已加载';
+                badgeBg = 'bg-success';
+            } else if (source === 'upload') {
+                // 手动上传
+                // 找到上传JSON卡片（通过卡片中的图标来定位）
+                targetCard = document.querySelector('.feature-icon i.fa-file-upload').closest('.feature-card');
+                badgeText = '已上传';
+                badgeBg = 'bg-info';
+            }
+            
+            if (targetCard) {
+                targetCard.style.position = 'relative';
+                const badge = document.createElement('span');
+                badge.className = `badge ${badgeBg} position-absolute top-2 right-2 data-source-badge`;
+                badge.textContent = badgeText;
+                badge.style.zIndex = '10';
+                targetCard.appendChild(badge);
             }
         }
         
