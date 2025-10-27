@@ -1642,10 +1642,7 @@
             document.head.appendChild(style);
         }
         
-        // 绑定编辑和删除按钮事件
-            bindSiteActions();
-        
-        
+        // 渲染网站卡片
         function renderSites(sites, tabIndex) {
             if (!sites || sites.length === 0) {
                 return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>此选项卡中没有网站</p></div>';
