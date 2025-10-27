@@ -907,6 +907,9 @@
         const confirmDeleteBtn = document.getElementById('confirmDelete');
         const deleteSiteName = document.getElementById('deleteSiteName');
         
+        // 数据修改状态标志
+        let dataHasChanged = false;
+        
         document.addEventListener('DOMContentLoaded', function() {
             // 页面加载时尝试从本地JSON文件加载数据
             loadFromJsonFile();
@@ -936,6 +939,9 @@
             
             // 添加拖拽相关的CSS样式
             addDragDropStyles();
+            
+            // 初始化数据更新标识
+            updateDataChangeIndicator();
         }
         
         // 绑定新功能按钮事件
@@ -1380,8 +1386,8 @@
             // 插入到新位置
             tabs.splice(toIndex, 0, movedTab);
             
-            // 保存数据
-            saveNavData();
+            // 标记数据已修改
+            setDataChanged();
             
             // 重新渲染所有选项卡
             renderTabs();
@@ -1527,8 +1533,8 @@
                 initSiteDragAndDrop(); // 重新绑定拖拽事件
             }
             
-            // 保存数据
-            saveNavData();
+            // 标记数据已修改
+            setDataChanged();
             
             // 记录日志
             addLogEntry(`重新排序网站: ${movedSite.name}`, LOG_TYPES.SUCCESS);
@@ -1570,8 +1576,8 @@
             bindSiteActions();
             initSiteDragAndDrop();
             
-            // 保存数据
-            saveNavData();
+            // 标记数据已修改
+            setDataChanged();
             
             // 记录日志
             const fromTabName = navData[currentPage].tabs[fromTabIndex].name;
@@ -1787,8 +1793,8 @@
                 initSiteDragAndDrop(); // 重新绑定拖拽事件
             }
             
-            // 保存数据
-            saveNavData();
+            // 标记数据已修改
+            setDataChanged();
             
             // 记录日志
             addLogEntry(`重新排序网站: ${movedSite.name}`, LOG_TYPES.INFO);
@@ -1830,8 +1836,8 @@
             bindSiteActions();
             initSiteDragAndDrop();
             
-            // 保存数据
-            saveNavData();
+            // 标记数据已修改
+            setDataChanged();
             
             // 记录日志
             const fromTabName = navData[currentPage].tabs[fromTabIndex].name;
@@ -1916,6 +1922,9 @@
                 initSiteDragAndDrop();
                 initTabDragAndDrop();
             }, 100);
+            
+            // 标记数据已修改
+            setDataChanged();
             
             showAlert('已删除网站: ' + siteName, 'success');
         }
@@ -2019,6 +2028,9 @@
                 initTabDragAndDrop();
             }, 100);
             
+            // 标记数据已修改
+            setDataChanged();
+            
             // 显示成功提示
             showAlert('已添加选项卡: '+tabName, 'success');
             addLogEntry(`已添加选项卡: ${tabName}`, LOG_TYPES.SUCCESS);
@@ -2083,6 +2095,9 @@
                 initSiteDragAndDrop();
                 initTabDragAndDrop();
             }, 100);
+            
+            // 标记数据已修改
+            setDataChanged();
             
             showAlert('已添加网站: '+siteName, 'success');
         }
@@ -2417,6 +2432,40 @@
                 });
         }
         
+        // 更新数据修改标识
+        function updateDataChangeIndicator() {
+            const saveBtn = document.getElementById('saveBtn');
+            if (!saveBtn) return;
+            
+            // 移除旧的标识
+            const existingBadge = saveBtn.querySelector('.badge');
+            if (existingBadge) {
+                existingBadge.remove();
+            }
+            
+            // 如果数据已修改，添加新标识
+            if (dataHasChanged) {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-danger position-absolute top-0 right-0';
+                badge.textContent = 'NEW';
+                badge.style.transform = 'translate(25%, -25%)';
+                saveBtn.style.position = 'relative';
+                saveBtn.appendChild(badge);
+            }
+        }
+        
+        // 设置数据已修改
+        function setDataChanged() {
+            dataHasChanged = true;
+            updateDataChangeIndicator();
+        }
+        
+        // 重置数据修改状态
+        function resetDataChanged() {
+            dataHasChanged = false;
+            updateDataChangeIndicator();
+        }
+        
         function saveNavData() {
             try {
                 // 创建下载链接
@@ -2428,6 +2477,9 @@
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
+                
+                // 重置数据修改状态
+                resetDataChanged();
                 
                 showAlert('导航数据已保存并准备好下载', 'success');
                 
@@ -2771,8 +2823,8 @@
             if (fixedCount > 0) {
                 showAlert(`成功修复${fixedCount}个URL错误`, 'success');
                 addLogEntry(`修复了${fixedCount}个URL错误`, LOG_TYPES.SUCCESS);
-                // 自动保存修复后的数据
-                saveNavData();
+                // 标记数据已修改
+                setDataChanged();
                 // 刷新页面显示
                 renderCurrentPage();
             }
@@ -3206,8 +3258,8 @@
                 // 自动切换到新添加的选项卡
                 selectTab(newTab.id);
                 
-                // 保存数据
-                saveNavData();
+                // 标记数据已修改
+                setDataChanged();
             }
         }
         
