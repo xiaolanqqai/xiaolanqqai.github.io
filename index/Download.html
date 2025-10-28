@@ -4,7 +4,7 @@
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>Xiaolan</title>
+	<title>Xiaolan - Download</title>
 	<link rel="Shortcut icon" href="../favicon.ico" loading="lazy">
 	<link rel="stylesheet" href="../css/bootstrap.min.css">
 	<script type="text/javascript" src="../js/jquery-3.5.1.min.js"></script>
@@ -15,25 +15,70 @@
 	<div class="z-3 d-flex flex-row position-fixed">
 		<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>返回</strong></button>
 		<button onclick="window.location.href = 'More.html'" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong>More</strong></button>
+		<button onclick="window.location.href = 'DD.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>DD</strong></button>
 	</div>
 	<div class="z-2 d-flex flex-column mx-auto mt-5 pt-2">
-
-		<div class="d-flex flex-column" id="ff"></div>
+		<div class="d-flex flex-column" id="nav-content-container"></div>
 
 		<div class="fixed-bottom mx-1">
 			<div class=" container-fluid">
 				<div class="float-end">
-					<span class="badge text-black-50"><a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • <a id="uptime1" href="Develop.html">Beta:error</a></span>
-					<span id="state1" class="badge text-bg-success">Error</span>
+					<span class="badge text-black-50">
+						<a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • 
+						<a id="uptime1" href="Develop.html">加载中...</a></span>
+					<span id="state1" class="badge text-bg-success">加载中...</span>
 					<a><div class="spinner-grow spinner-grow-sm text-info" role="status"></div></a>
 				</div>
 			</div>
 		</div>
-
 	</div>
 
-	<script src="../js/data.js"></script>
-	<script>datadow()</script><!-- 网站列表数据请求 -->
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		fetch('../js/nav-data.json')
+			.then(response => response.json())
+			.then(data => {
+				renderNavigation(data.download);
+				loadVersionInfo(data);
+			})
+			.catch(error => {
+				console.error('加载导航数据时出错:', error);
+				document.getElementById('nav-content-container').innerHTML = '<div class="alert alert-info mx-3">暂无导航数据，请先上传JSON文件</div>';
+				document.getElementById('uptime1').textContent = 'Beta:error';
+				document.getElementById('state1').textContent = 'Error';
+			});
+	});
+	
+	function renderNavigation(navData) {
+		const navContentContainer = document.getElementById('nav-content-container');
+		navContentContainer.innerHTML = '';
+		
+		if (!navData || !navData.tabs || navData.tabs.length === 0) {
+			navContentContainer.innerHTML = '<div class="alert alert-info mx-3">暂无导航数据</div>';
+			return;
+		}
+		
+		navData.tabs.forEach((tab, index) => {
+			const section = document.createElement('div');
+			section.className = 'mt-3 mx-3';
+			section.innerHTML = `
+				<div class="alert alert-secondary shadow" role="alert">${tab.name}</div>
+				<div id="ar${index+1}" class="d-flex flex-wrap p-2">
+					${tab.items.map(item => {
+						const iconUrl = item.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}`;
+						return `
+							<a href="${item.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1">
+								<img class="border rounded-circle w" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
+								<h6 class="t1">${item.name}</h6>
+							</a>
+						`;
+					}).join('')}
+				</div>
+			`;
+			navContentContainer.appendChild(section);
+		});
+	}
+</script>
 
 	<!--背景-->
 	<div class="z-1">
@@ -44,7 +89,6 @@
 		<canvas class="background"></canvas>
 	</div>
 	<script src="../js/particles.min.js"></script>
-
 	<!--背景-->
 
 	<script>
@@ -56,7 +100,5 @@
 	<script src="../js/foot.js"></script>
 
 	<div style="display: none;">111</div><!-- 去广告 -->
-
 </body>
-
 </html>

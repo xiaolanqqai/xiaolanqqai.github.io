@@ -25,10 +25,39 @@ html, body {
   margin: 0;
   padding: 0;
   background: #f8f8f8;
+  /* 优化滚动性能 */
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
 }
 
 .oh {
   overflow: hidden;
+}
+
+/* 模态框优化 */
+.modal {
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .kuaijie {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+  
+  .row-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .modal-dialog {
+    margin: 10px;
+  }
 }
 
 /**基本格式去除**/

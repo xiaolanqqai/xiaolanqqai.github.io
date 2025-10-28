@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>探索网页系统</title>
+    <!-- PWA相关配置 -->
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#3e8e41">
+    <meta name="description" content="发现新的有趣网站">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="探索网页">
+    <link rel="apple-touch-icon" href="../../img/index.png">
+    
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <link href="../../css/manager-styles.css" rel="stylesheet">
+    <!-- 引入通用脚本 -->
+    <script src="../../js/manager-common.js"></script>
+    <style>
+        /* 页面特定样式 */
+        .explore-header {
+            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+            color: white;
+        }
+        
+        .discover-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .discover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card-img-top {
+            height: 180px;
+            object-fit: cover;
+            background-color: #f8f9fa;
+        }
+        
+        .site-rating {
+            color: #ffc107;
+        }
+        
+        .category-pill {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        
+        .btn-discover {
+            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-discover:hover {
+            background: linear-gradient(135deg, #8e24aa 0%, #5e35b1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-random {
+            background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+            color: white;
+            border: none;
+        }
+        
+        .btn-random:hover {
+            background: linear-gradient(135deg, #00acc1 0%, #00838f 100%);
+        }
+        
+        .favorites-icon {
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        
+        .favorites-icon:hover {
+            transform: scale(1.2);
+        }
+        
+        .favorites-icon.active {
+            color: #e91e63;
+        }
+        
+        /* 加载动画 */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        
+        .search-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* 标签云样式 */
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .tag-cloud a {
+            text-decoration: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        
+        .tag-cloud a:hover {
+            background-color: #9c27b0;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* 收藏夹样式 */
+        .favorites-list .list-group-item {
+            border-left: 4px solid #e91e63;
+        }
+        
+        /* 管理页面导航栏中的感叹号按钮样式 */
+        .manager-nav-button.bg-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
+            color: white !important;
+            border: none;
+        }
+        
+        .manager-nav-button.bg-warning:hover {
+            background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%) !important;
+            transform: translateY(-1px);
+        }
+        
+        /* 日志条目样式 */
+        .log-entry {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #6c757d;
+            background-color: #f8f9fa;
+        }
+        
+        .log-entry.success {
+            border-left-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background-color: #fff5f5;
+        }
+        
+        .log-entry.warning {
+            border-left-color: #ffc107;
+            background-color: #fffef0;
+        }
+        
+        .log-entry.info {
+            border-left-color: #17a2b8;
+            background-color: #f0f9ff;
+        }
+    </style>
+</head>
+<body class="manager-body">
+    <!-- 返回首页按钮 -->
+    <a href="../../index.html" class="home-button bg-dark text-white" title="返回首页">
+        <i class="fas fa-home"></i>
+    </a>
+    
+    <!-- 管理页面导航栏 -->
+    <div class="manager-nav">
+        <a href="nav-manager.html" class="manager-nav-button" title="导航数据管理">
+            <i class="fas fa-sitemap"></i>
+        </a>
+        <a href="MM-generator.html" class="manager-nav-button" title="密码生成器">
+            <i class="fas fa-key"></i>
+        </a>
+        <a href="vol-manager.html" class="manager-nav-button" title="版本管理">
+            <i class="fas fa-code-branch"></i>
+        </a>
+        <a href="explore-manager.html" class="manager-nav-button active" title="探索网页">
+            <i class="fas fa-compass"></i>
+        </a>
+        <!-- 操作日志按钮 -->
+        <button class="manager-nav-button bg-warning text-white" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
+            <i class="fas fa-exclamation-circle"></i>
+        </button>
+    </div>
+    
+    <div class="manager-header explore-header py-4 mb-4">
+        <div class="container">
+            <h1 class="text-center mb-2">探索网页系统</h1>
+            <p class="text-center mb-0">发现新的有趣网站，开拓您的网络视野</p>
+        </div>
+    </div>
+    
+    <div class="container container-main">
+        <!-- 搜索和过滤区域 -->
+        <div class="search-filter-section bg-white rounded shadow p-4 mb-4">
+            <div class="search-form mb-4">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="搜索有趣的网站..." aria-label="搜索">
+                    <button class="btn btn-discover" type="button" id="searchButton">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 分类标签云 -->
+            <div class="tag-cloud text-center">
+                <a href="#" class="category-tag active" data-category="all">全部</a>
+                <a href="#" class="category-tag" data-category="tools">工具</a>
+                <a href="#" class="category-tag" data-category="entertainment">娱乐</a>
+                <a href="#" class="category-tag" data-category="education">教育</a>
+                <a href="#" class="category-tag" data-category="productivity">生产力</a>
+                <a href="#" class="category-tag" data-category="design">设计</a>
+                <a href="#" class="category-tag" data-category="programming">编程</a>
+                <a href="#" class="category-tag" data-category="news">新闻</a>
+                <a href="#" class="category-tag" data-category="social">社交</a>
+            </div>
+            
+            <!-- 随机发现按钮 -->
+            <div class="text-center mt-2">
+                <button class="btn btn-random" id="randomButton">
+                    <i class="fas fa-random"></i> 随机发现
+                </button>
+            </div>
+        </div>
+        
+        <!-- 标签页切换 -->
+        <div class="mb-4">
+            <ul class="nav nav-tabs" id="exploreTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="discover-tab" data-bs-toggle="tab" data-bs-target="#discover" type="button" role="tab" aria-controls="discover" aria-selected="true">发现</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="trending-tab" data-bs-toggle="tab" data-bs-target="#trending" type="button" role="tab" aria-controls="trending" aria-selected="false">热门</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="favorites-tab" data-bs-toggle="tab" data-bs-target="#favorites" type="button" role="tab" aria-controls="favorites" aria-selected="false">我的收藏</button>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 标签页内容 -->
+        <div class="tab-content" id="exploreTabContent">
+            <!-- 发现标签页 -->
+            <div class="tab-pane fade show active" id="discover" role="tabpanel" aria-labelledby="discover-tab">
+                <div class="row" id="discoverResults">
+                    <!-- 卡片将由JavaScript动态生成 -->
+                    <!-- 骨架屏加载状态 -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="discover-card shadow">
+                            <div class="skeleton card-img-top"></div>
+                            <div class="card-body">
+                                <div class="skeleton" style="height: 24px; width: 60%; margin-bottom: 12px;"></div>
+                                <div class="skeleton" style="height: 16px; width: 90%; margin-bottom: 8px;"></div>
+                                <div class="skeleton" style="height: 16px; width: 80%; margin-bottom: 12px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="discover-card shadow">
+                            <div class="skeleton card-img-top"></div>
+                            <div class="card-body">
+                                <div class="skeleton" style="height: 24px; width: 70%; margin-bottom: 12px;"></div>
+                                <div class="skeleton" style="height: 16px; width: 90%; margin-bottom: 8px;"></div>
+                                <div class="skeleton" style="height: 16px; width: 80%; margin-bottom: 12px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="discover-card shadow">
+                            <div class="skeleton card-img-top"></div>
+                            <div class="card-body">
+                                <div class="skeleton" style="height: 24px; width: 80%; margin-bottom: 12px;"></div>
+                                <div class="skeleton" style="height: 16px; width: 90%; margin-bottom: 8px;"></div>
+                                <div class="skeleton" style="height: 16px; width: 80%; margin-bottom: 12px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 加载更多按钮 -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-primary" id="loadMoreButton">
+                        <i class="fas fa-spinner"></i> 加载更多
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 热门标签页 -->
+            <div class="tab-pane fade" id="trending" role="tabpanel" aria-labelledby="trending-tab">
+                <div class="list-group" id="trendingList">
+                    <!-- 热门网站列表将由JavaScript动态生成 -->
+                    <!-- 骨架屏加载状态 -->
+                    <div class="list-group-item p-4">
+                        <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 10px;"></div>
+                        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                    </div>
+                    <div class="list-group-item p-4">
+                        <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 10px;"></div>
+                        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                    </div>
+                    <div class="list-group-item p-4">
+                        <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 10px;"></div>
+                        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 收藏标签页 -->
+            <div class="tab-pane fade" id="favorites" role="tabpanel" aria-labelledby="favorites-tab">
+                <div class="favorites-list" id="favoritesList">
+                    <div class="alert alert-info text-center p-5">
+                        <i class="fas fa-star text-warning mb-2" style="font-size: 3rem;"></i>
+                        <h4 class="mt-2">还没有收藏网站</h4>
+                        <p class="mb-0">浏览"发现"或"热门"标签页，点击星标图标收藏您喜欢的网站</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加网站按钮 -->
+        <div class="text-center mt-6 mb-4">
+            <button class="btn btn-discover" data-bs-toggle="modal" data-bs-target="#addSiteModal">
+                <i class="fas fa-plus"></i> 添加您发现的网站
+            </button>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <div class="manager-footer py-3 mt-4">
+        <div class="container text-center">
+            <p class="mb-1 text-muted">探索网页系统 &copy; 2023 Xiaolan</p>
+            <p class="mb-0"><a href="../../index.html" class="text-decoration-none">返回主页</a></p>
+        </div>
+    </div>
+    
+    <!-- 全局加载覆盖层 -->
+    <div id="loadingOverlay" class="loading-overlay d-none">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">加载中...</div>
+    </div>
+    
+    <!-- 添加网站模态框 -->
+    <div class="modal fade" id="addSiteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加新网站</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addSiteForm">
+                        <div class="mb-3">
+                            <label for="siteName" class="form-label">网站名称</label>
+                            <input type="text" class="form-control" id="siteName" placeholder="输入网站名称" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="siteUrl" class="form-label">网站链接</label>
+                            <input type="url" class="form-control" id="siteUrl" placeholder="https://" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="siteDescription" class="form-label">网站描述</label>
+                            <textarea class="form-control" id="siteDescription" rows="3" placeholder="简要描述这个网站的特点和用途" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="siteCategory" class="form-label">网站分类</label>
+                            <select class="form-select" id="siteCategory" required>
+                                <option value="">请选择分类</option>
+                                <option value="tools">工具</option>
+                                <option value="entertainment">娱乐</option>
+                                <option value="education">教育</option>
+                                <option value="productivity">生产力</option>
+                                <option value="design">设计</option>
+                                <option value="programming">编程</option>
+                                <option value="news">新闻</option>
+                                <option value="social">社交</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="siteImageUrl" class="form-label">网站预览图URL (可选)</label>
+                            <input type="url" class="form-control" id="siteImageUrl" placeholder="https://">
+                            <div class="form-text">没有预览图时会自动生成</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-discover" id="submitSiteButton">添加网站</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 网站详情模态框 -->
+    <div class="modal fade" id="siteDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalTitle">网站详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img id="detailModalImage" src="" alt="网站预览" class="img-fluid rounded mb-3">
+                            <div class="mt-2">
+                                <a id="detailModalVisit" href="" target="_blank" class="btn btn-discover w-100">
+                                    <i class="fas fa-external-link-alt"></i> 访问网站
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <h4 id="detailModalName" class="mb-2"></h4>
+                            <div id="detailModalCategories" class="mb-3"></div>
+                            <p id="detailModalDescription" class="mb-3"></p>
+                            <div class="mb-2">
+                                <span class="text-muted">访问量: </span>
+                                <span id="detailModalVisits">0</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted">评分: </span>
+                                <span id="detailModalRating" class="site-rating">☆☆☆☆☆</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted">添加时间: </span>
+                                <span id="detailModalDate"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 探索网页系统JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 模拟数据 - 在实际应用中应该从API获取
+            const mockSites = [
+                {
+                    id: 1,
+                    name: "Canva",
+                    url: "https://www.canva.com",
+                    description: "简单易用的图形设计工具，无需专业技能即可创建精美的设计作品。",
+                    category: ["design", "tools"],
+                    imageUrl: "https://example.com/canva.jpg",
+                    visits: 1254,
+                    rating: 4.8,
+                    addedDate: "2023-05-15"
+                },
+                {
+                    id: 2,
+                    name: "GitHub",
+                    url: "https://github.com",
+                    description: "全球最大的开源代码托管平台，程序员必备的协作开发工具。",
+                    category: ["programming", "productivity"],
+                    imageUrl: "https://example.com/github.jpg",
+                    visits: 5621,
+                    rating: 4.9,
+                    addedDate: "2023-04-20"
+                },
+                {
+                    id: 3,
+                    name: "Khan Academy",
+                    url: "https://www.khanacademy.org",
+                    description: "免费的在线教育平台，提供各种学科的视频课程和练习。",
+                    category: ["education"],
+                    imageUrl: "https://example.com/khan.jpg",
+                    visits: 876,
+                    rating: 4.7,
+                    addedDate: "2023-06-10"
+                },
+                {
+                    id: 4,
+                    name: "Bilibili",
+                    url: "https://www.bilibili.com",
+                    description: "国内知名的视频弹幕网站，拥有丰富的动画、游戏、音乐等内容。",
+                    category: ["entertainment", "social"],
+                    imageUrl: "https://example.com/bilibili.jpg",
+                    visits: 3421,
+                    rating: 4.6,
+                    addedDate: "2023-05-25"
+                },
+                {
+                    id: 5,
+                    name: "TinyPNG",
+                    url: "https://tinypng.com",
+                    description: "智能压缩图片的在线工具，保持图片质量的同时减小文件大小。",
+                    category: ["tools", "design"],
+                    imageUrl: "https://example.com/tinypng.jpg",
+                    visits: 987,
+                    rating: 4.5,
+                    addedDate: "2023-06-05"
+                },
+                {
+                    id: 6,
+                    name: "MDN Web Docs",
+                    url: "https://developer.mozilla.org",
+                    description: "Mozilla提供的权威Web开发文档，涵盖HTML、CSS、JavaScript等技术。",
+                    category: ["programming", "education"],
+                    imageUrl: "https://example.com/mdn.jpg",
+                    visits: 2154,
+                    rating: 4.9,
+                    addedDate: "2023-04-15"
+                }
+            ];
+            
+            // 获取本地存储的收藏网站
+            let favorites = JSON.parse(localStorage.getItem('explore-favorites')) || [];
+            
+            // 渲染发现页面卡片
+            function renderDiscoverCards(sites) {
+                const container = document.getElementById('discoverResults');
+                container.innerHTML = '';
+                
+                sites.forEach(site => {
+                    const isFavorite = favorites.some(fav => fav.id === site.id);
+                    const card = createSiteCard(site, isFavorite);
+                    container.appendChild(card);
+                });
+            }
+            
+            // 创建网站卡片
+            function createSiteCard(site, isFavorite) {
+                const col = document.createElement('div');
+                col.className = 'col-lg-4 col-md-6 mb-4';
+                
+                col.innerHTML = `
+                    <div class="discover-card shadow">
+                        <img src="${site.imageUrl || 'https://via.placeholder.com/400x225?text=' + encodeURIComponent(site.name)}" class="card-img-top" alt="${site.name}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="card-title">${site.name}</h5>
+                                <i class="fas fa-star favorites-icon ${isFavorite ? 'active' : ''}" data-id="${site.id}"></i>
+                            </div>
+                            <div class="mb-2">
+                                ${site.category.map(cat => `<span class="category-pill bg-purple-100 text-purple-800">${getCategoryName(cat)}</span>`).join('')}
+                            </div>
+                            <p class="card-text text-muted">${site.description}</p>
+                            <div class="d-flex justify-content-between mt-3">
+                                <span class="site-rating">${generateRatingStars(site.rating)}</span>
+                                <span class="text-sm text-muted">${site.visits} 次访问</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加卡片点击事件
+                col.querySelector('.discover-card').addEventListener('click', (e) => {
+                    // 如果点击的是收藏图标，不打开详情
+                    if (e.target.classList.contains('favorites-icon')) return;
+                    showSiteDetail(site);
+                });
+                
+                // 添加收藏图标点击事件
+                col.querySelector('.favorites-icon').addEventListener('click', (e) => {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    toggleFavorite(site);
+                    e.target.classList.toggle('active');
+                });
+                
+                return col;
+            }
+            
+            // 渲染热门网站列表
+            function renderTrendingList(sites) {
+                const container = document.getElementById('trendingList');
+                container.innerHTML = '';
+                
+                // 按访问量排序
+                const sortedSites = [...sites].sort((a, b) => b.visits - a.visits);
+                
+                sortedSites.forEach(site => {
+                    const isFavorite = favorites.some(fav => fav.id === site.id);
+                    const listItem = document.createElement('div');
+                    listItem.className = 'list-group-item p-4';
+                    
+                    listItem.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">${site.name}</h5>
+                                <p class="mb-0 text-muted">${site.description}</p>
+                            </div>
+                            <i class="fas fa-star favorites-icon ${isFavorite ? 'active' : ''}" data-id="${site.id}"></i>
+                        </div>
+                    `;
+                    
+                    // 添加点击事件
+                    listItem.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('favorites-icon')) {
+                            showSiteDetail(site);
+                        }
+                    });
+                    
+                    // 添加收藏图标点击事件
+                    listItem.querySelector('.favorites-icon').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleFavorite(site);
+                        e.target.classList.toggle('active');
+                    });
+                    
+                    container.appendChild(listItem);
+                });
+            }
+            
+            // 渲染收藏列表
+            function renderFavorites() {
+                const container = document.getElementById('favoritesList');
+                
+                if (favorites.length === 0) {
+                    container.innerHTML = `
+                        <div class="alert alert-info text-center p-5">
+                            <i class="fas fa-star text-warning mb-2" style="font-size: 3rem;"></i>
+                            <h4 class="mt-2">还没有收藏网站</h4>
+                            <p class="mb-0">浏览"发现"或"热门"标签页，点击星标图标收藏您喜欢的网站</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                favorites.forEach(site => {
+                    const listItem = document.createElement('div');
+                    listItem.className = 'list-group-item favorites-list-item p-4';
+                    
+                    listItem.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">${site.name}</h5>
+                                <p class="mb-0 text-muted">${site.description}</p>
+                            </div>
+                            <div>
+                                <a href="${site.url}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger remove-favorite" data-id="${site.id}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 添加点击事件
+                    listItem.addEventListener('click', (e) => {
+                        if (!e.target.closest('button') && !e.target.closest('a')) {
+                            showSiteDetail(site);
+                        }
+                    });
+                    
+                    // 添加移除收藏点击事件
+                    listItem.querySelector('.remove-favorite').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeFavorite(site.id);
+                        renderFavorites();
+                        // 同时更新其他标签页中的收藏状态
+                        updateFavoriteIcons();
+                    });
+                    
+                    container.appendChild(listItem);
+                });
+            }
+            
+            // 显示网站详情
+            function showSiteDetail(site) {
+                document.getElementById('detailModalTitle').textContent = site.name;
+                document.getElementById('detailModalName').textContent = site.name;
+                document.getElementById('detailModalDescription').textContent = site.description;
+                document.getElementById('detailModalImage').src = site.imageUrl || 'https://via.placeholder.com/400x225?text=' + encodeURIComponent(site.name);
+                document.getElementById('detailModalImage').alt = site.name;
+                document.getElementById('detailModalVisit').href = site.url;
+                document.getElementById('detailModalVisits').textContent = site.visits;
+                document.getElementById('detailModalRating').textContent = generateRatingStars(site.rating);
+                document.getElementById('detailModalDate').textContent = site.addedDate;
+                
+                // 设置分类标签
+                const categoriesContainer = document.getElementById('detailModalCategories');
+                categoriesContainer.innerHTML = '';
+                site.category.forEach(cat => {
+                    const pill = document.createElement('span');
+                    pill.className = 'category-pill bg-purple-100 text-purple-800';
+                    pill.textContent = getCategoryName(cat);
+                    categoriesContainer.appendChild(pill);
+                });
+                
+                // 打开模态框
+                const modal = new bootstrap.Modal(document.getElementById('siteDetailModal'));
+                modal.show();
+                
+                // 增加访问次数
+                site.visits += 1;
+            }
+            
+            // 切换收藏状态
+            function toggleFavorite(site) {
+                const index = favorites.findIndex(fav => fav.id === site.id);
+                
+                if (index === -1) {
+                    // 添加到收藏
+                    favorites.push(site);
+                    showToast(`已将${site.name}添加到收藏`);
+                } else {
+                    // 从收藏中移除
+                    favorites.splice(index, 1);
+                    showToast(`已从收藏中移除${site.name}`);
+                }
+                
+                // 保存到本地存储
+                localStorage.setItem('explore-favorites', JSON.stringify(favorites));
+                
+                // 更新收藏标签页
+                if (document.getElementById('favorites-tab').classList.contains('active')) {
+                    renderFavorites();
+                }
+            }
+            
+            // 移除收藏
+            function removeFavorite(siteId) {
+                favorites = favorites.filter(fav => fav.id !== siteId);
+                localStorage.setItem('explore-favorites', JSON.stringify(favorites));
+                showToast('已从收藏中移除');
+            }
+            
+            // 更新所有收藏图标的状态
+            function updateFavoriteIcons() {
+                document.querySelectorAll('.favorites-icon').forEach(icon => {
+                    const siteId = parseInt(icon.getAttribute('data-id'));
+                    const isFavorite = favorites.some(fav => fav.id === siteId);
+                    icon.classList.toggle('active', isFavorite);
+                });
+            }
+            
+            // 生成评分星星
+            function generateRatingStars(rating) {
+                const fullStars = Math.floor(rating);
+                const hasHalfStar = rating % 1 >= 0.5;
+                const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                
+                let stars = '★'.repeat(fullStars);
+                if (hasHalfStar) stars += '½';
+                stars += '☆'.repeat(emptyStars);
+                
+                return stars;
+            }
+            
+            // 获取分类的中文名称
+            function getCategoryName(category) {
+                const categoryMap = {
+                    'tools': '工具',
+                    'entertainment': '娱乐',
+                    'education': '教育',
+                    'productivity': '生产力',
+                    'design': '设计',
+                    'programming': '编程',
+                    'news': '新闻',
+                    'social': '社交',
+                    'other': '其他'
+                };
+                
+                return categoryMap[category] || category;
+            }
+            
+            // 搜索功能
+            function initSearch() {
+                const searchInput = document.getElementById('searchInput');
+                const searchButton = document.getElementById('searchButton');
+                
+                function performSearch() {
+                    const query = searchInput.value.toLowerCase().trim();
+                    if (!query) {
+                        renderDiscoverCards(mockSites);
+                        return;
+                    }
+                    
+                    const results = mockSites.filter(site => 
+                        site.name.toLowerCase().includes(query) ||
+                        site.description.toLowerCase().includes(query) ||
+                        site.category.some(cat => getCategoryName(cat).toLowerCase().includes(query))
+                    );
+                    
+                    renderDiscoverCards(results);
+                }
+                
+                searchButton.addEventListener('click', performSearch);
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') performSearch();
+                });
+            }
+            
+            // 分类过滤功能
+            function initCategoryFilter() {
+                const categoryTags = document.querySelectorAll('.category-tag');
+                
+                categoryTags.forEach(tag => {
+                    tag.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        
+                        // 更新活动标签样式
+                        categoryTags.forEach(t => t.classList.remove('active', 'bg-purple-600', 'text-white'));
+                        tag.classList.add('active', 'bg-purple-600', 'text-white');
+                        
+                        const category = tag.getAttribute('data-category');
+                        
+                        if (category === 'all') {
+                            renderDiscoverCards(mockSites);
+                        } else {
+                            const filtered = mockSites.filter(site => site.category.includes(category));
+                            renderDiscoverCards(filtered);
+                        }
+                    });
+                });
+            }
+            
+            // 随机发现功能
+            function initRandomDiscover() {
+                const randomButton = document.getElementById('randomButton');
+                
+                randomButton.addEventListener('click', () => {
+                    const randomIndex = Math.floor(Math.random() * mockSites.length);
+                    showSiteDetail(mockSites[randomIndex]);
+                });
+            }
+            
+            // 加载更多功能
+            function initLoadMore() {
+                const loadMoreButton = document.getElementById('loadMoreButton');
+                
+                loadMoreButton.addEventListener('click', () => {
+                    // 模拟加载更多数据
+                    loadMoreButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 加载中...';
+                    
+                    setTimeout(() => {
+                        // 复制现有数据模拟加载更多
+                        const moreSites = mockSites.map(site => ({
+                            ...site,
+                            id: site.id + mockSites.length, // 生成新ID
+                            name: site.name + ' (推荐)',
+                            visits: Math.floor(Math.random() * 2000) + 100
+                        }));
+                        
+                        // 追加到现有卡片
+                        const container = document.getElementById('discoverResults');
+                        moreSites.forEach(site => {
+                            const isFavorite = favorites.some(fav => fav.id === site.id);
+                            const card = createSiteCard(site, isFavorite);
+                            container.appendChild(card);
+                        });
+                        
+                        loadMoreButton.innerHTML = '<i class="fas fa-spinner"></i> 加载更多';
+                        loadMoreButton.disabled = true;
+                        loadMoreButton.textContent = '没有更多了';
+                        showToast('已加载更多推荐网站');
+                    }, 1500);
+                });
+            }
+            
+            // 添加网站表单处理
+            function initAddSiteForm() {
+                const submitButton = document.getElementById('submitSiteButton');
+                
+                submitButton.addEventListener('click', () => {
+                    const name = document.getElementById('siteName').value.trim();
+                    const url = document.getElementById('siteUrl').value.trim();
+                    const description = document.getElementById('siteDescription').value.trim();
+                    const category = document.getElementById('siteCategory').value;
+                    const imageUrl = document.getElementById('siteImageUrl').value.trim();
+                    
+                    if (!name || !url || !description || !category) {
+                        showToast('请填写所有必填字段', 'error');
+                        return;
+                    }
+                    
+                    // 创建新网站对象
+                    const newSite = {
+                        id: Date.now(), // 使用时间戳作为临时ID
+                        name,
+                        url,
+                        description,
+                        category: [category],
+                        imageUrl: imageUrl || `https://via.placeholder.com/400x225?text=${encodeURIComponent(name)}`,
+                        visits: 0,
+                        rating: 0,
+                        addedDate: new Date().toISOString().split('T')[0]
+                    };
+                    
+                    // 添加到模拟数据中
+                    mockSites.unshift(newSite);
+                    
+                    // 关闭模态框并重置表单
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addSiteModal'));
+                    modal.hide();
+                    document.getElementById('addSiteForm').reset();
+                    
+                    // 更新UI
+                    renderDiscoverCards(mockSites);
+                    renderTrendingList(mockSites);
+                    
+                    showToast(`已成功添加网站: ${name}`);
+                });
+            }
+            
+            // 显示提示信息
+            function showToast(message, type = 'success') {
+                // 创建提示元素
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type} position-fixed bottom-3 right-3 bg-${type === 'error' ? 'danger' : 'success'} text-white p-3 rounded shadow-lg z-50`;
+                toast.textContent = message;
+                
+                // 添加到文档
+                document.body.appendChild(toast);
+                
+                // 显示提示
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.style.transition = 'opacity 0.3s ease';
+                    toast.style.opacity = '1';
+                }, 10);
+                
+                // 自动关闭
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+            
+            // 初始化标签页切换
+            function initTabs() {
+                const tabButtons = document.querySelectorAll('#exploreTabs button');
+                
+                tabButtons.forEach(button => {
+                    button.addEventListener('shown.bs.tab', () => {
+                        if (button.id === 'favorites-tab') {
+                            renderFavorites();
+                        }
+                    });
+                });
+            }
+            
+            // 初始化所有功能
+            function init() {
+                renderDiscoverCards(mockSites);
+                renderTrendingList(mockSites);
+                renderFavorites();
+                initSearch();
+                initCategoryFilter();
+                initRandomDiscover();
+                initLoadMore();
+                initAddSiteForm();
+                initTabs();
+                
+                // 显示欢迎消息
+                showToast('欢迎使用探索网页系统！发现有趣的网站，开拓您的网络视野。');
+            }
+            
+            // 启动应用
+            init();
+            
+            // 注册页面日志
+            if (window.ManagerCommon && window.ManagerCommon.prototype.log) {
+                const managerCommon = new ManagerCommon();
+                managerCommon.log('探索网页系统已加载', 'info');
+            }
+        });
+    </script>
+</body>
+</html>
