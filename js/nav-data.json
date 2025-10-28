@@ -1,7 +1,7 @@
 {
   "version": {
-    "web_vol": "3.7.1",
-    "web_data": "2025.09.28"
+    "web_vol": "4.0.0",
+    "web_data": "2025.10.28"
   },
   "index": {
     "tabs": [
@@ -13,12 +13,12 @@
             "url": "https://www.bilibili.com"
           },
           {
-            "name": "樱花动漫",
-            "url": "https://www.dmh8.com"
-          },
-          {
             "name": "腾讯视频",
             "url": "https://v.qq.com"
+          },
+          {
+            "name": "樱花动漫",
+            "url": "https://www.dmh8.com"
           },
           {
             "name": "爱奇艺",
@@ -76,11 +76,11 @@
         "items": [
           {
             "name": "阿里云",
-            "url": "www.aliyun.com"
+            "url": "https:/www.aliyun.com"
           },
           {
             "name": "万网主机管理控制台",
-            "url": "cp.aliyun.com"
+            "url": "https:/cp.aliyun.com"
           },
           {
             "name": "官网",
@@ -656,10 +656,6 @@
             "url": "https://www.whpaiger.com"
           },
           {
-            "name": "风车动漫",
-            "url": "https://www.dmla7.com"
-          },
-          {
             "name": "zzzfun",
             "url": "https://www.zzzfun.com"
           },
@@ -670,10 +666,6 @@
           {
             "name": "电影天堂",
             "url": "https://dytt.dytt8.net"
-          },
-          {
-            "name": "电影天堂",
-            "url": "https://www.dytt50.com"
           },
           {
             "name": "茶杯狐",
@@ -733,7 +725,7 @@
           },
           {
             "name": "4k电影网",
-            "url": "https://4k电影网.com"
+            "url": "https:/4k电影网.com"
           },
           {
             "name": "奇心解析",
@@ -927,10 +919,6 @@
           {
             "name": "克隆窝",
             "url": "https://www.kelongwo.com"
-          },
-          {
-            "name": "克隆窝",
-            "url": "https://www.uy5.net"
           },
           {
             "name": "牛麦子",
