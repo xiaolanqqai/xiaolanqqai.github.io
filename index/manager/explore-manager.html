@@ -219,99 +219,39 @@
     </div>
     
     <div class="container container-main">
-        <!-- 搜索和过滤区域 -->
-        <div class="search-filter-section bg-white rounded shadow p-4 mb-4">
-            <div class="search-form mb-4">
-                <div class="input-group">
-                    <input type="text" id="searchInput" class="form-control" placeholder="搜索有趣的网站..." aria-label="搜索">
-                    <button class="btn btn-discover" type="button" id="searchButton">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- 分类标签云 -->
-            <div class="tag-cloud text-center">
-                <a href="#" class="category-tag active" data-category="all">全部</a>
-                <a href="#" class="category-tag" data-category="tools">工具</a>
-                <a href="#" class="category-tag" data-category="entertainment">娱乐</a>
-                <a href="#" class="category-tag" data-category="education">教育</a>
-                <a href="#" class="category-tag" data-category="productivity">生产力</a>
-                <a href="#" class="category-tag" data-category="design">设计</a>
-                <a href="#" class="category-tag" data-category="programming">编程</a>
-                <a href="#" class="category-tag" data-category="news">新闻</a>
-                <a href="#" class="category-tag" data-category="social">社交</a>
-            </div>
-            
-            <!-- 随机发现按钮 -->
-            <div class="text-center mt-2">
-                <button class="btn btn-random" id="randomButton">
-                    <i class="fas fa-random"></i> 随机发现
-                </button>
-            </div>
-        </div>
-        
         <!-- 标签页切换 -->
         <div class="mb-4">
             <ul class="nav nav-tabs" id="exploreTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="discover-tab" data-bs-toggle="tab" data-bs-target="#discover" type="button" role="tab" aria-controls="discover" aria-selected="true">发现</button>
+                    <button class="nav-link active" id="favorites-tab" data-bs-toggle="tab" data-bs-target="#favorites" type="button" role="tab" aria-controls="favorites" aria-selected="true">我的收藏</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="trending-tab" data-bs-toggle="tab" data-bs-target="#trending" type="button" role="tab" aria-controls="trending" aria-selected="false">热门</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="favorites-tab" data-bs-toggle="tab" data-bs-target="#favorites" type="button" role="tab" aria-controls="favorites" aria-selected="false">我的收藏</button>
-                </li>
             </ul>
+        </div>
+        
+        <!-- 工具箱模块 -->
+        <div class="toolbox-section bg-white rounded shadow p-6 mb-6">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-xl font-bold text-primary">浏览器收藏夹</h2>
+                <button id="refreshBookmarks" class="btn btn-outline-primary">
+                    <i class="fas fa-sync-alt"></i> 刷新
+                </button>
+            </div>
+            <p class="text-muted mb-4">以下是您浏览器中的收藏网站，按文件夹分类显示：</p>
+            
+            <!-- 收藏夹内容将由JavaScript动态生成 -->
+            <div id="bookmarksContainer" class="mt-4">
+                <div class="text-center py-6">
+                    <i class="fas fa-bookmark text-5xl text-muted mb-3"></i>
+                    <p class="text-muted">点击上方刷新按钮加载浏览器收藏夹</p>
+                </div>
+            </div>
         </div>
         
         <!-- 标签页内容 -->
         <div class="tab-content" id="exploreTabContent">
-            <!-- 发现标签页 -->
-            <div class="tab-pane fade show active" id="discover" role="tabpanel" aria-labelledby="discover-tab">
-                <div class="row" id="discoverResults">
-                    <!-- 卡片将由JavaScript动态生成 -->
-                    <!-- 骨架屏加载状态 -->
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="discover-card shadow">
-                            <div class="skeleton card-img-top"></div>
-                            <div class="card-body">
-                                <div class="skeleton" style="height: 24px; width: 60%; margin-bottom: 12px;"></div>
-                                <div class="skeleton" style="height: 16px; width: 90%; margin-bottom: 8px;"></div>
-                                <div class="skeleton" style="height: 16px; width: 80%; margin-bottom: 12px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="discover-card shadow">
-                            <div class="skeleton card-img-top"></div>
-                            <div class="card-body">
-                                <div class="skeleton" style="height: 24px; width: 70%; margin-bottom: 12px;"></div>
-                                <div class="skeleton" style="height: 16px; width: 90%; margin-bottom: 8px;"></div>
-                                <div class="skeleton" style="height: 16px; width: 80%; margin-bottom: 12px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="discover-card shadow">
-                            <div class="skeleton card-img-top"></div>
-                            <div class="card-body">
-                                <div class="skeleton" style="height: 24px; width: 80%; margin-bottom: 12px;"></div>
-                                <div class="skeleton" style="height: 16px; width: 90%; margin-bottom: 8px;"></div>
-                                <div class="skeleton" style="height: 16px; width: 80%; margin-bottom: 12px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 加载更多按钮 -->
-                <div class="text-center mt-4">
-                    <button class="btn btn-outline-primary" id="loadMoreButton">
-                        <i class="fas fa-spinner"></i> 加载更多
-                    </button>
-                </div>
-            </div>
             
             <!-- 热门标签页 -->
             <div class="tab-pane fade" id="trending" role="tabpanel" aria-labelledby="trending-tab">
@@ -366,6 +306,85 @@
         <div class="loading-spinner"></div>
         <div class="loading-text" id="loadingText">加载中...</div>
     </div>
+    
+    <!-- 工具箱模块样式 -->
+    <style>
+        .bookmark-folder {
+            margin-bottom: 20px;
+            border-left: 3px solid #007bff;
+            padding-left: 15px;
+        }
+        
+        .bookmark-folder-header {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 0;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .bookmark-folder-header:hover {
+            color: #007bff;
+        }
+        
+        .bookmark-folder-header i {
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .bookmark-folder-header.collapsed i {
+            transform: rotate(-90deg);
+        }
+        
+        .bookmark-items {
+            margin-left: 25px;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        
+        .bookmark-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            text-decoration: none !important;
+            color: #333;
+        }
+        
+        .bookmark-item:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .bookmark-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            flex-shrink: 0;
+            background-color: #ddd;
+            border-radius: 2px;
+        }
+        
+        .bookmark-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex-grow: 1;
+        }
+        
+        .bookmark-favicon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+    </style>
     
     <!-- 添加网站模态框 -->
     <div class="modal fade" id="addSiteModal" tabindex="-1" aria-hidden="true">
