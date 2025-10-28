@@ -1014,5 +1014,139 @@
             }
         });
     </script>
+    
+    <!-- 工具箱模块JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 模拟浏览器收藏夹数据
+            const mockBookmarks = {
+                title: "根文件夹",
+                children: [
+                    {
+                        title: "常用工具",
+                        children: [
+                            {title: "百度", url: "https://www.baidu.com", iconUrl: "../../img/图床/baidu.gif"},
+                            {title: "Google", url: "https://www.google.com", iconUrl: "../../img/图床/google.gif"},
+                            {title: "Bing", url: "https://www.bing.com", iconUrl: "../../img/图床/bing.webp"},
+                            {title: "GitHub", url: "https://github.com", iconUrl: ""}
+                        ]
+                    },
+                    {
+                        title: "视频网站",
+                        children: [
+                            {title: "哔哩哔哩", url: "https://www.bilibili.com", iconUrl: "../../img/图床/bilibili.gif"},
+                            {title: "YouTube", url: "https://www.youtube.com", iconUrl: ""}
+                        ]
+                    },
+                    {
+                        title: "开发资源",
+                        children: [
+                            {title: "MDN Web Docs", url: "https://developer.mozilla.org", iconUrl: ""},
+                            {title: "Stack Overflow", url: "https://stackoverflow.com", iconUrl: ""},
+                            {title: "Bootstrap", url: "https://getbootstrap.com", iconUrl: ""}
+                        ]
+                    }
+                ]
+            };
+            
+            // 渲染收藏夹函数
+            function renderBookmarks(bookmarks, container) {
+                container.innerHTML = '';
+                
+                if (bookmarks && bookmarks.children && bookmarks.children.length > 0) {
+                    bookmarks.children.forEach(folder => {
+                        // 创建文件夹元素
+                        const folderElement = document.createElement('div');
+                        folderElement.className = 'bookmark-folder';
+                        
+                        // 创建文件夹标题
+                        const folderHeader = document.createElement('div');
+                        folderHeader.className = 'bookmark-folder-header';
+                        folderHeader.innerHTML = `
+                            <i class="fas fa-chevron-right"></i>
+                            <span>${folder.title}</span>
+                            <span class="ml-2 badge bg-primary">${folder.children ? folder.children.length : 0}</span>
+                        `;
+                        
+                        // 创建书签项目容器
+                        const bookmarkItemsContainer = document.createElement('div');
+                        bookmarkItemsContainer.className = 'bookmark-items';
+                        
+                        // 绑定折叠/展开事件
+                        folderHeader.addEventListener('click', function() {
+                            folderHeader.classList.toggle('collapsed');
+                            if (bookmarkItemsContainer.style.display === 'none') {
+                                bookmarkItemsContainer.style.display = 'grid';
+                            } else {
+                                bookmarkItemsContainer.style.display = 'none';
+                            }
+                        });
+                        
+                        // 添加书签项目
+                        if (folder.children) {
+                            folder.children.forEach(bookmark => {
+                                const bookmarkItem = document.createElement('a');
+                                bookmarkItem.className = 'bookmark-item';
+                                bookmarkItem.href = bookmark.url;
+                                bookmarkItem.target = '_blank';
+                                
+                                // 获取favicon或使用默认图标
+                                let faviconHtml = '';
+                                if (bookmark.iconUrl) {
+                                    faviconHtml = `<img src="${bookmark.iconUrl}" alt="图标" class="bookmark-favicon">`;
+                                } else {
+                                    // 尝试使用favicon服务
+                                    const domain = new URL(bookmark.url).hostname;
+                                    faviconHtml = `<img src="https://www.google.com/s2/favicons?domain=${domain}" alt="图标" class="bookmark-favicon">`;
+                                }
+                                
+                                bookmarkItem.innerHTML = `
+                                    ${faviconHtml}
+                                    <span class="bookmark-title">${bookmark.title}</span>
+                                `;
+                                
+                                bookmarkItemsContainer.appendChild(bookmarkItem);
+                            });
+                        }
+                        
+                        // 组装文件夹元素
+                        folderElement.appendChild(folderHeader);
+                        folderElement.appendChild(bookmarkItemsContainer);
+                        
+                        container.appendChild(folderElement);
+                    });
+                } else {
+                    container.innerHTML = `
+                        <div class="alert alert-warning text-center py-4">
+                            <i class="fas fa-exclamation-triangle text-warning mb-2"></i>
+                            <p>未找到收藏夹数据</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // 刷新按钮事件
+            document.getElementById('refreshBookmarks').addEventListener('click', function() {
+                const container = document.getElementById('bookmarksContainer');
+                
+                // 显示加载状态
+                container.innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="spinner-border text-primary mb-3" role="status"></div>
+                        <p class="text-muted">正在加载收藏夹...</p>
+                    </div>
+                `;
+                
+                // 模拟加载延迟
+                setTimeout(() => {
+                    renderBookmarks(mockBookmarks, container);
+                }, 800);
+            });
+            
+            // 页面加载时自动尝试加载收藏夹
+            // 在实际环境中，由于浏览器安全限制，这里会显示提示信息
+            // 用户需要点击刷新按钮来加载模拟数据
+        });
+    </script>
 </body>
 </html>
