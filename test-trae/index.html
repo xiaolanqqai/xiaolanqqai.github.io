@@ -7,6 +7,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>Xiaolan</title>
 	<link rel="Shortcut icon" href="favicon.ico" loading="lazy">
+	<!-- PWA相关配置 -->
+	<link rel="manifest" href="manifest.json">
+	<meta name="theme-color" content="#3e8e41">
+	<meta name="description" content="高效的导航页面，提供快速搜索和网站访问">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="导航系统">
+	<link rel="apple-touch-icon" href="img/index.png">
+	
 	<!-- 预加载关键CSS -->
 	<link rel="preload" href="css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 	<noscript><link rel="stylesheet" href="css/bootstrap.min.css"></noscript>
@@ -244,6 +253,27 @@
 				}).catch(err => {
 					reject(err);
 				});
+			});
+		}
+		
+		// PWA Service Worker注册
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', () => {
+				navigator.serviceWorker.register('/test-trae/service-worker.js')
+					.then(registration => {
+						console.log('Service Worker 注册成功:', registration.scope);
+					})
+					.catch(error => {
+						console.error('Service Worker 注册失败:', error);
+					});
+			});
+			
+			// 监听Service Worker更新
+			let refreshing = false;
+			navigator.serviceWorker.addEventListener('controllerchange', () => {
+				if (refreshing) return;
+				refreshing = true;
+				window.location.reload();
 			});
 		}
 

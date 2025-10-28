@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MM-generator</title>
+    <!-- PWA相关配置 -->
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#3e8e41">
+    <meta name="description" content="密码生成和管理工具">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="密码生成器">
+    <link rel="apple-touch-icon" href="../../img/index.png">
+    
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/all.min.css">
-    <link rel="stylesheet" href="../../css/manager-styles.css">
+    <link href="../../css/manager-styles.css" rel="stylesheet">
+    <!-- 引入通用脚本 -->
+    <script src="../../js/manager-common.js"></script>
     <style>
         /* 页面特定样式 */
         .header-gradient {
@@ -853,5 +864,20 @@
             </div>
         </div>
     </div>
+    
+    <!-- PWA Service Worker注册 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker 注册成功:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker 注册失败:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>

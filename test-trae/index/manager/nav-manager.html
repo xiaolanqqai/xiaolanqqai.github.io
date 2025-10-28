@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>导航数据管理系统</title>
+    <!-- PWA相关配置 -->
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#3e8e41">
+    <meta name="description" content="导航页面数据管理工具">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="导航管理">
+    <link rel="apple-touch-icon" href="../../img/index.png">
+    
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/all.min.css">
     <link href="../../css/manager-styles.css" rel="stylesheet">
+    <!-- 引入通用脚本 -->
+    <script src="../../js/manager-common.js"></script>
     <style>
         /* 页面特定样式 */
         .site-card {
@@ -175,6 +186,8 @@
         <i class="fas fa-home"></i>
     </a>
     
+    <!-- 主题切换按钮将由manager-common.js自动创建 -->
+    
     <!-- 管理页面导航栏 -->
     <div class="manager-nav">
         <a href="nav-manager.html" class="manager-nav-button active" title="导航数据管理">
@@ -329,6 +342,12 @@
         </div>
     </div>
     
+    <!-- 全局加载覆盖层 -->
+    <div id="loadingOverlay" class="loading-overlay d-none">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">加载中...</div>
+    </div>
+    
     <!-- 模态框部分保持不变 -->
     <!-- 版本信息编辑模态框 -->
     <div class="modal fade" id="versionModal" tabindex="-1" aria-hidden="true">
@@ -371,6 +390,17 @@
                     <input type="file" id="jsonFile" accept=".json" class="d-none">
                     <div class="mt-3"><small class="text-muted">支持标准的JSON格式文件</small></div>
                 </div>
+                <!-- 上传进度条 -->
+                <div id="uploadProgressContainer" class="d-none mt-3">
+                <div class="d-flex justify-content-between items-center mb-1">
+                    <p class="mb-1">正在处理：<span id="progressFileName"></span></p>
+                    <span id="progressPercentage" class="text-muted small">0%</span>
+                </div>
+                <div class="progress progress-bar-animation mb-1">
+                    <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p id="progressMessage" class="text-sm text-muted">准备中...</p>
+            </div>
                 <div id="fileInfo" class="d-none">
                     <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i><span id="fileName">已选择文件：</span></div>
                     <h6 class="mt-4">JSON预览：</h6><div class="json-preview" id="jsonPreview"></div>
@@ -1104,17 +1134,52 @@
             const file = jsonFileInput.files[0];
             if (!file) return;
             
+            // 显示进度条
+              const progressContainer = document.getElementById('uploadProgressContainer');
+              const progressBar = document.getElementById('uploadProgressBar');
+              const progressFileName = document.getElementById('progressFileName');
+              const progressPercentage = document.getElementById('progressPercentage');
+              const progressMessage = document.getElementById('progressMessage');
+              
+              // 更新进度条的辅助函数
+              function updateProgressBar(percent, message) {
+                  progressBar.style.width = `${percent}%`;
+                  progressBar.setAttribute('aria-valuenow', percent);
+                  progressPercentage.textContent = `${percent}%`;
+                  progressMessage.textContent = message;
+              }
+              
+              progressContainer.classList.remove('d-none');
+              progressFileName.textContent = file.name;
+              updateProgressBar(0, '准备中...');
+            
             if (file.type !== 'application/json') {
-                alert('请选择JSON文件');
+                showAlert('请选择JSON文件', 'danger');
+                progressContainer.classList.add('d-none');
+                addLogEntry('上传文件类型错误', LOG_TYPES.ERROR, `文件名: ${file.name}, 类型: ${file.type}`);
                 return;
             }
             
             fileName.textContent = `已选择文件：${file.name}`;
             fileInfo.classList.remove('d-none');
             
+            // 记录日志
+            addLogEntry('开始处理上传文件', LOG_TYPES.INFO, `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
+            
+            // 模拟初始进度
+            setTimeout(() => {
+                updateProgressBar(30, '正在验证文件格式...');
+            }, 100);
+            
             const reader = new FileReader();
+            reader.onloadstart = function() {
+                updateProgressBar(50, '正在解析JSON数据...');
+            };
+            
             reader.onload = function(e) {
                 try {
+                    updateProgressBar(70, '正在验证数据结构...');
+                    
                     const content = e.target.result;
                     const jsonData = JSON.parse(content);
                     
@@ -1126,32 +1191,86 @@
                         };
                     }
                     
+                    // 验证必要的数据结构
+                    if (!jsonData.index || typeof jsonData.index !== 'object') {
+                        throw new Error('JSON数据必须包含index对象');
+                    }
+                    
+                    updateProgressBar(90, '准备完成，等待确认...');
+                    
                     jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
                     confirmUpload.disabled = false;
                     window.uploadedData = jsonData;
+                    
+                    updateProgressBar(100, '处理完成！');
+                    
+                    addLogEntry('文件处理完成', LOG_TYPES.SUCCESS, `文件名: ${file.name}`);
                 } catch (e) {
                     jsonPreview.textContent = `错误：${e.message}`;
+                    showAlert(`文件解析失败: ${e.message}`, 'danger');
+                    addLogEntry('文件解析失败', LOG_TYPES.ERROR, `错误: ${e.message}`);
+                    progressContainer.classList.add('d-none');
                     confirmUpload.disabled = true;
+                    updateProgressBar(0, '准备中...');
                 }
             };
             reader.readAsText(file);
         }
         
         function processUploadedFile() {
-            if (window.uploadedData) {
+            try {
+                // 显示全局加载动画
+                showLoadingOverlay('正在导入数据...');
+                
+                if (!window.uploadedData) {
+                    showAlert('没有待上传的数据', 'warning');
+                    addLogEntry('上传失败', LOG_TYPES.WARNING, '没有待上传的数据');
+                    hideLoadingOverlay();
+                    return;
+                }
+                
+                // 验证数据完整性
+                if (!validateNavData(window.uploadedData)) {
+                    showAlert('数据结构验证失败，请检查文件格式', 'danger');
+                    addLogEntry('数据验证失败', LOG_TYPES.ERROR, '数据结构不符合要求');
+                    hideLoadingOverlay();
+                    return;
+                }
+                
                 navData = window.uploadedData;
                 updateVersionDisplay();
                 renderTabs();
                 renderSpecialSites();
                 updateSpecialSectionVisibility();
-                uploadModal.hide();
-                showAlert('JSON文件已成功上传并加载', 'success');
-                // 显示上传标识
-                showDataSourceIndicator('upload');
-                delete window.uploadedData;
+                
+                // 隐藏进度条
+                document.getElementById('uploadProgressContainer').classList.add('d-none');
+                
+                // 重置文件输入
                 jsonFileInput.value = '';
                 fileInfo.classList.add('d-none');
                 confirmUpload.disabled = true;
+                
+                // 初始化拖拽功能
+                setTimeout(() => {
+                    initSiteDragAndDrop();
+                    initTabDragAndDrop();
+                    
+                    // 隐藏模态框和加载动画
+                    uploadModal.hide();
+                    hideLoadingOverlay();
+                    
+                    showAlert('JSON文件已成功上传并加载', 'success');
+                    addLogEntry('JSON文件导入成功', LOG_TYPES.SUCCESS, `版本: ${navData.version?.web_vol || '未知'}`);
+                    // 显示上传标识
+                    showDataSourceIndicator('upload');
+                    delete window.uploadedData;
+                }, 500);
+            } catch (error) {
+                hideLoadingOverlay();
+                showAlert(`上传过程中发生错误: ${error.message}`, 'danger');
+                addLogEntry('上传过程出错', LOG_TYPES.ERROR, `错误: ${error.message}`);
+                console.error('上传处理错误:', error);
             }
         }
         
@@ -1302,19 +1421,43 @@
             // 添加拖拽样式
             this.classList.add('dragging');
             
+            // 创建拖拽时的视觉指示器
+            const dragImage = this.cloneNode(true);
+            dragImage.style.position = 'absolute';
+            dragImage.style.left = '-9999px';
+            dragImage.style.top = '-9999px';
+            dragImage.style.opacity = '0.8';
+            dragImage.style.width = this.offsetWidth + 'px';
+            document.body.appendChild(dragImage);
+            
+            // 设置拖拽图像
+            e.dataTransfer.setDragImage(dragImage, this.offsetWidth / 2, this.offsetHeight / 2);
+            
             // 设置拖拽数据
             const tabIndex = this.getAttribute('data-tab-index');
             e.dataTransfer.setData('text/plain', JSON.stringify({
                 type: 'tab',
                 tabIndex: parseInt(tabIndex)
             }));
+            
+            // 添加动画类
+            this.classList.add('drag-start');
         }
         
         // 处理选项卡拖拽结束
         function handleTabDragEnd() {
             // 移除所有拖拽相关样式
-            document.querySelectorAll('.nav-item.dragging, .nav-item.drag-over').forEach(el => {
-                el.classList.remove('dragging', 'drag-over');
+            document.querySelectorAll('.nav-item.dragging, .nav-item.drag-over, .nav-item.drag-start').forEach(el => {
+                el.classList.remove('dragging', 'drag-over', 'drag-start');
+            });
+            
+            // 移除拖拽占位符
+            const placeholder = document.getElementById('tab-placeholder');
+            if (placeholder) placeholder.remove();
+            
+            // 移除拖拽图像
+            document.querySelectorAll('[style*="left: -9999px"]').forEach(el => {
+                if (el.parentNode === document.body) el.remove();
             });
         }
         
@@ -1327,6 +1470,23 @@
                     const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
                     if (dragData.type === 'tab') {
                         this.classList.add('drag-over');
+                        
+                        // 创建并移动占位符
+                        let placeholder = document.getElementById('tab-placeholder');
+                        if (!placeholder) {
+                            placeholder = document.createElement('li');
+                            placeholder.id = 'tab-placeholder';
+                            placeholder.className = 'nav-item tab-placeholder';
+                            placeholder.style.height = this.offsetHeight + 'px';
+                            placeholder.style.width = this.offsetWidth + 'px';
+                            placeholder.style.opacity = '0.7';
+                            placeholder.style.backgroundColor = '#0d6efd';
+                            placeholder.style.margin = this.style.margin;
+                            placeholder.style.borderRadius = '0.375rem';
+                        }
+                        
+                        // 插入占位符到当前元素位置
+                        this.parentNode.insertBefore(placeholder, this);
                     }
                 } catch (error) {
                     // 忽略数据解析错误
@@ -1368,14 +1528,24 @@
                         
                         // 执行拖拽排序
                         reorderTabs(dragData.tabIndex, targetTabIndex);
+                        
+                        // 显示成功提示
+                        showToast('选项卡排序成功', 'success');
+                        
+                        // 记录用户操作日志
+                        logUserAction('reorder_tabs', {
+                            fromIndex: dragData.tabIndex,
+                            toIndex: targetTabIndex
+                        });
                     }
                 }
             } catch (error) {
                 console.error('选项卡拖拽处理失败:', error);
+                showToast('重新排序失败', 'error');
+            } finally {
+                // 清理拖拽样式
+                handleTabDragEnd();
             }
-            
-            // 清理拖拽样式
-            handleTabDragEnd();
         }
         
         // 重新排序选项卡
@@ -1420,6 +1590,18 @@
             // 添加拖拽样式
             this.classList.add('dragging');
             
+            // 创建拖拽时的视觉指示器
+            const dragImage = this.cloneNode(true);
+            dragImage.style.position = 'absolute';
+            dragImage.style.left = '-9999px';
+            dragImage.style.top = '-9999px';
+            dragImage.style.opacity = '0.8';
+            dragImage.style.width = this.offsetWidth + 'px';
+            document.body.appendChild(dragImage);
+            
+            // 设置拖拽图像
+            e.dataTransfer.setDragImage(dragImage, this.offsetWidth / 2, this.offsetHeight / 2);
+            
             // 设置拖拽数据
             const tabIndex = this.getAttribute('data-tab-index');
             const siteIndex = this.getAttribute('data-site-index');
@@ -1428,13 +1610,25 @@
                 tabIndex: parseInt(tabIndex),
                 siteIndex: parseInt(siteIndex)
             }));
+            
+            // 添加动画类
+            this.classList.add('drag-start');
         }
         
         // 处理网站拖拽结束
         function handleSiteDragEnd() {
             // 移除所有拖拽相关样式
-            document.querySelectorAll('.site-card.dragging, .site-card.drag-over').forEach(el => {
-                el.classList.remove('dragging', 'drag-over');
+            document.querySelectorAll('.site-card.dragging, .site-card.drag-over, .site-card.drag-start').forEach(el => {
+                el.classList.remove('dragging', 'drag-over', 'drag-start');
+            });
+            
+            // 移除拖拽占位符
+            const placeholder = document.getElementById('site-placeholder');
+            if (placeholder) placeholder.remove();
+            
+            // 移除拖拽图像
+            document.querySelectorAll('[style*="left: -9999px"]').forEach(el => {
+                if (el.parentNode === document.body) el.remove();
             });
         }
         
@@ -1447,6 +1641,23 @@
                     const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
                     if (dragData.type === 'site') {
                         this.classList.add('drag-over');
+                        
+                        // 创建并移动占位符
+                        let placeholder = document.getElementById('site-placeholder');
+                        if (!placeholder) {
+                            placeholder = document.createElement('div');
+                            placeholder.id = 'site-placeholder';
+                            placeholder.className = 'site-card site-placeholder';
+                            placeholder.style.height = this.offsetHeight + 'px';
+                            placeholder.style.width = this.offsetWidth + 'px';
+                            placeholder.style.opacity = '0.7';
+                            placeholder.style.backgroundColor = '#0d6efd';
+                            placeholder.style.margin = this.style.margin;
+                            placeholder.style.borderRadius = '8px';
+                        }
+                        
+                        // 插入占位符到当前元素位置
+                        this.parentNode.insertBefore(placeholder, this);
                     }
                 } catch (error) {
                     // 忽略数据解析错误
@@ -1493,23 +1704,35 @@
                         if (dragData.tabIndex === targetTabIndex) {
                             // 同一个选项卡内排序
                             reorderSitesWithinTab(dragData.tabIndex, dragData.siteIndex, targetSiteIndex);
+                            showToast('网站重新排序成功', 'success');
                         } else {
                             // 跨选项卡移动
                             moveSiteBetweenTabs(dragData.tabIndex, dragData.siteIndex, targetTabIndex, targetSiteIndex);
+                            showToast('网站移动成功', 'success');
                         }
+                        
+                        // 记录用户操作日志
+                        logUserAction('reorder_sites', {
+                            fromTabIndex: dragData.tabIndex,
+                            fromSiteIndex: dragData.siteIndex,
+                            toTabIndex: targetTabIndex,
+                            toSiteIndex: targetSiteIndex
+                        });
                     } else {
                         // 放置在容器空白处，移动到选项卡末尾
                         if (dragData.tabIndex !== targetTabIndex) {
                             moveSiteBetweenTabs(dragData.tabIndex, dragData.siteIndex, targetTabIndex);
+                            showToast('网站移动成功', 'success');
                         }
                     }
                 }
             } catch (error) {
                 console.error('拖拽处理失败:', error);
+                showToast('操作失败', 'error');
+            } finally {
+                // 清理拖拽样式
+                handleSiteDragEnd();
             }
-            
-            // 清理拖拽样式
-            handleSiteDragEnd();
         }
         
         // 在同一个选项卡内重新排序网站
@@ -1595,6 +1818,7 @@
                 .site-card {
                     cursor: move;
                     transition: all 0.2s ease;
+                    position: relative;
                 }
                 
                 .site-card:hover {
@@ -1603,40 +1827,127 @@
                 }
                 
                 .site-card.dragging {
-                    opacity: 0.5;
-                    transform: scale(1.05);
+                    opacity: 0.7;
+                    transform: scale(1.05) rotate(2deg);
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                    background-color: rgba(13, 110, 253, 0.1);
+                    z-index: 1000;
+                    animation: dragPulse 1s ease-in-out infinite;
                 }
                 
                 .site-card.drag-over {
                     border: 2px dashed #0d6efd;
-                    background-color: rgba(13, 110, 253, 0.05);
-                    transform: scale(1.02);
+                    background-color: rgba(13, 110, 253, 0.15);
+                    transform: scale(1.03);
+                    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.3);
+                    position: relative;
+                }
+                
+                .site-card.drag-over::after {
+                    content: '';
+                    position: absolute;
+                    inset: -5px;
+                    border: 2px solid transparent;
+                    border-radius: 8px;
+                    background: linear-gradient(90deg, #0d6efd, transparent, #0d6efd) border-box;
+                    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+                    mask-composite: exclude;
+                    pointer-events: none;
+                    animation: borderShine 2s linear infinite;
                 }
                 
                 /* 选项卡拖拽样式 */
                 .nav-item[data-drag-type="tab"] {
                     cursor: move;
                     transition: all 0.2s ease;
+                    position: relative;
+                    padding: 0.5rem 1rem;
+                    border-radius: 0.375rem;
+                }
+                
+                .nav-item[data-drag-type="tab"]:hover {
+                    background-color: rgba(13, 110, 253, 0.05);
                 }
                 
                 .nav-item.dragging {
-                    opacity: 0.5;
-                    transform: scale(1.05);
+                    opacity: 0.7;
+                    transform: scale(1.05) translateY(-3px);
+                    background-color: rgba(13, 110, 253, 0.2);
+                    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+                    z-index: 1000;
+                    animation: dragPulse 1s ease-in-out infinite;
                 }
                 
                 .nav-item.drag-over {
                     border: 2px dashed #0d6efd;
-                    background-color: rgba(13, 110, 253, 0.05);
+                    background-color: rgba(13, 110, 253, 0.15);
+                    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.3);
                 }
                 
                 /* 站点容器拖拽样式 */
                 .sites-container {
                     min-height: 100px;
-                    transition: background-color 0.2s ease;
+                    transition: all 0.2s ease;
+                    border-radius: 0.375rem;
+                    padding: 0.5rem;
                 }
                 
                 .sites-container.drag-over {
-                    background-color: rgba(13, 110, 253, 0.05);
+                    background-color: rgba(13, 110, 253, 0.15);
+                    border: 2px dashed #0d6efd;
+                    box-shadow: inset 0 0 0 2px rgba(13, 110, 253, 0.2);
+                }
+                
+                /* 动画效果 */
+                @keyframes dragPulse {
+                    0%, 100% { transform: scale(1.05); }
+                    50% { transform: scale(1.08); }
+                }
+                
+                @keyframes borderShine {
+                    0% { background-position: 0% 0%; }
+                    100% { background-position: 200% 0%; }
+                }
+                
+                /* 拖拽开始动画 */
+                .drag-start {
+                    animation: dragStart 0.3s ease-out;
+                }
+                
+                @keyframes dragStart {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.08); }
+                    100% { transform: scale(1.05); }
+                }
+                
+                /* 拖拽占位符样式 */
+                .tab-placeholder {
+                    border-radius: 0.375rem;
+                    transition: all 0.2s ease;
+                    animation: placeholderPulse 1.5s ease-in-out infinite;
+                }
+                
+                .site-placeholder {
+                    border-radius: 8px;
+                    transition: all 0.2s ease;
+                    animation: placeholderPulse 1.5s ease-in-out infinite;
+                }
+                
+                @keyframes placeholderPulse {
+                    0%, 100% { opacity: 0.7; }
+                    50% { opacity: 0.5; }
+                }
+                
+                /* 跨选项卡拖拽指示器 */
+                .sites-container.drag-over::before {
+                    content: '放置到此处';
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100%;
+                    color: #0d6efd;
+                    font-weight: bold;
+                    font-size: 1.1rem;
                 }
             `;
             document.head.appendChild(style);
@@ -2503,31 +2814,536 @@
         
         function saveNavData() {
             try {
+                // 保存前先验证数据
+                const validationErrors = validateNavData(navData);
+                
+                if (validationErrors.length > 0) {
+                    // 尝试自动修复
+                    const repairResult = repairNavData(navData);
+                    
+                    // 显示修复结果
+                    showAlert(`发现${validationErrors.length}个数据结构问题，已自动修复${repairResult.repairs.length}处，现在保存数据`, 'info');
+                    
+                    // 记录修复信息
+                    addLogEntry('保存前数据验证失败，已自动修复', LOG_TYPES.INFO, 
+                        `问题: ${validationErrors.length}个\n修复: ${repairResult.repairs.length}处\n修复详情: ${repairResult.repairs.join('\n')}`);
+                    
+                    // 使用修复后的数据
+                    navData = repairResult.data;
+                }
+                
+                // 序列化数据为JSON
+                let dataStr;
+                try {
+                    dataStr = JSON.stringify(navData, null, 2);
+                } catch (stringifyError) {
+                    throw new Error(`数据序列化失败: ${stringifyError.message}`);
+                }
+                
                 // 创建下载链接
-                const dataStr = JSON.stringify(navData, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = 'nav-data.json';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // 重置数据修改状态
-                resetDataChanged();
-                
-                showAlert('导航数据已保存并准备好下载', 'success');
-                
-                // 记录保存操作
-                addLogEntry('数据保存成功', LOG_TYPES.SUCCESS, '导航数据已导出为JSON文件');
+                try {
+                    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(dataBlob);
+                    
+                    // 生成带时间戳的文件名
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                    link.download = `nav-data-${timestamp}.json`;
+                    
+                    document.body.appendChild(link);
+                    link.click();
+                    
+                    // 清理
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(link.href);
+                    }, 100);
+                    
+                    // 重置数据修改状态
+                    resetDataChanged();
+                    
+                    showAlert('导航数据已保存并准备好下载', 'success');
+                    
+                    // 记录保存操作
+                    addLogEntry('数据保存成功', LOG_TYPES.SUCCESS, '导航数据已导出为JSON文件');
+                } catch (downloadError) {
+                    // 如果下载失败，提供备选方案 - 将JSON复制到剪贴板
+                    try {
+                        navigator.clipboard.writeText(dataStr)
+                            .then(() => {
+                                showAlert('由于浏览器限制无法直接下载文件，但已将数据复制到剪贴板，请手动保存', 'warning');
+                                addLogEntry('数据保存为剪贴板内容', LOG_TYPES.WARNING, '下载失败，已复制到剪贴板');
+                            })
+                            .catch(() => {
+                                // 如果剪贴板也失败，显示原始数据在模态框
+                                showJsonPreviewModal(dataStr);
+                            });
+                    } catch (clipboardError) {
+                        throw new Error(`保存失败: ${downloadError.message}\n备选方法也失败: ${clipboardError.message}`);
+                    }
+                }
             } catch (e) {
                 console.error('保存数据时出错:', e);
-                showAlert('保存数据时出错', 'danger');
+                showAlert('保存数据时出错: ' + e.message, 'danger');
                 
-                // 记录保存失败
-                addLogEntry('数据保存失败', LOG_TYPES.ERROR, e.message);
+                // 记录详细错误信息
+                addLogEntry('数据保存失败', LOG_TYPES.ERROR, JSON.stringify({
+                    message: e.message,
+                    stack: e.stack,
+                    dataSize: navData ? JSON.stringify(navData).length : 'unknown',
+                    timestamp: new Date().toISOString()
+                }, null, 2));
             }
         }
+        
+        // 完整的导航数据验证函数
+        function validateNavData(data) {
+            const errors = [];
+            
+            // 检查数据是否为对象
+            if (!data || typeof data !== 'object') {
+                errors.push('数据必须是一个有效的JSON对象');
+                return errors;
+            }
+            
+            // 检查必要的顶层字段
+            if (!data.version) {
+                errors.push('缺少必要的version字段');
+            } else if (typeof data.version !== 'object') {
+                errors.push('version字段必须是一个对象');
+            } else {
+                // 检查版本字段结构
+                if (!data.version.web_vol) {
+                    errors.push('缺少必要的version.web_vol字段');
+                } else if (typeof data.version.web_vol !== 'string') {
+                    errors.push('version.web_vol必须是一个字符串');
+                }
+            }
+            
+            // 检查至少有一个页面数据
+            const hasPages = Object.keys(data).some(key => key !== 'version' && 
+                                                     typeof data[key] === 'object' && 
+                                                     data[key].tabs);
+            
+            if (!hasPages) {
+                errors.push('数据中必须包含至少一个有效的页面配置');
+            }
+            
+            // 对每个页面进行验证
+            Object.keys(data).forEach(pageKey => {
+                if (pageKey === 'version') return;
+                
+                const page = data[pageKey];
+                if (!page || typeof page !== 'object') return;
+                
+                // 验证选项卡配置
+                if (page.tabs) {
+                    if (!Array.isArray(page.tabs)) {
+                        errors.push(`页面 ${pageKey} 的tabs必须是一个数组`);
+                    } else {
+                        // 验证每个选项卡
+                        page.tabs.forEach((tab, tabIndex) => {
+                            if (!tab) {
+                                errors.push(`页面 ${pageKey} 的选项卡 ${tabIndex + 1} 不能为空`);
+                                return;
+                            }
+                            
+                            if (!tab.name) {
+                                errors.push(`页面 ${pageKey} 的选项卡 ${tabIndex + 1} 缺少name字段`);
+                            } else if (typeof tab.name !== 'string' || tab.name.trim() === '') {
+                                errors.push(`页面 ${pageKey} 的选项卡 ${tabIndex + 1} 的name必须是非空字符串`);
+                            }
+                            
+                            // 验证选项卡中的网站
+                            if (tab.items) {
+                                if (!Array.isArray(tab.items)) {
+                                    errors.push(`页面 ${pageKey} 的选项卡 "${tab.name || tabIndex + 1}" 的items必须是一个数组`);
+                                } else {
+                                    tab.items.forEach((site, siteIndex) => {
+                                        if (!site) {
+                                            errors.push(`页面 ${pageKey} 的选项卡 "${tab.name || tabIndex + 1}" 中的网站 ${siteIndex + 1} 不能为空`);
+                                            return;
+                                        }
+                                        
+                                        const siteErrors = validateSiteData(site, pageKey, tab.name || tabIndex + 1, siteIndex + 1);
+                                        if (siteErrors.length > 0) {
+                                            errors.push(...siteErrors);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+                
+                // 验证特殊栏目（如果存在）
+                if (pageKey === 'more' && page.special && page.special.sites) {
+                    if (!Array.isArray(page.special.sites)) {
+                        errors.push('特殊栏目的sites必须是一个数组');
+                    } else {
+                        page.special.sites.forEach((site, siteIndex) => {
+                            if (!site) {
+                                errors.push(`特殊栏目中的网站 ${siteIndex + 1} 不能为空`);
+                                return;
+                            }
+                            
+                            const siteErrors = validateSiteData(site, '特殊栏目', '', siteIndex + 1);
+                            if (siteErrors.length > 0) {
+                                errors.push(...siteErrors);
+                            }
+                        });
+                    }
+                }
+            });
+            
+            return errors;
+        }
+        
+        // 验证单个网站数据
+        function validateSiteData(site, page, tab, index) {
+            const errors = [];
+            const siteIdentifier = site.name || index;
+            const locationInfo = `页面 ${page} ${tab ? '选项卡 "' + tab + '" ' : ''}中的网站 "${siteIdentifier}"`;
+            
+            // 确保site是对象
+            if (!site || typeof site !== 'object') {
+                errors.push(`${locationInfo} 数据不是有效的对象`);
+                return errors;
+            }
+            
+            // 验证name字段
+            if (!site.name) {
+                errors.push(`${locationInfo} 缺少name字段`);
+            } else if (typeof site.name !== 'string') {
+                errors.push(`${locationInfo} 的name字段必须是字符串类型`);
+            } else if (site.name.trim() === '') {
+                errors.push(`${locationInfo} 的name字段不能为空字符串`);
+            } else if (site.name.length > 100) {
+                errors.push(`${locationInfo} 的name字段长度不能超过100个字符（当前${site.name.length}个）`);
+            }
+            
+            // 验证url字段
+            if (!site.url) {
+                errors.push(`${locationInfo} 缺少url字段`);
+            } else if (typeof site.url !== 'string') {
+                errors.push(`${locationInfo} 的url字段必须是字符串类型`);
+            } else if (site.url.trim() === '') {
+                errors.push(`${locationInfo} 的url字段不能为空字符串`);
+            } else {
+                // 对URL进行格式验证
+                const urlErrors = checkSingleUrl(site.url);
+                if (urlErrors.length > 0) {
+                    errors.push(`${locationInfo} 的URL有错误: ${urlErrors.join(', ')}`);
+                }
+            }
+            
+            // 验证icon字段（如果存在）
+            if (site.icon !== undefined) {
+                if (typeof site.icon !== 'string') {
+                    errors.push(`${locationInfo} 的icon字段必须是字符串类型`);
+                } else if (site.icon.trim() !== '') {
+                    const iconErrors = checkSingleUrl(site.icon);
+                    if (iconErrors.length > 0) {
+                        errors.push(`${locationInfo} 的图标URL有错误: ${iconErrors.join(', ')}`);
+                    }
+                }
+            }
+            
+            // 验证color字段（如果存在）
+            if (site.color !== undefined) {
+                if (typeof site.color !== 'string') {
+                    errors.push(`${locationInfo} 的color字段必须是字符串类型`);
+                } else if (site.color.trim() !== '') {
+                    const colorRegex = /^#[0-9A-Fa-f]{6}$/;
+                    if (!colorRegex.test(site.color)) {
+                        errors.push(`${locationInfo} 的颜色格式无效，请使用十六进制格式（如 #123456）`);
+                    }
+                }
+            }
+            
+            // 验证id字段（如果存在）
+            if (site.id !== undefined) {
+                if (typeof site.id !== 'string') {
+                    errors.push(`${locationInfo} 的id字段必须是字符串类型`);
+                } else if (!/^[a-zA-Z0-9_-]+$/.test(site.id)) {
+                    errors.push(`${locationInfo} 的id只能包含字母、数字、下划线和连字符`);
+                } else if (site.id.length > 50) {
+                    errors.push(`${locationInfo} 的id长度不能超过50个字符`);
+                }
+            }
+            
+            // 验证description字段（如果存在）
+            if (site.description !== undefined && typeof site.description !== 'string') {
+                errors.push(`${locationInfo} 的description字段必须是字符串类型`);
+            } else if (site.description && site.description.length > 500) {
+                errors.push(`${locationInfo} 的description长度不能超过500个字符`);
+            }
+            
+            // 验证category字段（如果存在）
+            if (site.category !== undefined && typeof site.category !== 'string') {
+                errors.push(`${locationInfo} 的category字段必须是字符串类型`);
+            } else if (site.category && site.category.length > 50) {
+                errors.push(`${locationInfo} 的category长度不能超过50个字符`);
+            }
+            
+            // 验证tags字段（如果存在）
+            if (site.tags !== undefined && !Array.isArray(site.tags)) {
+                errors.push(`${locationInfo} 的tags字段必须是数组类型`);
+            } else if (site.tags) {
+                // 检查标签内容
+                for (let i = 0; i < site.tags.length; i++) {
+                    if (typeof site.tags[i] !== 'string') {
+                        errors.push(`${locationInfo} 的标签 ${i + 1} 必须是字符串类型`);
+                    } else if (site.tags[i].length > 30) {
+                        errors.push(`${locationInfo} 的标签 "${site.tags[i]}" 长度不能超过30个字符`);
+                    }
+                }
+            }
+            
+            return errors;
+        }
+        
+        // 数据修复函数
+        function repairNavData(data) {
+            const repairedData = JSON.parse(JSON.stringify(data)); // 深拷贝
+            const repairs = [];
+            
+            // 确保data是对象
+            if (!repairedData || typeof repairedData !== 'object') {
+                return { data: { version: { web_vol: '1.0.0', web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.') } }, 
+                         repairs: ['创建了全新的数据结构，原始数据无效'] };
+            }
+            
+            // 确保version对象存在
+            if (!repairedData.version || typeof repairedData.version !== 'object') {
+                repairedData.version = {};
+                repairs.push('创建了缺失的version对象');
+            }
+            
+            // 确保版本字段存在且为字符串类型
+            if (!repairedData.version.web_vol || typeof repairedData.version.web_vol !== 'string') {
+                repairedData.version.web_vol = '1.0.0';
+                repairs.push('添加/修复了缺失的version.web_vol字段，设置为默认值 "1.0.0"');
+            }
+            
+            if (!repairedData.version.web_data || typeof repairedData.version.web_data !== 'string') {
+                repairedData.version.web_data = new Date().toISOString().split('T')[0].replace(/-/g, '.');
+                repairs.push('添加/修复了缺失的version.web_data字段，设置为当前日期');
+            }
+            
+            // 修复每个页面的数据
+            Object.keys(repairedData).forEach(pageKey => {
+                // 跳过版本对象
+                if (pageKey === 'version') return;
+                
+                let pageData = repairedData[pageKey];
+                
+                // 确保页面数据是对象
+                if (!pageData || typeof pageData !== 'object') {
+                    pageData = { tabs: [] };
+                    repairedData[pageKey] = pageData;
+                    repairs.push(`页面 ${pageKey} 数据无效，创建了新的页面结构`);
+                }
+                
+                // 确保tabs数组存在
+                if (!pageData.tabs || !Array.isArray(pageData.tabs)) {
+                    pageData.tabs = [];
+                    repairs.push(`页面 ${pageKey} 缺少tabs数组，已创建`);
+                }
+                
+                // 修复每个选项卡
+                pageData.tabs.forEach((tab, tabIndex) => {
+                    // 确保选项卡有名称
+                    if (!tab.name || tab.name.trim() === '') {
+                        tab.name = `未命名选项卡 ${tabIndex + 1}`;
+                        repairs.push(`页面 ${pageKey} 选项卡 ${tabIndex + 1} 缺少名称，已设置为默认名称`);
+                    }
+                    
+                    // 确保items数组存在
+                    if (!tab.items || !Array.isArray(tab.items)) {
+                        tab.items = [];
+                        repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 缺少items数组，已创建`);
+                    }
+                    
+                    // 修复每个网站
+                    tab.items.forEach((site, siteIndex) => {
+                        if (!site || typeof site !== 'object') {
+                            // 如果网站数据无效，替换为基本结构
+                            tab.items[siteIndex] = {
+                                name: `未命名网站 ${siteIndex + 1}`,
+                                url: '#'
+                            };
+                            repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 ${siteIndex + 1} 数据无效，已重置`);
+                            return;
+                        }
+                        
+                        // 修复name字段
+                        if (!site.name || typeof site.name !== 'string' || site.name.trim() === '') {
+                            site.name = `未命名网站 ${siteIndex + 1}`;
+                            repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 ${siteIndex + 1} 缺少有效名称，已设置为默认名称`);
+                        } else if (site.name.length > 100) {
+                            site.name = site.name.substring(0, 97) + '...';
+                            repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name.substring(0, 20)}..." 名称过长，已截断`);
+                        }
+                        
+                        // 修复url字段
+                        if (!site.url || typeof site.url !== 'string' || site.url.trim() === '') {
+                            site.url = '#';
+                            repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 缺少URL，已设置为占位符`);
+                        } else {
+                            // 尝试修复URL格式
+                            const urlErrors = checkSingleUrl(site.url);
+                            if (urlErrors.length > 0) {
+                                // 尝试修复URL
+                                const fixedUrl = fixUrl(site.url);
+                                if (fixedUrl !== site.url) {
+                                    site.url = fixedUrl;
+                                    repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" URL已自动修复`);
+                                }
+                            }
+                        }
+                        
+                        // 修复icon字段（如果存在）
+                        if (site.icon !== undefined) {
+                            if (typeof site.icon !== 'string') {
+                                delete site.icon;
+                                repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" icon字段类型错误，已移除`);
+                            } else if (site.icon.trim() !== '') {
+                                const iconErrors = checkSingleUrl(site.icon);
+                                if (iconErrors.length > 0) {
+                                    delete site.icon;
+                                    repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 图标URL格式错误，已移除`);
+                                }
+                            }
+                        }
+                        
+                        // 修复color字段（如果存在）
+                        if (site.color !== undefined) {
+                            if (typeof site.color !== 'string') {
+                                delete site.color;
+                                repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" color字段类型错误，已移除`);
+                            } else if (site.color.trim() !== '') {
+                                const colorRegex = /^#[0-9A-Fa-f]{6}$/;
+                                if (!colorRegex.test(site.color)) {
+                                    delete site.color;
+                                    repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 颜色格式错误，已移除`);
+                                }
+                            }
+                        }
+                        
+                        // 修复id字段（如果存在）
+                        if (site.id !== undefined) {
+                            if (typeof site.id !== 'string') {
+                                delete site.id;
+                                repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" id字段类型错误，已移除`);
+                            } else {
+                                // 清理无效字符
+                                const cleanedId = site.id.replace(/[^a-zA-Z0-9_-]/g, '');
+                                if (cleanedId !== site.id) {
+                                    site.id = cleanedId;
+                                    repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" id包含无效字符，已清理`);
+                                }
+                                // 截断过长的id
+                                if (site.id.length > 50) {
+                                    site.id = site.id.substring(0, 50);
+                                    repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" id过长，已截断`);
+                                }
+                                // 如果id为空，移除
+                                if (site.id === '') {
+                                    delete site.id;
+                                }
+                            }
+                        }
+                        
+                        // 修复description字段（如果存在）
+                        if (site.description !== undefined) {
+                            if (typeof site.description !== 'string') {
+                                delete site.description;
+                                repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" description字段类型错误，已移除`);
+                            } else if (site.description.length > 500) {
+                                site.description = site.description.substring(0, 497) + '...';
+                                repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 描述过长，已截断`);
+                            }
+                        }
+                        
+                        // 修复category字段（如果存在）
+                        if (site.category !== undefined) {
+                            if (typeof site.category !== 'string') {
+                                delete site.category;
+                                repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" category字段类型错误，已移除`);
+                            } else if (site.category.length > 50) {
+                                site.category = site.category.substring(0, 47) + '...';
+                                repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 类别过长，已截断`);
+                            }
+                        }
+                        
+                        // 修复tags字段（如果存在）
+                        if (site.tags !== undefined) {
+                            if (!Array.isArray(site.tags)) {
+                                delete site.tags;
+                                repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" tags字段类型错误，已移除`);
+                            } else {
+                                // 过滤和修复标签
+                                const originalLength = site.tags.length;
+                                site.tags = site.tags.filter(tag => {
+                                    if (typeof tag === 'string' && tag.trim() !== '') {
+                                        return true;
+                                    }
+                                    repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 移除了无效标签`);
+                                    return false;
+                                });
+                                
+                                // 修复过长的标签
+                                site.tags = site.tags.map(tag => {
+                                    if (tag.length > 30) {
+                                        repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 标签过长，已截断`);
+                                        return tag.substring(0, 27) + '...';
+                                    }
+                                    return tag;
+                                });
+                            }
+                        }
+                    });
+                    
+                    // 移除重复的网站
+                    const siteNames = new Set();
+                    const uniqueSites = [];
+                    tab.items.forEach(site => {
+                        if (!siteNames.has(site.name)) {
+                            siteNames.add(site.name);
+                            uniqueSites.push(site);
+                        }
+                    });
+                    
+                    if (uniqueSites.length < tab.items.length) {
+                        tab.items = uniqueSites;
+                        repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 移除了重复的网站`);
+                    }
+                });
+                
+                // 移除空选项卡
+                const nonEmptyTabs = pageData.tabs.filter(tab => 
+                    tab && tab.items && tab.items.length > 0
+                );
+                
+                if (nonEmptyTabs.length < pageData.tabs.length) {
+                    pageData.tabs = nonEmptyTabs;
+                    repairs.push(`页面 ${pageKey} 移除了空选项卡`);
+                }
+                
+                // 如果页面没有选项卡，创建一个默认选项卡
+                if (pageData.tabs.length === 0) {
+                    pageData.tabs.push({
+                        name: '默认选项卡',
+                        items: []
+                    });
+                    repairs.push(`页面 ${pageKey} 缺少选项卡，已创建默认选项卡`);
+                }
+            });
+            
+            return { data: repairedData, repairs };
+        }
+        // 原始函数实现已被完全替换为上面的新版本
         
         function processUploadedFile() {
             const file = jsonFileInput.files[0];
@@ -2536,44 +3352,106 @@
                 return;
             }
             
+            // 文件类型验证
+            const validExtensions = ['json'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(fileExtension)) {
+                showAlert('请选择JSON格式的文件', 'danger');
+                addLogEntry('文件类型错误', LOG_TYPES.ERROR, `文件名: ${file.name}, 类型: ${fileExtension}, 支持的类型: ${validExtensions.join(', ')}`);
+                return;
+            }
+            
+            // 文件大小验证
+            const maxFileSize = 1 * 1024 * 1024; // 1MB
+            if (file.size > maxFileSize) {
+                showAlert('文件大小不能超过1MB', 'danger');
+                addLogEntry('文件大小超限', LOG_TYPES.ERROR, `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB, 最大允许: ${(maxFileSize / 1024).toFixed(0)} KB`);
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const uploadedData = JSON.parse(e.target.result);
-                    
-                    // 验证数据结构
-                    if (!uploadedData.version || !uploadedData.index) {
-                        throw new Error('无效的JSON结构');
+                    // JSON解析错误处理
+                    let uploadedData;
+                    try {
+                        uploadedData = JSON.parse(e.target.result);
+                    } catch (parseError) {
+                        let errorDetail = parseError.message;
+                        // 提供更详细的解析错误信息
+                        if (errorDetail.includes('Unexpected token')) {
+                            const lineNumber = e.target.result.substring(0, parseError.position).split('\n').length;
+                            errorDetail += ` (第${lineNumber}行)`;
+                        }
+                        throw new Error(`JSON解析失败: ${errorDetail}`);
                     }
                     
+                    // 数据验证
+                    const validationErrors = validateNavData(uploadedData);
+                    
+                    // 处理验证错误
+                    if (validationErrors.length > 0) {
+                        // 尝试自动修复
+                        const repairResult = repairNavData(uploadedData);
+                        
+                        // 显示修复结果并确认是否使用修复后的数据
+                        const errorMessage = `发现${validationErrors.length}个数据结构错误，已尝试自动修复${repairResult.repairs.length}处`;
+                        showAlert(errorMessage, 'warning');
+                        
+                        // 记录修复信息
+                        addLogEntry('数据验证失败但已尝试修复', LOG_TYPES.WARNING, 
+                            `错误: ${validationErrors.length}个\n修复: ${repairResult.repairs.length}处\n修复详情: ${repairResult.repairs.join('\n')}`);
+                        
+                        // 使用修复后的数据
+                        uploadedData = repairResult.data;
+                    }
+                    
+                    // 使用验证/修复后的数据
                     navData = uploadedData;
-                    renderTabs();
-                    renderSpecialSites();
-                    updateVersionDisplay();
-                    updateSpecialSectionVisibility();
                     
-                    // 初始化拖拽功能
-                    setTimeout(() => {
-                        initSiteDragAndDrop();
-                        initTabDragAndDrop();
-                    }, 100);
-                    uploadModal.hide();
-                    showAlert('JSON文件上传成功', 'success');
-                    
-                    // 记录上传成功
-                    addLogEntry('JSON文件上传成功', LOG_TYPES.SUCCESS, `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
+                    // 更新界面
+                    try {
+                        renderTabs();
+                        renderSpecialSites();
+                        updateVersionDisplay();
+                        updateSpecialSectionVisibility();
+                        
+                        // 初始化拖拽功能
+                        setTimeout(() => {
+                            initSiteDragAndDrop();
+                            initTabDragAndDrop();
+                        }, 100);
+                        
+                        uploadModal.hide();
+                        showAlert('JSON文件上传成功', 'success');
+                        
+                        // 记录上传成功
+                        addLogEntry('JSON文件上传成功', LOG_TYPES.SUCCESS, 
+                            `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
+                    } catch (renderError) {
+                        throw new Error(`数据上传成功，但渲染界面时出错: ${renderError.message}`);
+                    }
                 } catch (error) {
-                    console.error('解析JSON文件失败:', error);
-                    showAlert('解析JSON文件失败: ' + error.message, 'danger');
+                    console.error('处理上传文件失败:', error);
+                    showAlert('处理上传文件失败: ' + error.message, 'danger');
                     
-                    // 记录上传失败
-                    addLogEntry('JSON文件上传失败', LOG_TYPES.ERROR, `文件名: ${file.name}, 错误: ${error.message}`);
+                    // 记录详细错误信息
+                    const errorDetails = {
+                        message: error.message,
+                        stack: error.stack,
+                        fileName: file.name,
+                        fileSize: (file.size / 1024).toFixed(2) + ' KB',
+                        timestamp: new Date().toISOString()
+                    };
+                    addLogEntry('文件处理失败', LOG_TYPES.ERROR, JSON.stringify(errorDetails, null, 2));
                 }
             };
             
-            reader.onerror = function() {
-                showAlert('读取文件失败', 'danger');
-                addLogEntry('文件读取失败', LOG_TYPES.ERROR, `文件名: ${file.name}`);
+            reader.onerror = function(error) {
+                const errorMessage = '读取文件失败: ' + (error.target.error ? error.target.error.message : '未知错误');
+                showAlert(errorMessage, 'danger');
+                addLogEntry('文件读取失败', LOG_TYPES.ERROR, 
+                    `文件名: ${file.name}, 错误: ${error.target.error ? error.target.error.name : 'unknown'}`);
             };
             
             reader.readAsText(file);
@@ -3339,6 +4217,19 @@
         
         // 页面加载时添加初始日志
         addLogEntry('导航数据管理系统已启动', LOG_TYPES.INFO, '系统初始化完成');
+        
+        // PWA Service Worker注册
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../../service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker 注册成功:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker 注册失败:', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
