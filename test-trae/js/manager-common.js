@@ -220,6 +220,45 @@ class ManagerCommon {
                 style.backgroundColor = 'var(--bg-primary)';
             }
         });
+        
+        // 处理特定区域的文本颜色 - 确保深色主题下文本变为浅色
+        if (isDark) {
+            // 处理页面选择器区域的文本
+            const pageSelector = document.querySelector('.bg-light.rounded.p-3 h5');
+            if (pageSelector) {
+                pageSelector.style.color = 'var(--text-primary)';
+            }
+            
+            // 处理功能卡片中的标题和描述
+            const featureCards = document.querySelectorAll('.feature-card h5, .feature-card p');
+            featureCards.forEach(card => {
+                card.style.color = 'var(--text-primary)';
+            });
+            
+            // 处理版本信息区域的文本
+            const versionInfo = document.querySelectorAll('.version-info h5, .version-info .badge');
+            versionInfo.forEach(info => {
+                info.style.color = 'var(--text-primary)';
+            });
+            
+            // 处理管理器卡片标题
+            const managerCardHeaders = document.querySelectorAll('.manager-card-header span');
+            managerCardHeaders.forEach(header => {
+                header.style.color = 'var(--text-primary)';
+            });
+            
+            // 处理所有h5标题元素
+            const h5Elements = document.querySelectorAll('h5');
+            h5Elements.forEach(h5 => {
+                h5.style.color = 'var(--text-primary)';
+            });
+            
+            // 处理所有p段落元素
+            const pElements = document.querySelectorAll('p');
+            pElements.forEach(p => {
+                p.style.color = 'var(--text-primary)';
+            });
+        }
     }
 
     // 更新主题图标
