@@ -228,6 +228,20 @@ body {
 
 .manager-nav-button i {
     font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 确保版本管理系统中的图标大小与其他管理系统一致 */
+.manager-nav a[href="vol-manager.html"] i,
+.manager-nav a[href="MM-generator.html"] i,
+.manager-nav a[href="nav-manager.html"] i {
+    font-size: 1.1rem !important;
+    width: 1.1rem !important;
+    height: 1.1rem !important;
 }
 
 /* 管理页面导航栏 - 响应式 */
