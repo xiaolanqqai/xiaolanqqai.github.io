@@ -66,8 +66,20 @@ class ManagerCommon {
         document.documentElement.setAttribute('data-theme', finalTheme);
         this.updateThemeIcon();
         
-        // 应用主题颜色转换
-        this.applyThemeColors(finalTheme);
+        // 确保在DOM完全加载后应用主题颜色转换，特别是对返回首页按钮
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            // DOM已加载或正在加载中，应用主题颜色
+            setTimeout(() => {
+                this.applyThemeColors(finalTheme);
+            }, 0);
+        } else {
+            // 等待DOM加载完成
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => {
+                    this.applyThemeColors(finalTheme);
+                }, 0);
+            });
+        }
     }
 
     // 切换主题
