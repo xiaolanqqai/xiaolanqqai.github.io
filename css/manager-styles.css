@@ -194,10 +194,17 @@ body {
     gap: 10px;
     padding: 15px;
     background-color: var(--bg-secondary);
-    border-radius: var(--border-radius);
+    border-radius: 0;
     margin-bottom: 20px;
     flex-wrap: wrap;
     justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
 }
 
 .manager-nav-button {
@@ -317,6 +324,7 @@ body {
 
 /* 主容器 */
 .container-main {
+    padding-top: 100px;
     padding-bottom: 40px;
 }
 
