@@ -164,6 +164,53 @@
             color: #6c757d;
             white-space: pre-wrap;
         }
+        
+        /* 密码输入样式 */
+        .password-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .password-input.filled {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        /* 图案按钮样式 */
+        .pattern-btn {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pattern-btn:hover {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+        
+        .pattern-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 图案按钮内的SVG样式 */
+        .pattern-btn svg {
+            width: 40px;
+            height: 40px;
+        }
     </style>
 </head>
 <body class="manager-body d-flex flex-column min-vh-100 p-3">
@@ -198,6 +245,97 @@
             <p class="lead mb-0">上传、编辑并下载HTML文件</p>
         </header>
         
+        <!-- 解密模态框 -->
+        <div class="modal fade" id="decryptModal" tabindex="-1" aria-labelledby="decryptModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="decryptModalLabel">文件解密</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="decryptPassword" class="form-label">请输入四位数图案密码：</label>
+                            <div class="password-input-container d-flex justify-content-center align-items-center gap-3 mb-4">
+                                <div class="password-input" id="decryptPassword1"></div>
+                                <div class="password-input" id="decryptPassword2"></div>
+                                <div class="password-input" id="decryptPassword3"></div>
+                                <div class="password-input" id="decryptPassword4"></div>
+                            </div>
+                            <div class="pattern-buttons d-flex justify-content-center gap-3">
+                                <button class="pattern-btn" id="patternA">
+                                    <svg width="40" height="40" viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                </button>
+                                <button class="pattern-btn" id="patternB">
+                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 30,30 10,30" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                </button>
+                                <button class="pattern-btn" id="patternC">
+                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 30,20 20,30 10,20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                </button>
+                                <button class="pattern-btn" id="patternD">
+                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 25,18 33,20 27,26 28,34 20,30 12,34 13,26 7,20 15,18" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                </button>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-secondary" id="clearDecryptPassword">清空</button>
+                            </div>
+                            <div class="text-danger mt-3 text-center" id="decryptError"></div>
+                            <div class="text-warning mt-3 text-center" id="decryptWarning"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="confirmDecrypt">确认解密</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 加密模态框 -->
+        <div class="modal fade" id="encryptModal" tabindex="-1" aria-labelledby="encryptModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="encryptModalLabel">文件加密</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="encryptPassword" class="form-label">请输入四位数图案密码：</label>
+                            <div class="password-input-container d-flex justify-content-center align-items-center gap-3 mb-4">
+                                <div class="password-input" id="encryptPassword1"></div>
+                                <div class="password-input" id="encryptPassword2"></div>
+                                <div class="password-input" id="encryptPassword3"></div>
+                                <div class="password-input" id="encryptPassword4"></div>
+                            </div>
+                            <div class="pattern-buttons d-flex justify-content-center gap-3">
+                                <button class="pattern-btn" id="encryptPatternA">
+                                    <svg width="40" height="40" viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                </button>
+                                <button class="pattern-btn" id="encryptPatternB">
+                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 30,30 10,30" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                </button>
+                                <button class="pattern-btn" id="encryptPatternC">
+                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 30,20 20,30 10,20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                </button>
+                                <button class="pattern-btn" id="encryptPatternD">
+                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 25,18 33,20 27,26 28,34 20,30 12,34 13,26 7,20 15,18" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                </button>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-secondary" id="clearEncryptPassword">清空</button>
+                            </div>
+                            <div class="text-danger mt-3 text-center" id="encryptError"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="confirmEncrypt">确认加密</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="upload-section bg-white rounded shadow p-4 mb-4 text-center" id="uploadSection">
             <h2 class="mb-4">请选择加载方式</h2>
             
@@ -205,7 +343,7 @@
                 <div class="col-md-6">
                     <div class="option-card p-4 rounded bg-light h-100">
                         <div class="option-title h5 mb-3 text-dark">从本地上传</div>
-                        <input type="file" id="fileInput" class="d-none" accept=".htm,.html">
+                        <input type="file" id="fileInput" class="d-none" accept=".htm,.html,.json">
                         <button id="uploadBtn" class="btn manager-btn-primary w-100 py-3">
                             <i class="fas fa-upload me-2"></i>
                             选择文件并上传
@@ -326,7 +464,7 @@
             
             <div class="download-section text-center">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                    <button id="downloadBtn" class="btn manager-btn-success btn-lg px-4">下载HTML文件</button>
+                    <button id="downloadBtn" class="btn manager-btn-success btn-lg px-4">下载JSON文件</button>
                     <button id="resetBtn" class="btn btn-secondary btn-lg px-4">重置</button>
                 </div>
             </div>
@@ -335,6 +473,234 @@
 
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
+        // AES加密解密功能
+        class AESUtil {
+            // AES-256-CBC加密
+            static encrypt(text, password) {
+                const encoder = new TextEncoder();
+                const textData = encoder.encode(text);
+                const passwordData = encoder.encode(password.padEnd(32, ' '));
+                
+                const iv = crypto.getRandomValues(new Uint8Array(16));
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                
+                return window.crypto.subtle.importKey(
+                    'raw',
+                    passwordData,
+                    { name: 'PBKDF2' },
+                    false,
+                    ['deriveKey']
+                ).then(key => {
+                    return window.crypto.subtle.deriveKey(
+                        {
+                            name: 'PBKDF2',
+                            salt: salt,
+                            iterations: 100000,
+                            hash: 'SHA-256'
+                        },
+                        key,
+                        {
+                            name: 'AES-CBC',
+                            length: 256
+                        },
+                        false,
+                        ['encrypt']
+                    );
+                }).then(key => {
+                    return window.crypto.subtle.encrypt(
+                        {
+                            name: 'AES-CBC',
+                            iv: iv
+                        },
+                        key,
+                        textData
+                    );
+                }).then(encrypted => {
+                    const encryptedData = new Uint8Array(encrypted);
+                    const totalLength = salt.length + iv.length + encryptedData.length;
+                    const combined = new Uint8Array(totalLength);
+                    
+                    combined.set(salt, 0);
+                    combined.set(iv, salt.length);
+                    combined.set(encryptedData, salt.length + iv.length);
+                    
+                    return btoa(String.fromCharCode.apply(null, combined));
+                });
+            }
+            
+            // AES-256-CBC解密
+            static decrypt(encryptedData, password) {
+                const combined = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
+                const salt = combined.slice(0, 16);
+                const iv = combined.slice(16, 32);
+                const encrypted = combined.slice(32);
+                
+                const encoder = new TextEncoder();
+                const passwordData = encoder.encode(password.padEnd(32, ' '));
+                
+                return window.crypto.subtle.importKey(
+                    'raw',
+                    passwordData,
+                    { name: 'PBKDF2' },
+                    false,
+                    ['deriveKey']
+                ).then(key => {
+                    return window.crypto.subtle.deriveKey(
+                        {
+                            name: 'PBKDF2',
+                            salt: salt,
+                            iterations: 100000,
+                            hash: 'SHA-256'
+                        },
+                        key,
+                        {
+                            name: 'AES-CBC',
+                            length: 256
+                        },
+                        false,
+                        ['decrypt']
+                    );
+                }).then(key => {
+                    return window.crypto.subtle.decrypt(
+                        {
+                            name: 'AES-CBC',
+                            iv: iv
+                        },
+                        key,
+                        encrypted
+                    );
+                }).then(decrypted => {
+                    const decoder = new TextDecoder();
+                    return decoder.decode(decrypted);
+                });
+            }
+        }
+        
+        // Cookie管理工具
+        class CookieUtil {
+            static set(name, value, days) {
+                let expires = '';
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = '; expires=' + date.toUTCString();
+                }
+                document.cookie = name + '=' + (value || '')  + expires + '; path=/';
+            }
+            
+            static get(name) {
+                const nameEQ = name + '=';
+                const ca = document.cookie.split(';');
+                for(let i=0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+                }
+                return null;
+            }
+        }
+        
+        // 图案密码工具
+        class PatternPassword {
+            constructor(modalType) {
+                this.modalType = modalType; // 'encrypt' 或 'decrypt'
+                this.password = [];
+                this.init();
+            }
+            
+            init() {
+                this.bindEvents();
+                this.reset();
+            }
+            
+            bindEvents() {
+                // 图案按钮点击事件
+                const patternButtons = document.querySelectorAll(`#${this.modalType}PatternA, #${this.modalType}PatternB, #${this.modalType}PatternC, #${this.modalType}PatternD`);
+                patternButtons.forEach((btn, index) => {
+                    btn.addEventListener('click', () => {
+                        this.addPattern(String.fromCharCode(65 + index)); // A, B, C, D
+                    });
+                });
+                
+                // 清空按钮点击事件
+                document.getElementById(`clear${this.modalType.charAt(0).toUpperCase() + this.modalType.slice(1)}Password`).addEventListener('click', () => {
+                    this.reset();
+                });
+            }
+            
+            addPattern(pattern) {
+                if (this.password.length < 4) {
+                    this.password.push(pattern);
+                    this.updateUI();
+                    
+                    // 密码输入完成
+                    if (this.password.length === 4) {
+                        // 解密时需要检查密码
+                        if (this.modalType === 'decrypt') {
+                            // 检查是否达到最大尝试次数
+                            const errorCount = parseInt(CookieUtil.get('mmks') || 0);
+                            if (errorCount >= 3) {
+                                document.getElementById('decryptError').textContent = '密码错误次数过多，请24小时后再试！';
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            updateUI() {
+                for (let i = 1; i <= 4; i++) {
+                    const inputElement = document.getElementById(`${this.modalType}Password${i}`);
+                    if (i <= this.password.length) {
+                        inputElement.textContent = this.password[i - 1];
+                        inputElement.classList.add('filled');
+                    } else {
+                        inputElement.textContent = '';
+                        inputElement.classList.remove('filled');
+                    }
+                }
+            }
+            
+            getPassword() {
+                return this.password.join('');
+            }
+            
+            reset() {
+                this.password = [];
+                this.updateUI();
+                document.getElementById(`${this.modalType}Error`).textContent = '';
+            }
+            
+            // 根据日期打乱图案顺序（仅解密时使用）
+            static shufflePatterns() {
+                if (this.modalType !== 'decrypt') return;
+                
+                const patterns = ['A', 'B', 'C', 'D'];
+                const today = new Date();
+                const dayOfMonth = today.getDate();
+                
+                // 根据日期生成伪随机数
+                const seed = dayOfMonth;
+                for (let i = patterns.length - 1; i > 0; i--) {
+                    const j = (seed + i) % (i + 1);
+                    [patterns[i], patterns[j]] = [patterns[j], patterns[i]];
+                }
+                
+                // 更新按钮顺序
+                const patternButtons = document.querySelectorAll('.pattern-btn');
+                const parent = patternButtons[0].parentElement;
+                
+                // 移除所有按钮
+                patternButtons.forEach(btn => parent.removeChild(btn));
+                
+                // 重新添加按钮（打乱顺序）
+                patterns.forEach(pattern => {
+                    const btn = document.getElementById(`pattern${pattern}`);
+                    parent.appendChild(btn);
+                });
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             console.log('页面加载完成，开始初始化');
             
@@ -358,15 +724,23 @@
             const clearLogsBtn = document.getElementById('clearLogsBtn');
             const logContainer = document.getElementById('logContainer');
             const emptyLogMessage = document.getElementById('emptyLogMessage');
+            const decryptModal = new bootstrap.Modal(document.getElementById('decryptModal'));
+            const encryptModal = new bootstrap.Modal(document.getElementById('encryptModal'));
             
             // 全局变量
             let entries = [];
             let draggedItem = null;
             let currentFileName = '';
             let editingIndex = -1;
+            let currentFileContent = '';
+            let isEncryptedFile = false;
             
             // 固定的URL地址
-            const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.htm';
+            const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.json';
+            
+            // 图案密码实例
+            let decryptPatternPassword = new PatternPassword('decrypt');
+            let encryptPatternPassword = new PatternPassword('encrypt');
             
             // 快捷输入按钮事件处理
             document.querySelectorAll('.quick-insert-btn').forEach(btn => {
@@ -474,19 +848,27 @@
                     reader.onload = function(e) {
                         try {
                             console.log('文件读取成功');
-                            // 解析文件内容
                             const content = e.target.result;
-                            parseFileContent(content);
+                            currentFileContent = content;
                             
-                            // 切换到主内容界面
-                            uploadSection.classList.add('d-none');
-                            mainContent.classList.remove('d-none');
-                            mainContent.classList.add('d-flex');
-                            addLogEntry(LOG_TYPES.SUCCESS, `文件上传成功`, `文件名: ${file.name}, 解析出 ${entries.length} 个条目, 来源: 本地上传`);
+                            // 检查是否是加密文件
+                            if (content.startsWith('data:')) {
+                                isEncryptedFile = true;
+                                showDecryptModal();
+                            } else {
+                                isEncryptedFile = false;
+                                parseFileContent(content);
+                                
+                                // 切换到主内容界面
+                                uploadSection.classList.add('d-none');
+                                mainContent.classList.remove('d-none');
+                                mainContent.classList.add('d-flex');
+                                addLogEntry(LOG_TYPES.SUCCESS, `文件上传成功`, `文件名: ${file.name}, 解析出 ${entries.length} 个条目, 来源: 本地上传`);
+                            }
                         } catch (error) {
                             console.error('文件解析失败:', error);
                             alert('文件解析失败: ' + error.message);
-                            fileInfo.textContent = '文件解析失败，请选择有效的HTML文件';
+                            fileInfo.textContent = '文件解析失败，请选择有效的文件';
                             addLogEntry(LOG_TYPES.ERROR, `文件解析失败`, `文件名: ${file.name}, 错误信息: ${error.message}, 来源: 本地上传`);
                         }
                     };
@@ -507,7 +889,7 @@
                 // 显示加载中
                 loading.classList.remove('d-none');
                 urlError.textContent = '';
-                currentFileName = 'MM.htm';
+                currentFileName = 'MM.json';
                 
                 // 记录开始加载
                 addLogEntry(LOG_TYPES.INFO, '开始从网络加载文件', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 来源: 网络加载`);
@@ -523,15 +905,24 @@
                     })
                     .then(content => {
                         console.log('文件加载成功，开始解析');
-                        parseFileContent(content);
+                        currentFileContent = content;
                         
-                        // 切换到主内容界面
-                        uploadSection.classList.add('d-none');
-                        mainContent.classList.remove('d-none');
-                        mainContent.classList.add('d-flex');
-                        
-                        // 记录成功加载
-                        addLogEntry(LOG_TYPES.SUCCESS, '网络文件加载成功', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 解析出 ${entries.length} 个条目, 来源: 网络加载`);
+                        // 检查是否是加密文件
+                        if (content.startsWith('data:')) {
+                            isEncryptedFile = true;
+                            showDecryptModal();
+                        } else {
+                            isEncryptedFile = false;
+                            parseFileContent(content);
+                            
+                            // 切换到主内容界面
+                            uploadSection.classList.add('d-none');
+                            mainContent.classList.remove('d-none');
+                            mainContent.classList.add('d-flex');
+                            
+                            // 记录成功加载
+                            addLogEntry(LOG_TYPES.SUCCESS, '网络文件加载成功', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 解析出 ${entries.length} 个条目, 来源: 网络加载`);
+                        }
                     })
                     .catch(error => {
                         console.error('URL加载错误:', error);
@@ -559,40 +950,48 @@
                 // 清空现有条目
                 entries = [];
                 
-                // 使用更灵活的正则表达式匹配<p>标签内容
-                const pattern = /<p>(.+?)<\/p>/g;
-                let match;
-                let count = 0;
-                
-                while ((match = pattern.exec(content)) !== null) {
-                    const line = match[1];
-                    // 分割字符串，支持中文冒号和英文冒号
-                    const parts = line.split(/[：:]/);
+                try {
+                    // 尝试解析为JSON
+                    entries = JSON.parse(content);
+                    console.log(`JSON解析完成，找到 ${entries.length} 个条目`);
+                } catch (jsonError) {
+                    // JSON解析失败，尝试解析为HTML
+                    console.log('JSON解析失败，尝试解析为HTML');
+                    const pattern = /<p>(.+?)<\/p>/g;
+                    let match;
+                    let count = 0;
                     
-                    if (parts.length >= 2) {
-                        const platform = parts[0].trim();
-                        const accountType = parts[1].trim();
-                        const passwordPattern = parts.length > 2 ? parts.slice(2).join('：').trim() : '';
+                    while ((match = pattern.exec(content)) !== null) {
+                        const line = match[1];
+                        // 分割字符串，支持中文冒号和英文冒号
+                        const parts = line.split(/[：:]/);
                         
-                        entries.push({ platform, accountType, passwordPattern });
-                        count++;
-                    } else {
-                        // 尝试其他可能的格式
-                        const simplePattern = /([^：:]+)[：:]([^：:]+)/;
-                        const simpleMatch = line.match(simplePattern);
-                        
-                        if (simpleMatch) {
-                            entries.push({
-                                platform: simpleMatch[1].trim(),
-                                accountType: simpleMatch[2].trim(),
-                                passwordPattern: ''
-                            });
+                        if (parts.length >= 2) {
+                            const platform = parts[0].trim();
+                            const accountType = parts[1].trim();
+                            const passwordPattern = parts.length > 2 ? parts.slice(2).join('：').trim() : '';
+                            
+                            entries.push({ platform, accountType, passwordPattern });
                             count++;
+                        } else {
+                            // 尝试其他可能的格式
+                            const simplePattern = /([^：:]+)[：:]([^：:]+)/;
+                            const simpleMatch = line.match(simplePattern);
+                            
+                            if (simpleMatch) {
+                                entries.push({
+                                    platform: simpleMatch[1].trim(),
+                                    accountType: simpleMatch[2].trim(),
+                                    passwordPattern: ''
+                                });
+                                count++;
+                            }
                         }
                     }
+                    
+                    console.log(`HTML解析完成，找到 ${count} 个条目`);
                 }
                 
-                console.log(`解析完成，找到 ${count} 个条目`);
                 // 渲染条目列表
                 renderEntriesList();
             }
@@ -644,10 +1043,109 @@
                 });
             }
             
+            // 显示解密模态框
+            function showDecryptModal() {
+                // 根据日期打乱解密时的图案顺序
+                PatternPassword.shufflePatterns();
+                decryptModal.show();
+            }
+            
+            // 确认解密按钮点击事件
+            document.getElementById('confirmDecrypt').addEventListener('click', async function() {
+                const password = decryptPatternPassword.getPassword();
+                if (password.length !== 4) {
+                    document.getElementById('decryptError').textContent = '请输入完整的四位数密码';
+                    return;
+                }
+                
+                try {
+                    const errorCount = parseInt(CookieUtil.get('mmks') || 0);
+                    if (errorCount >= 3) {
+                        document.getElementById('decryptError').textContent = '密码错误次数过多，请24小时后再试！';
+                        return;
+                    }
+                    
+                    // 解密文件内容
+                    const encryptedData = currentFileContent.replace('data:application/json;base64,', '');
+                    const decryptedContent = await AESUtil.decrypt(encryptedData, password);
+                    
+                    // 解析解密后的内容
+                    parseFileContent(decryptedContent);
+                    
+                    // 切换到主内容界面
+                    uploadSection.classList.add('d-none');
+                    mainContent.classList.remove('d-none');
+                    mainContent.classList.add('d-flex');
+                    
+                    // 关闭模态框
+                    decryptModal.hide();
+                    decryptPatternPassword.reset();
+                    
+                    // 清除错误计数
+                    CookieUtil.set('mmks', '0', 1);
+                    
+                    addLogEntry(LOG_TYPES.SUCCESS, '文件解密成功', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
+                } catch (error) {
+                    console.error('解密失败:', error);
+                    
+                    // 增加错误计数
+                    const errorCount = parseInt(CookieUtil.get('mmks') || 0) + 1;
+                    CookieUtil.set('mmks', errorCount.toString(), 1);
+                    
+                    document.getElementById('decryptError').textContent = '密码错误，请重试！';
+                    decryptPatternPassword.reset();
+                    
+                    addLogEntry(LOG_TYPES.ERROR, '文件解密失败', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
+                    
+                    // 显示错误提示
+                    if (errorCount >= 3) {
+                        document.getElementById('decryptError').textContent = '密码错误次数过多，请24小时后再试！';
+                    }
+                }
+            });
+            
+            // 确认加密按钮点击事件
+            document.getElementById('confirmEncrypt').addEventListener('click', async function() {
+                const password = encryptPatternPassword.getPassword();
+                if (password.length !== 4) {
+                    document.getElementById('encryptError').textContent = '请输入完整的四位数密码';
+                    return;
+                }
+                
+                try {
+                    // 生成下载内容
+                    const content = generateDownloadContent();
+                    
+                    // 加密内容
+                    const encryptedContent = await AESUtil.encrypt(content, password);
+                    
+                    // 下载加密文件
+                    const dataUrl = 'data:application/json;base64,' + encryptedContent;
+                    const blob = await (await fetch(dataUrl)).blob();
+                    const url = URL.createObjectURL(blob);
+                    
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = currentFileName;
+                    a.click();
+                    
+                    URL.revokeObjectURL(url);
+                    
+                    // 关闭模态框
+                    encryptModal.hide();
+                    encryptPatternPassword.reset();
+                    
+                    addLogEntry(LOG_TYPES.SUCCESS, '文件加密成功', `文件名: ${currentFileName}`);
+                } catch (error) {
+                    console.error('加密失败:', error);
+                    document.getElementById('encryptError').textContent = '加密失败，请重试！';
+                    addLogEntry(LOG_TYPES.ERROR, '文件加密失败', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
+                }
+            });
+            
             // 下载文件
             downloadBtn.addEventListener('click', function() {
-                const content = generateDownloadContent();
-                downloadFile(content, currentFileName, 'text/html');
+                encryptModal.show();
                 addLogEntry(LOG_TYPES.INFO, '点击了下载按钮');
             });
             
@@ -810,18 +1308,8 @@
             
             // 生成下载内容
             function generateDownloadContent() {
-                let content = '';
-                
-                // 添加所有条目
-                entries.forEach(entry => {
-                    if (entry.passwordPattern) {
-                        content += `<p>${entry.platform}：${entry.accountType}：${entry.passwordPattern}</p>\n`;
-                    } else {
-                        content += `<p>${entry.platform}：${entry.accountType}</p>\n`;
-                    }
-                });
-                
-                return content;
+                // 返回JSON格式内容
+                return JSON.stringify(entries, null, 2);
             }
             
             // 下载文件函数

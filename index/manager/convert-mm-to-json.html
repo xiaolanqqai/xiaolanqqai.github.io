@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MM.htm 转 JSON 工具</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            margin: 5px;
+        }
+        .json-output {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">MM.htm 转 JSON 工具</h1>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>说明：</h5>
+                    <p>此工具用于将 MM.htm 文件转换为 JSON 格式，以便在加密版 MM-generator.html 中使用。</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>步骤 1：上传 MM.htm 文件</h5>
+                    <input type="file" id="fileInput" class="form-control" accept=".htm,.html">
+                </div>
+                
+                <div class="mb-4">
+                    <h5>步骤 2：解析内容</h5>
+                    <button id="parseBtn" class="btn btn-primary">解析文件</button>
+                    <div id="status" class="mt-2"></div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>步骤 3：查看 JSON 结果</h5>
+                    <div id="jsonOutput" class="json-output"></div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>步骤 4：下载 JSON 文件</h5>
+                    <button id="downloadBtn" class="btn btn-success" disabled>下载 JSON</button>
+                    <button id="clearBtn" class="btn btn-secondary">清空</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            const parseBtn = document.getElementById('parseBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const status = document.getElementById('status');
+            const jsonOutput = document.getElementById('jsonOutput');
+            
+            let parsedData = [];
+            
+            parseBtn.addEventListener('click', function() {
+                const file = fileInput.files[0];
+                if (!file) {
+                    status.innerHTML = '<div class="alert alert-danger">请先选择一个文件</div>';
+                    return;
+                }
+                
+                status.innerHTML = '<div class="alert alert-info">正在解析文件...</div>';
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const content = e.target.result;
+                        parsedData = parseMMHTM(content);
+                        
+                        const jsonString = JSON.stringify(parsedData, null, 2);
+                        jsonOutput.textContent = jsonString;
+                        
+                        status.innerHTML = `<div class="alert alert-success">解析成功！共找到 ${parsedData.length} 个条目</div>`;
+                        downloadBtn.disabled = false;
+                    } catch (error) {
+                        status.innerHTML = `<div class="alert alert-danger">解析失败：${error.message}</div>`;
+                        downloadBtn.disabled = true;
+                    }
+                };
+                
+                reader.onerror = function() {
+                    status.innerHTML = '<div class="alert alert-danger">文件读取错误</div>';
+                };
+                
+                reader.readAsText(file);
+            });
+            
+            downloadBtn.addEventListener('click', function() {
+                if (parsedData.length === 0) {
+                    status.innerHTML = '<div class="alert alert-danger">没有可下载的数据</div>';
+                    return;
+                }
+                
+                const jsonString = JSON.stringify(parsedData, null, 2);
+                downloadFile(jsonString, 'MM.json', 'application/json');
+            });
+            
+            clearBtn.addEventListener('click', function() {
+                fileInput.value = '';
+                jsonOutput.textContent = '';
+                status.innerHTML = '';
+                downloadBtn.disabled = true;
+                parsedData = [];
+            });
+            
+            function parseMMHTM(content) {
+                const entries = [];
+                const pattern = /<p>(.+?)<\/p>/g;
+                let match;
+                
+                while ((match = pattern.exec(content)) !== null) {
+                    const line = match[1];
+                    const parts = line.split(/[：:]/);
+                    
+                    if (parts.length >= 2) {
+                        const platform = parts[0].trim();
+                        const accountType = parts[1].trim();
+                        const passwordPattern = parts.length > 2 ? parts.slice(2).join('：').trim() : '';
+                        
+                        entries.push({ platform, accountType, passwordPattern });
+                    } else {
+                        const simplePattern = /([^：:]+)[：:]([^：:]+)/;
+                        const simpleMatch = line.match(simplePattern);
+                        
+                        if (simpleMatch) {
+                            entries.push({
+                                platform: simpleMatch[1].trim(),
+                                accountType: simpleMatch[2].trim(),
+                                passwordPattern: ''
+                            });
+                        }
+                    }
+                }
+                
+                if (entries.length === 0) {
+                    throw new Error('未找到有效的条目内容');
+                }
+                
+                return entries;
+            }
+            
+            function downloadFile(content, fileName, contentType) {
+                const blob = new Blob([content], { type: contentType });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+            }
+        });
+    </script>
+</body>
+</html>
