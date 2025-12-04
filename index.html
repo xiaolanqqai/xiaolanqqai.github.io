@@ -28,6 +28,7 @@
 	<!-- 异步加载JS -->
 	<script src="js/jquery-3.5.1.min.js" defer></script>
 	<script src="performance-config.js" defer></script>
+	<script src="js/dark-mode.js" defer></script>
 </head>
 
 <body style="overflow-y: hidden">
@@ -88,6 +89,11 @@
 
 	// 延迟加载非关键资源
 	document.addEventListener('DOMContentLoaded', function () {
+		// 初始化深色模式切换系统
+		if (typeof DarkModeManager !== 'undefined') {
+			DarkModeManager.init();
+		}
+		
 		// 加载Bootstrap
 		loadScript('js/bootstrap.bundle.min.js', function() {
 			// 加载诗词API

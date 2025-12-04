@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="../css/bootstrap.min.css">
 	<script type="text/javascript" src="../js/jquery-3.5.1.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/index.css" />
+	<script src="../js/dark-mode.js" defer></script>
 </head>
 
 <body>
@@ -34,7 +35,11 @@
 	</div>
 
 	<script>
-	document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+	// 初始化深色模式切换系统
+	if (typeof DarkModeManager !== 'undefined') {
+		DarkModeManager.init();
+	}
 		fetch('../js/nav-data.json')
 			.then(response => response.json())
 			.then(data => {
@@ -42,12 +47,12 @@
 				loadVersionInfo(data);
 			})
 			.catch(error => {
-				console.error('加载导航数据时出错:', error);
-				document.getElementById('nav-content-container').innerHTML = '<div class="alert alert-info mx-3">暂无导航数据，请先上传JSON文件</div>';
-				document.getElementById('uptime1').textContent = 'Beta:error';
-				document.getElementById('state1').textContent = 'Error';
-			});
-	});
+			console.error('加载导航数据时出错:', error);
+			document.getElementById('nav-content-container').innerHTML = '<div class="alert alert-info mx-3">暂无导航数据，请先上传JSON文件</div>';
+			document.getElementById('uptime1').textContent = 'Beta:error';
+			document.getElementById('state1').textContent = 'Error';
+		});
+});
 	
 	function renderNavigation(navData) {
 		const navContentContainer = document.getElementById('nav-content-container');
