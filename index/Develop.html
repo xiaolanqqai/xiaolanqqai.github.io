@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <script type="text/javascript" src="../js/jquery-3.5.1.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/index.css" />
-    <script src="../js/dark-mode.js" defer></script>
 </head>
 
 <body>
@@ -54,10 +53,6 @@
     
     <script>
 	document.addEventListener('DOMContentLoaded', function () {
-		// 初始化深色模式切换系统
-		if (typeof DarkModeManager !== 'undefined') {
-			DarkModeManager.init();
-		}
 		fetch('../js/nav-data.json')
 			.then(response => response.json())
 			.then(data => {

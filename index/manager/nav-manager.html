@@ -58,31 +58,6 @@
             opacity: 1;
         }
         
-        /* 选项卡删除按钮样式 */
-        .nav-item .tab-delete-corner {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #dc3545;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            z-index: 10;
-            cursor: pointer;
-        }
-        
-        .nav-item:hover .tab-delete-corner {
-            opacity: 1;
-        }
-        
         .site-card .site-icon {
             width: 48px;
             height: 48px;
@@ -396,12 +371,6 @@
                             <label for="webData" class="form-label">数据版本 (web_data)</label>
                             <input type="text" class="form-control" id="webData" placeholder="例如: 2024.03.15" required>
                             <div class="form-text">列表数据版本号</div>
-                        </div>
-                        <div class="mb-3">
-                            <button type="button" class="btn btn-secondary btn-sm" id="getLatestVersionBtn">
-                                <i class="fas fa-sync-alt me-1"></i>获取最新版本信息
-                            </button>
-                            <div class="form-text">从版本历史文件中获取最新版本号和日期</div>
                         </div>
                     </form>
                 </div>
@@ -1045,52 +1014,11 @@
             // 特殊栏目管理
             addSpecialSiteBtn.addEventListener('click', showAddSpecialSiteModal);
             
-            // 获取最新版本信息按钮
-        const getLatestVersionBtn = document.getElementById('getLatestVersionBtn');
-        
-        // 版本信息编辑
-        document.querySelector('.version-info .btn').addEventListener('click', function() {
-            document.getElementById('webVol').value = navData.version.web_vol;
-            document.getElementById('webData').value = navData.version.web_data;
-        });
-        
-        // 获取最新版本信息功能
-        getLatestVersionBtn.addEventListener('click', function() {
-            const filePath = '../../js/version-history.json';
-            
-            fetch(filePath)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP错误！状态码: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.versions && Array.isArray(data.versions) && data.versions.length > 0) {
-                        // 按日期排序版本，获取最新的一个
-                        const sortedVersions = [...data.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
-                        const latestVersion = sortedVersions[0];
-                        
-                        // 提取版本号数字部分（如从"BETA 4.0.1"中提取"4.0.1"）
-                        const versionMatch = latestVersion.name.match(/\d+\.\d+(?:\.\d+)?/);
-                        if (versionMatch) {
-                            document.getElementById('webVol').value = versionMatch[0];
-                        }
-                        
-                        // 设置数据版本为发布日期，格式转换为YYYY.MM.DD
-                        const formattedDate = latestVersion.date.replace(/-/g, '.');
-                        document.getElementById('webData').value = formattedDate;
-                        
-                        showAlert(`已获取最新版本信息：${latestVersion.name} (${latestVersion.date})`, 'success');
-                    } else {
-                        showAlert('版本历史文件中没有版本记录', 'warning');
-                    }
-                })
-                .catch(error => {
-                    console.error('加载版本历史文件失败:', error);
-                    showAlert('加载版本历史文件失败，请检查文件路径或网络连接', 'danger');
-                });
-        });
+            // 版本信息编辑
+            document.querySelector('.version-info .btn').addEventListener('click', function() {
+                document.getElementById('webVol').value = navData.version.web_vol;
+                document.getElementById('webData').value = navData.version.web_data;
+            });
             
             pageButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1349,31 +1277,6 @@
             }
         }
         
-        // 删除选项卡
-        function deleteTab(tabIndex) {
-            if (!navData[currentPage] || !navData[currentPage].tabs || navData[currentPage].tabs.length <= 1) {
-                showAlert('不能删除最后一个选项卡！', 'warning');
-                return;
-            }
-            
-            const tabName = navData[currentPage].tabs[tabIndex].name;
-            
-            // 从数据中删除选项卡
-            navData[currentPage].tabs.splice(tabIndex, 1);
-            
-            // 标记数据已修改
-            setDataChanged();
-            
-            // 重新渲染选项卡
-            renderTabs();
-            
-            // 添加日志
-            addLogEntry(`已删除选项卡: ${tabName}`, LOG_TYPES.SUCCESS);
-            
-            // 显示成功提示
-            showAlert(`已成功删除选项卡: ${tabName}`, 'success');
-        }
-        
         function renderTabs() {
             navTabs.innerHTML = '';
             navTabContent.innerHTML = '';
@@ -1386,12 +1289,10 @@
             
             navData[currentPage].tabs.forEach((tab, index) => {
                 const tabNav = document.createElement('li');
-                tabNav.className = 'nav-item position-relative';
+                tabNav.className = 'nav-item';
                 tabNav.setAttribute('draggable', 'true');
                 tabNav.setAttribute('data-drag-type', 'tab');
                 tabNav.setAttribute('data-tab-index', index);
-                
-                // 创建选项卡链接
                 const tabLink = document.createElement('a');
                 tabLink.className = 'nav-link ' + (index === 0 ? 'active' : '');
                 tabLink.id = 'tab-' + index + '-nav';
@@ -1401,21 +1302,6 @@
                 tabLink.setAttribute('aria-controls', 'tab-' + index);
                 tabLink.setAttribute('aria-selected', (index === 0 ? 'true' : 'false'));
                 tabLink.textContent = tab.name;
-                
-                // 创建删除按钮
-                const deleteBtn = document.createElement('div');
-                deleteBtn.className = 'tab-delete-corner';
-                deleteBtn.setAttribute('data-tab-index', index);
-                deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-                
-                // 添加删除按钮点击事件
-                deleteBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    deleteTab(index);
-                });
-                
-                tabNav.appendChild(tabLink);
-                tabNav.appendChild(deleteBtn);
                 
                 // 添加双击编辑功能
                 tabLink.addEventListener('dblclick', function(e) {
@@ -4113,7 +3999,188 @@
             });
         }
         
-
+        // 初始化添加选项卡按钮的新交互
+        function setupAddTabButton() {
+            const addTabBtn = document.getElementById('addTabBtn');
+            let isEditing = false;
+            let inputElement = null;
+            
+            // 点击按钮时显示输入框
+            addTabBtn.addEventListener('click', function(e) {
+                if (isEditing) {
+                    // 如果已经处于编辑模式，保存输入
+                    saveNewTab();
+                } else {
+                    // 切换到编辑模式
+                    enableTabEditMode();
+                }
+            });
+            
+            // 启用选项卡编辑模式
+            function enableTabEditMode() {
+                if (isEditing) return;
+                
+                isEditing = true;
+                
+                // 创建输入框元素
+                inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.placeholder = '输入选项卡名称';
+                inputElement.className = 'tab-name-input';
+                inputElement.style.cssText = `
+                    position: absolute;
+                    right: 100%;
+                    margin-right: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 160px;
+                    padding: 5px 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    outline: none;
+                    background-color: #fff;
+                    z-index: 1000;
+                `;
+                
+                // 将输入框添加到按钮容器中
+                // 确保按钮容器有相对定位
+                if (addTabBtn.parentNode.style.position !== 'absolute' && addTabBtn.parentNode.style.position !== 'relative') {
+                    addTabBtn.parentNode.style.position = 'relative';
+                }
+                addTabBtn.parentNode.appendChild(inputElement);
+                
+                // 更改按钮文本为"完成"
+                addTabBtn.textContent = '完成';
+                
+                // 聚焦输入框
+                setTimeout(() => inputElement.focus(), 100);
+                
+                // 添加键盘事件监听
+                inputElement.addEventListener('keydown', handleKeyDown);
+                
+                // 添加失焦事件监听（自动保存）
+                inputElement.addEventListener('blur', handleBlur);
+                
+                // 防止点击按钮时输入框失焦
+                addTabBtn.addEventListener('click', preventInputBlur);
+                
+                // 全局点击事件，点击其他地方时保存
+                document.addEventListener('click', handleDocumentClick);
+            }
+            
+            // 处理键盘事件
+            function handleKeyDown(e) {
+                if (e.key === 'Enter') {
+                    // 按Enter键保存
+                    saveNewTab();
+                } else if (e.key === 'Escape') {
+                    // 按Esc键取消编辑
+                    cancelTabEdit();
+                }
+            }
+            
+            // 处理失焦事件
+            function handleBlur() {
+                // 失焦时自动保存
+                setTimeout(() => {
+                    if (isEditing) {
+                        saveNewTab();
+                    }
+                }, 200);
+            }
+            
+            // 防止点击按钮时输入框失焦
+            function preventInputBlur(e) {
+                e.stopPropagation();
+            }
+            
+            // 处理文档点击事件
+            function handleDocumentClick(e) {
+                // 点击按钮或输入框以外的区域时，保存并退出编辑模式
+                if (!addTabBtn.contains(e.target) && e.target !== inputElement) {
+                    saveNewTab();
+                }
+            }
+            
+            // 保存新选项卡
+            function saveNewTab() {
+                if (!isEditing || !inputElement) return;
+                
+                const tabName = inputElement.value.trim();
+                
+                if (tabName) {
+                    // 使用现有的addNewTab函数添加选项卡
+                    addNewTabWithName(tabName);
+                    
+                    // 记录操作日志
+                    addLogEntry(`添加选项卡: ${tabName}`);
+                    
+                    // 显示成功提示
+                    showSuccessToast(`选项卡 "${tabName}" 添加成功`);
+                }
+                
+                // 清理并退出编辑模式
+                cleanupEditMode();
+            }
+            
+            // 取消选项卡编辑
+            function cancelTabEdit() {
+                cleanupEditMode();
+            }
+            
+            // 清理编辑模式
+            function cleanupEditMode() {
+                if (!isEditing) return;
+                
+                // 移除事件监听
+                inputElement?.removeEventListener('keydown', handleKeyDown);
+                inputElement?.removeEventListener('blur', handleBlur);
+                addTabBtn.removeEventListener('click', preventInputBlur);
+                document.removeEventListener('click', handleDocumentClick);
+                
+                // 移除输入框
+                if (inputElement && inputElement.parentNode) {
+                    inputElement.parentNode.removeChild(inputElement);
+                }
+                
+                // 恢复按钮文本
+                addTabBtn.textContent = '+ 添加选项卡';
+                
+                // 重置状态
+                isEditing = false;
+                inputElement = null;
+            }
+            
+            // 添加新选项卡的函数（基于现有的addNewTab函数逻辑）
+            function addNewTabWithName(tabName) {
+                // 检查选项卡名称是否已存在
+                const isDuplicate = navData.tabs.some(tab => tab.name === tabName);
+                if (isDuplicate) {
+                    alert('选项卡名称已存在，请使用其他名称');
+                    return;
+                }
+                
+                // 创建新选项卡对象
+                const newTab = {
+                    id: Date.now().toString(),
+                    name: tabName,
+                    sites: []
+                };
+                
+                // 添加到数据中
+                navData.tabs.push(newTab);
+                
+                // 刷新选项卡显示
+                renderTabs();
+                
+                // 自动切换到新添加的选项卡
+                selectTab(newTab.id);
+                
+                // 标记数据已修改
+                setDataChanged();
+            }
+        }
         
         // 显示成功提示
         function showSuccessToast(message) {
