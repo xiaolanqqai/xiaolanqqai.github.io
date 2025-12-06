@@ -496,12 +496,12 @@
 			}, 3000);
 		}
 
-		// 加载MM-encrypted.json文件
+		// 加载MM.json文件
 		function loadMMFile() {
-			fetch('MM-encrypted.json')
+			fetch('../js/MM.json')
 				.then(response => {
 					if (!response.ok) {
-						throw new Error('无法加载MM-encrypted.json文件');
+						throw new Error('无法加载MM.json文件');
 					}
 					return response.text();
 				})
@@ -509,18 +509,18 @@
 					// 文件已加载，等待用户输入密码
 				})
 				.catch(error => {
-					console.error('加载MM-encrypted.json文件时出错:', error);
-					document.getElementById('error-message').textContent = '无法加载MM-encrypted.json文件';
+					console.error('加载MM.json文件时出错:', error);
+					document.getElementById('error-message').textContent = '无法加载MM.json文件';
 				});
 		}
 
 		// 尝试解密
 		async function attemptDecryption() {
 			try {
-				// 加载MM-encrypted.json文件
-				const response = await fetch('MM-encrypted.json');
+				// 加载MM.json文件
+				const response = await fetch('../js/MM.json');
 				if (!response.ok) {
-					throw new Error('无法加载MM-encrypted.json文件');
+					throw new Error('无法加载MM.json文件');
 				}
 				const encryptedContent = await response.text();
 
