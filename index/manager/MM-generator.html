@@ -343,7 +343,7 @@
                 <div class="col-md-6">
                     <div class="option-card p-4 rounded bg-light h-100">
                         <div class="option-title h5 mb-3 text-dark">从本地上传</div>
-                        <input type="file" id="fileInput" class="d-none" accept=".htm,.html,.json">
+                        <input type="file" id="fileInput" class="d-none" accept=".json">
                         <button id="uploadBtn" class="btn manager-btn-primary w-100 py-3">
                             <i class="fas fa-upload me-2"></i>
                             选择文件并上传
@@ -615,7 +615,7 @@
             
             bindEvents() {
                 // 图案按钮点击事件
-                const patternButtons = document.querySelectorAll(`#${this.modalType}PatternA, #${this.modalType}PatternB, #${this.modalType}PatternC, #${this.modalType}PatternD`);
+                const patternButtons = document.querySelectorAll('.pattern-btn');
                 patternButtons.forEach((btn, index) => {
                     btn.addEventListener('click', () => {
                         this.addPattern(String.fromCharCode(65 + index)); // A, B, C, D
@@ -734,9 +734,10 @@
             let editingIndex = -1;
             let currentFileContent = '';
             let isEncryptedFile = false;
+            let currentFileArrayBuffer = null; // 保存网络加载的原始ArrayBuffer
             
             // 固定的URL地址
-            const FIXED_URL = 'https://xiaolanqqai.xyz/index/MM.json';
+            const FIXED_URL = '/js/MM.json';
             
             // 图案密码实例
             let decryptPatternPassword = new PatternPassword('decrypt');
@@ -845,14 +846,37 @@
                     addLogEntry(LOG_TYPES.INFO, '开始加载文件', `文件名: ${file.name}, 文件大小: ${formatFileSize(file.size)}, 来源: 本地上传`);
                     
                     const reader = new FileReader();
+                    
+                    // 先以ArrayBuffer形式读取文件，用于检测文件类型
                     reader.onload = function(e) {
                         try {
                             console.log('文件读取成功');
-                            const content = e.target.result;
+                            const arrayBuffer = e.target.result;
+                            const content = new TextDecoder().decode(arrayBuffer);
                             currentFileContent = content;
                             
                             // 检查是否是加密文件
-                            if (content.startsWith('data:')) {
+                            // 1. 检查是否以'data:'开头（完整的data URL）
+                            // 2. 检查是否看起来是base64编码的内容
+                            // 3. 检查是否包含不可打印字符或乱码（可能是二进制加密文件）
+                            function isBase64(str) {
+                                try {
+                                    // 检查是否只包含base64字符
+                                    return /^[A-Za-z0-9+/]*={0,2}$/.test(str) && 
+                                           // 检查长度是否是4的倍数
+                                           (str.length % 4 === 0);
+                                } catch {
+                                    return false;
+                                }
+                            }
+                            
+                            function containsBinaryData(str) {
+                                // 检查是否包含不可打印字符（除了换行符、制表符等常见控制字符）
+                                // 或者包含Unicode替换字符（表示解码错误）
+                                return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
+                            }
+                            
+                            if (content.startsWith('data:') || isBase64(content) || containsBinaryData(content)) {
                                 isEncryptedFile = true;
                                 showDecryptModal();
                             } else {
@@ -877,7 +901,7 @@
                         fileInfo.textContent = '文件读取错误，请重试';
                         addLogEntry(LOG_TYPES.ERROR, '文件读取失败', `文件名: ${file.name}, 无法读取选定的文件, 来源: 本地上传`);
                     };
-                    reader.readAsText(file);
+                    reader.readAsArrayBuffer(file);
                 } else {
                     console.log('未选择文件');
                 }
@@ -901,14 +925,36 @@
                         if (!response.ok) {
                             throw new Error(`HTTP错误! 状态: ${response.status}`);
                         }
-                        return response.text();
+                        return response.arrayBuffer();
                     })
-                    .then(content => {
+                    .then(arrayBuffer => {
                         console.log('文件加载成功，开始解析');
+                        const content = new TextDecoder().decode(arrayBuffer);
                         currentFileContent = content;
+                        currentFileArrayBuffer = arrayBuffer; // 保存原始ArrayBuffer
                         
                         // 检查是否是加密文件
-                        if (content.startsWith('data:')) {
+                        // 1. 检查是否以'data:'开头（完整的data URL）
+                        // 2. 检查是否看起来是base64编码的内容
+                        // 3. 检查是否包含不可打印字符或乱码（可能是二进制加密文件）
+                        function isBase64(str) {
+                            try {
+                                // 检查是否只包含base64字符
+                                return /^[A-Za-z0-9+/]*={0,2}$/.test(str) && 
+                                       // 检查长度是否是4的倍数
+                                       (str.length % 4 === 0);
+                            } catch {
+                                return false;
+                            }
+                        }
+                        
+                        function containsBinaryData(str) {
+                            // 检查是否包含不可打印字符（除了换行符、制表符等常见控制字符）
+                            // 或者包含Unicode替换字符（表示解码错误）
+                            return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
+                        }
+                        
+                        if (content.startsWith('data:') || isBase64(content) || containsBinaryData(content)) {
                             isEncryptedFile = true;
                             showDecryptModal();
                         } else {
@@ -951,45 +997,14 @@
                 entries = [];
                 
                 try {
-                    // 尝试解析为JSON
+                    // 解析为JSON
                     entries = JSON.parse(content);
                     console.log(`JSON解析完成，找到 ${entries.length} 个条目`);
                 } catch (jsonError) {
-                    // JSON解析失败，尝试解析为HTML
-                    console.log('JSON解析失败，尝试解析为HTML');
-                    const pattern = /<p>(.+?)<\/p>/g;
-                    let match;
-                    let count = 0;
-                    
-                    while ((match = pattern.exec(content)) !== null) {
-                        const line = match[1];
-                        // 分割字符串，支持中文冒号和英文冒号
-                        const parts = line.split(/[：:]/);
-                        
-                        if (parts.length >= 2) {
-                            const platform = parts[0].trim();
-                            const accountType = parts[1].trim();
-                            const passwordPattern = parts.length > 2 ? parts.slice(2).join('：').trim() : '';
-                            
-                            entries.push({ platform, accountType, passwordPattern });
-                            count++;
-                        } else {
-                            // 尝试其他可能的格式
-                            const simplePattern = /([^：:]+)[：:]([^：:]+)/;
-                            const simpleMatch = line.match(simplePattern);
-                            
-                            if (simpleMatch) {
-                                entries.push({
-                                    platform: simpleMatch[1].trim(),
-                                    accountType: simpleMatch[2].trim(),
-                                    passwordPattern: ''
-                                });
-                                count++;
-                            }
-                        }
-                    }
-                    
-                    console.log(`HTML解析完成，找到 ${count} 个条目`);
+                    console.error('JSON解析失败:', jsonError);
+                    alert('JSON文件解析失败: ' + jsonError.message);
+                    addLogEntry(LOG_TYPES.ERROR, 'JSON文件解析失败', `错误信息: ${jsonError.message}`);
+                    return;
                 }
                 
                 // 渲染条目列表
@@ -1066,8 +1081,133 @@
                     }
                     
                     // 解密文件内容
-                    const encryptedData = currentFileContent.replace('data:application/json;base64,', '');
+                    let encryptedData = currentFileContent;
+                    // 如果是完整的data URL，去掉前缀
+                    if (encryptedData.startsWith('data:application/json;base64,')) {
+                        encryptedData = encryptedData.replace('data:application/json;base64,', '');
+                    }
+                    
+                    // 如果内容包含不可打印字符，可能是二进制数据，尝试转换为base64
+                    function containsBinaryData(str) {
+                        return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
+                    }
+                    
+                    if (containsBinaryData(encryptedData)) {
+                        // 对于二进制数据，我们需要重新以ArrayBuffer读取原始文件
+                        // 因为currentFileContent是通过TextDecoder解码的，可能已经损坏
+                        console.log('检测到二进制数据，需要重新读取文件');
+                        
+                        if (fileInput.files && fileInput.files[0]) {
+                            // 如果是通过文件上传的
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                try {
+                                    const arrayBuffer = e.target.result;
+                                    const binaryStr = String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+                                    const base64Data = btoa(binaryStr);
+                                    
+                                    // 重新解密
+                                    AESUtil.decrypt(base64Data, password)
+                                        .then(decryptedContent => {
+                                            // 解析解密后的内容
+                                            parseFileContent(decryptedContent);
+                                            
+                                            // 切换到主内容界面
+                                            uploadSection.classList.add('d-none');
+                                            mainContent.classList.remove('d-none');
+                                            mainContent.classList.add('d-flex');
+                                            
+                                            // 关闭模态框
+                                            decryptModal.hide();
+                                            decryptPatternPassword.reset();
+                                            
+                                            // 清除错误计数
+                                            CookieUtil.set('mmks', '0', 1);
+                                            
+                                            addLogEntry(LOG_TYPES.SUCCESS, '文件解密成功', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
+                                        })
+                                        .catch(error => {
+                                            handleDecryptError(error);
+                                        });
+                                } catch (error) {
+                                    handleDecryptError(error);
+                                }
+                            };
+                            reader.readAsArrayBuffer(fileInput.files[0]);
+                            return;
+                        } else {
+                        // 如果是通过网络加载的，使用保存的原始ArrayBuffer
+                        console.log('使用网络加载的原始ArrayBuffer进行处理');
+                        try {
+                            const binaryStr = String.fromCharCode.apply(null, new Uint8Array(currentFileArrayBuffer));
+                            const base64Data = btoa(binaryStr);
+                            
+                            // 重新解密
+                            AESUtil.decrypt(base64Data, password)
+                                .then(decryptedContent => {
+                                    // 解析解密后的内容
+                                    parseFileContent(decryptedContent);
+                                    
+                                    // 切换到主内容界面
+                                    uploadSection.classList.add('d-none');
+                                    mainContent.classList.remove('d-none');
+                                    mainContent.classList.add('d-flex');
+                                    
+                                    // 关闭模态框
+                                    decryptModal.hide();
+                                    decryptPatternPassword.reset();
+                                    
+                                    // 清除错误计数
+                                    CookieUtil.set('mmks', '0', 1);
+                                    
+                                    addLogEntry(LOG_TYPES.SUCCESS, '文件解密成功', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
+                                })
+                                .catch(error => {
+                                    handleDecryptError(error);
+                                });
+                        } catch (error) {
+                            handleDecryptError(error);
+                        }
+                        return;
+                    }
+                    }
+                    
+                    // 正常解密
                     const decryptedContent = await AESUtil.decrypt(encryptedData, password);
+                    
+                    function handleDecryptError(error) {
+                        console.error('解密失败:', error);
+                        
+                        // 增加错误计数
+                        const errorCount = parseInt(CookieUtil.get('mmks') || 0) + 1;
+                        CookieUtil.set('mmks', errorCount.toString(), 1);
+                        
+                        document.getElementById('decryptError').textContent = '密码错误，请重试！';
+                        decryptPatternPassword.reset();
+                        
+                        // 获取所有密码输入框并添加错误样式
+                            const passwordInputs = document.querySelectorAll('.password-input');
+                            passwordInputs.forEach(input => {
+                                // 先移除可能存在的样式，确保动画能再次触发
+                                input.classList.remove('input-error', 'shake');
+                                // 触发重排，确保动画能正常播放
+                                void input.offsetWidth;
+                                // 添加错误样式
+                                input.classList.add('input-error', 'shake');
+                                
+                                // 3秒后移除样式，以便下次错误时可以再次触发动画
+                                setTimeout(() => {
+                                    input.classList.remove('input-error', 'shake');
+                                }, 3000);
+                            });
+                        
+                        addLogEntry(LOG_TYPES.ERROR, '文件解密失败', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
+                        
+                        // 显示错误提示
+                        if (errorCount >= 3) {
+                            document.getElementById('decryptError').textContent = '密码错误次数过多，请24小时后再试！';
+                        }
+                    }
                     
                     // 解析解密后的内容
                     parseFileContent(decryptedContent);

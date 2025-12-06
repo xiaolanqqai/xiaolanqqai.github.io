@@ -145,6 +145,23 @@ body {
     animation: fadeIn 0.3s ease-out;
 }
 
+/* 抖动动画 - 用于错误提示 */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* 错误状态样式 */
+.input-error {
+    border-color: var(--danger-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(225, 82, 61, 0.25) !important;
+}
+
 /* 进度条样式 */
 .progress-container {
     position: fixed;
