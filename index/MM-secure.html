@@ -51,18 +51,50 @@
 			border-color: #0a58ca;
 		}
 
+		/* 密码显示区域样式更新 */
 		.password-display {
-			font-size: 24px;
+			font-size: 32px;
 			text-align: center;
 			margin: 20px 0;
-			letter-spacing: 10px;
+			letter-spacing: 15px;
 			font-family: monospace;
+			padding: 15px;
+			border: 2px solid #ced4da;
+			border-radius: 8px;
+			background-color: #f8f9fa;
+			color: #495057;
+			transition: all 0.3s ease;
+			min-height: 60px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		/* 错误状态下的密码显示区域 */
+		.password-display.error {
+			border-color: #dc3545;
+			background-color: #fff5f5;
+			color: #dc3545;
+			box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+		}
+
+		/* 抖动动画 */
+		@keyframes shake {
+			0%, 100% { transform: translateX(0); }
+			10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+			20%, 40%, 60%, 80% { transform: translateX(5px); }
+		}
+
+		/* 抖动效果类 */
+		.shake {
+			animation: shake 0.5s ease-in-out;
 		}
 
 		.error-message {
 			color: #dc3545;
 			text-align: center;
 			margin: 10px 0;
+			font-weight: 500;
 		}
 
 		.lockout-message {
@@ -382,6 +414,8 @@
 			currentPassword = '';
 			updatePasswordDisplay();
 			document.getElementById('error-message').textContent = '';
+			// 清除错误样式
+			document.getElementById('password-display').classList.remove('error');
 		}
 
 		// 检查锁定状态
@@ -446,6 +480,20 @@
 
 			const message = `密码错误！剩余尝试次数：${Math.max(0, MAX_ERRORS - errorCount)}`;
 			document.getElementById('error-message').textContent = message;
+
+			// 应用抖动效果和错误样式
+			const passwordDisplay = document.getElementById('password-display');
+			passwordDisplay.classList.add('error', 'shake');
+
+			// 移除抖动效果和错误样式
+			setTimeout(() => {
+				passwordDisplay.classList.remove('shake');
+			}, 500);
+
+			// 3秒后移除错误样式
+			setTimeout(() => {
+				passwordDisplay.classList.remove('error');
+			}, 3000);
 		}
 
 		// 加载MM-encrypted.json文件
