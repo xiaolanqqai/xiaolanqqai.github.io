@@ -16,28 +16,33 @@
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/all.min.css">
     <link href="../../css/manager-styles.css" rel="stylesheet">
+    <!-- 深色模式样式 -->
+    <link rel="stylesheet" href="../../css/dark-mode.css">
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
+    <script src="../../js/dark-mode.js"></script>
     <style>
         /* 页面特定样式 */
         .header-gradient {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--primary-color) 100%);
         }
         
         .option-card {
             transition: all 0.3s;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-color);
+            background-color: var(--card-bg);
         }
         
         .option-card:hover {
-            border-color: #3498db;
-            background: #f0f8ff;
+            border-color: var(--primary-color);
+            background: var(--bg-light);
         }
         
         .entry-item {
-            border-left: 4px solid #3498db;
+            border-left: 4px solid var(--primary-color);
             cursor: grab;
             transition: transform 0.2s, box-shadow 0.2s;
+            background-color: var(--card-bg);
         }
         
         .entry-item:active {
@@ -48,33 +53,34 @@
         
         .entry-item.dragging {
             opacity: 0.6;
-            background: #e3f2fd;
+            background: var(--bg-light);
         }
         
         .entry-item.editing {
-            background: #e3f2fd;
-            border-left-color: #2ecc71;
+            background: var(--bg-light);
+            border-left-color: var(--success-color);
         }
         
         .drag-handle {
             cursor: move;
-            color: #7f8c8d;
+            color: var(--text-secondary);
         }
         
         .upload-area {
-            border: 2px dashed #dee2e6;
+            border: 2px dashed var(--border-color);
             transition: all 0.2s ease;
+            background-color: var(--card-bg);
         }
         
         .upload-area:hover {
-            border-color: #3498db;
-            background-color: #e9ecef;
+            border-color: var(--primary-color);
+            background-color: var(--bg-light);
         }
         
         .baidu-notice {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
+            background: var(--warning-color);
+            border: 1px solid var(--warning-color);
+            color: var(--text-primary);
         }
         
         .baidu-button {
@@ -82,7 +88,7 @@
             text-align: center;
             margin: 10px 0;
             padding: 10px;
-            background: #2932e1;
+            background: var(--primary-color);
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -109,13 +115,13 @@
         
         /* 管理页面导航栏中的感叹号按钮样式 */
         .manager-nav-button.bg-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
-            color: white !important;
+            background: linear-gradient(135deg, var(--warning-color) 0%, #ffb300 100%) !important;
+            color: var(--text-light) !important;
         }
         
         .manager-nav-button.bg-warning:hover {
             background: linear-gradient(135deg, #ffb300 0%, #ffa000 100%) !important;
-            color: white !important;
+            color: var(--text-light) !important;
         }
         
         /* 日志条目样式 */
@@ -123,45 +129,47 @@
             padding: 10px 12px;
             margin-bottom: 8px;
             border-radius: 6px;
-            border-left: 4px solid #007bff;
-            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            background-color: var(--bg-secondary);
             font-size: 0.875rem;
+            color: var(--text-primary);
         }
         
         .log-entry.success {
-            border-left-color: #28a745;
-            background-color: #f8fff9;
+            border-left-color: var(--success-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.error {
-            border-left-color: #dc3545;
-            background-color: #fff5f5;
+            border-left-color: var(--danger-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.warning {
-            border-left-color: #ffc107;
-            background-color: #fffef0;
+            border-left-color: var(--warning-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.info {
-            border-left-color: #17a2b8;
-            background-color: #f0f9ff;
+            border-left-color: var(--info-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-time {
             font-size: 0.75rem;
-            color: #6c757d;
+            color: var(--text-secondary);
             margin-bottom: 4px;
         }
         
         .log-message {
             font-weight: 500;
             margin-bottom: 2px;
+            color: var(--text-primary);
         }
         
         .log-details {
             font-size: 0.8rem;
-            color: #6c757d;
+            color: var(--text-secondary);
             white-space: pre-wrap;
         }
         
@@ -169,27 +177,29 @@
         .password-input {
             width: 50px;
             height: 50px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-color);
             border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
             font-weight: bold;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
         }
         
         .password-input.filled {
-            border-color: #28a745;
-            background-color: #f8fff9;
+            border-color: var(--success-color);
+            background-color: var(--bg-secondary);
         }
         
         /* 图案按钮样式 */
         .pattern-btn {
             width: 60px;
             height: 60px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-color);
             border-radius: 5px;
-            background-color: #fff;
+            background-color: var(--bg-light);
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -1510,5 +1520,8 @@
             });
         }
     </script>
+    
+    <!-- 深色模式功能 -->
+    <script src="../../js/dark-mode.js"></script>
 </body>
 </html>

@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="../../css/dark-mode.css">
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
+    <script src="../../js/dark-mode.js"></script>
     <style>
         /* 页面特定样式 */
         .site-card {
@@ -83,11 +84,12 @@
         
         .json-preview {
             font-family: 'Courier New', Courier, monospace;
-            background-color: #f8f9fa;
+            background-color: var(--bg-secondary);
             border-radius: 4px;
             max-height: 250px;
             overflow-y: auto;
             font-size: 0.8rem;
+            color: var(--text-primary);
         }
         
         .page-btn {
@@ -95,8 +97,8 @@
         }
         
         .special-section .badge {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
+            background-color: var(--bg-secondary);
+            color: var(--text-light);
         }
         
         /* 操作日志按钮样式 */
@@ -125,13 +127,13 @@
         
         /* 管理页面导航栏中的感叹号按钮样式 */
         .manager-nav-button.bg-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
-            color: white !important;
+            background: linear-gradient(135deg, var(--warning-color) 0%, #ffb300 100%) !important;
+            color: var(--text-light) !important;
         }
         
         .manager-nav-button.bg-warning:hover {
             background: linear-gradient(135deg, #ffb300 0%, #ffa000 100%) !important;
-            color: white !important;
+            color: var(--text-light) !important;
         }
         
         /* 日志条目样式 */
@@ -139,45 +141,46 @@
             padding: 10px 12px;
             margin-bottom: 8px;
             border-radius: 6px;
-            border-left: 4px solid #007bff;
-            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            background-color: var(--bg-secondary);
             font-size: 0.875rem;
         }
         
         .log-entry.success {
-            border-left-color: #28a745;
-            background-color: #f8fff9;
+            border-left-color: var(--success-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.error {
-            border-left-color: #dc3545;
-            background-color: #fff5f5;
+            border-left-color: var(--danger-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.warning {
-            border-left-color: #ffc107;
-            background-color: #fffef0;
+            border-left-color: var(--warning-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.info {
-            border-left-color: #17a2b8;
-            background-color: #f0f9ff;
+            border-left-color: var(--info-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-time {
             font-size: 0.75rem;
-            color: #6c757d;
+            color: var(--text-secondary);
             margin-bottom: 4px;
         }
         
         .log-message {
             font-weight: 500;
             margin-bottom: 2px;
+            color: var(--text-primary);
         }
         
         .log-details {
             font-size: 0.8rem;
-            color: #6c757d;
+            color: var(--text-secondary);
             white-space: pre-wrap;
         }
     </style>
@@ -4242,11 +4245,5 @@
     
     <!-- 深色模式功能 -->
     <script src="../../js/dark-mode.js"></script>
-    <script>
-        // 初始化深色模式
-        document.addEventListener('DOMContentLoaded', function() {
-            new DarkMode();
-        });
-    </script>
 </body>
 </html>

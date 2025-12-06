@@ -4,14 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MM.htm 转 JSON 工具</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- PWA相关配置 -->
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#3e8e41">
+    <meta name="description" content="MM.htm转JSON工具">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MM转JSON">
+    <link rel="apple-touch-icon" href="../../img/index.png">
+    
+    <link href="../../css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/all.min.css">
+    <!-- 深色模式样式 -->
+    <link rel="stylesheet" href="../../css/dark-mode.css">
+    <!-- 管理页面通用样式 -->
+    <link rel="stylesheet" href="../../css/manager-styles.css">
+    <!-- 引入通用脚本 -->
+    <script src="../../js/manager-common.js"></script>
+    <script src="../../js/dark-mode.js"></script>
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
         .container {
             max-width: 800px;
             margin-top: 50px;
+        }
+        .back-home {
+            margin-bottom: 20px;
         }
         .card {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -20,18 +37,43 @@
             margin: 5px;
         }
         .json-output {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 5px;
             padding: 15px;
             max-height: 400px;
             overflow-y: auto;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 14px;
+            color: var(--text-primary);
         }
     </style>
 </head>
-<body>
+<body class="manager-body">
+    <!-- 返回首页按钮 -->
+    <a href="../../index.html" class="home-button bg-dark text-white" title="返回首页">
+        <i class="fas fa-home"></i>
+    </a>
+    
+    <!-- 管理页面导航栏 -->
+    <nav class="manager-nav">
+        <a href="nav-manager.html" class="manager-nav-button">
+            <i class="fas fa-sitemap"></i> 导航管理
+        </a>
+        <a href="MM-generator.html" class="manager-nav-button">
+            <i class="fas fa-key"></i> 密码生成
+        </a>
+        <a href="vol-manager.html" class="manager-nav-button">
+            <i class="fas fa-code-branch"></i> 版本管理
+        </a>
+        <a href="explore-manager.html" class="manager-nav-button">
+            <i class="fas fa-compass"></i> 探索网页
+        </a>
+        <a href="convert-mm-to-json.html" class="manager-nav-button active">
+            <i class="fas fa-exchange-alt"></i> MM转JSON
+        </a>
+    </nav>
+    
     <div class="container">
         <div class="card">
             <div class="card-header">
@@ -68,7 +110,7 @@
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const fileInput = document.getElementById('fileInput');

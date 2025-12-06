@@ -37,8 +37,14 @@ class DarkMode {
         // 创建主题切换按钮
         this.createThemeToggleButton();
         
-        // 设置初始主题（根据时间）
-        this.updateThemeByTime();
+        // 首先应用用户保存的主题（如果有）
+        this.applySavedTheme();
+        
+        // 如果用户没有手动设置主题，根据时间自动设置
+        const userThemePreference = localStorage.getItem('dark-mode');
+        if (!userThemePreference) {
+            this.updateThemeByTime();
+        }
         
         // 绑定主题切换事件
         this.bindThemeToggleEvent();
@@ -57,6 +63,8 @@ class DarkMode {
         }, 60 * 60 * 1000);
         
         console.log('DarkMode: 初始化完成');
+        console.log('DarkMode: 最终主题:', document.documentElement.getAttribute('data-theme'));
+        console.log('DarkMode: localStorage主题:', localStorage.getItem('dark-mode'));
         
         // 测试主题切换功能
         console.log('DarkMode: 测试 - 主题切换按钮:', document.getElementById('themeToggle'));
@@ -124,30 +132,35 @@ class DarkMode {
 
     // 应用保存的主题
     applySavedTheme() {
+        // 调试信息
+        console.log('DarkMode: applySavedTheme方法被调用');
+        
         // 从localStorage获取保存的主题，默认使用light
         const savedTheme = localStorage.getItem('dark-mode') || 'light';
-        const finalTheme = savedTheme === 'dark' ? 'dark' : 'light';
+        console.log('DarkMode: 从localStorage获取的主题:', savedTheme);
         
-        console.log(`DarkMode: 应用保存的主题: ${finalTheme}`);
+        // 直接使用获取的主题，确保正确
+        const finalTheme = savedTheme === 'dark' ? 'dark' : 'light';
+        console.log(`DarkMode: 最终应用的主题: ${finalTheme}`);
         
         // 应用主题到HTML根元素
         document.documentElement.setAttribute('data-theme', finalTheme);
+        console.log('DarkMode: applySavedTheme后data-theme属性值:', document.documentElement.getAttribute('data-theme'));
         
         // 直接设置背景色和文本色，确保主题立即生效
-        const isDark = finalTheme === 'dark';
         const html = document.documentElement;
         const body = document.body;
         
-        if (isDark) {
-            html.style.backgroundColor = '#2b2b2b';
-            body.style.backgroundColor = '#2b2b2b';
-            html.style.color = '#f8f9fa';
-            body.style.color = '#f8f9fa';
+        if (finalTheme === 'dark') {
+            html.style.backgroundColor = 'var(--bg-primary)';
+            body.style.backgroundColor = 'var(--bg-primary)';
+            html.style.color = 'var(--text-primary)';
+            body.style.color = 'var(--text-primary)';
         } else {
-            html.style.backgroundColor = '#ffffff';
-            body.style.backgroundColor = '#ffffff';
-            html.style.color = '#212529';
-            body.style.color = '#212529';
+            html.style.backgroundColor = 'var(--bg-primary)';
+            body.style.backgroundColor = 'var(--bg-primary)';
+            html.style.color = 'var(--text-primary)';
+            body.style.color = 'var(--text-primary)';
         }
         
         // 更新主题图标
@@ -156,45 +169,53 @@ class DarkMode {
     
     // 根据北京日出日落时间自动更新主题
     updateThemeByTime() {
+        // 调试信息
+        console.log('DarkMode: updateThemeByTime方法被调用');
+        
         // 获取当前北京时间
         const now = new Date();
         const hours = now.getHours();
         const minutes = now.getMinutes();
         const currentTime = hours + minutes / 60;
+        console.log(`DarkMode: 当前时间: ${hours}:${minutes} (${currentTime}小时)`);
         
         // 北京大致日出日落时间（冬季）
         // 日出：约7:00
         // 日落：约17:30
         const sunrise = 7.0;
         const sunset = 17.5;
+        console.log(`DarkMode: 日出时间: ${sunrise}小时, 日落时间: ${sunset}小时`);
         
         // 判断是否应该使用深色模式
         // 晚上17:30到早上7:00使用深色模式
         const shouldBeDark = currentTime < sunrise || currentTime > sunset;
         const targetTheme = shouldBeDark ? 'dark' : 'light';
+        console.log(`DarkMode: 根据时间判断应该使用的主题: ${targetTheme} (shouldBeDark: ${shouldBeDark})`);
         
         // 检查用户是否手动切换过主题
         const userThemePreference = localStorage.getItem('dark-mode');
+        console.log(`DarkMode: 用户手动设置的主题: ${userThemePreference}`);
         
         // 如果用户没有手动切换过主题，根据时间自动切换
         if (!userThemePreference) {
             console.log(`DarkMode: 根据时间自动切换主题: ${targetTheme}`);
             document.documentElement.setAttribute('data-theme', targetTheme);
+            console.log('DarkMode: updateThemeByTime后data-theme属性值:', document.documentElement.getAttribute('data-theme'));
             
             // 直接设置背景色和文本色
             const html = document.documentElement;
             const body = document.body;
             
             if (shouldBeDark) {
-                html.style.backgroundColor = '#2b2b2b';
-                body.style.backgroundColor = '#2b2b2b';
-                html.style.color = '#f8f9fa';
-                body.style.color = '#f8f9fa';
+                html.style.backgroundColor = 'var(--bg-primary)';
+                body.style.backgroundColor = 'var(--bg-primary)';
+                html.style.color = 'var(--text-primary)';
+                body.style.color = 'var(--text-primary)';
             } else {
-                html.style.backgroundColor = '#ffffff';
-                body.style.backgroundColor = '#ffffff';
-                html.style.color = '#212529';
-                body.style.color = '#212529';
+                html.style.backgroundColor = 'var(--bg-primary)';
+                body.style.backgroundColor = 'var(--bg-primary)';
+                html.style.color = 'var(--text-primary)';
+                body.style.color = 'var(--text-primary)';
             }
             
             // 更新主题图标
@@ -207,46 +228,45 @@ class DarkMode {
 
     // 切换主题
     toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        // 调试信息
+        console.log('DarkMode: toggleTheme方法被调用');
         
+        // 简单直接的主题切换逻辑
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        console.log('DarkMode: 当前主题:', currentTheme);
+        
+        // 计算新主题（与当前主题相反）
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         console.log(`DarkMode: 切换主题: ${currentTheme} -> ${newTheme}`);
         
-        // 应用新主题
+        // 直接设置新主题到DOM
         document.documentElement.setAttribute('data-theme', newTheme);
+        
+        // 保存到localStorage
         localStorage.setItem('dark-mode', newTheme);
         
-        // 更新图标
-        this.updateThemeIcon();
+        // 验证设置是否成功
+        console.log('DarkMode: 设置后data-theme:', document.documentElement.getAttribute('data-theme'));
+        console.log('DarkMode: 设置后localStorage:', localStorage.getItem('dark-mode'));
         
-        // 直接修改body和html的背景色和文本色
+        // 直接设置背景色和文本色，确保立即切换
         const html = document.documentElement;
         const body = document.body;
         
         if (newTheme === 'dark') {
-            // 深色主题
-            html.style.backgroundColor = '#2b2b2b';
-            body.style.backgroundColor = '#2b2b2b';
-            html.style.color = '#f8f9fa';
-            body.style.color = '#f8f9fa';
+            html.style.backgroundColor = 'var(--bg-primary)';
+            body.style.backgroundColor = 'var(--bg-primary)';
+            html.style.color = 'var(--text-primary)';
+            body.style.color = 'var(--text-primary)';
         } else {
-            // 浅色主题
-            html.style.backgroundColor = '#ffffff';
-            body.style.backgroundColor = '#ffffff';
-            html.style.color = '#212529';
-            body.style.color = '#212529';
+            html.style.backgroundColor = 'var(--bg-primary)';
+            body.style.backgroundColor = 'var(--bg-primary)';
+            html.style.color = 'var(--text-primary)';
+            body.style.color = 'var(--text-primary)';
         }
         
-        // 处理颜色类和硬编码颜色值
-        this.applyThemeColors(newTheme);
-        
-        // 确保页面所有元素都应用了正确的主题样式
-        setTimeout(() => {
-            this.applyThemeColors(newTheme);
-        }, 100);
-        
-        // 添加过渡动画
-        document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+        // 更新图标
+        this.updateThemeIcon();
         
         // 显示切换提示
         this.showToast(`主题已切换为${newTheme === 'dark' ? '深色' : '浅色'}模式`);
@@ -254,11 +274,33 @@ class DarkMode {
 
     // 应用主题颜色转换
     applyThemeColors(theme) {
-        // 如果没有提供theme参数，从HTML根元素获取
-        const currentTheme = theme || document.documentElement.getAttribute('data-theme') || 'light';
+        // 确保theme参数只能是'dark'或'light'
+        const currentTheme = (theme === 'dark') ? 'dark' : 'light';
         const isDark = currentTheme === 'dark';
         
         console.log(`DarkMode: 应用主题颜色: ${isDark ? '深色' : '浅色'}`);
+        console.log(`DarkMode: applyThemeColors接收的theme参数: ${theme}`);
+        console.log(`DarkMode: applyThemeColors使用的currentTheme: ${currentTheme}`);
+        
+        // 直接为HTML和body应用主题颜色
+        const html = document.documentElement;
+        const body = document.body;
+        
+        if (isDark) {
+            // 深色主题 - 强制设置背景色和文本色
+            html.style.backgroundColor = 'var(--bg-primary)';
+            body.style.backgroundColor = 'var(--bg-primary)';
+            html.style.color = 'var(--text-primary)';
+            body.style.color = 'var(--text-primary)';
+            console.log('DarkMode: 应用深色主题颜色');
+        } else {
+            // 浅色主题 - 强制设置背景色和文本色
+            html.style.backgroundColor = 'var(--bg-primary)';
+            body.style.backgroundColor = 'var(--bg-primary)';
+            html.style.color = 'var(--text-primary)';
+            body.style.color = 'var(--text-primary)';
+            console.log('DarkMode: 应用浅色主题颜色');
+        }
         
         // 处理Bootstrap颜色类
         this.processBootstrapColorClasses(isDark);
@@ -266,31 +308,22 @@ class DarkMode {
         // 处理硬编码的颜色值
         this.processHardcodedColors(isDark);
         
-        // 直接为常见元素应用颜色
-        const html = document.documentElement;
-        const body = document.body;
-        
         if (isDark) {
-            // 深色主题
-            html.style.backgroundColor = '#2b2b2b';
-            body.style.backgroundColor = '#2b2b2b';
-            html.style.color = '#f8f9fa';
-            body.style.color = '#f8f9fa';
-            
-            // 为所有容器、卡片、区域应用深色背景
+            // 深色主题 - 为所有容器、卡片、区域应用深色背景
             const containers = document.querySelectorAll('.container, .row, .col, .section, .content, .main-content, .sidebar, .header, .footer, .panel, .widget, .block, .module, .box, .item, .element, .component, .part, .area, .zone');
             containers.forEach(container => {
-                container.style.backgroundColor = '#2b2b2b';
-                container.style.color = '#f8f9fa';
+                container.style.backgroundColor = 'var(--bg-primary)';
+                container.style.color = 'var(--text-primary)';
             });
             
-            // 为所有文本元素应用深色文本
-            const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, strong, li, .t1, .text-black-50');
+            // 深色主题 - 为所有文本元素应用深色文本
+            // 扩大选择器范围，确保覆盖所有可能的文本元素
+            const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, strong, li, div, td, th, label, .t1, .text-black-50, .text-dark, .text-muted');
             textElements.forEach(text => {
-                text.style.color = '#f8f9fa';
+                text.style.color = 'var(--text-primary)';
             });
             
-            // 特别处理alert元素
+            // 深色主题 - 特别处理alert元素
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
                 alert.style.backgroundColor = '#333333';
@@ -298,21 +331,21 @@ class DarkMode {
                 alert.style.borderColor = '#555555';
             });
             
-            // 特别处理badge元素
+            // 深色主题 - 特别处理badge元素
             const badges = document.querySelectorAll('.badge');
             badges.forEach(badge => {
                 badge.style.backgroundColor = '#444444';
                 badge.style.color = '#f8f9fa';
             });
             
-            // 特别处理MM-secure.html中的密码输入区域
+            // 深色主题 - 特别处理MM-secure.html中的密码输入区域
             const passwordContainer = document.querySelector('.password-container');
             if (passwordContainer) {
                 passwordContainer.style.backgroundColor = 'rgba(43, 43, 43, 0.9)';
                 passwordContainer.style.color = '#f8f9fa';
             }
             
-            // 特别处理MM-secure.html中的模式按钮
+            // 深色主题 - 特别处理MM-secure.html中的模式按钮
             const patternBtns = document.querySelectorAll('.pattern-btn');
             patternBtns.forEach(btn => {
                 btn.style.backgroundColor = '#444444';
@@ -320,33 +353,27 @@ class DarkMode {
                 btn.style.color = '#f8f9fa';
             });
             
-            // 特别处理MM-secure.html中的选中模式按钮
+            // 深色主题 - 特别处理MM-secure.html中的选中模式按钮
             const selectedPatternBtns = document.querySelectorAll('.pattern-btn.selected');
             selectedPatternBtns.forEach(btn => {
                 btn.style.backgroundColor = '#0d6efd';
                 btn.style.color = '#ffffff';
             });
         } else {
-            // 浅色主题
-            html.style.backgroundColor = '#ffffff';
-            body.style.backgroundColor = '#ffffff';
-            html.style.color = '#212529';
-            body.style.color = '#212529';
-            
-            // 为所有容器、卡片、区域应用浅色背景
+            // 浅色主题 - 为所有容器、卡片、区域应用浅色背景
             const containers = document.querySelectorAll('.container, .row, .col, .section, .content, .main-content, .sidebar, .header, .footer, .panel, .widget, .block, .module, .box, .item, .element, .component, .part, .area, .zone');
             containers.forEach(container => {
                 container.style.backgroundColor = '#ffffff';
                 container.style.color = '#212529';
             });
             
-            // 为所有文本元素应用浅色文本
+            // 浅色主题 - 为所有文本元素应用浅色文本
             const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, strong, li, .t1, .text-black-50');
             textElements.forEach(text => {
                 text.style.color = '#212529';
             });
             
-            // 特别处理alert元素
+            // 浅色主题 - 特别处理alert元素
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {
                 alert.style.backgroundColor = '';
@@ -354,21 +381,21 @@ class DarkMode {
                 alert.style.borderColor = '';
             });
             
-            // 特别处理badge元素
+            // 浅色主题 - 特别处理badge元素
             const badges = document.querySelectorAll('.badge');
             badges.forEach(badge => {
                 badge.style.backgroundColor = '';
                 badge.style.color = '';
             });
             
-            // 特别处理MM-secure.html中的密码输入区域
+            // 浅色主题 - 特别处理MM-secure.html中的密码输入区域
             const passwordContainer = document.querySelector('.password-container');
             if (passwordContainer) {
                 passwordContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
                 passwordContainer.style.color = '#212529';
             }
             
-            // 特别处理MM-secure.html中的模式按钮
+            // 浅色主题 - 特别处理MM-secure.html中的模式按钮
             const patternBtns = document.querySelectorAll('.pattern-btn');
             patternBtns.forEach(btn => {
                 btn.style.backgroundColor = '#f8f9fa';
@@ -376,7 +403,7 @@ class DarkMode {
                 btn.style.color = '#212529';
             });
             
-            // 特别处理MM-secure.html中的选中模式按钮
+            // 浅色主题 - 特别处理MM-secure.html中的选中模式按钮
             const selectedPatternBtns = document.querySelectorAll('.pattern-btn.selected');
             selectedPatternBtns.forEach(btn => {
                 btn.style.backgroundColor = '#0d6efd';
@@ -477,8 +504,12 @@ class DarkMode {
             if (!isDark && (color.includes('#212529') || color.includes('#6c757d') || color.includes('#000000'))) {
                 style.color = 'var(--text-primary)';
             }
+            // 检查是否是深色主题下的深色文本（黑色背景配黑色文字的问题）
+            else if (isDark && (color.includes('#212529') || color.includes('#000000') || color.includes('#6c757d'))) {
+                style.color = 'var(--text-primary)';
+            }
             // 检查是否是深色主题下的浅色文本
-            else if (isDark && (color.includes('#ffffff') || color.includes('#f8f9fa') || color.includes('#ffffff'))) {
+            else if (isDark && (color.includes('#ffffff') || color.includes('#f8f9fa'))) {
                 style.color = 'var(--text-primary)';
             }
         });
@@ -526,12 +557,22 @@ class DarkMode {
                 }
             });
             
-            // 处理所有div元素
+            // 处理所有div元素 - 无论是否有内联样式
             const divElements = document.querySelectorAll('div');
             divElements.forEach(div => {
-                if (div.style.color && !div.style.color.includes('var(')) {
-                    div.style.color = 'var(--text-primary)';
-                }
+                div.style.color = 'var(--text-primary)';
+            });
+            
+            // 处理所有表格元素
+            const tableElements = document.querySelectorAll('table, td, th');
+            tableElements.forEach(element => {
+                element.style.color = 'var(--text-primary)';
+            });
+            
+            // 处理所有表单元素
+            const formElements = document.querySelectorAll('input, textarea, select, label');
+            formElements.forEach(element => {
+                element.style.color = 'var(--text-primary)';
             });
             
             // 处理所有a链接元素

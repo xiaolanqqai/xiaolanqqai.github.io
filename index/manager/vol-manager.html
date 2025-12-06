@@ -4,11 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>版本管理系统</title>
+    <!-- PWA相关配置 -->
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#3e8e41">
+    <meta name="description" content="版本管理工具">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="版本管理">
+    <link rel="apple-touch-icon" href="../../img/index.png">
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/all.min.css">
     <link href="../../css/manager-styles.css" rel="stylesheet">
+    <!-- 深色模式样式 -->
+    <link rel="stylesheet" href="../../css/dark-mode.css">
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
+    <script src="../../js/dark-mode.js"></script>
     <style>
         /* 页面特定样式 */
         .version-card {
@@ -20,14 +31,14 @@
         }
         
         .version-header {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);
+            color: var(--text-light);
             border-radius: 6px 6px 0 0;
         }
         
         .readonly-badge {
-            background-color: #6c757d;
-            color: white;
+            background-color: var(--text-secondary);
+            color: var(--text-light);
             font-size: 0.7rem;
             padding: 0.2rem 0.5rem;
             border-radius: 4px;
@@ -45,7 +56,7 @@
             top: 0;
             bottom: 0;
             width: 2px;
-            background-color: #e9ecef;
+            background-color: var(--border-color);
         }
         
         .timeline-item {
@@ -79,17 +90,18 @@
         
         .json-preview {
             font-family: 'Courier New', Courier, monospace;
-            background-color: #f8f9fa;
+            background-color: var(--bg-secondary);
             border-radius: 4px;
             max-height: 250px;
             overflow-y: auto;
             font-size: 0.8rem;
+            color: var(--text-primary);
         }
         
         /* 管理页面导航栏中感叹号按钮样式 */
         .manager-nav-button.bg-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
-            color: white !important;
+            background: linear-gradient(135deg, var(--warning-color) 0%, #ffb300 100%) !important;
+            color: var(--text-light) !important;
             border: none;
         }
         
@@ -103,44 +115,46 @@
             padding: 0.75rem;
             margin-bottom: 0.5rem;
             border-radius: 6px;
-            border-left: 4px solid #6c757d;
-            background-color: #f8f9fa;
+            border-left: 4px solid var(--text-secondary);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
         }
         
         .log-entry.success {
-            border-left-color: #28a745;
-            background-color: #f8fff9;
+            border-left-color: var(--success-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.error {
-            border-left-color: #dc3545;
-            background-color: #fff5f5;
+            border-left-color: var(--danger-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.warning {
-            border-left-color: #ffc107;
-            background-color: #fffef0;
+            border-left-color: var(--warning-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-entry.info {
-            border-left-color: #17a2b8;
-            background-color: #f0f9ff;
+            border-left-color: var(--info-color);
+            background-color: var(--bg-secondary);
         }
         
         .log-time {
             font-size: 0.75rem;
-            color: #6c757d;
+            color: var(--text-secondary);
             margin-bottom: 0.25rem;
         }
         
         .log-message {
             font-weight: 500;
             margin-bottom: 0.25rem;
+            color: var(--text-primary);
         }
         
         .log-details {
             font-size: 0.8rem;
-            color: #6c757d;
+            color: var(--text-secondary);
             font-style: italic;
         }
     </style>
@@ -951,5 +965,8 @@
             </div>
         </div>
     </div>
+    
+    <!-- 深色模式功能 -->
+    <script src="../../js/dark-mode.js"></script>
 </body>
 </html>

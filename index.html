@@ -254,17 +254,6 @@
 
 		//--------------------------------------------------------------
 
-		//剪贴板内容跳转百度搜索
-		function getClipboardText() {
-			return new Promise((resolve, reject) => {
-				navigator.clipboard.readText().then(text => {
-					resolve(text);
-				}).catch(err => {
-					reject(err);
-				});
-			});
-		}
-		
 		// PWA Service Worker注册
 		if ('serviceWorker' in navigator) {
 			window.addEventListener('load', () => {
@@ -285,22 +274,9 @@
 				window.location.reload();
 			});
 		}
-
-		getClipboardText().then(text => {
-			window.open("https://www.baidu.com/s?word=" + text, "_self");
-		}).catch(err => {
-			console.error('获取剪贴板文本失败：', err);
-		});
 	</script>
 	
-	<!-- 深色模式功能 -->
-	<script src="js/dark-mode.js"></script>
-	<script>
-		// 初始化深色模式
-		document.addEventListener('DOMContentLoaded', function() {
-			new DarkMode();
-		});
-	</script>
+
 	
 	<div style="display: none;">111</div>
 
