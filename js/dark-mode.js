@@ -1,16 +1,23 @@
 // 通用深色模式切换功能 - 适用于所有页面
 class DarkMode {
     constructor() {
+        console.log('DarkMode: 构造函数被调用');
         // 绑定this上下文
         this.applyThemeColors = this.applyThemeColors.bind(this);
         this.toggleTheme = this.toggleTheme.bind(this);
         this.applySavedTheme = this.applySavedTheme.bind(this);
+        this.updateThemeByTime = this.updateThemeByTime.bind(this);
+        
+        // 北京坐标
+        this.beijingLat = 39.9042;
+        this.beijingLng = 116.4074;
         
         this.init();
     }
 
     init() {
         console.log('DarkMode: 初始化开始');
+        console.log('DarkMode: 当前this指向:', this);
         
         // 确保DOM完全加载后再执行
         if (document.readyState === 'loading') {
@@ -25,12 +32,13 @@ class DarkMode {
     
     completeInit() {
         console.log('DarkMode: DOM加载完成，开始初始化功能');
+        console.log('DarkMode: 当前this指向:', this);
         
         // 创建主题切换按钮
         this.createThemeToggleButton();
         
-        // 设置初始主题
-        this.applySavedTheme();
+        // 设置初始主题（根据时间）
+        this.updateThemeByTime();
         
         // 绑定主题切换事件
         this.bindThemeToggleEvent();
@@ -43,7 +51,15 @@ class DarkMode {
             this.applyThemeColors();
         }, 500);
         
+        // 设置定时器，每小时检查一次时间并更新主题
+        setInterval(() => {
+            this.updateThemeByTime();
+        }, 60 * 60 * 1000);
+        
         console.log('DarkMode: 初始化完成');
+        
+        // 测试主题切换功能
+        console.log('DarkMode: 测试 - 主题切换按钮:', document.getElementById('themeToggle'));
     }
 
     // 创建主题切换按钮
@@ -84,12 +100,16 @@ class DarkMode {
             // 移除可能存在的旧事件监听器
             themeToggle.removeEventListener('click', this.toggleTheme);
             
-            // 绑定新事件监听器
-            themeToggle.addEventListener('click', this.toggleTheme);
+            // 绑定新事件监听器 - 使用箭头函数确保this指向正确
+            themeToggle.addEventListener('click', () => {
+                console.log('DarkMode: 主题切换按钮被点击！');
+                this.toggleTheme();
+            });
             
             // 添加鼠标事件调试
             themeToggle.addEventListener('mouseover', () => {
                 console.log('DarkMode: 鼠标悬停在主题切换按钮上');
+                console.log('DarkMode: 当前按钮HTML:', themeToggle.innerHTML);
             });
             
             themeToggle.addEventListener('mouseout', () => {
@@ -132,6 +152,57 @@ class DarkMode {
         
         // 更新主题图标
         this.updateThemeIcon();
+    }
+    
+    // 根据北京日出日落时间自动更新主题
+    updateThemeByTime() {
+        // 获取当前北京时间
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const currentTime = hours + minutes / 60;
+        
+        // 北京大致日出日落时间（冬季）
+        // 日出：约7:00
+        // 日落：约17:30
+        const sunrise = 7.0;
+        const sunset = 17.5;
+        
+        // 判断是否应该使用深色模式
+        // 晚上17:30到早上7:00使用深色模式
+        const shouldBeDark = currentTime < sunrise || currentTime > sunset;
+        const targetTheme = shouldBeDark ? 'dark' : 'light';
+        
+        // 检查用户是否手动切换过主题
+        const userThemePreference = localStorage.getItem('dark-mode');
+        
+        // 如果用户没有手动切换过主题，根据时间自动切换
+        if (!userThemePreference) {
+            console.log(`DarkMode: 根据时间自动切换主题: ${targetTheme}`);
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            
+            // 直接设置背景色和文本色
+            const html = document.documentElement;
+            const body = document.body;
+            
+            if (shouldBeDark) {
+                html.style.backgroundColor = '#2b2b2b';
+                body.style.backgroundColor = '#2b2b2b';
+                html.style.color = '#f8f9fa';
+                body.style.color = '#f8f9fa';
+            } else {
+                html.style.backgroundColor = '#ffffff';
+                body.style.backgroundColor = '#ffffff';
+                html.style.color = '#212529';
+                body.style.color = '#212529';
+            }
+            
+            // 更新主题图标
+            this.updateThemeIcon();
+        } else {
+            // 如果用户手动切换过主题，保持用户的偏好
+            console.log(`DarkMode: 保持用户手动设置的主题: ${userThemePreference}`);
+        }
     }
 
     // 切换主题
@@ -233,6 +304,28 @@ class DarkMode {
                 badge.style.backgroundColor = '#444444';
                 badge.style.color = '#f8f9fa';
             });
+            
+            // 特别处理MM-secure.html中的密码输入区域
+            const passwordContainer = document.querySelector('.password-container');
+            if (passwordContainer) {
+                passwordContainer.style.backgroundColor = 'rgba(43, 43, 43, 0.9)';
+                passwordContainer.style.color = '#f8f9fa';
+            }
+            
+            // 特别处理MM-secure.html中的模式按钮
+            const patternBtns = document.querySelectorAll('.pattern-btn');
+            patternBtns.forEach(btn => {
+                btn.style.backgroundColor = '#444444';
+                btn.style.borderColor = '#666666';
+                btn.style.color = '#f8f9fa';
+            });
+            
+            // 特别处理MM-secure.html中的选中模式按钮
+            const selectedPatternBtns = document.querySelectorAll('.pattern-btn.selected');
+            selectedPatternBtns.forEach(btn => {
+                btn.style.backgroundColor = '#0d6efd';
+                btn.style.color = '#ffffff';
+            });
         } else {
             // 浅色主题
             html.style.backgroundColor = '#ffffff';
@@ -266,6 +359,28 @@ class DarkMode {
             badges.forEach(badge => {
                 badge.style.backgroundColor = '';
                 badge.style.color = '';
+            });
+            
+            // 特别处理MM-secure.html中的密码输入区域
+            const passwordContainer = document.querySelector('.password-container');
+            if (passwordContainer) {
+                passwordContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                passwordContainer.style.color = '#212529';
+            }
+            
+            // 特别处理MM-secure.html中的模式按钮
+            const patternBtns = document.querySelectorAll('.pattern-btn');
+            patternBtns.forEach(btn => {
+                btn.style.backgroundColor = '#f8f9fa';
+                btn.style.borderColor = '#ddd';
+                btn.style.color = '#212529';
+            });
+            
+            // 特别处理MM-secure.html中的选中模式按钮
+            const selectedPatternBtns = document.querySelectorAll('.pattern-btn.selected');
+            selectedPatternBtns.forEach(btn => {
+                btn.style.backgroundColor = '#0d6efd';
+                btn.style.color = '#ffffff';
             });
         }
     }

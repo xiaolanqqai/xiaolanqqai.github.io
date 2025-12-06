@@ -2,9 +2,6 @@
 window.onload = function () {
 	//背景触发
 	Particles.init({ selector: '.background' });
-	// 去广告
-	var gg = document.querySelector("body>div:last-of-type");
-	gg.parentNode.removeChild(gg);
 };
 
 //---------------------------------------------------------------------------------

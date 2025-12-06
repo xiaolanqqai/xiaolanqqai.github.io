@@ -16,6 +16,8 @@
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/all.min.css">
     <link href="../../css/manager-styles.css" rel="stylesheet">
+    <!-- 深色模式样式 -->
+    <link rel="stylesheet" href="../../css/dark-mode.css">
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
     <style>
@@ -4236,6 +4238,15 @@
                     });
             });
         }
+    </script>
+    
+    <!-- 深色模式功能 -->
+    <script src="../../js/dark-mode.js"></script>
+    <script>
+        // 初始化深色模式
+        document.addEventListener('DOMContentLoaded', function() {
+            new DarkMode();
+        });
     </script>
 </body>
 </html>
