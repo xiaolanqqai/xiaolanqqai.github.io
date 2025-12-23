@@ -1,7 +1,7 @@
 {
   "version": {
-    "web_vol": "4.0.0",
-    "web_data": "2025.10.28"
+    "web_vol": "4.1.0",
+    "web_data": "2025.12.23"
   },
   "index": {
     "tabs": [
@@ -1262,6 +1262,10 @@
         "name": "开发工具",
         "items": [
           {
+            "name": "Trae IDE",
+            "url": "https://www.trae.ai"
+          },
+          {
             "name": "GitHub",
             "url": "https://github.com"
           },
@@ -1270,16 +1274,12 @@
             "url": "https://stackoverflow.com"
           },
           {
-            "name": "MDN Web Docs",
-            "url": "https://developer.mozilla.org"
+            "name": "Vercel",
+            "url": "https://vercel.com"
           },
           {
-            "name": "CodePen",
-            "url": "https://codepen.io"
-          },
-          {
-            "name": "JSFiddle",
-            "url": "https://jsfiddle.net"
+            "name": "Cloudflare",
+            "url": "https://www.cloudflare.com"
           }
         ]
       },
@@ -1287,20 +1287,24 @@
         "name": "框架文档",
         "items": [
           {
-            "name": "Bootstrap",
-            "url": "https://getbootstrap.com"
+            "name": "Bootstrap 5",
+            "url": "https://getbootstrap.com/docs/5.0/"
           },
           {
-            "name": "Vue.js",
-            "url": "https://vuejs.org"
+            "name": "MDN Web Docs",
+            "url": "https://developer.mozilla.org/zh-CN/"
           },
           {
-            "name": "React",
-            "url": "https://reactjs.org"
+            "name": "Font Awesome 6",
+            "url": "https://fontawesome.com/icons"
           },
           {
-            "name": "jQuery",
-            "url": "https://jquery.com"
+            "name": "Vanilla JS (ES6+)",
+            "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
+          },
+          {
+            "name": "CSS3 Reference",
+            "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS"
           }
         ]
       }

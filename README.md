@@ -40,11 +40,24 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 - **简化布局**：移除冗余元素，专注核心功能
 - **动画效果**：添加平滑过渡动画，提升用户体验
 
-### 兼容性与支持
-- 兼容所有现代浏览器（Chrome、Firefox、Safari、Edge）
-- 支持移动设备浏览和操作
-- 采用渐进增强设计，确保基础功能在各种环境可用
-- 提供离线访问能力（PWA特性）
+### 核心技术栈
+- **框架/库**：HTML5, CSS3 (Flexbox/Grid), Vanilla JavaScript (ES6+), Bootstrap 5, Font Awesome 6
+- **架构模式**：模块化组件设计 (Web Components 思想), 响应式布局, PWA 离线支持
+- **开发工具**：Trae (Powered by Gemini-3-Flash-Preview)
+- **开发文档/参考**：
+  - [Bootstrap 5 官方文档](https://getbootstrap.com/docs/5.0/)
+  - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
+  - [Font Awesome 图标库](https://fontawesome.com/icons)
+
+BETA 4.1-2025-12-23
+1：模块化架构升级：引入 header-component.js 组件，实现管理系统 Header 与导航栏的模块化复用
+2：通用逻辑整合：创建 manager-common.js 集中管理各系统的通用逻辑（如主题切换、导航高亮、日志处理）
+3：CSS 架构标准化与中央化：移除所有管理系统的内联样式及硬编码颜色类（如 bg-dark, text-white 等）
+4：管理系统功能修复：修复探索系统分类过滤失效问题，补全 category-tag HTML 结构
+5：UI 组件增强：统一并增强各工具的 JSON 预览组件，实现字体、边框及滚动行为的一致性
+6：逻辑重构：重构 showToast 反馈系统及分类过滤逻辑，移除 JS 直接操作样式的硬编码行为
+7：页面对齐：完成所有管理页面（含转换工具）的 Header 渐变及导航按钮标准化，完全对齐中央主题变量
+8：代码清理：迁移各页面冗余 <style> 块至 manager-styles.css，清理动态生成内容中的硬编码颜色类
 
 BETA 4.0-2025-10-27
 1：全新升级新的管理系统，由TRAE打造，附带4大管理系统，使数据管理更简单，更美观
