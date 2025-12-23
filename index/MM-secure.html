@@ -221,106 +221,106 @@
 		const MAX_ERRORS = 3;
 		const LOCKOUT_DURATION = 24 * 60 * 60 * 1000; // 24小时
 
-		// AES 加密工具类
+		// AES加密解密功能 - 与MM-generator.html保持一致
 		class AESUtil {
-			static generateKey(password, salt) {
+			// AES-256-CBC加密
+			static encrypt(text, password) {
 				const encoder = new TextEncoder();
-				const keyMaterial = encoder.encode(password);
-				const saltBuffer = encoder.encode(salt);
-				return crypto.subtle.importKey(
+				const textData = encoder.encode(text);
+				const passwordData = encoder.encode(password.padEnd(32, ' '));
+				
+				const iv = crypto.getRandomValues(new Uint8Array(16));
+				const salt = crypto.getRandomValues(new Uint8Array(16));
+				
+				return window.crypto.subtle.importKey(
 					'raw',
-					keyMaterial,
+					passwordData,
 					{ name: 'PBKDF2' },
 					false,
 					['deriveKey']
-				).then(keyMaterial => {
-					return crypto.subtle.deriveKey(
+				).then(key => {
+					return window.crypto.subtle.deriveKey(
 						{
 							name: 'PBKDF2',
-							salt: saltBuffer,
+							salt: salt,
 							iterations: 100000,
 							hash: 'SHA-256'
 						},
-						keyMaterial,
+						key,
 						{
 							name: 'AES-CBC',
 							length: 256
 						},
-						true,
-						['encrypt', 'decrypt']
+						false,
+						['encrypt']
 					);
+				}).then(key => {
+					return window.crypto.subtle.encrypt(
+						{
+							name: 'AES-CBC',
+							iv: iv
+						},
+						key,
+						textData
+					);
+				}).then(encrypted => {
+					const encryptedData = new Uint8Array(encrypted);
+					const totalLength = salt.length + iv.length + encryptedData.length;
+					const combined = new Uint8Array(totalLength);
+					
+					combined.set(salt, 0);
+					combined.set(iv, salt.length);
+					combined.set(encryptedData, salt.length + iv.length);
+					
+					return btoa(String.fromCharCode.apply(null, combined));
 				});
 			}
-
-			static async encrypt(plaintext, password) {
-				const salt = crypto.getRandomValues(new Uint8Array(16));
-				const iv = crypto.getRandomValues(new Uint8Array(16));
-				const key = await this.generateKey(password, salt);
+			
+			// AES-256-CBC解密
+			static decrypt(encryptedData, password) {
+				const combined = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
+				const salt = combined.slice(0, 16);
+				const iv = combined.slice(16, 32);
+				const encrypted = combined.slice(32);
+				
 				const encoder = new TextEncoder();
-				const data = encoder.encode(plaintext);
-				const encrypted = await crypto.subtle.encrypt(
-					{
-						name: 'AES-CBC',
-						iv: iv
-					},
-					key,
-					data
-				);
-				return {
-					salt: Array.from(salt),
-					iv: Array.from(iv),
-					encrypted: Array.from(new Uint8Array(encrypted))
-				};
-			}
-
-			static async decrypt(encryptedData, password) {
-				const salt = new Uint8Array(encryptedData.salt);
-				const iv = new Uint8Array(encryptedData.iv);
-				const data = new Uint8Array(encryptedData.encrypted);
-				const key = await this.generateKey(password, salt);
-				const decrypted = await crypto.subtle.decrypt(
-					{
-						name: 'AES-CBC',
-						iv: iv
-					},
-					key,
-					data
-				);
-				const decoder = new TextDecoder();
-				return decoder.decode(decrypted);
-			}
-
-			static async encryptToBase64(plaintext, password) {
-				const encrypted = await this.encrypt(plaintext, password);
-				const combined = new Uint8Array(
-					1 + 16 + 16 + encrypted.encrypted.length
-				);
-				combined[0] = 1; // 版本号
-				combined.set(encrypted.salt, 1);
-				combined.set(encrypted.iv, 1 + 16);
-				combined.set(encrypted.encrypted, 1 + 16 + 16);
-				return btoa(String.fromCharCode.apply(null, combined));
-			}
-
-			static async decryptFromBase64(encryptedBase64, password) {
-				const combined = new Uint8Array(
-					atob(encryptedBase64).split('').map(char => char.charCodeAt(0))
-				);
-				const version = combined[0];
-				if (version !== 1) {
-					throw new Error('不支持的加密版本');
-				}
-				const salt = combined.slice(1, 1 + 16);
-				const iv = combined.slice(1 + 16, 1 + 16 + 16);
-				const encrypted = combined.slice(1 + 16 + 16);
-				return this.decrypt(
-					{
-						salt: Array.from(salt),
-						iv: Array.from(iv),
-						encrypted: Array.from(encrypted)
-					},
-					password
-				);
+				const passwordData = encoder.encode(password.padEnd(32, ' '));
+				
+				return window.crypto.subtle.importKey(
+					'raw',
+					passwordData,
+					{ name: 'PBKDF2' },
+					false,
+					['deriveKey']
+				).then(key => {
+					return window.crypto.subtle.deriveKey(
+						{
+							name: 'PBKDF2',
+							salt: salt,
+							iterations: 100000,
+							hash: 'SHA-256'
+						},
+						key,
+						{
+							name: 'AES-CBC',
+							length: 256
+						},
+						false,
+						['decrypt']
+					);
+				}).then(key => {
+					return window.crypto.subtle.decrypt(
+						{
+							name: 'AES-CBC',
+							iv: iv
+						},
+						key,
+						encrypted
+					);
+				}).then(decrypted => {
+					const decoder = new TextDecoder();
+					return decoder.decode(decrypted);
+				});
 			}
 		}
 
@@ -519,36 +519,53 @@
 
 		// 尝试解密
 		async function attemptDecryption() {
+			console.log('开始尝试解密，当前密码:', currentPassword);
 			try {
 				// 加载MM.json文件
 				const response = await fetch('../js/MM.json');
 				if (!response.ok) {
 					throw new Error('无法加载MM.json文件');
 				}
-				const encryptedContent = await response.text();
+				let encryptedContent = await response.text();
+				console.log('MM.json文件内容长度:', encryptedContent.length);
+				console.log('文件内容前50个字符:', encryptedContent.substring(0, 50));
+
+				// 检查并移除data URL前缀
+				if (encryptedContent.startsWith('data:application/json;base64,')) {
+					console.log('检测到data URL前缀，移除它...');
+					encryptedContent = encryptedContent.replace('data:application/json;base64,', '');
+					console.log('移除前缀后的内容长度:', encryptedContent.length);
+					console.log('移除前缀后的内容前50个字符:', encryptedContent.substring(0, 50));
+				}
 
 				// 尝试解密
 				let decryptedContent;
 				try {
-					// 检查是否是加密的JSON
-					const parsed = JSON.parse(encryptedContent);
-					if (parsed.salt && parsed.iv && parsed.encrypted) {
-						// 是加密的JSON
-						decryptedContent = await AESUtil.decrypt(parsed, currentPassword);
-					} else {
-						// 可能已经是明文JSON
-						decryptedContent = encryptedContent;
-					}
+					// 直接使用AESUtil.decrypt解密，因为MM.json是base64加密的
+					console.log('开始解密...');
+					decryptedContent = await AESUtil.decrypt(encryptedContent, currentPassword);
+					console.log('解密成功，解密内容:', decryptedContent);
 				} catch (e) {
-					// 尝试base64解密
-					decryptedContent = await AESUtil.decryptFromBase64(encryptedContent, currentPassword);
+					console.error('解密失败:', e);
+					// 如果解密失败，可能是明文JSON
+					try {
+						console.log('尝试解析为明文JSON...');
+						JSON.parse(encryptedContent);
+						decryptedContent = encryptedContent;
+						console.log('解析明文JSON成功');
+					} catch (jsonError) {
+						console.error('解析明文JSON也失败:', jsonError);
+						// 不是明文JSON，解密确实失败
+						throw e;
+					}
 				}
 
 				// 解密成功
+				console.log('准备显示解密内容');
 				displayDecryptedContent(decryptedContent);
 				resetLockout();
 			} catch (error) {
-				console.error('解密失败:', error);
+				console.error('整体解密流程失败:', error);
 				recordError();
 				clearPassword();
 			}
