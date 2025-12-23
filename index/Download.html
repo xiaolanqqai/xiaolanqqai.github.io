@@ -2,14 +2,10 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>Xiaolan - Download</title>
-	<link rel="Shortcut icon" href="../favicon.ico" loading="lazy">
-	<link rel="stylesheet" href="../css/bootstrap.min.css">
+	<!-- 模块化 Header 组件 -->
+	<script src="../js/components/header-component.js"></script>
 	<script type="text/javascript" src="../js/jquery-3.5.1.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="../css/index.css" />
-	<link rel="stylesheet" href="../css/dark-mode.css">
 </head>
 
 <body>
@@ -81,16 +77,9 @@
 	}
 </script>
 
-	<!--背景-->
-	<div class="z-1">
-		<div class="z-4">
-			<div id="jsi-flying-fish-container" class="w-100"></div>
-			<script src="../js/fish.js"></script>
-		</div>
-		<canvas class="background"></canvas>
-	</div>
-	<script src="../js/particles.min.js"></script>
-	<!--背景-->
+	<!--背景--><!-- 模块化 Background 组件 -->
+	<script src="../js/components/background-component.js"></script>
+</body>
 
 	<script>
 		$('img').on("error", function () {

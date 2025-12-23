@@ -32,12 +32,11 @@ class DarkMode {
     
     completeInit() {
         console.log('DarkMode: DOM加载完成，开始初始化功能');
-        console.log('DarkMode: 当前this指向:', this);
         
         // 创建主题切换按钮
         this.createThemeToggleButton();
         
-        // 首先应用用户保存的主题（如果有）
+        // 应用用户保存的主题（如果有）
         this.applySavedTheme();
         
         // 如果用户没有手动设置主题，根据时间自动设置
@@ -49,13 +48,11 @@ class DarkMode {
         // 绑定主题切换事件
         this.bindThemeToggleEvent();
         
-        // 应用主题颜色
+        // 应用主题颜色 - 立即应用
         this.applyThemeColors();
         
-        // 确保在DOM完全渲染后再次应用主题
-        setTimeout(() => {
-            this.applyThemeColors();
-        }, 500);
+        // 使用 MutationObserver 监听 DOM 变化，动态应用主题颜色
+        this.observeDOMChanges();
         
         // 设置定时器，每小时检查一次时间并更新主题
         setInterval(() => {
@@ -63,11 +60,20 @@ class DarkMode {
         }, 60 * 60 * 1000);
         
         console.log('DarkMode: 初始化完成');
-        console.log('DarkMode: 最终主题:', document.documentElement.getAttribute('data-theme'));
-        console.log('DarkMode: localStorage主题:', localStorage.getItem('dark-mode'));
+    }
+
+    // 新增：监听 DOM 变化，确保动态生成的元素也能正确应用深色模式
+    observeDOMChanges() {
+        const observer = new MutationObserver((mutations) => {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                this.applyThemeColors();
+            }
+        });
         
-        // 测试主题切换功能
-        console.log('DarkMode: 测试 - 主题切换按钮:', document.getElementById('themeToggle'));
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     }
 
     // 创建主题切换按钮
@@ -273,142 +279,26 @@ class DarkMode {
     }
 
     // 应用主题颜色转换
-    applyThemeColors(theme) {
-        // 确保theme参数只能是'dark'或'light'
-        const currentTheme = (theme === 'dark') ? 'dark' : 'light';
-        const isDark = currentTheme === 'dark';
-        
-        console.log(`DarkMode: 应用主题颜色: ${isDark ? '深色' : '浅色'}`);
-        console.log(`DarkMode: applyThemeColors接收的theme参数: ${theme}`);
-        console.log(`DarkMode: applyThemeColors使用的currentTheme: ${currentTheme}`);
-        
-        // 直接为HTML和body应用主题颜色
-        const html = document.documentElement;
-        const body = document.body;
-        
-        if (isDark) {
-            // 深色主题 - 强制设置背景色和文本色
-            html.style.backgroundColor = 'var(--bg-primary)';
-            body.style.backgroundColor = 'var(--bg-primary)';
-            html.style.color = 'var(--text-primary)';
-            body.style.color = 'var(--text-primary)';
-            console.log('DarkMode: 应用深色主题颜色');
-        } else {
-            // 浅色主题 - 强制设置背景色和文本色
-            html.style.backgroundColor = 'var(--bg-primary)';
-            body.style.backgroundColor = 'var(--bg-primary)';
-            html.style.color = 'var(--text-primary)';
-            body.style.color = 'var(--text-primary)';
-            console.log('DarkMode: 应用浅色主题颜色');
-        }
-        
-        // 处理Bootstrap颜色类
-        this.processBootstrapColorClasses(isDark);
-        
-        // 处理硬编码的颜色值
-        this.processHardcodedColors(isDark);
-        
-        if (isDark) {
-            // 深色主题 - 为所有容器、卡片、区域应用深色背景
-            const containers = document.querySelectorAll('.container, .row, .col, .section, .content, .main-content, .sidebar, .header, .footer, .panel, .widget, .block, .module, .box, .item, .element, .component, .part, .area, .zone');
-            containers.forEach(container => {
-                container.style.backgroundColor = 'var(--bg-primary)';
-                container.style.color = 'var(--text-primary)';
+    applyThemeColors() {
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'dark') {
+            // 使用更高效的选择器和批量操作
+            document.querySelectorAll('.alert-secondary, .alert-info, .alert-success').forEach(el => {
+                el.classList.add('bg-dark', 'text-light', 'border-secondary');
             });
-            
-            // 深色主题 - 为所有文本元素应用深色文本
-            // 扩大选择器范围，确保覆盖所有可能的文本元素
-            const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, strong, li, div, td, th, label, .t1, .text-black-50, .text-dark, .text-muted');
-            textElements.forEach(text => {
-                text.style.color = 'var(--text-primary)';
+            document.querySelectorAll('.btn-info, .btn-light').forEach(el => {
+                el.classList.add('btn-dark');
+                el.classList.remove('btn-info', 'btn-light');
             });
-            
-            // 深色主题 - 特别处理alert元素
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                alert.style.backgroundColor = '#333333';
-                alert.style.color = '#f8f9fa';
-                alert.style.borderColor = '#555555';
-            });
-            
-            // 深色主题 - 特别处理badge元素
-            const badges = document.querySelectorAll('.badge');
-            badges.forEach(badge => {
-                badge.style.backgroundColor = '#444444';
-                badge.style.color = '#f8f9fa';
-            });
-            
-            // 深色主题 - 特别处理MM-secure.html中的密码输入区域
-            const passwordContainer = document.querySelector('.password-container');
-            if (passwordContainer) {
-                passwordContainer.style.backgroundColor = 'rgba(43, 43, 43, 0.9)';
-                passwordContainer.style.color = '#f8f9fa';
-            }
-            
-            // 深色主题 - 特别处理MM-secure.html中的模式按钮
-            const patternBtns = document.querySelectorAll('.pattern-btn');
-            patternBtns.forEach(btn => {
-                btn.style.backgroundColor = '#444444';
-                btn.style.borderColor = '#666666';
-                btn.style.color = '#f8f9fa';
-            });
-            
-            // 深色主题 - 特别处理MM-secure.html中的选中模式按钮
-            const selectedPatternBtns = document.querySelectorAll('.pattern-btn.selected');
-            selectedPatternBtns.forEach(btn => {
-                btn.style.backgroundColor = '#0d6efd';
-                btn.style.color = '#ffffff';
+            document.querySelectorAll('.kuaijie-a-1, .text-black-50').forEach(el => {
+                el.classList.add('text-light');
+                el.classList.remove('text-black-50');
             });
         } else {
-            // 浅色主题 - 为所有容器、卡片、区域应用浅色背景
-            const containers = document.querySelectorAll('.container, .row, .col, .section, .content, .main-content, .sidebar, .header, .footer, .panel, .widget, .block, .module, .box, .item, .element, .component, .part, .area, .zone');
-            containers.forEach(container => {
-                container.style.backgroundColor = '#ffffff';
-                container.style.color = '#212529';
+            document.querySelectorAll('.bg-dark.text-light.border-secondary').forEach(el => {
+                el.classList.remove('bg-dark', 'text-light', 'border-secondary');
             });
-            
-            // 浅色主题 - 为所有文本元素应用浅色文本
-            const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, strong, li, .t1, .text-black-50');
-            textElements.forEach(text => {
-                text.style.color = '#212529';
-            });
-            
-            // 浅色主题 - 特别处理alert元素
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                alert.style.backgroundColor = '';
-                alert.style.color = '';
-                alert.style.borderColor = '';
-            });
-            
-            // 浅色主题 - 特别处理badge元素
-            const badges = document.querySelectorAll('.badge');
-            badges.forEach(badge => {
-                badge.style.backgroundColor = '';
-                badge.style.color = '';
-            });
-            
-            // 浅色主题 - 特别处理MM-secure.html中的密码输入区域
-            const passwordContainer = document.querySelector('.password-container');
-            if (passwordContainer) {
-                passwordContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-                passwordContainer.style.color = '#212529';
-            }
-            
-            // 浅色主题 - 特别处理MM-secure.html中的模式按钮
-            const patternBtns = document.querySelectorAll('.pattern-btn');
-            patternBtns.forEach(btn => {
-                btn.style.backgroundColor = '#f8f9fa';
-                btn.style.borderColor = '#ddd';
-                btn.style.color = '#212529';
-            });
-            
-            // 浅色主题 - 特别处理MM-secure.html中的选中模式按钮
-            const selectedPatternBtns = document.querySelectorAll('.pattern-btn.selected');
-            selectedPatternBtns.forEach(btn => {
-                btn.style.backgroundColor = '#0d6efd';
-                btn.style.color = '#ffffff';
-            });
+            // 恢复原始类名（这里可以根据需要进一步细化）
         }
     }
 
