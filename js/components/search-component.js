@@ -50,8 +50,11 @@
         window.oMoreB = oMoreB;
     }
 
-    // Load search logic
+    // Load search logic - Removed redundant loading since it's now in index.html
+    // but kept for compatibility with other pages if any
     function loadSearchLogic() {
+        if (typeof submitFn === 'function') return; // Already loaded
+        
         if (window.jQuery) {
             const script = document.createElement('script');
             script.src = `${basePath}js/search_ajx.js`;

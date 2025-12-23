@@ -14,11 +14,9 @@
     }
     
     const backgroundHTML = `
-        <div class="z-1">
-            <div class="z-4">
-                <div id="jsi-flying-fish-container" class="w-100"></div>
-            </div>
-            <canvas class="background"></canvas>
+        <div class="background-container" style="pointer-events: none;">
+            <div id="jsi-flying-fish-container" style="pointer-events: none;"></div>
+            <canvas class="background" style="pointer-events: none;"></canvas>
         </div>
     `;
 

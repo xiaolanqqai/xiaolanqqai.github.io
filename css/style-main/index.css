@@ -88,10 +88,48 @@ html, body {
     zoom: 0.9;
     margin: 0;  
     padding: 0;
-    background: var(--bg-primary);
+    background: transparent; /* 改为透明以显示背景组件 */
     color: var(--text-primary);
     /* 优化滚动性能 */
     -webkit-overflow-scrolling: touch;
+    min-height: 100vh;
+}
+
+/* 背景容器 - 确保在最底层且不遮挡点击 */
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -100 !important; /* 极低层级 */
+    pointer-events: none;
+    background: var(--bg-primary); /* 将背景色移到这里 */
+}
+
+/* 主内容容器 - 确保在背景之上且可点击 */
+.main-content {
+    position: relative;
+    min-height: 100vh;
+}
+
+/* 确保所有内容容器不限制高度，允许滚动 */
+.content-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* 如果背景需要交互（如小鱼），则需要调整 */
+#jsi-flying-fish-container, .background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -90 !important;
+    pointer-events: none;
 }
 
 .oh { overflow: hidden !important; }
@@ -107,19 +145,29 @@ html, body {
     box-shadow: var(--shadow-lg) !important;
 }
 
-.z1, .z-1 { z-index: 1 !important }
-.z2, .z-2 { z-index: 2 !important }
-.z3, .z-3 { z-index: 3 !important }
-.z4, .z-4 { z-index: 4 !important }
-.z5, .z-5 { z-index: 5 !important }
-.z6, .z-6 { z-index: 6 !important }
-.z7, .z-7 { z-index: 7 !important }
-.z8, .z-8 { z-index: 8 !important }
-.z9, .z-9 { z-index: 9 !important }
-.z10, .z-10 { z-index: 10 !important }
+/** z-index standardization (z-0 to z-1000) **/
+.z-0 { z-index: 0 !important }
+.z-1 { z-index: 10 !important }
+.z-2 { z-index: 20 !important }
+.z-3 { z-index: 30 !important }
+.z-4 { z-index: 40 !important }
+.z-5 { z-index: 50 !important }
 .z-100 { z-index: 100 !important }
+.z-500 { z-index: 500 !important }
 .z-1000 { z-index: 1000 !important }
 .z-index-high { z-index: 9999 !important }
+
+/* 移除重复且冲突的定义 */
+.z1 { z-index: 1 !important }
+.z2 { z-index: 2 !important }
+.z3 { z-index: 3 !important }
+.z4 { z-index: 4 !important }
+.z5 { z-index: 5 !important }
+.z6 { z-index: 6 !important }
+.z7 { z-index: 7 !important }
+.z8 { z-index: 8 !important }
+.z9 { z-index: 9 !important }
+.z10 { z-index: 10 !important }
 
 /**boostrap补全(以boostrap_v5.3.0为基础)**/
 
@@ -303,17 +351,6 @@ html, body {
 .pb-9 {padding-bottom: 10rem !important}
 .pb-10 {padding-bottom: 15rem !important}
 
-/** z-index standardization (z-0 to z-1000) **/
-.z-0 { z-index: 0 !important }
-.z-1 { z-index: 10 !important }
-.z-2 { z-index: 20 !important }
-.z-3 { z-index: 30 !important }
-.z-4 { z-index: 40 !important }
-.z-5 { z-index: 50 !important }
-.z-100 { z-index: 100 !important }
-.z-500 { z-index: 500 !important }
-.z-1000 { z-index: 1000 !important }
-
 /** Layout & Visibility **/
 .oh { overflow: hidden !important }
 .pos-f { position: fixed !important }
@@ -485,26 +522,57 @@ html, body {
     border-radius: var(--border-radius);
     padding: 12px 8px !important;
     height: 100px;
-    transition: var(--transition);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     text-decoration: none !important;
     box-shadow: var(--shadow);
     overflow: hidden;
     position: relative;
+    cursor: pointer;
+    z-index: 1;
 }
 
 .nav-ban-item:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: var(--shadow-lg);
     border-color: var(--primary-color);
-    background: var(--bg-secondary);
+    z-index: 20;
+}
+
+/* More 页面等宽小卡片布局 */
+.more-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 10px;
+}
+
+.more-card {
+    width: 120px; /* 等宽小卡片 */
+    height: 90px;
+    flex-shrink: 0;
+}
+
+.more-card .nav-ban-item {
+    height: 100%;
+    padding: 8px !important;
+}
+
+.more-card .nav-ban-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+}
+
+.more-card .nav-ban-text {
+    font-size: 0.85rem;
 }
 
 .nav-ban-icon {
     width: 40px;
     height: 40px;
     margin-bottom: 8px;
-    object-fit: contain;
     transition: var(--transition);
+    object-fit: contain;
 }
 
 .nav-ban-item:hover .nav-ban-icon {
@@ -528,18 +596,17 @@ html, body {
 .nav-ban-item:hover .nav-ban-text {
     overflow: visible;
     text-overflow: clip;
-}
-
-.nav-ban-item:hover .nav-ban-text {
+    white-space: nowrap;
     display: inline-block;
     width: auto;
-    animation: marquee 8s linear infinite;
+    animation: marquee 5s linear infinite;
     padding-left: 10px;
+    padding-right: 10px;
 }
 
 @keyframes marquee {
-    0% { transform: translateX(10%); }
-    100% { transform: translateX(-100%); }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
 /** Header 黏顶与高度统一 **/
@@ -550,6 +617,7 @@ html, body {
     background: var(--bg-primary);
     box-shadow: var(--shadow);
     padding: 10px 0;
+    width: 100%;
 }
 
 .header-nav-container {
@@ -574,6 +642,7 @@ html, body {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    z-index: 100; /* 确保在较高层级 */
 }
 
 .search-wrapper {
