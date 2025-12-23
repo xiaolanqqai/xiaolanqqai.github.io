@@ -11,49 +11,49 @@
 </head>
 
 <body>
-	<div class="z-3 d-flex flex-row position-fixed">
-		<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3 w-100px"><strong>返回</strong></button>
-		<button onclick="window.location.href = 'DD.html'" type="button" class="btn btn-info shadow mt-3 w-100px"><strong>DD</strong></button>
-		<form class="more-tag d-flex mx-3" role="search">
-			<input id="txt" class="form-control shadow me-2" type="search" placeholder="Search" aria-label="Search"
-				onkeypress="handleKeyPress(event)">
-			<button id="btn" class="btn btn-outline-success shadow" type="button">Search</button>
-		</form>
-		<button id="more-s" class="more-tag btn btn-info dropdown-toggle shadow" type="button">•••</button>
-		<button id="more-c" class="more-tag btn btn-info shadow mx-2 oh" type="button">清空</button>
-		<div id="more-mm" class="d-none">
-			<button class="more-tag btn btn-info shadow oh" onclick="window.location.href = 'MM-secure.html'" type="button">M-M</button>
-			<button class="more-tag btn btn-info shadow oh" onclick="window.location.href = 'manager/nav-manager.html'" type="button">manager</button>
-		</div>
-		
-	</div>
-	<div class="z-2 d-flex flex-column mx-auto mt-5 pt-2">
-		<div class="d-flex flex-column">
-			<div class="mt-3 mx-3 d-none" id="more-b">
-				<button onclick="a(0)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">1.</h6>
-				</button>
-				<button onclick="a(1)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">2.</h6>
-				</button>
-				<button onclick="a(2)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">192168.</h6>
-				</button>
-				<button onclick="a(3)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="https://api.iowen.cn/favicon/www.baidu.com.png" loading="lazy"><h6 class="nav-ban-text">Baidu</h6>
-				</button>
-				<button onclick="a(4)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="https://api.iowen.cn/favicon/www.bing.com.png" loading="lazy"><h6 class="nav-ban-text">Bing</h6>
-				</button>
-				<button onclick="a(5)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="https://api.iowen.cn/favicon/www.google.com.png" loading="lazy"><h6 class="nav-ban-text">Google.hk</h6>
-				</button>
-				<button onclick="a(6)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="https://api.iowen.cn/favicon/www.Yandex.com.png" loading="lazy"><h6 class="nav-ban-text">Yandex</h6>
-				</button>
-				<button onclick="a(7)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="https://api.iowen.cn/favicon/www.bilibili.com.png" loading="lazy"><h6 class="nav-ban-text">BiliBili</h6>
-				</button>
-				<button onclick="a(8)" class="col my-2 p-1 text-center nav-ban-item" type="button"><img class="border rounded-circle nav-ban-icon" src="https://api.iowen.cn/favicon/www.kuaidi100.com.png" loading="lazy"><h6 class="nav-ban-text">快递100</h6>
-				</button>
+	<!-- 顶部导航栏 - 黏顶且高度统一 -->
+	<header class="sticky-header">
+		<div class="container-fluid header-nav-container">
+			<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow fw-bold">返回</button>
+			<button onclick="window.location.href = 'DD.html'" type="button" class="btn btn-info shadow fw-bold">DD</button>
+			
+			<form class="d-flex flex-grow-1 mx-2" role="search" onsubmit="event.preventDefault(); document.getElementById('btn').click();">
+				<input id="txt" class="form-control shadow me-2" type="search" placeholder="Search" aria-label="Search"
+					onkeypress="handleKeyPress(event)">
+				<button id="btn" class="btn btn-outline-success shadow" type="button">Search</button>
+			</form>
+			
+			<div class="d-flex gap-2 align-items-center">
+				<button id="more-s" class="btn btn-info dropdown-toggle shadow" type="button">•••</button>
+				<button id="more-c" class="btn btn-info shadow oh" type="button">清空</button>
+				<div id="more-mm" class="d-none d-flex gap-2">
+					<button class="btn btn-info shadow oh" onclick="window.location.href = 'MM-secure.html'" type="button">M-M</button>
+					<button class="btn btn-info shadow oh" onclick="window.location.href = 'manager/nav-manager.html'" type="button">manager</button>
+				</div>
 			</div>
 		</div>
-		<div class="d-flex flex-column" id="nav-content-container"></div>
-		<div class="mt-3 mx-3 d-none" id="aav">
-			<div class="alert alert-secondary shadow" role="alert">小日本ポートエロ</div>
-			<div id="ar21" class="d-flex flex-wrap p-2"></div>
+	</header>
+
+	<div class="z-2 d-flex flex-column mx-auto">
+		<div class="container mt-3">
+			<div id="more-b" class="row row-cols-4 g-2 d-none mb-4">
+				<div class="col"><a href="http://192.168.1.1" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">1.</h6></a></div>
+				<div class="col"><a href="http://192.168.2.1" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">2.</h6></a></div>
+				<div class="col"><a href="http://192.168.1.1" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">192168.</h6></a></div>
+				<div class="col"><a href="https://www.baidu.com" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.baidu.com.png" loading="lazy"><h6 class="nav-ban-text">Baidu</h6></a></div>
+				<div class="col"><a href="https://www.bing.com" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.bing.com.png" loading="lazy"><h6 class="nav-ban-text">Bing</h6></a></div>
+				<div class="col"><a href="https://www.google.com" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.google.com.png" loading="lazy"><h6 class="nav-ban-text">Google.hk</h6></a></div>
+				<div class="col"><a href="https://www.yandex.com" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.Yandex.com.png" loading="lazy"><h6 class="nav-ban-text">Yandex</h6></a></div>
+				<div class="col"><a href="https://www.bilibili.com" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.bilibili.com.png" loading="lazy"><h6 class="nav-ban-text">BiliBili</h6></a></div>
+				<div class="col"><a href="https://www.kuaidi100.com" rel="nofollow" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.kuaidi100.com.png" loading="lazy"><h6 class="nav-ban-text">快递100</h6></a></div>
+			</div>
+			
+			<div id="nav-content-container"></div>
+			
+			<div class="mt-4 d-none" id="aav">
+				<div class="alert alert-secondary shadow" role="alert">小日本ポートエロ</div>
+				<div id="ar21" class="row row-cols-4 g-2 p-2"></div>
+			</div>
 		</div>
 		<div class="fixed-bottom mx-1">
 			<div class=" container-fluid">
@@ -90,28 +90,32 @@
 			navContentContainer.innerHTML = '';
 
 			if (!navData || !navData.tabs) {
-				navContentContainer.innerHTML = '<div class="alert alert-info mx-3">暂无导航数据</div>';
+				navContentContainer.innerHTML = '<div class="alert alert-info">暂无导航数据</div>';
 				return;
 			}
 
 			navData.tabs.forEach((tab, index) => {
 				const section = document.createElement('div');
-				section.className = 'mt-3 mx-3';
+				section.className = 'mb-4';
 				section.innerHTML = `
-	            <div class="alert alert-secondary shadow" role="alert">${tab.name}</div>
-	            <div id="ar${index + 1}" class="d-flex flex-wrap p-2">
-	                ${tab.items.map(item => {
-					const iconUrl = item.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}`;
-					return `
-	                        <a href="${item.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center nav-ban-item">
-	                            <img class="border rounded-circle nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
-	                            <h6 class="nav-ban-text">${item.name}</h6>
-	                        </a>
-	                    `;
-				}).join('')}
-	            </div>
-	        `;
+					<div class="alert alert-secondary shadow mb-3" role="alert">${tab.name}</div>
+					<div id="ar${index + 1}" class="row row-cols-4 g-2 p-2">
+					</div>
+				`;
 				navContentContainer.appendChild(section);
+
+				const row = section.querySelector(`#ar${index + 1}`);
+				tab.items.forEach(item => {
+					const col = document.createElement('div');
+					col.className = 'col';
+					const iconUrl = item.url ? `https://api.iowen.cn/favicon/${new URL(item.url).hostname}.png` : '../img/index.png';
+					col.innerHTML = `
+						<a href="${item.url}" rel="nofollow" target="_blank" class="nav-ban-item">
+							<img class="nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
+							<h6 class="nav-ban-text">${item.name}</h6>
+						</a>`;
+					row.appendChild(col);
+				});
 			});
 		}
 
@@ -135,11 +139,13 @@
 			specialContainer.innerHTML = specialSites.map(site => {
 				const iconUrl = site.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(site.url)}`;
 				return `
-	            <a href="${site.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center nav-ban-item">
-	                <img class="border rounded-circle nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
-	                <h6 class="nav-ban-text">${site.name}</h6>
-	            </a>
-	        `;
+					<div class="col">
+						<a href="${site.url}" rel="nofollow" target="_blank" class="nav-ban-item">
+							<img class="nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
+							<h6 class="nav-ban-text">${site.name}</h6>
+						</a>
+					</div>
+				`;
 			}).join('');
 
 			console.log('特殊栏目已渲染（隐藏状态），共', specialSites.length, '个网站');

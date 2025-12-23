@@ -38,7 +38,7 @@ function submitFn(obj, evt){
 			_html ="https://www.kuaidi100.com/chaxun?com=&nu=" + value;
 		};
 	}
-	$(obj).find('.result-container').html(window.open(_html));
+	window.open(_html);
 	$(obj).find('.result-container').fadeIn(100);
 	evt.preventDefault();
 };

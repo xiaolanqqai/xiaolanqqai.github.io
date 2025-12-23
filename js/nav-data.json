@@ -1266,20 +1266,20 @@
             "url": "https://www.trae.ai"
           },
           {
+            "name": "Visual Studio Code",
+            "url": "https://code.visualstudio.com/"
+          },
+          {
             "name": "GitHub",
             "url": "https://github.com"
           },
           {
-            "name": "Stack Overflow",
-            "url": "https://stackoverflow.com"
+            "name": "Git",
+            "url": "https://git-scm.com/"
           },
           {
             "name": "Vercel",
             "url": "https://vercel.com"
-          },
-          {
-            "name": "Cloudflare",
-            "url": "https://www.cloudflare.com"
           }
         ]
       },
@@ -1299,12 +1299,12 @@
             "url": "https://fontawesome.com/icons"
           },
           {
-            "name": "Vanilla JS (ES6+)",
-            "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
+            "name": "jQuery",
+            "url": "https://api.jquery.com/"
           },
           {
-            "name": "CSS3 Reference",
-            "url": "https://developer.mozilla.org/zh-CN/docs/Web/CSS"
+            "name": "Vanilla JS (ES6+)",
+            "url": "https://developer.mozilla.org/zh-CN/docs/Web/JavaScript"
           }
         ]
       }

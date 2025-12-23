@@ -20,16 +20,5 @@
   margin-top: 30%;
 }
 
-/* 快捷容器 */
-.kuaijie {
-  width: 100%;
-  max-width: 550px;
-}
+/* 快捷容器已移至 style-main/index.css */
 
-/* 响应式微调 */
-@media (max-width: 768px) {
-  .kuaijie {
-    max-width: 100%;
-    padding: 0 10px;
-  }
-}

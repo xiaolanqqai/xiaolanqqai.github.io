@@ -26,11 +26,11 @@
 		</div>
 		<div class="d-flex flex-column h-60p">
 			<nav class="p-2 mx-auto mt-5 pt-5">
-				<div class="nav nav-tabs shadow rounded-2" id="nav-tabs-container">
+				<div class="nav nav-tabs shadow rounded-2 justify-content-center" id="nav-tabs-container">
 					<!-- More链接将由JavaScript动态添加 -->
 				</div>
 			</nav>
-			<div class="mx-auto mt-3 mw-550px w-100p" id="nav-content-container"></div>
+			<div class="mx-auto mt-3 kuaijie" id="nav-content-container"></div>
 		</div>
 		<div class="fixed-bottom mx-1">
 			<div class="container-fluid">
@@ -91,36 +91,43 @@
 
 		// 渲染主要标签页
 		navData.tabs.forEach((tab, index) => {
+			const tabId = tab.name.toLowerCase().replace(/\s+/g, '-');
 			const tabElement = document.createElement('a');
 			tabElement.className = `nav-link btn nav-top ${index === 0 ? 'active' : ''}`;
 			tabElement.textContent = tab.name;
-			tabElement.setAttribute('data-tab', tab.name.toLowerCase().replace(/\s+/g, '-'));
+			tabElement.setAttribute('data-tab', tabId);
 			tabElement.href = '#';
+			
+			// 点击切换
 			tabElement.addEventListener('click', function (e) {
 				e.preventDefault();
-				switchTab(tab.name.toLowerCase().replace(/\s+/g, '-'));
+				switchTab(tabId);
 			});
+			
+			// 划过切换
 			tabElement.addEventListener('mouseenter', function () {
-				switchTab(tab.name.toLowerCase().replace(/\s+/g, '-'));
+				switchTab(tabId);
 			});
+			
 			navTabsContainer.appendChild(tabElement);
 
 			const contentElement = document.createElement('div');
 			contentElement.className = `nav-ban ${index === 0 ? '' : 'd-none'}`;
-			contentElement.id = `tab-${tab.name.toLowerCase().replace(/\s+/g, '-')}`;
+			contentElement.style.display = index === 0 ? 'block' : 'none';
+			contentElement.id = `tab-${tabId}`;
+			
 			const row = document.createElement('div');
-			row.className = 'row row-cols-4 p-2';
+			row.className = 'row row-cols-4 g-2 p-2'; // 使用Bootstrap Gutter
+			
 			tab.items.forEach(item => {
-				// 修改这里：使用与more页面相同的图标逻辑
 				const iconUrl = item.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}`;
-				const col = document.createElement('a');
-				col.href = item.url;
-				col.rel = 'nofollow';
-				col.target = '_blank';
-				col.className = 'col my-2 p-1 text-center nav-ban-item';
+				const col = document.createElement('div');
+				col.className = 'col';
 				col.innerHTML = `
-					<img class="border rounded-circle nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='img/index.png'">
-					<h6 class="nav-ban-text">${item.name}</h6>`;
+					<a href="${item.url}" rel="nofollow" target="_blank" class="nav-ban-item">
+						<img class="nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='img/index.png'">
+						<h6 class="nav-ban-text">${item.name}</h6>
+					</a>`;
 				row.appendChild(col);
 			});
 			contentElement.appendChild(row);
@@ -135,23 +142,43 @@
 		navTabsContainer.appendChild(moreTabElement);
 	}
 
-	function switchTab(tabName) {
-		document.querySelectorAll('.nav-ban').forEach(tab => {
+	function switchTab(tabId) {
+		// 隐藏所有内容
+		const contents = document.querySelectorAll('.nav-ban');
+		contents.forEach(tab => {
 			tab.classList.add('d-none');
+			tab.style.display = 'none'; // 强制隐藏
 		});
-		document.querySelectorAll('.nav-top').forEach(tab => {
-			tab.classList.remove('active');
-		});
-		document.getElementById(`tab-${tabName}`).classList.remove('d-none');
-		document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+		
+		// 移除所有标签的激活状态
+		const tabs = document.querySelectorAll('.nav-top');
+		tabs.forEach(tab => tab.classList.remove('active'));
+		
+		// 显示当前内容并激活当前标签
+		const targetContent = document.getElementById(`tab-${tabId}`);
+		const targetTab = document.querySelector(`[data-tab="${tabId}"]`);
+		
+		if (targetContent) {
+			targetContent.classList.remove('d-none');
+			targetContent.style.display = 'block'; // 强制显示
+		}
+		if (targetTab) targetTab.classList.add('active');
 	}
 </script>
 	<!-- 模块化 Background 组件 -->
 	<script src="js/components/background-component.js"></script>
 	
 	<script>
-		//--------------------------------------------------------------
+		function handleKeyPress(event) {
+			if (event.keyCode === 13) {
+				event.preventDefault();
+				const btn = document.querySelector('.search-icon');
+				if (btn) btn.click();
+				return false;
+			}
+		}
 
+		//--------------------------------------------------------------
 		//首页搜索框跳转指向算法
 		var indexing = document.getElementById("indexing");
 		var oMoreB = localStorage.getItem("oMoreB");
