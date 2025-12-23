@@ -34,10 +34,14 @@
         <noscript><link rel="stylesheet" href="${basePath}css/index.css"></noscript>
         <link rel="preload" href="${basePath}css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="${basePath}css/all.min.css"></noscript>
-        <link rel="stylesheet" type="text/css" href="${basePath}css/search-form.css" media="print" onload="this.media='all'">
+                
+                <!-- Bootstrap 样式补全与标准化 -->
+                <link rel="stylesheet" href="${basePath}css/style-main/index.css">
+                
+                <link rel="stylesheet" type="text/css" href="${basePath}css/search-form.css" media="print" onload="this.media='all'">
         
-        <!-- 管理页面样式 (仅在管理页面加载) -->
-        ${window.location.pathname.includes('/manager/') ? `<link href="${basePath}css/manager-styles.css" rel="stylesheet">` : ''}
+        <!-- 核心组件与管理页面样式 -->
+        <link rel="stylesheet" href="${basePath}css/manager-styles.css">
         
         <!-- 深色模式样式 -->
         <link rel="stylesheet" href="${basePath}css/dark-mode.css">

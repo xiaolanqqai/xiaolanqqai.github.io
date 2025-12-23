@@ -163,4 +163,42 @@ body {
   .search-wrapper.active .input-holder {
     width: 200px;
   }
-}/*# sourceMappingURL=search-form.css.map */
+}
+
+/* 搜索建议 (AJAX) 样式 */
+#search_ajx {
+  position: fixed;
+  z-index: 1000;
+  transform: translateX(-50%);
+  margin-top: 20px;
+  left: 50%;
+}
+#search_ajx ul {
+  text-align: left;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+#list {
+  width: 400px;
+  max-width: 90vw;
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+#list li {
+  line-height: 40px;
+}
+#list li a {
+  font-size: 14px;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: block;
+  padding: 0 20px;
+  transition: background 0.2s;
+}
+#list li a:hover {
+  background: var(--bg-light);
+}

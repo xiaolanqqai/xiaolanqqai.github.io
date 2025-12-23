@@ -8,173 +8,10 @@
     
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
-    <style>
-        /* 页面特定样式 */
-        .site-card {
-            width: 100px;
-            height: 110px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            position: relative;
-            display: inline-block;
-            text-align: center;
-            cursor: pointer;
-        }
-        
-        .site-card:hover {
-            transform: translateY(-2px);
-        }
-        
-        .site-card .delete-corner {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background-color: #dc3545;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            z-index: 10;
-        }
-        
-        .site-card:hover .delete-corner {
-            opacity: 1;
-        }
-        
-        .site-card .site-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            object-fit: cover;
-            margin: 0 auto 8px;
-            display: block;
-        }
-        
-        .site-card .site-name {
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-height: 1.2;
-            height: 28px;
-        }
-        
-        .json-preview {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: var(--bg-secondary);
-            border-radius: 4px;
-            max-height: 250px;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            color: var(--text-primary);
-        }
-        
-        .page-btn {
-            font-size: 0.85rem;
-        }
-        
-        .special-section .badge {
-            background-color: var(--bg-secondary);
-            color: var(--text-light);
-        }
-        
-        /* 操作日志按钮样式 */
-        .home-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .home-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* 管理页面导航栏中的感叹号按钮样式 */
-        .manager-nav-button.bg-warning {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #ffb300 100%) !important;
-            color: var(--text-light) !important;
-        }
-        
-        .manager-nav-button.bg-warning:hover {
-            background: linear-gradient(135deg, #ffb300 0%, #ffa000 100%) !important;
-            color: var(--text-light) !important;
-        }
-        
-        /* 日志条目样式 */
-        .log-entry {
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            border-left: 4px solid var(--primary-color);
-            background-color: var(--bg-secondary);
-            font-size: 0.875rem;
-        }
-        
-        .log-entry.success {
-            border-left-color: var(--success-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.error {
-            border-left-color: var(--danger-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.warning {
-            border-left-color: var(--warning-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.info {
-            border-left-color: var(--info-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-        
-        .log-message {
-            font-weight: 500;
-            margin-bottom: 2px;
-            color: var(--text-primary);
-        }
-        
-        .log-details {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            white-space: pre-wrap;
-        }
-    </style>
 </head>
 <body class="manager-body">
     <!-- 返回首页按钮 -->
-    <a href="../../index.html" class="home-button bg-dark text-white" title="返回首页">
+    <a href="../../index.html" class="home-button" title="返回首页">
         <i class="fas fa-home"></i>
     </a>
     
@@ -195,14 +32,14 @@
             <i class="fas fa-compass"></i>
         </a>
         <!-- 操作日志按钮 -->
-        <button class="manager-nav-button bg-warning text-white" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
+        <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
             <i class="fas fa-exclamation-circle"></i>
         </button>
     </div>
-    <div class="manager-header py-4 mb-4">
+    <div class="manager-header header-gradient py-4 mb-4">
         <div class="container">
-            <h1 class="text-center mb-2">导航数据管理系统</h1>
-            <p class="text-center mb-0">管理您的网站导航选项卡内容</p>
+            <h1 class="text-center mb-2 text-light">导航数据管理系统</h1>
+            <p class="text-center mb-0 text-light opacity-75">管理您的网站导航选项卡内容</p>
         </div>
     </div>
     
@@ -227,11 +64,11 @@
         <div class="bg-light rounded p-3 mb-4">
             <h5 class="mb-3">选择要管理的页面:</h5>
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-outline-primary page-btn active" data-page="index">主页 (index.html)</button>
-                <button class="btn btn-outline-primary page-btn" data-page="more">更多页面 (More.html)</button>
-                <button class="btn btn-outline-primary page-btn" data-page="dd">DD页面 (DD.html)</button>
-                <button class="btn btn-outline-primary page-btn" data-page="download">下载页面 (Download.html)</button>
-                <button class="btn btn-outline-primary page-btn" data-page="develop">开发页面 (Develop.html)</button>
+                <button class="btn btn-outline-primary fs-085r active" data-page="index">主页 (index.html)</button>
+                <button class="btn btn-outline-primary fs-085r" data-page="more">更多页面 (More.html)</button>
+                <button class="btn btn-outline-primary fs-085r" data-page="dd">DD页面 (DD.html)</button>
+                <button class="btn btn-outline-primary fs-085r" data-page="download">下载页面 (Download.html)</button>
+                <button class="btn btn-outline-primary fs-085r" data-page="develop">开发页面 (Develop.html)</button>
             </div>
         </div>
         
@@ -392,7 +229,7 @@
                     <span id="progressPercentage" class="text-muted small">0%</span>
                 </div>
                 <div class="progress progress-bar-animation mb-1">
-                    <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated w-0p" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
                 <p id="progressMessage" class="text-sm text-muted">准备中...</p>
             </div>
@@ -416,8 +253,8 @@
                     <div id="defaultIcon" class="site-icon-default">
                         <i class="fas fa-globe fa-3x"></i>
                     </div>
-                    <img src="" alt="网站图标" id="siteIconImage" class="site-icon img-fluid" style="display: none;">
-                    <div id="loadingIcon" class="site-icon-loading" style="display: none;">
+                    <img src="" alt="网站图标" id="siteIconImage" class="site-icon img-fluid d-none">
+                    <div id="loadingIcon" class="site-icon-loading d-none">
                         <i class="fas fa-spinner fa-spin fa-3x"></i>
                     </div>
                 </div>

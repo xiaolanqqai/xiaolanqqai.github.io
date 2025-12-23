@@ -20,173 +20,35 @@
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
     <script src="../../js/dark-mode.js"></script>
-    <style>
-        /* 页面特定样式 */
-        .version-card {
-            transition: transform 0.2s ease;
-        }
-        
-        .version-card:hover {
-            transform: translateY(-3px);
-        }
-        
-        .version-header {
-            background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);
-            color: var(--text-light);
-            border-radius: 6px 6px 0 0;
-        }
-        
-        .readonly-badge {
-            background-color: var(--text-secondary);
-            color: var(--text-light);
-            font-size: 0.7rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-        }
-        
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
-        }
-        
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0.7rem;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background-color: var(--border-color);
-        }
-        
-        .timeline-item {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-        
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -2rem;
-            top: 0.5rem;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            border: 2px solid white;
-            box-shadow: 0 0 0 2px var(--primary-color);
-        }
-        
-        .timeline-date {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 0.25rem;
-        }
-        
-        .version-timeline {
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        
-        .json-preview {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: var(--bg-secondary);
-            border-radius: 4px;
-            max-height: 250px;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            color: var(--text-primary);
-        }
-        
-        /* 管理页面导航栏中感叹号按钮样式 */
-        .manager-nav-button.bg-warning {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #ffb300 100%) !important;
-            color: var(--text-light) !important;
-            border: none;
-        }
-        
-        .manager-nav-button.bg-warning:hover {
-            background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%) !important;
-            transform: translateY(-1px);
-        }
-        
-        /* 日志条目样式 */
-        .log-entry {
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border-radius: 6px;
-            border-left: 4px solid var(--text-secondary);
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-        }
-        
-        .log-entry.success {
-            border-left-color: var(--success-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.error {
-            border-left-color: var(--danger-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.warning {
-            border-left-color: var(--warning-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.info {
-            border-left-color: var(--info-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.25rem;
-        }
-        
-        .log-message {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-            color: var(--text-primary);
-        }
-        
-        .log-details {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-    </style>
 </head>
 <body class="manager-body">
     <!-- 返回首页按钮 -->
-    <a href="../../index.html" class="home-button bg-dark text-white" title="返回首页">
+    <a href="../../index.html" class="home-button" title="返回首页">
         <i class="fas fa-home"></i>
     </a>
     
     <!-- 管理页面导航栏 -->
     <div class="manager-nav">
-            <a href="nav-manager.html" class="manager-nav-button" title="导航数据管理">
-                <i class="fas fa-sitemap"></i>
-            </a>
-            <a href="MM-generator.html" class="manager-nav-button" title="密码生成器">
-                <i class="fas fa-key"></i>
-            </a>
-            <a href="vol-manager.html" class="manager-nav-button active" title="版本管理">
-                <i class="fas fa-code-branch"></i>
-            </a>
-            <a href="explore-manager.html" class="manager-nav-button" title="探索网页">
-                <i class="fas fa-compass"></i>
-            </a>
-            <button class="manager-nav-button bg-warning" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas" title="操作日志">
-                <i class="fas fa-exclamation-circle"></i>
-            </button>
-        </div>
-    <div class="manager-header py-4 mb-4">
+        <a href="nav-manager.html" class="manager-nav-button" title="导航数据管理">
+            <i class="fas fa-sitemap"></i>
+        </a>
+        <a href="MM-generator.html" class="manager-nav-button" title="密码生成器">
+            <i class="fas fa-key"></i>
+        </a>
+        <a href="vol-manager.html" class="manager-nav-button active" title="版本管理">
+            <i class="fas fa-code-branch"></i>
+        </a>
+        <a href="explore-manager.html" class="manager-nav-button" title="探索网页">
+            <i class="fas fa-compass"></i>
+        </a>
+        <button class="manager-nav-button bg-warning" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas" title="操作日志">
+            <i class="fas fa-exclamation-circle"></i>
+        </button>
+    </div>
+    <div class="manager-header header-gradient py-4 mb-4">
         <div class="container">
-            <h1 class="text-center mb-2">版本管理系统</h1>
-            <p class="text-center mb-0">加载版本历史记录，添加新版本信息</p>
+            <h1 class="text-center mb-2 text-light">版本管理系统</h1>
+            <p class="text-center mb-0 text-light opacity-75">加载版本历史记录，添加新版本信息</p>
         </div>
     </div>
     
@@ -408,19 +270,19 @@
                 };
                 
                 logEntries.unshift(logEntry); // 最新的在前面
-                renderLogs();
-            }
-            
-            // 渲染日志
-            function renderLogs() {
-                if (logEntries.length === 0) {
-                    emptyLogMessage.style.display = 'block';
-                    logContainer.innerHTML = '';
-                    return;
-                }
-                
-                emptyLogMessage.style.display = 'none';
-                logContainer.innerHTML = '';
+                        renderLogs();
+                    }
+                    
+                    // 渲染日志
+                    function renderLogs() {
+                        if (logEntries.length === 0) {
+                            emptyLogMessage.classList.remove('d-none');
+                            logContainer.innerHTML = '';
+                            return;
+                        }
+                        
+                        emptyLogMessage.classList.add('d-none');
+                        logContainer.innerHTML = '';
                 
                 logEntries.forEach(entry => {
                     const logElement = document.createElement('div');

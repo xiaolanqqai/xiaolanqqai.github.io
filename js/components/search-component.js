@@ -25,7 +25,7 @@
                 <div class="result-container"></div>
             </div>
             <div id="search_ajx">
-                <ul id="list" style="display:none;"></ul>
+                <ul id="list" class="d-none"></ul>
             </div>
         </form>
     `;

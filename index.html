@@ -12,10 +12,10 @@
 	<script src="performance-config.js" defer></script>
 </head>
 
-<body style="overflow-y: hidden">
+<body class="overflow-y-hidden">
 	<!-- 管理功能已移除 -->
-	<div class="z-2 d-flex flex-column mx-auto">
-		<div class="d-flex flex-column justify-content-end" style="height: 40%;">
+	<div class="z-2 d-flex flex-column mx-auto w-100p h-100p">
+		<div class="d-flex flex-column justify-content-end h-40p">
 			<div class="mx-auto shadow mt-3 rounded-3"><img id="indexing" width="250" src="img/login.png" class="p-1">
 			</div>
 			<div class="mx-auto mt-5 pt-5">
@@ -24,13 +24,13 @@
 				<script src="js/components/search-component.js"></script>
 			</div>
 		</div>
-		<div class="d-flex flex-column" style="height: 60%;">
+		<div class="d-flex flex-column h-60p">
 			<nav class="p-2 mx-auto mt-5 pt-5">
 				<div class="nav nav-tabs shadow rounded-2" id="nav-tabs-container">
 					<!-- More链接将由JavaScript动态添加 -->
 				</div>
 			</nav>
-			<div class="kuaijie mx-auto mt-3" id="nav-content-container"></div>
+			<div class="mx-auto mt-3 mw-550px w-100p" id="nav-content-container"></div>
 		</div>
 		<div class="fixed-bottom mx-1">
 			<div class="container-fluid">
@@ -100,6 +100,9 @@
 				e.preventDefault();
 				switchTab(tab.name.toLowerCase().replace(/\s+/g, '-'));
 			});
+			tabElement.addEventListener('mouseenter', function () {
+				switchTab(tab.name.toLowerCase().replace(/\s+/g, '-'));
+			});
 			navTabsContainer.appendChild(tabElement);
 
 			const contentElement = document.createElement('div');
@@ -114,10 +117,10 @@
 				col.href = item.url;
 				col.rel = 'nofollow';
 				col.target = '_blank';
-				col.className = 'col my-2 p-1 text-center text-black-50 kuaijie-a';
+				col.className = 'col my-2 p-1 text-center nav-ban-item';
 				col.innerHTML = `
-					<img class="border rounded-circle w" src="${iconUrl}" loading="lazy" onerror="this.src='img/index.png'">
-					<h6 class="t1">${item.name}</h6>`;
+					<img class="border rounded-circle nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='img/index.png'">
+					<h6 class="nav-ban-text">${item.name}</h6>`;
 				row.appendChild(col);
 			});
 			contentElement.appendChild(row);
@@ -147,22 +150,6 @@
 	<script src="js/components/background-component.js"></script>
 	
 	<script>
-		//首页栏目切换算法
-		var aTop = document.getElementsByClassName('nav-top');
-		var aBan = document.getElementsByClassName('nav-ban');
-		var i = 0;
-		for (i = 0; i < aTop.length - 1; i++) {
-			aTop[i].index = i;
-			aTop[i].onmouseenter = function () {
-				for (i = 0; i < aBan.length; i++) {
-					aTop[i].className = 'nav-link btn nav-top';
-					aBan[i].style.display = 'none';
-				};
-				aBan[this.index].style.display = 'block';
-				this.className = 'nav-link btn nav-top active';
-			};
-		};
-
 		//--------------------------------------------------------------
 
 		//首页搜索框跳转指向算法
@@ -236,7 +223,7 @@
 	
 
 	
-	<div style="display: none;">111</div>
+	<div class="d-none">111</div>
 
 </body>
 </html>

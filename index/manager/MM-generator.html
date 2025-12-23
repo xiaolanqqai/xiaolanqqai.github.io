@@ -8,211 +8,10 @@
     
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
-    <style>
-        /* 页面特定样式 */
-        .header-gradient {
-            background: linear-gradient(135deg, var(--dark-color) 0%, var(--primary-color) 100%);
-        }
-        
-        .option-card {
-            transition: all 0.3s;
-            border: 2px solid var(--border-color);
-            background-color: var(--card-bg);
-        }
-        
-        .option-card:hover {
-            border-color: var(--primary-color);
-            background: var(--bg-light);
-        }
-        
-        .entry-item {
-            border-left: 4px solid var(--primary-color);
-            cursor: grab;
-            transition: transform 0.2s, box-shadow 0.2s;
-            background-color: var(--card-bg);
-        }
-        
-        .entry-item:active {
-            cursor: grabbing;
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .entry-item.dragging {
-            opacity: 0.6;
-            background: var(--bg-light);
-        }
-        
-        .entry-item.editing {
-            background: var(--bg-light);
-            border-left-color: var(--success-color);
-        }
-        
-        .drag-handle {
-            cursor: move;
-            color: var(--text-secondary);
-        }
-        
-        .upload-area {
-            border: 2px dashed var(--border-color);
-            transition: all 0.2s ease;
-            background-color: var(--card-bg);
-        }
-        
-        .upload-area:hover {
-            border-color: var(--primary-color);
-            background-color: var(--bg-light);
-        }
-        
-        .baidu-notice {
-            background: var(--warning-color);
-            border: 1px solid var(--warning-color);
-            color: var(--text-primary);
-        }
-        
-        .baidu-button {
-            display: block;
-            text-align: center;
-            margin: 10px 0;
-            padding: 10px;
-            background: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .spin {
-            animation: spin 1s linear infinite;
-        }
-        
-        @media (max-width: 768px) {
-            .home-button {
-                top: 10px;
-                left: 10px;
-                width: 40px;
-                height: 40px;
-            }
-        }
-        
-        /* 管理页面导航栏中的感叹号按钮样式 */
-        .manager-nav-button.bg-warning {
-            background: linear-gradient(135deg, var(--warning-color) 0%, #ffb300 100%) !important;
-            color: var(--text-light) !important;
-        }
-        
-        .manager-nav-button.bg-warning:hover {
-            background: linear-gradient(135deg, #ffb300 0%, #ffa000 100%) !important;
-            color: var(--text-light) !important;
-        }
-        
-        /* 日志条目样式 */
-        .log-entry {
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            border-left: 4px solid var(--primary-color);
-            background-color: var(--bg-secondary);
-            font-size: 0.875rem;
-            color: var(--text-primary);
-        }
-        
-        .log-entry.success {
-            border-left-color: var(--success-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.error {
-            border-left-color: var(--danger-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.warning {
-            border-left-color: var(--warning-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-entry.info {
-            border-left-color: var(--info-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        .log-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-        
-        .log-message {
-            font-weight: 500;
-            margin-bottom: 2px;
-            color: var(--text-primary);
-        }
-        
-        .log-details {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            white-space: pre-wrap;
-        }
-        
-        /* 密码输入样式 */
-        .password-input {
-            width: 50px;
-            height: 50px;
-            border: 2px solid var(--border-color);
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            background-color: var(--bg-light);
-            color: var(--text-primary);
-        }
-        
-        .password-input.filled {
-            border-color: var(--success-color);
-            background-color: var(--bg-secondary);
-        }
-        
-        /* 图案按钮样式 */
-        .pattern-btn {
-            width: 60px;
-            height: 60px;
-            border: 2px solid var(--border-color);
-            border-radius: 5px;
-            background-color: var(--bg-light);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .pattern-btn:hover {
-            border-color: #007bff;
-            background-color: #e3f2fd;
-        }
-        
-        .pattern-btn:active {
-            transform: scale(0.95);
-        }
-        
-        /* 图案按钮内的SVG样式 */
-        .pattern-btn svg {
-            width: 40px;
-            height: 40px;
-        }
-    </style>
 </head>
 <body class="manager-body d-flex flex-column min-vh-100 p-3">
     <!-- 返回首页按钮 -->
-    <a href="../../index.html" class="home-button bg-dark text-white" title="返回首页">
+    <a href="../../index.html" class="home-button" title="返回首页">
         <i class="fas fa-home"></i>
     </a>
     
@@ -231,15 +30,15 @@
             <i class="fas fa-compass"></i>
         </a>
         <!-- 操作日志按钮 -->
-        <button class="manager-nav-button bg-warning text-white" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
+        <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
             <i class="fas fa-exclamation-circle"></i>
         </button>
     </div>
     
     <div class="container flex-grow-1 d-flex flex-column">
-        <header class="manager-header text-center text-white p-4 rounded mb-4">
+        <header class="manager-header text-center text-light p-4 rounded mb-4 header-gradient">
             <h1 class="mb-2">MM-generator</h1>
-            <p class="lead mb-0">上传、编辑并下载HTML文件</p>
+            <p class="lead mb-0 opacity-75">上传、编辑并下载HTML文件</p>
         </header>
         
         <!-- 解密模态框 -->
@@ -254,23 +53,23 @@
                         <div class="mb-3">
                             <label for="decryptPassword" class="form-label">请输入四位数图案密码：</label>
                             <div class="password-input-container d-flex justify-content-center align-items-center gap-3 mb-4">
-                                <div class="password-input" id="decryptPassword1"></div>
-                                <div class="password-input" id="decryptPassword2"></div>
-                                <div class="password-input" id="decryptPassword3"></div>
-                                <div class="password-input" id="decryptPassword4"></div>
+                                <div class="password-input w-50px h-50px fs-24px" id="decryptPassword1"></div>
+                                <div class="password-input w-50px h-50px fs-24px" id="decryptPassword2"></div>
+                                <div class="password-input w-50px h-50px fs-24px" id="decryptPassword3"></div>
+                                <div class="password-input w-50px h-50px fs-24px" id="decryptPassword4"></div>
                             </div>
                             <div class="pattern-buttons d-flex justify-content-center gap-3">
-                                <button class="pattern-btn" id="patternA">
-                                    <svg width="40" height="40" viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                <button class="pattern-btn w-60px h-60px" id="patternA">
+                                    <svg class="w-40px h-40px" viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" stroke-width="2"/></svg>
                                 </button>
-                                <button class="pattern-btn" id="patternB">
-                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 30,30 10,30" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                <button class="pattern-btn w-60px h-60px" id="patternB">
+                                    <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 30,30 10,30" fill="none" stroke="#000" stroke-width="2"/></svg>
                                 </button>
-                                <button class="pattern-btn" id="patternC">
-                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 30,20 20,30 10,20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                <button class="pattern-btn w-60px h-60px" id="patternC">
+                                    <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 30,20 20,30 10,20" fill="none" stroke="#000" stroke-width="2"/></svg>
                                 </button>
-                                <button class="pattern-btn" id="patternD">
-                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 25,18 33,20 27,26 28,34 20,30 12,34 13,26 7,20 15,18" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                <button class="pattern-btn w-60px h-60px" id="patternD">
+                                    <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 25,18 33,20 27,26 28,34 20,30 12,34 13,26 7,20 15,18" fill="none" stroke="#000" stroke-width="2"/></svg>
                                 </button>
                             </div>
                             <div class="text-center mt-4">
@@ -300,23 +99,23 @@
                         <div class="mb-3">
                             <label for="encryptPassword" class="form-label">请输入四位数图案密码：</label>
                             <div class="password-input-container d-flex justify-content-center align-items-center gap-3 mb-4">
-                                <div class="password-input" id="encryptPassword1"></div>
-                                <div class="password-input" id="encryptPassword2"></div>
-                                <div class="password-input" id="encryptPassword3"></div>
-                                <div class="password-input" id="encryptPassword4"></div>
+                                <div class="password-input w-50px h-50px fs-24px" id="encryptPassword1"></div>
+                                <div class="password-input w-50px h-50px fs-24px" id="encryptPassword2"></div>
+                                <div class="password-input w-50px h-50px fs-24px" id="encryptPassword3"></div>
+                                <div class="password-input w-50px h-50px fs-24px" id="encryptPassword4"></div>
                             </div>
                             <div class="pattern-buttons d-flex justify-content-center gap-3">
-                                <button class="pattern-btn" id="encryptPatternA">
-                                    <svg width="40" height="40" viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                <button class="pattern-btn w-60px h-60px" id="encryptPatternA">
+                                    <svg class="w-40px h-40px" viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" stroke-width="2"/></svg>
                                 </button>
-                                <button class="pattern-btn" id="encryptPatternB">
-                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 30,30 10,30" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                <button class="pattern-btn w-60px h-60px" id="encryptPatternB">
+                                    <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 30,30 10,30" fill="none" stroke="#000" stroke-width="2"/></svg>
                                 </button>
-                                <button class="pattern-btn" id="encryptPatternC">
-                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 30,20 20,30 10,20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                <button class="pattern-btn w-60px h-60px" id="encryptPatternC">
+                                    <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 30,20 20,30 10,20" fill="none" stroke="#000" stroke-width="2"/></svg>
                                 </button>
-                                <button class="pattern-btn" id="encryptPatternD">
-                                    <svg width="40" height="40" viewBox="0 0 40 40"><polygon points="20,10 25,18 33,20 27,26 28,34 20,30 12,34 13,26 7,20 15,18" fill="none" stroke="#000" stroke-width="2"/></svg>
+                                <button class="pattern-btn w-60px h-60px" id="encryptPatternD">
+                                    <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 25,18 33,20 27,26 28,34 20,30 12,34 13,26 7,20 15,18" fill="none" stroke="#000" stroke-width="2"/></svg>
                                 </button>
                             </div>
                             <div class="text-center mt-4">
@@ -339,7 +138,7 @@
             <div class="row justify-content-center g-4">
                 <div class="col-md-6">
                     <div class="option-card p-4 rounded bg-light h-100">
-                        <div class="option-title h5 mb-3 text-dark">从本地上传</div>
+                        <h5 class="fw-medium mb-3">从本地上传</h5>
                         <input type="file" id="fileInput" class="d-none" accept=".json">
                         <button id="uploadBtn" class="btn manager-btn-primary w-100 py-3">
                             <i class="fas fa-upload me-2"></i>
@@ -351,7 +150,7 @@
                 
                 <div class="col-md-6">
                     <div class="option-card p-4 rounded bg-light h-100">
-                        <div class="option-title h5 mb-3 text-dark">从网络加载</div>
+                        <h5 class="fw-medium mb-3">从网络加载</h5>
                         <button id="loadUrlBtn" class="btn manager-btn-warning w-100 py-3">
                             <i class="fas fa-link me-2"></i>
                             加载文件
@@ -373,7 +172,7 @@
             <div class="row g-4 mb-4">
                 <div class="col-lg-6">
                     <div class="bg-white rounded shadow p-4 h-100">
-                        <h2 class="section-title border-bottom pb-2 mb-3">添加新条目</h2>
+                        <h4 class="text-primary fw-semibold border-bottom pb-2 mb-3">添加新条目</h4>
                         <p class="text-muted mb-3">在此处添加新的密码模式条目，添加后将在右侧列表中显示</p>
                         
                         <form id="entryForm" class="mb-4">
@@ -444,7 +243,7 @@
                 
                 <div class="col-lg-6">
                     <div class="bg-white rounded shadow p-4 h-100 d-flex flex-column">
-                        <h2 class="section-title border-bottom pb-2 mb-3">已添加条目 <small class="text-muted">(拖拽排序)</small></h2>
+                        <h4 class="text-primary fw-semibold border-bottom pb-2 mb-3">已添加条目 <small class="text-muted fs-6">(拖拽排序)</small></h4>
                         <p class="text-muted mb-3">所有已添加的条目列表，支持拖拽排序和删除操作</p>
                         
                         <div class="entries-container flex-grow-1 d-flex flex-column">
@@ -1409,16 +1208,16 @@
                 
                 item.addEventListener('dragenter', function(e) {
                     e.preventDefault();
-                    this.style.backgroundColor = '#e3f2fd';
+                    this.classList.add('drag-over');
                 });
                 
                 item.addEventListener('dragleave', function() {
-                    this.style.backgroundColor = '';
+                    this.classList.remove('drag-over');
                 });
                 
                 item.addEventListener('drop', function(e) {
                     e.preventDefault();
-                    this.style.backgroundColor = '';
+                    this.classList.remove('drag-over');
                     
                     if (draggedItem && draggedItem !== this) {
                         const fromIndex = parseInt(draggedItem.dataset.index);

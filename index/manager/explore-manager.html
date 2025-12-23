@@ -13,184 +13,20 @@
     <meta name="apple-mobile-web-app-title" content="探索网页">
     <link rel="apple-touch-icon" href="../../img/index.png">
     
+    <!-- 引入样式 -->
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/all.min.css">
+    <link href="../../css/style-main/index.css" rel="stylesheet">
     <link href="../../css/manager-styles.css" rel="stylesheet">
     <!-- 深色模式样式 -->
     <link rel="stylesheet" href="../../css/dark-mode.css">
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
     <script src="../../js/dark-mode.js"></script>
-    <style>
-        /* 页面特定样式 */
-        .explore-header {
-            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
-            color: white;
-        }
-        
-        .discover-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: none;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 100%;
-        }
-        
-        .discover-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        
-        .card-img-top {
-            height: 180px;
-            object-fit: cover;
-            background-color: #f8f9fa;
-        }
-        
-        .site-rating {
-            color: #ffc107;
-        }
-        
-        .category-pill {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 20px;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            display: inline-block;
-        }
-        
-        .btn-discover {
-            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
-            color: white;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-discover:hover {
-            background: linear-gradient(135deg, #8e24aa 0%, #5e35b1 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .btn-random {
-            background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
-            color: white;
-            border: none;
-        }
-        
-        .btn-random:hover {
-            background: linear-gradient(135deg, #00acc1 0%, #00838f 100%);
-        }
-        
-        .favorites-icon {
-            cursor: pointer;
-            transition: transform 0.2s ease, color 0.2s ease;
-        }
-        
-        .favorites-icon:hover {
-            transform: scale(1.2);
-        }
-        
-        .favorites-icon.active {
-            color: #e91e63;
-        }
-        
-        /* 加载动画 */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: skeleton-loading 1.5s infinite;
-        }
-        
-        @keyframes skeleton-loading {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
-            }
-        }
-        
-        .search-form {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        /* 标签云样式 */
-        .tag-cloud {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        
-        .tag-cloud a {
-            text-decoration: none;
-            padding: 5px 12px;
-            border-radius: 20px;
-            background-color: #f8f9fa;
-            color: #6c757d;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-        }
-        
-        .tag-cloud a:hover {
-            background-color: #9c27b0;
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        /* 收藏夹样式 */
-        .favorites-list .list-group-item {
-            border-left: 4px solid #e91e63;
-        }
-        
-        /* 管理页面导航栏中的感叹号按钮样式 */
-        .manager-nav-button.bg-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%) !important;
-            color: white !important;
-            border: none;
-        }
-        
-        .manager-nav-button.bg-warning:hover {
-            background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%) !important;
-            transform: translateY(-1px);
-        }
-        
-        /* 日志条目样式 */
-        .log-entry {
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border-radius: 6px;
-            border-left: 4px solid #6c757d;
-            background-color: #f8f9fa;
-        }
-        
-        .log-entry.success {
-            border-left-color: #28a745;
-            background-color: #f8fff9;
-        }
-        
-        .log-entry.error {
-            border-left-color: #dc3545;
-            background-color: #fff5f5;
-        }
-        
-        .log-entry.warning {
-            border-left-color: #ffc107;
-            background-color: #fffef0;
-        }
-        
-        .log-entry.info {
-            border-left-color: #17a2b8;
-            background-color: #f0f9ff;
-        }
-    </style>
 </head>
 <body class="manager-body">
     <!-- 返回首页按钮 -->
-    <a href="../../index.html" class="home-button bg-dark text-white" title="返回首页">
+    <a href="../../index.html" class="home-button" title="返回首页">
         <i class="fas fa-home"></i>
     </a>
     
@@ -209,15 +45,15 @@
             <i class="fas fa-compass"></i>
         </a>
         <!-- 操作日志按钮 -->
-        <button class="manager-nav-button bg-warning text-white" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
+        <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
             <i class="fas fa-exclamation-circle"></i>
         </button>
     </div>
     
-    <div class="manager-header explore-header py-4 mb-4">
+    <div class="manager-header explore-header header-gradient py-4 mb-4">
         <div class="container">
-            <h1 class="text-center mb-2">探索网页系统</h1>
-            <p class="text-center mb-0">发现新的有趣网站，开拓您的网络视野</p>
+            <h1 class="text-center mb-2 text-light">探索网页系统</h1>
+            <p class="text-center mb-0 text-light opacity-75">发现新的有趣网站，开拓您的网络视野</p>
         </div>
     </div>
     
@@ -235,53 +71,72 @@
         </div>
         
         <!-- 工具箱模块 -->
-        <div class="toolbox-section bg-white rounded shadow p-6 mb-6">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="text-xl font-bold text-primary">浏览器收藏夹</h2>
-                <button id="refreshBookmarks" class="btn btn-outline-primary">
+        <div class="manager-card mb-4">
+            <div class="manager-card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-bookmark me-2"></i>浏览器收藏夹</h5>
+                <button id="refreshBookmarks" class="btn btn-sm btn-light">
                     <i class="fas fa-sync-alt"></i> 刷新
                 </button>
             </div>
-            <p class="text-muted mb-4">以下是您浏览器中的收藏网站，按文件夹分类显示：</p>
-            
-            <!-- 收藏夹内容将由JavaScript动态生成 -->
-            <div id="bookmarksContainer" class="mt-4">
-                <div class="text-center py-6">
-                    <i class="fas fa-bookmark text-5xl text-muted mb-3"></i>
-                    <p class="text-muted">点击上方刷新按钮加载浏览器收藏夹</p>
+            <div class="manager-card-body">
+                <p class="text-muted mb-3 small">以下是您浏览器中的收藏网站，按文件夹分类显示：</p>
+                
+                <!-- 收藏夹内容将由JavaScript动态生成 -->
+                <div id="bookmarksContainer">
+                    <div class="text-center py-5">
+                        <i class="fas fa-bookmark fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">点击上方刷新按钮加载浏览器收藏夹</p>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 分类过滤 -->
+        <div class="mb-4">
+            <h6 class="mb-3 text-muted small"><i class="fas fa-filter me-2"></i>按分类发现</h6>
+            <div class="tag-cloud" id="categoryFilter">
+                <a href="#" class="category-tag active" data-category="all">全部</a>
+                <a href="#" class="category-tag" data-category="tools">工具</a>
+                <a href="#" class="category-tag" data-category="entertainment">娱乐</a>
+                <a href="#" class="category-tag" data-category="education">教育</a>
+                <a href="#" class="category-tag" data-category="productivity">生产力</a>
+                <a href="#" class="category-tag" data-category="design">设计</a>
+                <a href="#" class="category-tag" data-category="programming">编程</a>
+                <a href="#" class="category-tag" data-category="news">新闻</a>
+                <a href="#" class="category-tag" data-category="social">社交</a>
+                <a href="#" class="category-tag" data-category="other">其他</a>
             </div>
         </div>
         
         <!-- 标签页内容 -->
-        <div class="tab-content" id="exploreTabContent">
+        <div class="tab-content border-0 p-0 bg-transparent" id="exploreTabContent">
             
             <!-- 热门标签页 -->
             <div class="tab-pane fade" id="trending" role="tabpanel" aria-labelledby="trending-tab">
-                <div class="list-group" id="trendingList">
+                <div class="list-group shadow-sm" id="trendingList">
                     <!-- 热门网站列表将由JavaScript动态生成 -->
                     <!-- 骨架屏加载状态 -->
                     <div class="list-group-item p-4">
-                        <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 10px;"></div>
-                        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                        <div class="skeleton h-20px w-50p mb-2"></div>
+                        <div class="skeleton h-16px w-80p"></div>
                     </div>
                     <div class="list-group-item p-4">
-                        <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 10px;"></div>
-                        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                        <div class="skeleton h-20px w-50p mb-2"></div>
+                        <div class="skeleton h-16px w-80p"></div>
                     </div>
                     <div class="list-group-item p-4">
-                        <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 10px;"></div>
-                        <div class="skeleton" style="height: 16px; width: 80%;"></div>
+                        <div class="skeleton h-20px w-50p mb-2"></div>
+                        <div class="skeleton h-16px w-80p"></div>
                     </div>
                 </div>
             </div>
             
             <!-- 收藏标签页 -->
-            <div class="tab-pane fade" id="favorites" role="tabpanel" aria-labelledby="favorites-tab">
+            <div class="tab-pane fade show active" id="favorites" role="tabpanel" aria-labelledby="favorites-tab">
                 <div class="favorites-list" id="favoritesList">
                     <div class="alert alert-info text-center p-5">
-                        <i class="fas fa-star text-warning mb-2" style="font-size: 3rem;"></i>
-                        <h4 class="mt-2">还没有收藏网站</h4>
+                        <i class="fas fa-star text-warning mb-3 fs-1"></i>
+                        <h4>还没有收藏网站</h4>
                         <p class="mb-0">浏览"发现"或"热门"标签页，点击星标图标收藏您喜欢的网站</p>
                     </div>
                 </div>
@@ -289,9 +144,9 @@
         </div>
         
         <!-- 添加网站按钮 -->
-        <div class="text-center mt-6 mb-4">
-            <button class="btn btn-discover" data-bs-toggle="modal" data-bs-target="#addSiteModal">
-                <i class="fas fa-plus"></i> 添加您发现的网站
+        <div class="text-center mt-5 mb-4">
+            <button class="btn btn-lg btn-discover px-4" data-bs-toggle="modal" data-bs-target="#addSiteModal">
+                <i class="fas fa-plus me-2"></i>添加您发现的网站
             </button>
         </div>
     </div>
@@ -309,85 +164,6 @@
         <div class="loading-spinner"></div>
         <div class="loading-text" id="loadingText">加载中...</div>
     </div>
-    
-    <!-- 工具箱模块样式 -->
-    <style>
-        .bookmark-folder {
-            margin-bottom: 20px;
-            border-left: 3px solid #007bff;
-            padding-left: 15px;
-        }
-        
-        .bookmark-folder-header {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 8px 0;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .bookmark-folder-header:hover {
-            color: #007bff;
-        }
-        
-        .bookmark-folder-header i {
-            margin-right: 8px;
-            transition: transform 0.3s ease;
-        }
-        
-        .bookmark-folder-header.collapsed i {
-            transform: rotate(-90deg);
-        }
-        
-        .bookmark-items {
-            margin-left: 25px;
-            margin-top: 10px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 10px;
-        }
-        
-        .bookmark-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            text-decoration: none !important;
-            color: #333;
-        }
-        
-        .bookmark-item:hover {
-            background-color: #e9ecef;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .bookmark-icon {
-            width: 16px;
-            height: 16px;
-            margin-right: 8px;
-            flex-shrink: 0;
-            background-color: #ddd;
-            border-radius: 2px;
-        }
-        
-        .bookmark-title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex-grow: 1;
-        }
-        
-        .bookmark-favicon {
-            width: 16px;
-            height: 16px;
-            margin-right: 8px;
-            flex-shrink: 0;
-        }
-    </style>
     
     <!-- 添加网站模态框 -->
     <div class="modal fade" id="addSiteModal" tabindex="-1" aria-hidden="true">
@@ -587,7 +363,7 @@
                                 <i class="fas fa-star favorites-icon ${isFavorite ? 'active' : ''}" data-id="${site.id}"></i>
                             </div>
                             <div class="mb-2">
-                                ${site.category.map(cat => `<span class="category-pill bg-purple-100 text-purple-800">${getCategoryName(cat)}</span>`).join('')}
+                                ${site.category.map(cat => `<span class="category-pill">${getCategoryName(cat)}</span>`).join('')}
                             </div>
                             <p class="card-text text-muted">${site.description}</p>
                             <div class="d-flex justify-content-between mt-3">
@@ -663,7 +439,7 @@
                 if (favorites.length === 0) {
                     container.innerHTML = `
                         <div class="alert alert-info text-center p-5">
-                            <i class="fas fa-star text-warning mb-2" style="font-size: 3rem;"></i>
+                            <i class="fas fa-star text-warning mb-2 fs-3r"></i>
                             <h4 class="mt-2">还没有收藏网站</h4>
                             <p class="mb-0">浏览"发现"或"热门"标签页，点击星标图标收藏您喜欢的网站</p>
                         </div>
@@ -731,7 +507,7 @@
                 categoriesContainer.innerHTML = '';
                 site.category.forEach(cat => {
                     const pill = document.createElement('span');
-                    pill.className = 'category-pill bg-purple-100 text-purple-800';
+                    pill.className = 'category-pill';
                     pill.textContent = getCategoryName(cat);
                     categoriesContainer.appendChild(pill);
                 });
@@ -849,8 +625,8 @@
                         e.preventDefault();
                         
                         // 更新活动标签样式
-                        categoryTags.forEach(t => t.classList.remove('active', 'bg-purple-600', 'text-white'));
-                        tag.classList.add('active', 'bg-purple-600', 'text-white');
+                        categoryTags.forEach(t => t.classList.remove('active'));
+                        tag.classList.add('active');
                         
                         const category = tag.getAttribute('data-category');
                         
@@ -956,24 +732,24 @@
             function showToast(message, type = 'success') {
                 // 创建提示元素
                 const toast = document.createElement('div');
-                toast.className = `toast toast-${type} position-fixed bottom-3 right-3 bg-${type === 'error' ? 'danger' : 'success'} text-white p-3 rounded shadow-lg z-50`;
+                toast.className = `feedback-toast ${type}`;
                 toast.textContent = message;
                 
                 // 添加到文档
                 document.body.appendChild(toast);
                 
                 // 显示提示
-                toast.style.opacity = '0';
                 setTimeout(() => {
-                    toast.style.transition = 'opacity 0.3s ease';
-                    toast.style.opacity = '1';
+                    toast.classList.add('show');
                 }, 10);
                 
                 // 自动关闭
                 setTimeout(() => {
-                    toast.style.opacity = '0';
+                    toast.classList.remove('show');
                     setTimeout(() => {
-                        document.body.removeChild(toast);
+                        if (document.body.contains(toast)) {
+                            document.body.removeChild(toast);
+                        }
                     }, 300);
                 }, 3000);
             }

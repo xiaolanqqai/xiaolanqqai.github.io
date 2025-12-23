@@ -10,9 +10,9 @@
 
 <body>
 	<div class="z-3 d-flex flex-row position-fixed">
-		<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>返回</strong></button>
-		<button onclick="window.location.href = 'More.html'" type="button" class="btn btn-info shadow mt-3" style="width: 100px;"><strong>More</strong></button>
-		<button onclick="window.location.href = 'Download.html'" type="button" class="btn btn-info shadow mt-3 mx-3" style="width: 100px;"><strong>软件资源</strong></button>
+		<button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3 w-100px"><strong>返回</strong></button>
+		<button onclick="window.location.href = 'More.html'" type="button" class="btn btn-info shadow mt-3 w-100px"><strong>More</strong></button>
+		<button onclick="window.location.href = 'Download.html'" type="button" class="btn btn-info shadow mt-3 mx-3 w-100px"><strong>软件资源</strong></button>
 	</div>
 	<div class="z-2 d-flex flex-column mx-auto mt-5 pt-2">
 		<div class="d-flex flex-column" id="nav-content-container"></div>
@@ -64,9 +64,9 @@
 					${tab.items.map(item => {
 						const iconUrl = item.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}`;
 						return `
-							<a href="${item.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center text-black-50 kuaijie-a-1">
-								<img class="border rounded-circle w" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
-								<h6 class="t1">${item.name}</h6>
+							<a href="${item.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center nav-ban-item">
+								<img class="border rounded-circle nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
+								<h6 class="nav-ban-text">${item.name}</h6>
 							</a>
 						`;
 					}).join('')}
@@ -91,7 +91,6 @@
 	<script src="../js/foot.js"></script>
 	<script src="../js/dark-mode.js"></script>
 
-
-	<div style="display: none;">111</div><!-- 去广告 -->
+	<div class="d-none">111</div><!-- 去广告 -->
 </body>
 </html>
