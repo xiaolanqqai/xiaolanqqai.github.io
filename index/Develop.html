@@ -8,31 +8,31 @@
     <script type="text/javascript" src="../js/jquery-3.5.1.min.js"></script>
 </head>
 
-<body>
-    <div class="z-3 d-flex flex-row position-fixed">
-        <button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow mt-3 mx-3 w-100px"><strong>返回</strong></button>
-        <button onclick="window.location.href = 'More.html'" type="button" class="btn btn-info shadow mt-3 w-100px"><strong>More</strong></button>
-    </div>
-    <div class="z-2 d-flex flex-column mx-auto mt-5 pt-2">
-        <div class="d-flex flex-column">
-            <div class="mt-3 mx-3 d-none" id="more-b">
-                <!-- 快捷按钮区域 -->
-            </div>
+<body class="main-content">
+    <header class="sticky-header">
+        <div class="container-fluid header-nav-container px-4">
+            <button onclick="window.location.href = '../index.html'" type="button" class="btn btn-info shadow fw-bold">返回</button>
+            <button onclick="window.location.href = 'More.html'" type="button" class="btn btn-info shadow fw-bold">More</button>
         </div>
-        <div class="d-flex flex-column" id="nav-content-container"></div>
-        
-        <div class="mt-3 mx-3">
-            <div class="alert alert-success shadow" role="alert">
-                <h5 class="alert-heading">BOOSTRAP_v5.3.0-alpha3</h5>
-                <h5 class="alert-heading">JQuery_v3.5.1</h5>
-                <h5 class="alert-heading">Particles_v2.2.3</h5>
-                <hr class="my-2">
-                <h5 class="alert-heading">网站数据_v1.0_20250901</h5>
-                <hr class="my-2">
-                <div id="version-history"></div>
+    </header>
+
+    <div class="content-wrapper">
+        <div class="container-fluid mt-3 px-4">
+            <div id="nav-content-container"></div>
+            
+            <div class="mt-3">
+                <div class="alert alert-success shadow" role="alert">
+                    <h5 class="alert-heading">BOOSTRAP_v5.3.0-alpha3</h5>
+                    <h5 class="alert-heading">JQuery_v3.5.1</h5>
+                    <h5 class="alert-heading">Particles_v2.2.3</h5>
+                    <hr class="my-2">
+                    <h5 class="alert-heading">网站数据_v1.0_20250901</h5>
+                    <hr class="my-2">
+                    <div id="version-history"></div>
+                </div>
+                <div class="alert alert-info shadow" role="alert">旧站点版本 2.4 --><a href="https://xiaolanqqai.github.io/" class="badge badge-light">网址</a></div>
+                <div class="alert alert-info shadow" role="alert">旧站点版本 1.0 --><a href="https://xiaolanqqai.github.io/" class="badge badge-light">网址</a></div>
             </div>
-            <div class="alert alert-info shadow" role="alert">旧站点版本 2.4 --><a href="https://xiaolanqqai.github.io/" class="badge badge-light">网址</a></div>
-            <div class="alert alert-info shadow" role="alert">旧站点版本 1.0 --><a href="https://xiaolanqqai.github.io/" class="badge badge-light">网址</a></div>
         </div>
 
         <div class="fixed-bottom mx-1">
@@ -70,22 +70,26 @@
 		
 		navData.tabs.forEach((tab, index) => {
 			const section = document.createElement('div');
-			section.className = 'mt-3 mx-3';
+			section.className = 'mb-4';
 			section.innerHTML = `
-				<div class="alert alert-secondary shadow" role="alert">${tab.name}</div>
-				<div id="ar${index + 1}" class="d-flex flex-wrap p-2">
-					${tab.items.map(item => {
-						const iconUrl = item.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}`;
-						return `
-							<a href="${item.url}" rel="nofollow" target="_blank" class="my-2 p-1 text-center nav-ban-item">
-								<img class="border rounded-circle nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
-								<h6 class="nav-ban-text">${item.name}</h6>
-							</a>
-						`;
-					}).join('')}
+				<div class="alert alert-secondary shadow mb-3" role="alert">${tab.name}</div>
+				<div id="ar${index + 1}" class="more-grid">
 				</div>
 			`;
 			navContentContainer.appendChild(section);
+
+			const grid = section.querySelector(`#ar${index + 1}`);
+			tab.items.forEach(item => {
+				const col = document.createElement('div');
+				col.className = 'more-card';
+				const iconUrl = item.icon || (item.url ? `https://api.iowen.cn/favicon/${new URL(item.url).hostname}.png` : '../img/index.png');
+				col.innerHTML = `
+					<a href="${item.url}" rel="nofollow" target="_blank" class="nav-ban-item">
+						<img class="nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
+						<h6 class="nav-ban-text">${item.name}</h6>
+					</a>`;
+				grid.appendChild(col);
+			});
 		});
 	}
 </script>
@@ -96,16 +100,13 @@
         $('img').on("error", function () {
             $(this).attr('src', '../img/index.png');
         });
-    </script>
-    <script src="../js/foot.js"></script>
-    <script src="../js/dark-mode.js"></script>
-    
-    <script>
+
         // 加载版本信息
         fetch('../js/version-history.json')
             .then(response => response.json())
             .then(data => {
                 const versionContainer = document.getElementById('version-history');
+                if (!versionContainer) return;
                 let html = '';
                 
                 data.versions.forEach((version, index) => {
@@ -127,11 +128,11 @@
             })
             .catch(error => {
                 console.error('加载版本信息失败:', error);
-                document.getElementById('version-history').innerHTML = '<p>无法加载版本信息</p>';
+                const versionContainer = document.getElementById('version-history');
+                if (versionContainer) versionContainer.innerHTML = '<p>无法加载版本信息</p>';
             });
     </script>
     
     <div class="d-none">111</div>
-    
 </body>
 </html>

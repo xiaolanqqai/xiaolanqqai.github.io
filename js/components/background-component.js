@@ -37,17 +37,52 @@
     // Load libraries and init
     async function initBackground() {
         try {
+            // Check if jQuery is loaded (required for fish.js)
+            if (typeof jQuery === 'undefined') {
+                await loadScript(`${basePath}js/jquery-3.5.1.min.js`);
+            }
+
             // Check if libraries are already loaded
+            const scriptsToLoad = [];
             if (typeof Particles === 'undefined') {
-                await loadScript(`${basePath}js/particles.min.js`);
+                scriptsToLoad.push(loadScript(`${basePath}js/particles.min.js`));
             }
             
-            // Load foot.js and dark-mode.js
-            await loadScript(`${basePath}js/foot.js`);
-            await loadScript(`${basePath}js/dark-mode.js`);
+            scriptsToLoad.push(loadScript(`${basePath}js/foot.js`));
+            scriptsToLoad.push(loadScript(`${basePath}js/dark-mode.js`));
+            scriptsToLoad.push(loadScript(`${basePath}js/fish.js`));
             
-            // Optional: load fish.js if it exists
-            // await loadScript(`${basePath}js/fish.js`);
+            await Promise.all(scriptsToLoad);
+            
+            // Initialize Particles explicitly
+            if (typeof Particles !== 'undefined') {
+                Particles.init({
+                    selector: '.background',
+                    color: '#75A5B7',
+                    connectParticles: true,
+                    responsive: [
+                        {
+                            breakpoint: 768,
+                            options: {
+                                maxParticles: 40,
+                                color: '#75A5B7',
+                                connectParticles: false
+                            }
+                        }
+                    ]
+                });
+            }
+
+            // Initialize Fish (RENDERER) explicitly if loaded after DOMContentLoaded
+            if (typeof RENDERER !== 'undefined') {
+                RENDERER.init();
+            }
+
+            // Initialize DarkMode if not already initialized
+            if (typeof DarkMode !== 'undefined' && !window.darkModeInstance) {
+                window.darkModeInstance = new DarkMode();
+            }
+
         } catch (err) {
             console.error('Failed to load background components:', err);
         }
