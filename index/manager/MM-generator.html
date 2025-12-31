@@ -8,6 +8,7 @@
     
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
+    <script src="../../js/github-api-helper.js"></script>
 </head>
 <body class="manager-body d-flex flex-column min-vh-100 p-3">
     <!-- 返回首页按钮 -->
@@ -29,6 +30,9 @@
         <a href="explore-manager.html" class="manager-nav-button" title="探索网页">
             <i class="fas fa-compass"></i>
         </a>
+        <button class="manager-nav-button bg-primary text-white" data-bs-toggle="modal" data-bs-target="#githubConfigModal" title="GitHub API 配置">
+            <i class="fab fa-github"></i>
+        </button>
         <!-- 操作日志按钮 -->
         <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
             <i class="fas fa-exclamation-circle"></i>
@@ -261,6 +265,9 @@
             <div class="download-section text-center">
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                     <button id="downloadBtn" class="btn manager-btn-success btn-lg px-4">下载JSON文件</button>
+                    <button id="githubSaveBtn" class="btn btn-primary btn-lg px-4">
+                        <i class="fab fa-github me-2"></i>同步到 GitHub
+                    </button>
                     <button id="resetBtn" class="btn btn-secondary btn-lg px-4">重置</button>
                 </div>
             </div>
@@ -410,18 +417,31 @@
             }
             
             bindEvents() {
+                // 根据 modalType 确定按钮前缀
+                let prefix = '';
+                if (this.modalType === 'encrypt') prefix = 'encrypt';
+                else if (this.modalType === 'syncEncrypt') prefix = 'syncEncrypt';
+                
                 // 图案按钮点击事件
-                const patternButtons = document.querySelectorAll('.pattern-btn');
-                patternButtons.forEach((btn, index) => {
-                    btn.addEventListener('click', () => {
-                        this.addPattern(String.fromCharCode(65 + index)); // A, B, C, D
-                    });
+                const patterns = ['A', 'B', 'C', 'D'];
+                patterns.forEach(p => {
+                    const btnId = prefix ? `${prefix}Pattern${p}` : `pattern${p}`;
+                    const btn = document.getElementById(btnId);
+                    if (btn) {
+                        btn.addEventListener('click', () => {
+                            this.addPattern(p);
+                        });
+                    }
                 });
                 
                 // 清空按钮点击事件
-                document.getElementById(`clear${this.modalType.charAt(0).toUpperCase() + this.modalType.slice(1)}Password`).addEventListener('click', () => {
-                    this.reset();
-                });
+                const clearBtnId = `clear${this.modalType.charAt(0).toUpperCase() + this.modalType.slice(1)}Password`;
+                const clearBtn = document.getElementById(clearBtnId);
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', () => {
+                        this.reset();
+                    });
+                }
             }
             
             addPattern(pattern) {
@@ -522,6 +542,8 @@
             const emptyLogMessage = document.getElementById('emptyLogMessage');
             const decryptModal = new bootstrap.Modal(document.getElementById('decryptModal'));
             const encryptModal = new bootstrap.Modal(document.getElementById('encryptModal'));
+            const githubConfigModal = new bootstrap.Modal(document.getElementById('githubConfigModal'));
+            const githubSyncEncryptModal = new bootstrap.Modal(document.getElementById('githubSyncEncryptModal'));
             
             // 全局变量
             let entries = [];
@@ -538,6 +560,7 @@
             // 图案密码实例
             let decryptPatternPassword = new PatternPassword('decrypt');
             let encryptPatternPassword = new PatternPassword('encrypt');
+            let syncEncryptPatternPassword = new PatternPassword('syncEncrypt');
             
             // 快捷输入按钮事件处理
             document.querySelectorAll('.quick-insert-btn').forEach(btn => {
@@ -1085,6 +1108,91 @@
                 addLogEntry(LOG_TYPES.INFO, '点击了下载按钮');
             });
             
+            // GitHub 同步相关逻辑
+            const githubSaveBtn = document.getElementById('githubSaveBtn');
+            const saveGithubConfigBtn = document.getElementById('saveGithubConfigBtn');
+            const confirmSyncToGithubBtn = document.getElementById('confirmSyncToGithub');
+
+            // 预填充 GitHub 配置
+            function fillGithubConfig() {
+                const config = window.githubHelper.getConfig();
+                if (config) {
+                    document.getElementById('ghToken').value = config.token || '';
+                    document.getElementById('ghOwner').value = config.owner || '';
+                    document.getElementById('ghRepo').value = config.repo || '';
+                    document.getElementById('ghBranch').value = config.branch || 'main';
+                }
+            }
+            fillGithubConfig();
+
+            // 保存 GitHub 配置
+            saveGithubConfigBtn.addEventListener('click', function() {
+                const token = document.getElementById('ghToken').value.trim();
+                const owner = document.getElementById('ghOwner').value.trim();
+                const repo = document.getElementById('ghRepo').value.trim();
+                const branch = document.getElementById('ghBranch').value.trim();
+
+                if (!token || !owner || !repo) {
+                    alert('请填写完整的配置信息');
+                    return;
+                }
+
+                window.githubHelper.saveConfig(token, owner, repo, branch);
+                githubConfigModal.hide();
+                addLogEntry(LOG_TYPES.SUCCESS, 'GitHub 配置已保存');
+            });
+
+            // 点击 GitHub 同步按钮
+            githubSaveBtn.addEventListener('click', function() {
+                if (!window.githubHelper.isConfigured()) {
+                    githubConfigModal.show();
+                    return;
+                }
+                syncEncryptPatternPassword.reset();
+                githubSyncEncryptModal.show();
+                addLogEntry(LOG_TYPES.INFO, '准备同步到 GitHub');
+            });
+
+            // 确认同步到 GitHub
+            confirmSyncToGithubBtn.addEventListener('click', async function() {
+                const password = syncEncryptPatternPassword.getPassword();
+                if (password.length !== 4) {
+                    document.getElementById('syncEncryptError').textContent = '请输入完整的四位数密码';
+                    return;
+                }
+
+                try {
+                    // 显示加载中状态
+                    confirmSyncToGithubBtn.disabled = true;
+                    confirmSyncToGithubBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>同步中...';
+                    
+                    // 生成 JSON 内容
+                    const content = generateDownloadContent();
+                    
+                    // 加密内容
+                    const encryptedContent = await AESUtil.encrypt(content, password);
+                    
+                    // 同步到 GitHub
+                    const path = 'js/MM.json';
+                    const result = await window.githubHelper.updateFile(
+                        path,
+                        encryptedContent,
+                        `Update MM.json via MM-generator (${new Date().toLocaleString()})`
+                    );
+
+                    githubSyncEncryptModal.hide();
+                    alert('数据已成功加密并同步到 GitHub 仓库！');
+                    addLogEntry(LOG_TYPES.SUCCESS, 'GitHub 同步成功', `文件: ${path}, SHA: ${result.content.sha}`);
+                } catch (error) {
+                    console.error('GitHub 同步失败:', error);
+                    document.getElementById('syncEncryptError').textContent = '同步失败: ' + error.message;
+                    addLogEntry(LOG_TYPES.ERROR, 'GitHub 同步失败', error.message);
+                } finally {
+                    confirmSyncToGithubBtn.disabled = false;
+                    confirmSyncToGithubBtn.innerHTML = '加密并同步';
+                }
+            });
+            
             // 重置
             resetBtn.addEventListener('click', function() {
                 // 清空所有数据
@@ -1266,6 +1374,94 @@
         });
     </script>
     
+    <!-- GitHub API 配置模态框 -->
+    <div class="modal fade" id="githubConfigModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fab fa-github me-2"></i>GitHub API 配置</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <small><i class="fas fa-info-circle me-1"></i>配置 GitHub Token 后，您可以直接将更改保存到 GitHub 仓库，无需手动上传下载 JSON 文件。</small>
+                    </div>
+                    <form id="githubConfigForm">
+                        <div class="mb-3">
+                            <label for="ghToken" class="form-label">Personal Access Token (PAT)</label>
+                            <input type="password" class="form-control" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" required>
+                            <div class="form-text">需要 <code>repo</code> 权限。可在 GitHub Settings -> Developer settings -> Personal access tokens 中生成。</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghOwner" class="form-label">仓库所有者 (Owner)</label>
+                            <input type="text" class="form-control" id="ghOwner" placeholder="例如: xiaolanqqai" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghRepo" class="form-label">仓库名称 (Repository)</label>
+                            <input type="text" class="form-control" id="ghRepo" placeholder="例如: xiaolanqqai.github.io" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghBranch" class="form-label">分支 (Branch)</label>
+                            <input type="text" class="form-control" id="ghBranch" placeholder="例如: main" value="main">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveGithubConfigBtn">保存配置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GitHub 同步加密模态框 -->
+    <div class="modal fade" id="githubSyncEncryptModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-lock me-2"></i>加密并同步到 GitHub</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <small><i class="fas fa-exclamation-triangle me-1"></i>同步到 GitHub 前，数据将使用您设置的图案密码进行 AES 加密，以确保数据安全。</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-center d-block">请输入四位数图案密码：</label>
+                        <div class="password-input-container d-flex justify-content-center align-items-center gap-3 mb-4">
+                            <div class="password-input w-50px h-50px fs-24px" id="syncEncryptPassword1"></div>
+                            <div class="password-input w-50px h-50px fs-24px" id="syncEncryptPassword2"></div>
+                            <div class="password-input w-50px h-50px fs-24px" id="syncEncryptPassword3"></div>
+                            <div class="password-input w-50px h-50px fs-24px" id="syncEncryptPassword4"></div>
+                        </div>
+                        <div class="pattern-buttons d-flex justify-content-center gap-3">
+                            <button class="pattern-btn w-60px h-60px" id="syncEncryptPatternA">
+                                <svg class="w-40px h-40px" viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                            </button>
+                            <button class="pattern-btn w-60px h-60px" id="syncEncryptPatternB">
+                                <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 30,30 10,30" fill="none" stroke="#000" stroke-width="2"/></svg>
+                            </button>
+                            <button class="pattern-btn w-60px h-60px" id="syncEncryptPatternC">
+                                <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 30,20 20,30 10,20" fill="none" stroke="#000" stroke-width="2"/></svg>
+                            </button>
+                            <button class="pattern-btn w-60px h-60px" id="syncEncryptPatternD">
+                                <svg class="w-40px h-40px" viewBox="0 0 40 40"><polygon points="20,10 25,18 33,20 27,26 28,34 20,30 12,34 13,26 7,20 15,18" fill="none" stroke="#000" stroke-width="2"/></svg>
+                            </button>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="btn btn-secondary" id="clearSyncEncryptPassword">清空</button>
+                        </div>
+                        <div class="text-danger mt-3 text-center" id="syncEncryptError"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirmSyncToGithub">加密并同步</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 操作日志 offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
         <div class="offcanvas-header">

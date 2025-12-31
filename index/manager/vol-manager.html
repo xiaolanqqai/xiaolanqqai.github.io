@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="../../css/dark-mode.css">
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
+    <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/dark-mode.js"></script>
 </head>
 <body class="manager-body">
@@ -41,6 +42,9 @@
         <a href="explore-manager.html" class="manager-nav-button" title="探索网页">
             <i class="fas fa-compass"></i>
         </a>
+        <button class="manager-nav-button bg-primary text-white" data-bs-toggle="modal" data-bs-target="#githubConfigModal" title="GitHub API 配置">
+            <i class="fab fa-github"></i>
+        </button>
         <button class="manager-nav-button bg-warning" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas" title="操作日志">
             <i class="fas fa-exclamation-circle"></i>
         </button>
@@ -92,7 +96,19 @@
                         <h5>保存/导出数据</h5>
                         <p class="flex-grow-1">将当前版本数据保存为JSON文件</p>
                         <button id="saveDataBtn" class="btn manager-btn-primary mt-2" disabled>
-                            <i class="fas fa-file-export me-1"></i>保存数据
+                            <i class="fas fa-file-export me-1"></i>本地保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card manager-feature-card h-100 border-primary shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-info mb-3"><i class="fab fa-github"></i></div>
+                        <h5>GitHub 云端保存</h5>
+                        <p class="flex-grow-1">直接同步版本数据到 GitHub 仓库</p>
+                        <button id="githubSaveBtn" class="btn btn-primary mt-2">
+                            <i class="fas fa-cloud-upload-alt me-1"></i>立即同步
                         </button>
                     </div>
                 </div>
@@ -231,6 +247,9 @@
         const confirmImport = document.getElementById('confirmImport');
         const sortByDateBtn = document.getElementById('sortByDateBtn');
         const saveDataBtn = document.getElementById('saveDataBtn');
+        const githubSaveBtn = document.getElementById('githubSaveBtn');
+        const githubConfigModal = new bootstrap.Modal(document.getElementById('githubConfigModal'));
+        const saveGithubConfigBtn = document.getElementById('saveGithubConfigBtn');
         const jsonFileInput = document.getElementById('jsonFile');
         const dropArea = document.getElementById('dropArea');
         const fileInfo = document.getElementById('fileInfo');
@@ -321,6 +340,13 @@
             confirmImport.addEventListener('click', processImportedFile);
             sortByDateBtn.addEventListener('click', sortVersionsByDate);
             saveDataBtn.addEventListener('click', saveDataToStorage);
+            
+            // GitHub 相关事件
+            githubSaveBtn.addEventListener('click', saveToGithub);
+            saveGithubConfigBtn.addEventListener('click', saveGithubConfig);
+            
+            // 模态框显示时加载配置
+            document.getElementById('githubConfigModal').addEventListener('show.bs.modal', loadGithubConfigToForm);
             
             // 为添加版本模态框添加显示事件监听器，设置默认值
             document.getElementById('addVersionModal').addEventListener('show.bs.modal', function() {
@@ -420,6 +446,68 @@
         }
         
         // 保存数据为JSON文件
+        // 加载 GitHub 配置到表单
+        function loadGithubConfigToForm() {
+            const config = window.githubHelper.config;
+            if (config.token) document.getElementById('ghToken').value = config.token;
+            if (config.owner) document.getElementById('ghOwner').value = config.owner;
+            if (config.repo) document.getElementById('ghRepo').value = config.repo;
+            if (config.branch) document.getElementById('ghBranch').value = config.branch;
+        }
+
+        // 保存 GitHub 配置
+        function saveGithubConfig() {
+            const config = {
+                token: document.getElementById('ghToken').value.trim(),
+                owner: document.getElementById('ghOwner').value.trim(),
+                repo: document.getElementById('ghRepo').value.trim(),
+                branch: document.getElementById('ghBranch').value.trim() || 'main'
+            };
+
+            if (!config.token || !config.owner || !config.repo) {
+                alert('请填写完整的 GitHub 配置信息');
+                return;
+            }
+
+            window.githubHelper.saveConfig(config);
+            githubConfigModal.hide();
+            showAlert('GitHub 配置已保存', 'success');
+        }
+
+        // 同步到 GitHub
+        async function saveToGithub() {
+            if (!window.githubHelper.isConfigured()) {
+                githubConfigModal.show();
+                return;
+            }
+
+            try {
+                showLoadingOverlay('正在同步到 GitHub...');
+                
+                const dataStr = JSON.stringify(versionData, null, 2);
+                const path = 'js/version-history.json'; // 版本历史数据文件路径
+                
+                const result = await window.githubHelper.updateFile(
+                    path, 
+                    dataStr, 
+                    `Update version-history.json via Web Manager (${new Date().toLocaleString()})`
+                );
+
+                hideLoadingOverlay();
+                showAlert('数据已成功同步到 GitHub 仓库！', 'success');
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.SUCCESS, 'GitHub 同步成功', `提交 SHA: ${result.content.sha}`);
+                }
+            } catch (error) {
+                hideLoadingOverlay();
+                console.error('GitHub 同步失败:', error);
+                showAlert('同步失败: ' + error.message, 'danger');
+                if (window.addLogEntry) {
+                    window.addLogEntry(window.LOG_TYPES.ERROR, 'GitHub 同步失败', error.message);
+                }
+            }
+        }
+
         function saveDataToStorage() {
             try {
                 const dataStr = JSON.stringify(versionData, null, 2);
@@ -802,6 +890,46 @@
         }
     </script>
     
+    <!-- GitHub API 配置模态框 -->
+    <div class="modal fade" id="githubConfigModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fab fa-github me-2"></i>GitHub API 配置</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <small><i class="fas fa-info-circle me-1"></i>配置 GitHub Token 后，您可以直接将更改保存到 GitHub 仓库，无需手动上传下载 JSON 文件。</small>
+                    </div>
+                    <form id="githubConfigForm">
+                        <div class="mb-3">
+                            <label for="ghToken" class="form-label">Personal Access Token (PAT)</label>
+                            <input type="password" class="form-control" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" required>
+                            <div class="form-text">需要 <code>repo</code> 权限。可在 GitHub Settings -> Developer settings -> Personal access tokens 中生成。</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghOwner" class="form-label">仓库所有者 (Owner)</label>
+                            <input type="text" class="form-control" id="ghOwner" placeholder="例如: xiaolanqqai" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghRepo" class="form-label">仓库名称 (Repository)</label>
+                            <input type="text" class="form-control" id="ghRepo" placeholder="例如: xiaolanqqai.github.io" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghBranch" class="form-label">分支 (Branch)</label>
+                            <input type="text" class="form-control" id="ghBranch" placeholder="例如: main" value="main">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveGithubConfigBtn">保存配置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 操作日志 offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
         <div class="offcanvas-header">

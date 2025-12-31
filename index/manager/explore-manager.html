@@ -23,6 +23,7 @@
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
     <script src="../../js/dark-mode.js"></script>
+    <script src="../../js/github-api-helper.js"></script>
 </head>
 <body class="manager-body">
     <!-- 返回首页按钮 -->
@@ -44,6 +45,9 @@
         <a href="explore-manager.html" class="manager-nav-button active" title="探索网页">
             <i class="fas fa-compass"></i>
         </a>
+        <button class="manager-nav-button bg-primary text-white" data-bs-toggle="modal" data-bs-target="#githubConfigModal" title="GitHub API 配置">
+            <i class="fab fa-github"></i>
+        </button>
         <!-- 操作日志按钮 -->
         <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
             <i class="fas fa-exclamation-circle"></i>
@@ -58,6 +62,30 @@
     </div>
     
     <div class="container container-main">
+        <!-- GitHub 同步功能卡片 -->
+        <div class="manager-card mb-4 border-primary">
+            <div class="manager-card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fab fa-github me-2"></i>GitHub 云端同步</h5>
+                <button class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#githubConfigModal">
+                    <i class="fas fa-cog"></i> 配置
+                </button>
+            </div>
+            <div class="manager-card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <p class="mb-0 text-muted small">
+                            同步发现的网站数据和您的个人收藏到 GitHub 仓库。配置后可实现多端数据共享。
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button id="syncToGithubBtn" class="btn btn-primary">
+                            <i class="fas fa-cloud-upload-alt me-1"></i> 立即同步
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 标签页切换 -->
         <div class="mb-4">
             <ul class="nav nav-tabs" id="exploreTabs" role="tablist">
@@ -165,6 +193,54 @@
         <div class="loading-text" id="loadingText">加载中...</div>
     </div>
     
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <script>
+        function showLoadingOverlay(text = '加载中...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            if (overlay && loadingText) {
+                loadingText.textContent = text;
+                overlay.classList.remove('d-none');
+            }
+        }
+        
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('d-none');
+            }
+        }
+    </script>
+    
     <!-- 添加网站模态框 -->
     <div class="modal fade" id="addSiteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -264,6 +340,170 @@
     <!-- 探索网页系统JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 操作日志系统
+            const operationLogs = [];
+            const LOG_TYPES = {
+                SUCCESS: 'success',
+                ERROR: 'error',
+                WARNING: 'warning',
+                INFO: 'info'
+            };
+            
+            // 添加日志条目
+            function addLogEntry(type, message, details = '') {
+                const logEntry = {
+                    timestamp: new Date().toLocaleString('zh-CN'),
+                    type: type,
+                    message: message,
+                    details: details
+                };
+                
+                operationLogs.unshift(logEntry);
+                if (operationLogs.length > 100) operationLogs.pop();
+                renderLogs();
+            }
+            
+            // 渲染日志
+            function renderLogs() {
+                const logContainer = document.getElementById('logContainer');
+                const emptyLogMessage = document.getElementById('emptyLogMessage');
+                if (!logContainer || !emptyLogMessage) return;
+
+                if (operationLogs.length === 0) {
+                    emptyLogMessage.style.display = 'block';
+                    logContainer.innerHTML = '';
+                    return;
+                }
+                
+                emptyLogMessage.style.display = 'none';
+                logContainer.innerHTML = '';
+                
+                operationLogs.forEach(log => {
+                    const logElement = document.createElement('div');
+                    logElement.className = `log-entry ${log.type}`;
+                    logElement.style.padding = '8px';
+                    logElement.style.borderBottom = '1px solid #eee';
+                    logElement.style.fontSize = '12px';
+                    logElement.innerHTML = `
+                        <div style="color: #888;">${log.timestamp}</div>
+                        <div style="font-weight: bold; color: ${log.type === 'error' ? '#dc3545' : log.type === 'success' ? '#28a745' : '#333'};">${log.message}</div>
+                        ${log.details ? `<div style="color: #666;">${log.details}</div>` : ''}
+                    `;
+                    logContainer.appendChild(logElement);
+                });
+            }
+
+            // 清空日志
+            document.getElementById('clearLogsBtn').addEventListener('click', () => {
+                operationLogs.length = 0;
+                renderLogs();
+            });
+
+            // GitHub 相关逻辑
+            const githubConfigModal = new bootstrap.Modal(document.getElementById('githubConfigModal'));
+            const syncToGithubBtn = document.getElementById('syncToGithubBtn');
+            const saveGithubConfigBtn = document.getElementById('saveGithubConfigBtn');
+
+            // 预填充 GitHub 配置
+            function fillGithubConfig() {
+                const config = window.githubHelper.getConfig();
+                if (config) {
+                    document.getElementById('ghToken').value = config.token || '';
+                    document.getElementById('ghOwner').value = config.owner || '';
+                    document.getElementById('ghRepo').value = config.repo || '';
+                    document.getElementById('ghBranch').value = config.branch || 'main';
+                }
+            }
+            fillGithubConfig();
+
+            // 保存 GitHub 配置
+            saveGithubConfigBtn.addEventListener('click', function() {
+                const token = document.getElementById('ghToken').value.trim();
+                const owner = document.getElementById('ghOwner').value.trim();
+                const repo = document.getElementById('ghRepo').value.trim();
+                const branch = document.getElementById('ghBranch').value.trim();
+
+                if (!token || !owner || !repo) {
+                    alert('请填写完整的配置信息');
+                    return;
+                }
+
+                window.githubHelper.saveConfig(token, owner, repo, branch);
+                githubConfigModal.hide();
+                addLogEntry(LOG_TYPES.SUCCESS, 'GitHub 配置已保存');
+            });
+
+            // 同步到 GitHub
+            syncToGithubBtn.addEventListener('click', async function() {
+                if (!window.githubHelper.isConfigured()) {
+                    githubConfigModal.show();
+                    return;
+                }
+
+                try {
+                    showLoadingOverlay('正在同步到 GitHub...');
+                    const data = {
+                        sites: mockSites,
+                        favorites: favorites,
+                        lastUpdated: new Date().toISOString()
+                    };
+                    const dataStr = JSON.stringify(data, null, 2);
+                    const path = 'js/explore-data.json';
+                    
+                    const result = await window.githubHelper.updateFile(
+                        path, 
+                        dataStr, 
+                        `Update explore-data.json via Web Manager (${new Date().toLocaleString()})`
+                    );
+                    
+                    hideLoadingOverlay();
+                    showToast('数据已成功同步到 GitHub！');
+                    addLogEntry(LOG_TYPES.SUCCESS, 'GitHub 同步成功', `提交 SHA: ${result.content.sha}`);
+                } catch (error) {
+                    hideLoadingOverlay();
+                    console.error('GitHub 同步失败:', error);
+                    showToast('同步失败: ' + error.message, 'error');
+                    addLogEntry(LOG_TYPES.ERROR, 'GitHub 同步失败', error.message);
+                }
+            });
+
+            // 从 GitHub 加载数据
+            async function loadFromGithub() {
+                if (!window.githubHelper.isConfigured()) return;
+
+                try {
+                    const path = 'js/explore-data.json';
+                    const response = await window.githubHelper.getFile(path);
+                    if (response && response.content) {
+                        const decodedContent = decodeURIComponent(escape(atob(response.content)));
+                        const data = JSON.parse(decodedContent);
+                        
+                        if (data.sites) {
+                            mockSites.length = 0;
+                            mockSites.push(...data.sites);
+                        }
+                        
+                        if (data.favorites) {
+                            favorites.length = 0;
+                            favorites.push(...data.favorites);
+                            localStorage.setItem('explore-favorites', JSON.stringify(favorites));
+                        }
+                        
+                        renderDiscoverCards(mockSites);
+                        renderTrendingList(mockSites);
+                        renderFavorites();
+                        
+                        addLogEntry(LOG_TYPES.SUCCESS, '从 GitHub 加载数据成功');
+                    }
+                } catch (error) {
+                    console.error('从 GitHub 加载数据失败:', error);
+                    // 如果文件不存在，这是正常的（第一次同步前）
+                    if (error.status !== 404) {
+                        addLogEntry(LOG_TYPES.ERROR, '从 GitHub 加载数据失败', error.message);
+                    }
+                }
+            }
+
             // 模拟数据 - 在实际应用中应该从API获取
             const mockSites = [
                 {
@@ -725,6 +965,7 @@
                     renderTrendingList(mockSites);
                     
                     showToast(`已成功添加网站: ${name}`);
+                    addLogEntry(LOG_TYPES.SUCCESS, '添加了新网站', `名称: ${name}, 分类: ${category}`);
                 });
             }
             
@@ -779,8 +1020,12 @@
                 initAddSiteForm();
                 initTabs();
                 
+                // 尝试从 GitHub 加载最新数据
+                loadFromGithub();
+                
                 // 显示欢迎消息
                 showToast('欢迎使用探索网页系统！发现有趣的网站，开拓您的网络视野。');
+                addLogEntry(LOG_TYPES.INFO, '探索网页系统已加载');
             }
             
             // 启动应用
@@ -927,6 +1172,72 @@
             // 用户需要点击刷新按钮来加载模拟数据
         });
     </script>
+    
+    <!-- GitHub API 配置模态框 -->
+    <div class="modal fade" id="githubConfigModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fab fa-github me-2"></i>GitHub API 配置</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <small><i class="fas fa-info-circle me-1"></i>配置 GitHub Token 后，您可以直接将更改保存到 GitHub 仓库，无需手动上传下载 JSON 文件。</small>
+                    </div>
+                    <form id="githubConfigForm">
+                        <div class="mb-3">
+                            <label for="ghToken" class="form-label">Personal Access Token (PAT)</label>
+                            <input type="password" class="form-control" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" required>
+                            <div class="form-text">需要 <code>repo</code> 权限。可在 GitHub Settings -> Developer settings -> Personal access tokens 中生成。</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghOwner" class="form-label">仓库所有者 (Owner)</label>
+                            <input type="text" class="form-control" id="ghOwner" placeholder="例如: xiaolanqqai" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghRepo" class="form-label">仓库名称 (Repository)</label>
+                            <input type="text" class="form-control" id="ghRepo" placeholder="例如: xiaolanqqai.github.io" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghBranch" class="form-label">分支 (Branch)</label>
+                            <input type="text" class="form-control" id="ghBranch" placeholder="例如: main" value="main">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveGithubConfigBtn">保存配置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作日志 offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="logOffcanvasLabel">操作日志</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted small">记录主要操作和错误信息</span>
+                <button id="clearLogsBtn" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-trash me-1"></i>清空日志
+                </button>
+            </div>
+            <div id="logContainer" class="mb-3">
+                <div id="emptyLogMessage" class="text-center text-muted p-4">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i>
+                    <p>暂无操作记录</p>
+                </div>
+            </div>
+            <div class="small text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                日志记录文件同步、编辑等操作
+            </div>
+        </div>
+    </div>
     
     <!-- 深色模式功能 -->
     <script src="../../js/dark-mode.js"></script>

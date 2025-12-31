@@ -8,6 +8,7 @@
     
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
+    <script src="../../js/github-api-helper.js"></script>
 </head>
 <body class="manager-body">
     <!-- 返回首页按钮 -->
@@ -31,6 +32,10 @@
         <a href="explore-manager.html" class="manager-nav-button" title="探索网页">
             <i class="fas fa-compass"></i>
         </a>
+        <!-- GitHub 设置按钮 -->
+        <button class="manager-nav-button bg-info" title="GitHub API 设置" data-bs-toggle="modal" data-bs-target="#githubConfigModal">
+            <i class="fab fa-github"></i>
+        </button>
         <!-- 操作日志按钮 -->
         <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
             <i class="fas fa-exclamation-circle"></i>
@@ -74,50 +79,67 @@
         
         <!-- 功能卡片 -->
         <div class="row mb-4 g-3">
-            <div class="col-md-3">
+            <div class="col-lg-2 col-md-4 col-sm-6">
                 <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="text-primary mb-3 feature-icon"><i class="fas fa-file-upload"></i></div>
-                        <h5>上传JSON文件</h5>
-                        <p class="flex-grow-1">从您的设备上传导航数据JSON文件</p>
-                        <button class="btn manager-btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                            <i class="fas fa-upload me-1"></i>上传JSON
+                        <h6>上传JSON</h6>
+                        <p class="flex-grow-1 xsmall">从设备上传JSON文件</p>
+                        <button class="btn btn-sm manager-btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="fas fa-upload me-1"></i>上传
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-2 col-md-4 col-sm-6">
                 <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="text-success mb-3 feature-icon"><i class="fas fa-database"></i></div>
-                        <h5>从本地加载</h5>
-                        <p class="flex-grow-1">从本地JSON文件加载数据</p>
-                        <button id="loadFromLocalBtn" class="btn manager-btn-success mt-2">
-                            <i class="fas fa-download me-1"></i>从本地加载
+                        <h6>本地加载</h6>
+                        <p class="flex-grow-1 xsmall">从本地JSON加载数据</p>
+                        <button id="loadFromLocalBtn" class="btn btn-sm manager-btn-success mt-2">
+                            <i class="fas fa-download me-1"></i>加载
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-2 col-md-4 col-sm-6">
                 <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="text-info mb-3 feature-icon"><i class="fas fa-save"></i></div>
-                        <h5>保存数据</h5>
-                        <p class="flex-grow-1">将当前数据保存到本地存储并下载JSON文件</p>
-                        <button id="saveBtn" class="btn manager-btn-primary mt-2">
-                            <i class="fas fa-save me-1"></i>保存数据
+                        <h6>下载数据</h6>
+                        <p class="flex-grow-1 xsmall">保存并下载JSON文件</p>
+                        <button id="saveBtn" class="btn btn-sm manager-btn-primary mt-2">
+                            <i class="fas fa-save me-1"></i>下载
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-4 col-md-8 col-sm-12">
+                <div class="card feature-card h-100 border-primary shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-primary mb-3 feature-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <h6>GitHub 云端保存</h6>
+                        <p class="flex-grow-1 xsmall">直接将更改提交到 GitHub 仓库，实现动态更新</p>
+                        <div class="d-flex gap-2">
+                            <button id="githubSaveBtn" class="btn btn-sm btn-primary mt-2 flex-grow-1">
+                                <i class="fas fa-cloud-upload-alt me-1"></i>同步到 GitHub
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary mt-2" data-bs-toggle="modal" data-bs-target="#githubConfigModal">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
                 <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="text-warning mb-3 feature-icon"><i class="fas fa-trash-alt"></i></div>
-                        <h5>清空数据</h5>
-                        <p class="flex-grow-1">清除当前已加载的所有导航数据</p>
-                        <button id="clearDataBtn" class="btn manager-btn-warning mt-2">
-                            <i class="fas fa-broom me-1"></i>清空数据
+                        <h6>清空数据</h6>
+                        <p class="flex-grow-1 xsmall">清除当前已加载的所有数据</p>
+                        <button id="clearDataBtn" class="btn btn-sm manager-btn-warning mt-2">
+                            <i class="fas fa-broom me-1"></i>清空
                         </button>
                     </div>
                 </div>
@@ -353,6 +375,46 @@
         </div></div>
     </div>
     
+    <!-- GitHub API 配置模态框 -->
+    <div class="modal fade" id="githubConfigModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fab fa-github me-2"></i>GitHub API 配置</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <small><i class="fas fa-info-circle me-1"></i>配置 GitHub Token 后，您可以直接将更改保存到 GitHub 仓库，无需手动上传下载 JSON 文件。</small>
+                    </div>
+                    <form id="githubConfigForm">
+                        <div class="mb-3">
+                            <label for="ghToken" class="form-label">Personal Access Token (PAT)</label>
+                            <input type="password" class="form-control" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" required>
+                            <div class="form-text">需要 <code>repo</code> 权限。可在 GitHub Settings -> Developer settings -> Personal access tokens 中生成。</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghOwner" class="form-label">仓库所有者 (Owner)</label>
+                            <input type="text" class="form-control" id="ghOwner" placeholder="例如: xiaolanqqai" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghRepo" class="form-label">仓库名称 (Repository)</label>
+                            <input type="text" class="form-control" id="ghRepo" placeholder="例如: xiaolanqqai.github.io" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ghBranch" class="form-label">分支 (Branch)</label>
+                            <input type="text" class="form-control" id="ghBranch" placeholder="例如: main" value="main">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveGithubConfigBtn">保存配置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 操作日志 Offcanvas 组件 -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
         <div class="offcanvas-header">
@@ -769,6 +831,11 @@
         const confirmDeleteBtn = document.getElementById('confirmDelete');
         const deleteSiteName = document.getElementById('deleteSiteName');
         
+        // GitHub API 相关变量
+        const githubConfigModal = new bootstrap.Modal(document.getElementById('githubConfigModal'));
+        const githubSaveBtn = document.getElementById('githubSaveBtn');
+        const saveGithubConfigBtn = document.getElementById('saveGithubConfigBtn');
+        
         // 数据修改状态标志
         let dataHasChanged = false;
         
@@ -792,6 +859,11 @@
             confirmEditSite.addEventListener('click', saveEditedSite);
             confirmDeleteBtn.addEventListener('click', deleteSite);
             saveVersionBtn.addEventListener('click', saveVersionInfo);
+            
+            // GitHub API 相关事件
+            githubSaveBtn.addEventListener('click', saveToGithub);
+            saveGithubConfigBtn.addEventListener('click', saveGithubConfig);
+            document.getElementById('githubConfigModal').addEventListener('show.bs.modal', loadGithubConfigToForm);
             
             // 日志管理
             clearLogsBtn.addEventListener('click', clearAllLogs);
@@ -2404,6 +2476,70 @@
             }
         }
         
+        // GitHub API 配置处理
+        function loadGithubConfigToForm() {
+            const config = window.githubHelper.config;
+            document.getElementById('ghToken').value = config.token || '';
+            document.getElementById('ghOwner').value = config.owner || '';
+            document.getElementById('ghRepo').value = config.repo || '';
+            document.getElementById('ghBranch').value = config.branch || 'main';
+        }
+
+        function saveGithubConfig() {
+            const token = document.getElementById('ghToken').value.trim();
+            const owner = document.getElementById('ghOwner').value.trim();
+            const repo = document.getElementById('ghRepo').value.trim();
+            const branch = document.getElementById('ghBranch').value.trim();
+
+            if (!token || !owner || !repo) {
+                showAlert('请填写所有必填字段', 'warning');
+                return;
+            }
+
+            window.githubHelper.saveConfig({ token, owner, repo, branch });
+            githubConfigModal.hide();
+            showAlert('GitHub 配置已保存', 'success');
+            addLogEntry('GitHub API 配置已更新', LOG_TYPES.SUCCESS);
+        }
+
+        async function saveToGithub() {
+            if (!window.githubHelper.isConfigured()) {
+                githubConfigModal.show();
+                return;
+            }
+
+            try {
+                showLoadingOverlay('正在同步到 GitHub...');
+                
+                // 验证数据
+                const validationErrors = validateNavData(navData);
+                if (validationErrors.length > 0) {
+                    // 尝试修复
+                    repairNavData(navData);
+                    addLogEntry('同步前数据验证失败，已尝试自动修复', LOG_TYPES.WARNING);
+                }
+
+                const dataStr = JSON.stringify(navData, null, 2);
+                const path = 'js/nav-data.json'; // 导航数据文件路径
+                
+                const result = await window.githubHelper.updateFile(
+                    path, 
+                    dataStr, 
+                    `Update nav-data.json via Web Manager (${new Date().toLocaleString()})`
+                );
+
+                hideLoadingOverlay();
+                showAlert('数据已成功同步到 GitHub 仓库！', 'success');
+                addLogEntry('GitHub 同步成功', LOG_TYPES.SUCCESS, `提交 SHA: ${result.content.sha}`);
+                resetDataChanged();
+            } catch (error) {
+                hideLoadingOverlay();
+                console.error('GitHub 同步失败:', error);
+                showAlert('同步失败: ' + error.message, 'danger');
+                addLogEntry('GitHub 同步失败', LOG_TYPES.ERROR, error.message);
+            }
+        }
+
         function saveNavData() {
             try {
                 // 创建下载链接
