@@ -14,14 +14,14 @@
     }
     
     const backgroundHTML = `
-        <div class="background-container" style="pointer-events: none;">
-            <div id="jsi-flying-fish-container" style="pointer-events: none;"></div>
-            <canvas class="background" style="pointer-events: none;"></canvas>
+        <div class="background-container" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -100; pointer-events: none;">
+            <div id="jsi-flying-fish-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -95; pointer-events: none;"></div>
+            <canvas class="background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -90; pointer-events: none;"></canvas>
         </div>
     `;
 
-    // Inject background structure
-    document.body.insertAdjacentHTML('beforeend', backgroundHTML);
+    // Inject background structure at the beginning of body
+    document.body.insertAdjacentHTML('afterbegin', backgroundHTML);
 
     // Helper to load scripts sequentially
     function loadScript(src) {

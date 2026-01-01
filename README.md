@@ -48,6 +48,13 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
   - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
   - [Font Awesome 图标库](https://fontawesome.com/icons)
 
+BETA 4.2-2026-01-01
+1：GitHub API 优化：移除管理页面的用户自定义配置功能，改为内置统一管理，简化操作流程并增强安全性
+2：背景动画优化：修复背景动画在长页面（More.html）中的定位失效问题，统一使用 fixed 定位与层级管理
+3：导航栏体验增强：修复 More 页面导航栏不黏顶问题，增加毛玻璃视觉效果及深色模式适配优化
+4：PWA 架构清理：移除冗余的 PWA 相关逻辑与配置，进一步精简系统体积
+5：代码清理与兼容性修复：移除各管理页面中未定义的函数引用，解决因 zoom 属性导致的布局兼容性问题
+
 BETA 4.1-2025-12-23
 1：模块化架构升级：引入 header-component.js 组件，实现管理系统 Header 与导航栏的模块化复用
 2：通用逻辑整合：创建 manager-common.js 集中管理各系统的通用逻辑（如主题切换、导航高亮、日志处理）

@@ -85,7 +85,6 @@ ul,ol{list-style:none}
 fieldset,img{border:0}
 
 html, body {
-    zoom: 0.9;
     margin: 0;  
     padding: 0;
     background: transparent; /* 改为透明以显示背景组件 */
@@ -93,6 +92,7 @@ html, body {
     /* 优化滚动性能 */
     -webkit-overflow-scrolling: touch;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* 背景容器 - 确保在最底层且不遮挡点击 */
@@ -111,6 +111,7 @@ html, body {
 .main-content {
     position: relative;
     min-height: 100vh;
+    zoom: 0.9;
 }
 
 /* 确保所有内容容器不限制高度，允许滚动 */
@@ -611,10 +612,13 @@ html, body {
 
 /** Header 黏顶与高度统一 **/
 .sticky-header {
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1020 !important;
     background: var(--bg-primary);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     box-shadow: var(--shadow);
     padding: 10px 0;
     width: 100%;
