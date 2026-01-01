@@ -11,7 +11,7 @@
 }
 
 [data-theme="dark"] body {
-    background-color: var(--bg-primary) !important;
+    background-color: transparent !important;
     color: var(--text-primary) !important;
 }
 

@@ -14,8 +14,8 @@
     }
     
     const backgroundHTML = `
-        <div class="background-container" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -100; pointer-events: none;">
-            <div id="jsi-flying-fish-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -95; pointer-events: none;"></div>
+        <div class="background-container" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -100; pointer-events: none; background: var(--bg-primary); transition: background 0.3s ease;">
+            <div id="jsi-flying-fish-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -95; pointer-events: none; opacity: 0.6;"></div>
             <canvas class="background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -90; pointer-events: none;"></canvas>
         </div>
     `;
