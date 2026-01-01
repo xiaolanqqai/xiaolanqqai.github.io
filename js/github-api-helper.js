@@ -9,13 +9,30 @@ class GitHubAPIHelper {
     }
 
     /**
-     * 加载保存的配置
+     * 加载配置 (内置 Token - 已加密)
      */
     loadConfig() {
-        const saved = localStorage.getItem('github_api_config');
-        const config = saved ? JSON.parse(saved) : {};
+        // 加密后的 Token 字符串
+        const _e = "1f001507190331080815305d502f3c5f223e3c205e400f141d162839021a570d023e57221d0a2808065d2120542c0d39563f01070159003c200337232059561a275138361216485f301d3e1424332d2d2029553d36300305580605211f";
+        
+        // 获取解密密钥 (从浏览器缓存的 userName 获取)
+        // 默认值设为 'guest' 以防止报错，但此时 Token 解密将失败
+        const _k = localStorage.getItem('userName') || 'guest';
+
+        // 解密函数 (XOR + Hex)
+        const _d = (hex, key) => {
+            let str = '';
+            for (let i = 0; i < hex.length; i += 2) {
+                const charCode = parseInt(hex.substr(i, 2), 16) ^ key.charCodeAt((i / 2) % key.length);
+                str += String.fromCharCode(charCode);
+            }
+            return str;
+        };
+
+        const _t = _d(_e, _k);
+
         return {
-            token: config.token || '',
+            token: _t,
             owner: 'xiaolanqqai',
             repo: 'xiaolanqqai.github.io',
             branch: 'main'
@@ -27,14 +44,6 @@ class GitHubAPIHelper {
      */
     getConfig() {
         return this.config;
-    }
-
-    /**
-     * 保存配置 (仅保存 Token)
-     */
-    saveConfig(token) {
-        this.config.token = token;
-        localStorage.setItem('github_api_config', JSON.stringify(this.config));
     }
 
     /**
@@ -74,7 +83,7 @@ class GitHubAPIHelper {
      */
     async updateFile(path, content, message = 'Update data via Web Manager') {
         if (!this.isConfigured()) {
-            throw new Error('未配置 GitHub Token，请在控制台或 localStorage 中设置 github_api_config。');
+            throw new Error('GitHub Token 未配置或无效。');
         }
 
         const sha = await this.getFileSHA(path);
