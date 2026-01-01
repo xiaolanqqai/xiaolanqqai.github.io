@@ -48,8 +48,8 @@ var RENDERER = {
 		this.fishes.length = 0;
 		this.watchIds.length = 0;
 		this.intervalCount = this.MAX_INTERVAL_COUNT;
-		this.width = this.$container.width();
-		this.height = this.$container.height();
+		this.width = this.$window.width();
+		this.height = this.$window.height();
 		this.fishCount = this.FISH_COUNT * this.width / 500 * this.height / 500;
 		this.$canvas.attr({width : this.width, height : this.height});
 		this.reverse = false;

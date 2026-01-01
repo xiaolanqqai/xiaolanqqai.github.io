@@ -38,6 +38,9 @@
         
         <!-- 深色模式样式 -->
         <link rel="stylesheet" href="${basePath}css/dark-mode.css">
+        
+        <!-- 深色模式逻辑 (自动加载) -->
+        <script src="${basePath}js/dark-mode.js" defer></script>
     `;
 
     document.write(headContent);
