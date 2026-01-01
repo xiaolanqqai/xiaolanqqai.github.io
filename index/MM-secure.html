@@ -397,21 +397,54 @@
 			console.log('开始尝试解密，当前密码:', currentPassword);
 			try {
 				// 加载MM.json文件
-				const response = await fetch('../data/MM.json');
+				const response = await fetch('../data/MM.json?t=' + new Date().getTime());
 				if (!response.ok) {
 					throw new Error('无法加载MM.json文件');
 				}
-				let encryptedContent = await response.text();
-				console.log('MM.json文件内容长度:', encryptedContent.length);
-				console.log('文件内容前50个字符:', encryptedContent.substring(0, 50));
-
-				// 检查并移除data URL前缀
-				if (encryptedContent.startsWith('data:application/json;base64,')) {
-					console.log('检测到data URL前缀，移除它...');
-					encryptedContent = encryptedContent.replace('data:application/json;base64,', '');
-					console.log('移除前缀后的内容长度:', encryptedContent.length);
-					console.log('移除前缀后的内容前50个字符:', encryptedContent.substring(0, 50));
+				
+				// 读取为ArrayBuffer以处理二进制数据
+				const arrayBuffer = await response.arrayBuffer();
+				let encryptedContent = '';
+				
+				// 尝试解码为文本
+				const textContent = new TextDecoder().decode(arrayBuffer);
+				
+				// 检查是否包含二进制数据
+				function containsBinaryData(str) {
+					return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
 				}
+				
+				let isBinary = containsBinaryData(textContent);
+				if (!isBinary) {
+					try {
+						// 尝试atob，如果失败说明不是有效的Base64，那可能是二进制（或者明文）
+						// 但如果是加密的，必须是Base64。如果不是Base64，说明是原始二进制加密数据。
+						// 忽略空白字符
+						const cleanStr = textContent.replace(/\s/g, '');
+						if (cleanStr.length > 0) {
+							atob(cleanStr);
+						}
+					} catch (e) {
+						console.log('atob失败，判定为二进制数据');
+						isBinary = true;
+					}
+				}
+				
+				if (isBinary) {
+					console.log('检测到二进制数据，转换为Base64...');
+					const binaryStr = String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
+					encryptedContent = btoa(binaryStr);
+				} else {
+					encryptedContent = textContent;
+					// 检查并移除data URL前缀
+					if (encryptedContent.startsWith('data:application/json;base64,')) {
+						console.log('检测到data URL前缀，移除它...');
+						encryptedContent = encryptedContent.replace('data:application/json;base64,', '');
+					}
+				}
+
+				console.log('处理后的内容长度:', encryptedContent.length);
+				console.log('文件内容前50个字符:', encryptedContent.substring(0, 50));
 
 				// 尝试解密
 				let decryptedContent;
