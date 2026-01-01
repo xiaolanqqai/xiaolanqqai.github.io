@@ -23,11 +23,10 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 - **前端框架**：基于Bootstrap 5.3.0-alpha3构建响应式界面
 - **JavaScript**：使用jQuery 3.5.1和原生JS，采用模块化类设计
 - **性能优化**：实现CSS预加载、JS异步加载、资源延迟加载和图片懒加载
-- **PWA支持**：提供离线访问能力，可安装为桌面应用
 - **现代CSS**：使用渐变、backdrop-filter等现代CSS特性
 
 ### 文件结构
-- **根目录**：包含首页、配置文件和PWA相关文件
+- **根目录**：包含首页和配置文件
 - **index/**：功能页面（More、Develop、Download等）和管理系统
 - **css/**：样式文件，包含Bootstrap、自定义样式和Sass源文件
 - **js/**：JavaScript代码，包括核心功能、管理系统通用脚本和性能配置
@@ -42,7 +41,7 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 
 ### 核心技术栈
 - **框架/库**：HTML5, CSS3 (Flexbox/Grid), Vanilla JavaScript (ES6+), Bootstrap 5, Font Awesome 6
-- **架构模式**：模块化组件设计 (Web Components 思想), 响应式布局, PWA 离线支持
+- **架构模式**：模块化组件设计 (Web Components 思想), 响应式布局
 - **开发工具**：Trae (Powered by Gemini-3-Flash-Preview)
 - **开发文档/参考**：
   - [Bootstrap 5 官方文档](https://getbootstrap.com/docs/5.0/)

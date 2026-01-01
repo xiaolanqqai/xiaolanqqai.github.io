@@ -35,7 +35,7 @@
 						<li>点击上方按钮访问 MM-secure.html 页面</li>
 						<li>页面会自动加载并尝试解密 <code>MM-encrypted.json</code> 文件</li>
 						<li>输入密码 <strong>ABCD</strong> (按图案顺序点击)</li>
-						<li>如果解密成功，会显示 MM.json 文件的内容</li>
+						<li>如果解密成功，会显示 data/MM.json 文件的内容</li>
 					</ul>
 				</div>
 
@@ -76,7 +76,7 @@
 	<script>
 		// 加载版本信息
 		document.addEventListener('DOMContentLoaded', function () {
-			fetch('../js/nav-data.json')
+			fetch('../data/nav-data.json')
 				.then(response => response.json())
 				.then(data => {
 					loadVersionInfo(data);

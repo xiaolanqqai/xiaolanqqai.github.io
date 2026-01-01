@@ -68,7 +68,7 @@
 			});
 			
 			// 加载导航数据
-			fetch('js/nav-data.json')
+			fetch('data/nav-data.json')
 				.then(response => response.json())
 				.then(data => {
 					renderNavigation(data.index);
@@ -232,28 +232,6 @@
 			});
 		});
 
-		//--------------------------------------------------------------
-
-		// PWA Service Worker注册
-		if ('serviceWorker' in navigator) {
-			window.addEventListener('load', () => {
-				navigator.serviceWorker.register('/test-trae/service-worker.js')
-					.then(registration => {
-						console.log('Service Worker 注册成功:', registration.scope);
-					})
-					.catch(error => {
-						console.error('Service Worker 注册失败:', error);
-					});
-			});
-			
-			// 监听Service Worker更新
-			let refreshing = false;
-			navigator.serviceWorker.addEventListener('controllerchange', () => {
-				if (refreshing) return;
-				refreshing = true;
-				window.location.reload();
-			});
-		}
 	</script>
 	
 

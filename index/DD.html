@@ -37,7 +37,7 @@
 
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
-		fetch('../js/nav-data.json')
+		fetch('../data/nav-data.json')
 			.then(response => response.json())
 			.then(data => {
 				renderNavigation(data.dd);

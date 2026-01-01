@@ -50,7 +50,7 @@
     
     <script>
 	document.addEventListener('DOMContentLoaded', function () {
-		fetch('../js/nav-data.json')
+		fetch('../data/nav-data.json')
 			.then(response => response.json())
 			.then(data => {
 				renderNavigation(data['develop']);
@@ -102,7 +102,7 @@
         });
 
         // 加载版本信息
-        fetch('../js/version-history.json')
+        fetch('../data/vols.json')
             .then(response => response.json())
             .then(data => {
                 const versionContainer = document.getElementById('version-history');

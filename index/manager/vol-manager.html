@@ -4,14 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>版本管理系统</title>
-    <!-- PWA相关配置 -->
-    <link rel="manifest" href="../../manifest.json">
-    <meta name="theme-color" content="#3e8e41">
     <meta name="description" content="版本管理工具">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="版本管理">
-    <link rel="apple-touch-icon" href="../../img/index.png">
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/all.min.css">
     <link href="../../css/manager-styles.css" rel="stylesheet">
@@ -42,9 +35,6 @@
         <a href="explore-manager.html" class="manager-nav-button" title="探索网页">
             <i class="fas fa-compass"></i>
         </a>
-        <button class="manager-nav-button bg-primary text-white" data-bs-toggle="modal" data-bs-target="#githubConfigModal" title="GitHub API 配置">
-            <i class="fab fa-github"></i>
-        </button>
         <button class="manager-nav-button bg-warning" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas" title="操作日志">
             <i class="fas fa-exclamation-circle"></i>
         </button>
@@ -248,8 +238,6 @@
         const sortByDateBtn = document.getElementById('sortByDateBtn');
         const saveDataBtn = document.getElementById('saveDataBtn');
         const githubSaveBtn = document.getElementById('githubSaveBtn');
-        const githubConfigModal = new bootstrap.Modal(document.getElementById('githubConfigModal'));
-        const saveGithubConfigBtn = document.getElementById('saveGithubConfigBtn');
         const jsonFileInput = document.getElementById('jsonFile');
         const dropArea = document.getElementById('dropArea');
         const fileInfo = document.getElementById('fileInfo');
@@ -343,10 +331,6 @@
             
             // GitHub 相关事件
             githubSaveBtn.addEventListener('click', saveToGithub);
-            saveGithubConfigBtn.addEventListener('click', saveGithubConfig);
-            
-            // 模态框显示时加载配置
-            document.getElementById('githubConfigModal').addEventListener('show.bs.modal', loadGithubConfigToForm);
             
             // 为添加版本模态框添加显示事件监听器，设置默认值
             document.getElementById('addVersionModal').addEventListener('show.bs.modal', function() {
@@ -389,7 +373,7 @@
         
         // 从本地JSON文件加载数据
         function loadVersionDataFromFile() {
-            const filePath = '../../../js/version-history.json';
+            const filePath = '../../../data/vols.json';
             const fullPath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/') + filePath;
             
             if (window.addLogEntry) {
@@ -446,51 +430,18 @@
         }
         
         // 保存数据为JSON文件
-        // 加载 GitHub 配置到表单
-        function loadGithubConfigToForm() {
-            const config = window.githubHelper.config;
-            if (config.token) document.getElementById('ghToken').value = config.token;
-            if (config.owner) document.getElementById('ghOwner').value = config.owner;
-            if (config.repo) document.getElementById('ghRepo').value = config.repo;
-            if (config.branch) document.getElementById('ghBranch').value = config.branch;
-        }
-
-        // 保存 GitHub 配置
-        function saveGithubConfig() {
-            const config = {
-                token: document.getElementById('ghToken').value.trim(),
-                owner: document.getElementById('ghOwner').value.trim(),
-                repo: document.getElementById('ghRepo').value.trim(),
-                branch: document.getElementById('ghBranch').value.trim() || 'main'
-            };
-
-            if (!config.token || !config.owner || !config.repo) {
-                alert('请填写完整的 GitHub 配置信息');
-                return;
-            }
-
-            window.githubHelper.saveConfig(config);
-            githubConfigModal.hide();
-            showAlert('GitHub 配置已保存', 'success');
-        }
-
         // 同步到 GitHub
         async function saveToGithub() {
-            if (!window.githubHelper.isConfigured()) {
-                githubConfigModal.show();
-                return;
-            }
-
             try {
                 showLoadingOverlay('正在同步到 GitHub...');
                 
                 const dataStr = JSON.stringify(versionData, null, 2);
-                const path = 'js/version-history.json'; // 版本历史数据文件路径
+                const path = 'data/vols.json'; // 版本历史数据文件路径
                 
                 const result = await window.githubHelper.updateFile(
                     path, 
                     dataStr, 
-                    `Update version-history.json via Web Manager (${new Date().toLocaleString()})`
+                    `Update vols.json via Web Manager (${new Date().toLocaleString()})`
                 );
 
                 hideLoadingOverlay();
@@ -514,7 +465,7 @@
                 const dataBlob = new Blob([dataStr], {type: 'application/json'});
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(dataBlob);
-                link.download = 'version-history.json';
+                link.download = 'vols.json';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -747,7 +698,7 @@
                 const dataBlob = new Blob([dataStr], {type: 'application/json'});
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(dataBlob);
-                link.download = 'version-history.json';
+                link.download = 'vols.json';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -890,46 +841,6 @@
         }
     </script>
     
-    <!-- GitHub API 配置模态框 -->
-    <div class="modal fade" id="githubConfigModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fab fa-github me-2"></i>GitHub API 配置</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <small><i class="fas fa-info-circle me-1"></i>配置 GitHub Token 后，您可以直接将更改保存到 GitHub 仓库，无需手动上传下载 JSON 文件。</small>
-                    </div>
-                    <form id="githubConfigForm">
-                        <div class="mb-3">
-                            <label for="ghToken" class="form-label">Personal Access Token (PAT)</label>
-                            <input type="password" class="form-control" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" required>
-                            <div class="form-text">需要 <code>repo</code> 权限。可在 GitHub Settings -> Developer settings -> Personal access tokens 中生成。</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghOwner" class="form-label">仓库所有者 (Owner)</label>
-                            <input type="text" class="form-control" id="ghOwner" placeholder="例如: xiaolanqqai" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghRepo" class="form-label">仓库名称 (Repository)</label>
-                            <input type="text" class="form-control" id="ghRepo" placeholder="例如: xiaolanqqai.github.io" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghBranch" class="form-label">分支 (Branch)</label>
-                            <input type="text" class="form-control" id="ghBranch" placeholder="例如: main" value="main">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="saveGithubConfigBtn">保存配置</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- 操作日志 offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
         <div class="offcanvas-header">

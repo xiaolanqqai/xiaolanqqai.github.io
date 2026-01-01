@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>探索网页系统</title>
-    <!-- PWA相关配置 -->
-    <link rel="manifest" href="../../manifest.json">
-    <meta name="theme-color" content="#3e8e41">
-    <meta name="description" content="发现新的有趣网站">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="探索网页">
-    <link rel="apple-touch-icon" href="../../img/index.png">
     
     <!-- 引入样式 -->
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
@@ -45,9 +37,6 @@
         <a href="explore-manager.html" class="manager-nav-button active" title="探索网页">
             <i class="fas fa-compass"></i>
         </a>
-        <button class="manager-nav-button bg-primary text-white" data-bs-toggle="modal" data-bs-target="#githubConfigModal" title="GitHub API 配置">
-            <i class="fab fa-github"></i>
-        </button>
         <!-- 操作日志按钮 -->
         <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
             <i class="fas fa-exclamation-circle"></i>
@@ -66,15 +55,12 @@
         <div class="manager-card mb-4 border-primary">
             <div class="manager-card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fab fa-github me-2"></i>GitHub 云端同步</h5>
-                <button class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#githubConfigModal">
-                    <i class="fas fa-cog"></i> 配置
-                </button>
             </div>
             <div class="manager-card-body">
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <p class="mb-0 text-muted small">
-                            同步发现的网站数据和您的个人收藏到 GitHub 仓库。配置后可实现多端数据共享。
+                            直接同步发现的网站数据和您的个人收藏到 GitHub 仓库。
                         </p>
                     </div>
                     <div class="col-md-4 text-end">
@@ -400,46 +386,10 @@
             });
 
             // GitHub 相关逻辑
-            const githubConfigModal = new bootstrap.Modal(document.getElementById('githubConfigModal'));
             const syncToGithubBtn = document.getElementById('syncToGithubBtn');
-            const saveGithubConfigBtn = document.getElementById('saveGithubConfigBtn');
-
-            // 预填充 GitHub 配置
-            function fillGithubConfig() {
-                const config = window.githubHelper.getConfig();
-                if (config) {
-                    document.getElementById('ghToken').value = config.token || '';
-                    document.getElementById('ghOwner').value = config.owner || '';
-                    document.getElementById('ghRepo').value = config.repo || '';
-                    document.getElementById('ghBranch').value = config.branch || 'main';
-                }
-            }
-            fillGithubConfig();
-
-            // 保存 GitHub 配置
-            saveGithubConfigBtn.addEventListener('click', function() {
-                const token = document.getElementById('ghToken').value.trim();
-                const owner = document.getElementById('ghOwner').value.trim();
-                const repo = document.getElementById('ghRepo').value.trim();
-                const branch = document.getElementById('ghBranch').value.trim();
-
-                if (!token || !owner || !repo) {
-                    alert('请填写完整的配置信息');
-                    return;
-                }
-
-                window.githubHelper.saveConfig(token, owner, repo, branch);
-                githubConfigModal.hide();
-                addLogEntry(LOG_TYPES.SUCCESS, 'GitHub 配置已保存');
-            });
 
             // 同步到 GitHub
             syncToGithubBtn.addEventListener('click', async function() {
-                if (!window.githubHelper.isConfigured()) {
-                    githubConfigModal.show();
-                    return;
-                }
-
                 try {
                     showLoadingOverlay('正在同步到 GitHub...');
                     const data = {
@@ -448,7 +398,7 @@
                         lastUpdated: new Date().toISOString()
                     };
                     const dataStr = JSON.stringify(data, null, 2);
-                    const path = 'js/explore-data.json';
+                    const path = 'data/explore-data.json';
                     
                     const result = await window.githubHelper.updateFile(
                         path, 
@@ -469,10 +419,8 @@
 
             // 从 GitHub 加载数据
             async function loadFromGithub() {
-                if (!window.githubHelper.isConfigured()) return;
-
                 try {
-                    const path = 'js/explore-data.json';
+                    const path = 'data/explore-data.json';
                     const response = await window.githubHelper.getFile(path);
                     if (response && response.content) {
                         const decodedContent = decodeURIComponent(escape(atob(response.content)));
@@ -1173,46 +1121,6 @@
         });
     </script>
     
-    <!-- GitHub API 配置模态框 -->
-    <div class="modal fade" id="githubConfigModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fab fa-github me-2"></i>GitHub API 配置</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <small><i class="fas fa-info-circle me-1"></i>配置 GitHub Token 后，您可以直接将更改保存到 GitHub 仓库，无需手动上传下载 JSON 文件。</small>
-                    </div>
-                    <form id="githubConfigForm">
-                        <div class="mb-3">
-                            <label for="ghToken" class="form-label">Personal Access Token (PAT)</label>
-                            <input type="password" class="form-control" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" required>
-                            <div class="form-text">需要 <code>repo</code> 权限。可在 GitHub Settings -> Developer settings -> Personal access tokens 中生成。</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghOwner" class="form-label">仓库所有者 (Owner)</label>
-                            <input type="text" class="form-control" id="ghOwner" placeholder="例如: xiaolanqqai" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghRepo" class="form-label">仓库名称 (Repository)</label>
-                            <input type="text" class="form-control" id="ghRepo" placeholder="例如: xiaolanqqai.github.io" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghBranch" class="form-label">分支 (Branch)</label>
-                            <input type="text" class="form-control" id="ghBranch" placeholder="例如: main" value="main">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="saveGithubConfigBtn">保存配置</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- 操作日志 offcanvas -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
         <div class="offcanvas-header">

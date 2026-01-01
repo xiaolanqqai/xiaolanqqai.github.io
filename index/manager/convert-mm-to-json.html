@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MM.htm 转 JSON 工具</title>
-    <!-- PWA相关配置 -->
-    <link rel="manifest" href="../../manifest.json">
-    <meta name="theme-color" content="#3e8e41">
-    <meta name="description" content="MM.htm转JSON工具">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MM转JSON">
-    <link rel="apple-touch-icon" href="../../img/index.png">
     
     <link href="../../css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../css/all.min.css">
@@ -149,6 +141,8 @@
                 
                 const jsonString = JSON.stringify(parsedData, null, 2);
                 downloadFile(jsonString, 'MM.json', 'application/json');
+                addLogEntry('转换成功！已准备好下载 MM.json', LOG_TYPES.SUCCESS);
+                addLogEntry('提示：请将下载的文件移动到 data 目录下', LOG_TYPES.INFO);
             });
             
             clearBtn.addEventListener('click', function() {

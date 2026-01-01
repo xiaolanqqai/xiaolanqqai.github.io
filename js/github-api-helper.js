@@ -13,19 +13,27 @@ class GitHubAPIHelper {
      */
     loadConfig() {
         const saved = localStorage.getItem('github_api_config');
-        return saved ? JSON.parse(saved) : {
-            token: '',
-            owner: '',
-            repo: '',
+        const config = saved ? JSON.parse(saved) : {};
+        return {
+            token: config.token || '',
+            owner: 'xiaolanqqai',
+            repo: 'xiaolanqqai.github.io',
             branch: 'main'
         };
     }
 
     /**
-     * 保存配置
+     * 获取配置
      */
-    saveConfig(config) {
-        this.config = { ...this.config, ...config };
+    getConfig() {
+        return this.config;
+    }
+
+    /**
+     * 保存配置 (仅保存 Token)
+     */
+    saveConfig(token) {
+        this.config.token = token;
         localStorage.setItem('github_api_config', JSON.stringify(this.config));
     }
 
@@ -33,7 +41,7 @@ class GitHubAPIHelper {
      * 检查配置是否完整
      */
     isConfigured() {
-        return this.config.token && this.config.owner && this.config.repo;
+        return !!this.config.token;
     }
 
     /**
@@ -66,7 +74,7 @@ class GitHubAPIHelper {
      */
     async updateFile(path, content, message = 'Update data via Web Manager') {
         if (!this.isConfigured()) {
-            throw new Error('GitHub API 未配置，请先在设置中配置 Token、仓库所有者和仓库名。');
+            throw new Error('未配置 GitHub Token，请在控制台或 localStorage 中设置 github_api_config。');
         }
 
         const sha = await this.getFileSHA(path);

@@ -30,9 +30,6 @@
         <a href="explore-manager.html" class="manager-nav-button" title="探索网页">
             <i class="fas fa-compass"></i>
         </a>
-        <button class="manager-nav-button bg-primary text-white" data-bs-toggle="modal" data-bs-target="#githubConfigModal" title="GitHub API 配置">
-            <i class="fab fa-github"></i>
-        </button>
         <!-- 操作日志按钮 -->
         <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
             <i class="fas fa-exclamation-circle"></i>
@@ -542,7 +539,6 @@
             const emptyLogMessage = document.getElementById('emptyLogMessage');
             const decryptModal = new bootstrap.Modal(document.getElementById('decryptModal'));
             const encryptModal = new bootstrap.Modal(document.getElementById('encryptModal'));
-            const githubConfigModal = new bootstrap.Modal(document.getElementById('githubConfigModal'));
             const githubSyncEncryptModal = new bootstrap.Modal(document.getElementById('githubSyncEncryptModal'));
             
             // 全局变量
@@ -555,7 +551,7 @@
             let currentFileArrayBuffer = null; // 保存网络加载的原始ArrayBuffer
             
             // 固定的URL地址
-            const FIXED_URL = '/js/MM.json';
+            const FIXED_URL = '/data/MM.json';
             
             // 图案密码实例
             let decryptPatternPassword = new PatternPassword('decrypt');
@@ -1110,44 +1106,10 @@
             
             // GitHub 同步相关逻辑
             const githubSaveBtn = document.getElementById('githubSaveBtn');
-            const saveGithubConfigBtn = document.getElementById('saveGithubConfigBtn');
             const confirmSyncToGithubBtn = document.getElementById('confirmSyncToGithub');
-
-            // 预填充 GitHub 配置
-            function fillGithubConfig() {
-                const config = window.githubHelper.getConfig();
-                if (config) {
-                    document.getElementById('ghToken').value = config.token || '';
-                    document.getElementById('ghOwner').value = config.owner || '';
-                    document.getElementById('ghRepo').value = config.repo || '';
-                    document.getElementById('ghBranch').value = config.branch || 'main';
-                }
-            }
-            fillGithubConfig();
-
-            // 保存 GitHub 配置
-            saveGithubConfigBtn.addEventListener('click', function() {
-                const token = document.getElementById('ghToken').value.trim();
-                const owner = document.getElementById('ghOwner').value.trim();
-                const repo = document.getElementById('ghRepo').value.trim();
-                const branch = document.getElementById('ghBranch').value.trim();
-
-                if (!token || !owner || !repo) {
-                    alert('请填写完整的配置信息');
-                    return;
-                }
-
-                window.githubHelper.saveConfig(token, owner, repo, branch);
-                githubConfigModal.hide();
-                addLogEntry(LOG_TYPES.SUCCESS, 'GitHub 配置已保存');
-            });
 
             // 点击 GitHub 同步按钮
             githubSaveBtn.addEventListener('click', function() {
-                if (!window.githubHelper.isConfigured()) {
-                    githubConfigModal.show();
-                    return;
-                }
                 syncEncryptPatternPassword.reset();
                 githubSyncEncryptModal.show();
                 addLogEntry(LOG_TYPES.INFO, '准备同步到 GitHub');
@@ -1173,7 +1135,7 @@
                     const encryptedContent = await AESUtil.encrypt(content, password);
                     
                     // 同步到 GitHub
-                    const path = 'js/MM.json';
+                    const path = 'data/MM.json';
                     const result = await window.githubHelper.updateFile(
                         path,
                         encryptedContent,
@@ -1374,46 +1336,6 @@
         });
     </script>
     
-    <!-- GitHub API 配置模态框 -->
-    <div class="modal fade" id="githubConfigModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fab fa-github me-2"></i>GitHub API 配置</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <small><i class="fas fa-info-circle me-1"></i>配置 GitHub Token 后，您可以直接将更改保存到 GitHub 仓库，无需手动上传下载 JSON 文件。</small>
-                    </div>
-                    <form id="githubConfigForm">
-                        <div class="mb-3">
-                            <label for="ghToken" class="form-label">Personal Access Token (PAT)</label>
-                            <input type="password" class="form-control" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" required>
-                            <div class="form-text">需要 <code>repo</code> 权限。可在 GitHub Settings -> Developer settings -> Personal access tokens 中生成。</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghOwner" class="form-label">仓库所有者 (Owner)</label>
-                            <input type="text" class="form-control" id="ghOwner" placeholder="例如: xiaolanqqai" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghRepo" class="form-label">仓库名称 (Repository)</label>
-                            <input type="text" class="form-control" id="ghRepo" placeholder="例如: xiaolanqqai.github.io" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ghBranch" class="form-label">分支 (Branch)</label>
-                            <input type="text" class="form-control" id="ghBranch" placeholder="例如: main" value="main">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="saveGithubConfigBtn">保存配置</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- GitHub 同步加密模态框 -->
     <div class="modal fade" id="githubSyncEncryptModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -1488,20 +1410,6 @@
         </div>
     </div>
     
-    <!-- PWA Service Worker注册 -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('../../service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker 注册成功:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker 注册失败:', error);
-                    });
-            });
-        }
-    </script>
     
     <!-- 深色模式功能 -->
     <script src="../../js/dark-mode.js"></script>

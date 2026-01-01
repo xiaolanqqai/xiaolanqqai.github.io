@@ -202,7 +202,7 @@
 		// 初始化
 		document.addEventListener('DOMContentLoaded', function () {
 			// 加载版本信息
-			fetch('../js/nav-data.json')
+			fetch('../data/nav-data.json')
 				.then(response => response.json())
 				.then(data => {
 					loadVersionInfo(data);
@@ -376,7 +376,7 @@
 
 		// 加载MM.json文件
 		function loadMMFile() {
-			fetch('../js/MM.json')
+			fetch('../data/MM.json')
 				.then(response => {
 					if (!response.ok) {
 						throw new Error('无法加载MM.json文件');
@@ -397,7 +397,7 @@
 			console.log('开始尝试解密，当前密码:', currentPassword);
 			try {
 				// 加载MM.json文件
-				const response = await fetch('../js/MM.json');
+				const response = await fetch('../data/MM.json');
 				if (!response.ok) {
 					throw new Error('无法加载MM.json文件');
 				}
