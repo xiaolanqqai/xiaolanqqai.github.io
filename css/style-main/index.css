@@ -111,7 +111,6 @@ html, body {
 .main-content {
     position: relative;
     min-height: 100vh;
-    zoom: 0.9;
 }
 
 /* 确保所有内容容器不限制高度，允许滚动 */
