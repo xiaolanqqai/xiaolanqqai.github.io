@@ -40,12 +40,12 @@
 				<div class="more-card"><a href="javascript:a(0)" class="nav-ban-item"><img class="nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">1.</h6></a></div>
 				<div class="more-card"><a href="javascript:a(1)" class="nav-ban-item"><img class="nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">2.</h6></a></div>
 				<div class="more-card"><a href="javascript:a(2)" class="nav-ban-item"><img class="nav-ban-icon" src="../img/luyou.png" loading="lazy"><h6 class="nav-ban-text">192168.</h6></a></div>
-				<div class="more-card"><a href="javascript:a(3)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.baidu.com.png" loading="lazy"><h6 class="nav-ban-text">Baidu</h6></a></div>
-				<div class="more-card"><a href="javascript:a(4)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.bing.com.png" loading="lazy"><h6 class="nav-ban-text">Bing</h6></a></div>
-				<div class="more-card"><a href="javascript:a(5)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.google.com.png" loading="lazy"><h6 class="nav-ban-text">Google.hk</h6></a></div>
-				<div class="more-card"><a href="javascript:a(6)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.Yandex.com.png" loading="lazy"><h6 class="nav-ban-text">Yandex</h6></a></div>
-				<div class="more-card"><a href="javascript:a(7)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.bilibili.com.png" loading="lazy"><h6 class="nav-ban-text">BiliBili</h6></a></div>
-				<div class="more-card"><a href="javascript:a(8)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.iowen.cn/favicon/www.kuaidi100.com.png" loading="lazy"><h6 class="nav-ban-text">快递100</h6></a></div>
+				<div class="more-card"><a href="javascript:a(3)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.baidu.com" loading="lazy"><h6 class="nav-ban-text">Baidu</h6></a></div>
+				<div class="more-card"><a href="javascript:a(4)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.bing.com" loading="lazy"><h6 class="nav-ban-text">Bing</h6></a></div>
+				<div class="more-card"><a href="javascript:a(5)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.google.com" loading="lazy"><h6 class="nav-ban-text">Google.hk</h6></a></div>
+				<div class="more-card"><a href="javascript:a(6)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.yandex.com" loading="lazy"><h6 class="nav-ban-text">Yandex</h6></a></div>
+				<div class="more-card"><a href="javascript:a(7)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.bilibili.com" loading="lazy"><h6 class="nav-ban-text">BiliBili</h6></a></div>
+				<div class="more-card"><a href="javascript:a(8)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.kuaidi100.com" loading="lazy"><h6 class="nav-ban-text">快递100</h6></a></div>
 			</div>
 			
 			<div id="nav-content-container"></div>
@@ -108,7 +108,7 @@
 				tab.items.forEach(item => {
 					const col = document.createElement('div');
 					col.className = 'more-card';
-					const iconUrl = item.url ? `https://api.iowen.cn/favicon/${new URL(item.url).hostname}.png` : '../img/index.png';
+					const iconUrl = item.url ? `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}` : '../img/index.png';
 					col.innerHTML = `
 						<a href="${item.url}" rel="nofollow" target="_blank" class="nav-ban-item">
 							<img class="nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
@@ -137,7 +137,7 @@
 
 			// 渲染特殊栏目的网站
 			specialContainer.innerHTML = specialSites.map(site => {
-				const iconUrl = site.icon || `https://api.iowen.cn/favicon/${new URL(site.url).hostname}.png`;
+				const iconUrl = site.icon || `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(site.url)}`;
 				return `
 					<div class="more-card">
 						<a href="${site.url}" rel="nofollow" target="_blank" class="nav-ban-item">

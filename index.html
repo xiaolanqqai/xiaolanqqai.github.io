@@ -120,7 +120,7 @@
 			row.className = 'row row-cols-4 g-2 p-2'; // 使用Bootstrap Gutter
 			
 			tab.items.forEach(item => {
-				const iconUrl = item.url ? `https://api.iowen.cn/favicon/${new URL(item.url).hostname}.png` : 'img/index.png';
+				const iconUrl = item.url ? `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}` : 'img/index.png';
 				const col = document.createElement('div');
 				col.className = 'col';
 				col.innerHTML = `

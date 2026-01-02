@@ -74,7 +74,7 @@
 			tab.items.forEach(item => {
 				const col = document.createElement('div');
 				col.className = 'more-card';
-				const iconUrl = item.icon || (item.url ? `https://api.iowen.cn/favicon/${new URL(item.url).hostname}.png` : '../img/index.png');
+				const iconUrl = item.icon || (item.url ? `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(item.url)}` : '../img/index.png');
 				col.innerHTML = `
 					<a href="${item.url}" rel="nofollow" target="_blank" class="nav-ban-item">
 						<img class="nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
