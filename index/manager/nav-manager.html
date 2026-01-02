@@ -651,9 +651,9 @@
         
         // 在模态框显示时初始化
         document.addEventListener('DOMContentLoaded', function() {
-            const addSiteModal = document.getElementById('addSiteModal');
-            if (addSiteModal) {
-                addSiteModal.addEventListener('shown.bs.modal', function() {
+            const addSiteModalElement = document.getElementById('addSiteModal');
+            if (addSiteModalElement) {
+                addSiteModalElement.addEventListener('shown.bs.modal', function() {
                     // 延迟一下确保DOM元素已加载
                     setTimeout(() => {
                         // 重置图标显示状态
@@ -765,10 +765,8 @@
         // 其他变量声明
         const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));
         const editSiteModal = new bootstrap.Modal(document.getElementById('editSiteModal'));
-        const addTabModal = new bootstrap.Modal(document.getElementById('addTabModal'));
         const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
         const confirmAddSite = document.getElementById('confirmAddSite');
-        const confirmAddTab = document.getElementById('confirmAddTab');
         const confirmEditSite = document.getElementById('confirmEditSite');
         const confirmUpload = document.getElementById('confirmUpload');
         const jsonFileInput = document.getElementById('jsonFile');
@@ -802,8 +800,6 @@
             // 移除直接绑定的点击事件，改用setupAddTabButton中设置的新交互
             loadFromLocalBtn.addEventListener('click', loadFromJsonFile);
             confirmAddSite.addEventListener('click', addNewSite);
-            // 保留confirmAddTab的事件监听器以兼容旧代码
-            confirmAddTab.addEventListener('click', addNewTab);
             confirmUpload.addEventListener('click', processUploadedFile);
             clearDataBtn.addEventListener('click', showClearConfirmModal);
             confirmClearBtn.addEventListener('click', clearAllData);
@@ -1070,6 +1066,7 @@
             reader.readAsText(file);
         }
         
+        // 数据处理函数
         function processUploadedFile() {
             try {
                 // 显示全局加载动画
@@ -1246,7 +1243,8 @@
                 btn.addEventListener('click', function() {
                     currentTabIndex = parseInt(this.getAttribute('data-tab-index'));
                     document.getElementById('addSiteForm').reset();
-                    document.getElementById('addSiteModal').style.display = 'block';
+                    document.getElementById('addSiteForm').removeAttribute('data-special');
+                    addSiteModal.show();
                 });
             });
             
@@ -1827,190 +1825,6 @@
             }).join('');
         }
         
-        // 初始化网站拖拽排序功能
-        function initSiteDragAndDrop() {
-            // 为所有站点容器添加拖放事件
-            document.querySelectorAll('.sites-container').forEach(container => {
-                container.addEventListener('dragover', handleSiteDragOver);
-                container.addEventListener('drop', handleSiteDrop);
-                container.addEventListener('dragleave', handleSiteDragLeave);
-            });
-            
-            // 为所有网站卡片添加拖拽事件
-            document.querySelectorAll('.site-card').forEach(card => {
-                card.addEventListener('dragstart', handleSiteDragStart);
-                card.addEventListener('dragend', handleSiteDragEnd);
-                card.addEventListener('dragenter', handleSiteDragEnter);
-            });
-        }
-        
-        // 处理网站拖拽开始
-        function handleSiteDragStart(e) {
-            // 添加拖拽样式
-            this.classList.add('dragging');
-            
-            // 设置拖拽数据
-            const tabIndex = this.getAttribute('data-tab-index');
-            const siteIndex = this.getAttribute('data-site-index');
-            e.dataTransfer.setData('text/plain', JSON.stringify({
-                type: 'site',
-                tabIndex: parseInt(tabIndex),
-                siteIndex: parseInt(siteIndex)
-            }));
-        }
-        
-        // 处理网站拖拽结束
-        function handleSiteDragEnd() {
-            // 移除所有拖拽相关样式
-            document.querySelectorAll('.site-card.dragging, .site-card.drag-over').forEach(el => {
-                el.classList.remove('dragging', 'drag-over');
-            });
-        }
-        
-        // 处理网站拖拽进入
-        function handleSiteDragEnter(e) {
-            e.preventDefault();
-            // 只在拖拽的是网站时添加样式
-            if (e.dataTransfer.getData('text/plain')) {
-                const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
-                if (dragData.type === 'site') {
-                    this.classList.add('drag-over');
-                }
-            }
-        }
-        
-        // 处理网站拖拽悬停
-        function handleSiteDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-        }
-        
-        // 处理网站拖拽离开
-        function handleSiteDragLeave(e) {
-            // 检查是否真的离开了容器
-            const relatedTarget = e.relatedTarget;
-            if (!this.contains(relatedTarget)) {
-                document.querySelectorAll('.site-card.drag-over').forEach(el => {
-                    el.classList.remove('drag-over');
-                });
-            }
-        }
-        
-        // 处理网站放置
-        function handleSiteDrop(e) {
-            e.preventDefault();
-            
-            try {
-                // 获取拖拽数据
-                const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
-                
-                if (dragData.type === 'site') {
-                    // 获取目标位置信息
-                    const targetElement = e.target.closest('.site-card');
-                    const dropContainer = this;
-                    const targetTabIndex = parseInt(dropContainer.id.replace('sites-container-', ''));
-                    
-                    if (targetElement) {
-                        const targetSiteIndex = parseInt(targetElement.getAttribute('data-site-index'));
-                        
-                        // 执行拖拽排序
-                        if (dragData.tabIndex === targetTabIndex) {
-                            // 同一个选项卡内排序
-                            reorderSitesWithinTab(dragData.tabIndex, dragData.siteIndex, targetSiteIndex);
-                        } else {
-                            // 跨选项卡移动
-                            moveSiteBetweenTabs(dragData.tabIndex, dragData.siteIndex, targetTabIndex, targetSiteIndex);
-                        }
-                    } else {
-                        // 放置在容器空白处，移动到选项卡末尾
-                        if (dragData.tabIndex !== targetTabIndex) {
-                            moveSiteBetweenTabs(dragData.tabIndex, dragData.siteIndex, targetTabIndex);
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('拖拽处理失败:', error);
-            }
-            
-            // 清理拖拽样式
-            handleSiteDragEnd();
-        }
-        
-        // 在同一个选项卡内重新排序网站
-        function reorderSitesWithinTab(tabIndex, fromIndex, toIndex) {
-            // 确保目标选项卡的数据结构存在
-            if (!navData[currentPage].tabs[tabIndex].items) {
-                navData[currentPage].tabs[tabIndex].items = [];
-            }
-            
-            const sites = navData[currentPage].tabs[tabIndex].items;
-            
-            // 从原位置移除
-            const [movedSite] = sites.splice(fromIndex, 1);
-            
-            // 插入到新位置
-            sites.splice(toIndex, 0, movedSite);
-            
-            // 刷新显示
-            const container = document.getElementById(`sites-container-${tabIndex}`);
-            if (container) {
-                container.innerHTML = renderSites(sites, tabIndex);
-                bindSiteActions();
-                initSiteDragAndDrop(); // 重新绑定拖拽事件
-            }
-            
-            // 标记数据已修改
-            setDataChanged();
-            
-            // 记录日志
-            addLogEntry(`重新排序网站: ${movedSite.name}`, LOG_TYPES.INFO);
-        }
-        
-        // 在不同选项卡之间移动网站
-        function moveSiteBetweenTabs(fromTabIndex, fromSiteIndex, toTabIndex, toSiteIndex = null) {
-            // 确保目标选项卡的数据结构存在
-            if (!navData[currentPage].tabs[toTabIndex].items) {
-                navData[currentPage].tabs[toTabIndex].items = [];
-            }
-            
-            const fromSites = navData[currentPage].tabs[fromTabIndex].items;
-            const toSites = navData[currentPage].tabs[toTabIndex].items;
-            
-            // 从原位置移除
-            const [movedSite] = fromSites.splice(fromSiteIndex, 1);
-            
-            // 插入到新位置
-            if (toSiteIndex !== null && toSiteIndex >= 0 && toSiteIndex <= toSites.length) {
-                toSites.splice(toSiteIndex, 0, movedSite);
-            } else {
-                toSites.push(movedSite);
-            }
-            
-            // 刷新显示
-            const fromContainer = document.getElementById(`sites-container-${fromTabIndex}`);
-            const toContainer = document.getElementById(`sites-container-${toTabIndex}`);
-            
-            if (fromContainer) {
-                fromContainer.innerHTML = renderSites(fromSites, fromTabIndex);
-            }
-            
-            if (toContainer) {
-                toContainer.innerHTML = renderSites(toSites, toTabIndex);
-            }
-            
-            // 重新绑定事件
-            bindSiteActions();
-            initSiteDragAndDrop();
-            
-            // 标记数据已修改
-            setDataChanged();
-            
-            // 记录日志
-            const fromTabName = navData[currentPage].tabs[fromTabIndex].name;
-            const toTabName = navData[currentPage].tabs[toTabIndex].name;
-            addLogEntry(`移动网站: ${movedSite.name} 从 "${fromTabName}" 到 "${toTabName}"`, LOG_TYPES.INFO);
-        }
-        
         function bindSiteActions() {
             // 绑定卡片点击事件（编辑）
             document.querySelectorAll('.site-card').forEach(card => {
@@ -2043,28 +1857,6 @@
             editSiteModal.show();
         }
         
-        function saveEditedSite() {
-            const tabIndex = parseInt(document.getElementById('editSiteTabIndex').value);
-            const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
-            const siteName = document.getElementById('editSiteName').value.trim();
-            const siteUrl = document.getElementById('editSiteUrl').value.trim();
-            
-            if (!siteName || !siteUrl) {
-                alert('请填写所有字段');
-                return;
-            }
-            
-            navData[currentPage].tabs[tabIndex].items[siteIndex] = {
-                name: siteName,
-                url: siteUrl
-                // 不保存icon字段，渲染时自动生成
-            };
-            
-            editSiteModal.hide();
-            renderTabs();
-            showAlert('网站信息已更新: ' + siteName, 'success');
-        }
-        
         function showDeleteConfirm(tabIndex, siteIndex) {
             const site = navData[currentPage].tabs[tabIndex].items[siteIndex];
             document.getElementById('deleteTabIndex').value = tabIndex;
@@ -2093,179 +1885,6 @@
             setDataChanged();
             
             showAlert('已删除网站: ' + siteName, 'success');
-        }
-        
-        // 修改添加选项卡按钮交互
-        let addTabInput = null;
-        let addTabBtnOriginalText = '';
-        
-        function setupAddTabButton() {
-            const addTabBtn = document.getElementById('addTabBtn');
-            if (!addTabBtn) return;
-            
-            addTabBtnOriginalText = addTabBtn.innerHTML;
-            
-            addTabBtn.addEventListener('click', function() {
-                // 如果已经处于编辑模式，执行保存操作
-                if (addTabBtn.innerHTML.includes('完成')) {
-                    saveNewTab();
-                    return;
-                }
-                
-                // 进入编辑模式
-                if (!addTabInput) {
-                    // 创建输入框
-                    addTabInput = document.createElement('input');
-                    addTabInput.type = 'text';
-                    addTabInput.placeholder = '输入选项卡名称';
-                    addTabInput.className = 'form-control form-control-sm mr-2';
-                    addTabInput.style.width = 'auto';
-                    addTabInput.style.minWidth = '150px';
-                    addTabInput.style.maxWidth = '250px';
-                    addTabInput.style.display = 'inline-block';
-                    addTabInput.style.marginRight = '5px';
-                    
-                    // 添加到按钮之前
-                    addTabBtn.parentNode.insertBefore(addTabInput, addTabBtn);
-                    
-                    // 处理Enter键保存
-                    addTabInput.addEventListener('keydown', function(e) {
-                        if (e.key === 'Enter') {
-                            saveNewTab();
-                        } else if (e.key === 'Escape') {
-                            cancelAddTab();
-                        }
-                    });
-                    
-                    // 处理失焦事件自动保存
-                    addTabInput.addEventListener('blur', function() {
-                        // 短暂延迟以确保点击按钮的事件可以触发
-                        setTimeout(function() {
-                            if (addTabInput && !document.activeElement.closest('#addTabBtn')) {
-                                saveNewTab();
-                            }
-                        }, 200);
-                    });
-                }
-                
-                // 显示输入框并聚焦
-                addTabInput.classList.remove('d-none');
-                addTabInput.focus();
-                
-                // 更改按钮文本为完成
-                addTabBtn.innerHTML = '<i class="fas fa-check me-1"></i>完成';
-                addTabBtn.classList.remove('btn-outline-light');
-                addTabBtn.classList.add('btn-success');
-            });
-        }
-        
-        function saveNewTab() {
-            if (!addTabInput) return;
-            
-            const tabName = addTabInput.value.trim();
-            if (!tabName) {
-                // 如果输入为空，取消添加
-                cancelAddTab();
-                return;
-            }
-            
-            // 添加新选项卡
-            if (!navData[currentPage]) {
-                navData[currentPage] = { tabs: [] };
-            }
-            if (!navData[currentPage].tabs) {
-                navData[currentPage].tabs = [];
-            }
-            
-            navData[currentPage].tabs.push({
-                name: tabName,
-                items: []
-            });
-            
-            // 重置按钮和隐藏输入框
-            resetAddTabButton();
-            
-            // 重新渲染选项卡
-            renderTabs();
-            
-            // 初始化拖拽功能
-            setTimeout(() => {
-                initSiteDragAndDrop();
-                initTabDragAndDrop();
-            }, 100);
-            
-            // 标记数据已修改
-            setDataChanged();
-            
-            // 显示成功提示
-            showAlert('已添加选项卡: '+tabName, 'success');
-            addLogEntry(`已添加选项卡: ${tabName}`, LOG_TYPES.SUCCESS);
-        }
-        
-        function cancelAddTab() {
-            resetAddTabButton();
-        }
-        
-        function resetAddTabButton() {
-            if (addTabInput) {
-                addTabInput.value = '';
-                addTabInput.classList.add('d-none');
-            }
-            
-            const addTabBtn = document.getElementById('addTabBtn');
-            if (addTabBtn) {
-                addTabBtn.innerHTML = addTabBtnOriginalText;
-                addTabBtn.classList.remove('btn-success');
-                addTabBtn.classList.add('btn-outline-light');
-            }
-        }
-        
-        // 保留原函数以兼容其他调用
-        function showAddTabModal() {
-            // 现在使用新的交互方式
-            const addTabBtn = document.getElementById('addTabBtn');
-            if (addTabBtn) {
-                addTabBtn.click();
-            }
-        }
-        
-        function addNewTab() {
-            // 这个函数现在由saveNewTab调用
-            saveNewTab();
-        }
-        
-        function addNewSite() {
-            const siteName = document.getElementById('siteName').value.trim();
-            const siteUrl = document.getElementById('siteUrl').value.trim();
-            
-            if (!siteName || !siteUrl) {
-                alert('请填写所有字段');
-                return;
-            }
-            
-            if (!navData[currentPage].tabs[currentTabIndex].items) {
-                navData[currentPage].tabs[currentTabIndex].items = [];
-            }
-            
-            navData[currentPage].tabs[currentTabIndex].items.push({
-                name: siteName,
-                url: siteUrl
-                // 不保存icon字段，渲染时自动生成
-            });
-            
-            addSiteModal.hide();
-            renderTabs();
-            
-            // 初始化拖拽功能
-            setTimeout(() => {
-                initSiteDragAndDrop();
-                initTabDragAndDrop();
-            }, 100);
-            
-            // 标记数据已修改
-            setDataChanged();
-            
-            showAlert('已添加网站: '+siteName, 'success');
         }
         
         // 特殊栏目管理功能
@@ -2367,6 +1986,10 @@
                 
                 addSiteModal.hide();
                 renderSpecialSites();
+                
+                // 标记数据已修改
+                setDataChanged();
+                
                 showAlert('网站已添加到特殊栏目: '+siteName, 'success');
             } else {
                 // 普通添加网站逻辑
@@ -2382,6 +2005,16 @@
                 
                 addSiteModal.hide();
                 renderTabs();
+                
+                // 初始化拖拽功能
+                setTimeout(() => {
+                    initSiteDragAndDrop();
+                    initTabDragAndDrop();
+                }, 100);
+                
+                // 标记数据已修改
+                setDataChanged();
+                
                 showAlert('已添加网站: '+siteName, 'success');
             }
         }
@@ -2408,6 +2041,10 @@
                 
                 editSiteModal.hide();
                 renderSpecialSites();
+                
+                // 标记数据已修改
+                setDataChanged();
+                
                 showAlert('特殊栏目网站已更新: '+siteName, 'success');
             } else {
                 // 普通编辑网站逻辑
@@ -2421,6 +2058,10 @@
                 
                 editSiteModal.hide();
                 renderTabs();
+                
+                // 标记数据已修改
+                setDataChanged();
+                
                 showAlert('网站已更新: '+siteName, 'success');
             }
         }
@@ -3233,118 +2874,6 @@
             return { data: repairedData, repairs };
         }
         // 原始函数实现已被完全替换为上面的新版本
-        
-        function processUploadedFile() {
-            const file = jsonFileInput.files[0];
-            if (!file) {
-                showAlert('请先选择文件', 'warning');
-                return;
-            }
-            
-            // 文件类型验证
-            const validExtensions = ['json'];
-            const fileExtension = file.name.split('.').pop().toLowerCase();
-            if (!validExtensions.includes(fileExtension)) {
-                showAlert('请选择JSON格式的文件', 'danger');
-                addLogEntry('文件类型错误', LOG_TYPES.ERROR, `文件名: ${file.name}, 类型: ${fileExtension}, 支持的类型: ${validExtensions.join(', ')}`);
-                return;
-            }
-            
-            // 文件大小验证
-            const maxFileSize = 1 * 1024 * 1024; // 1MB
-            if (file.size > maxFileSize) {
-                showAlert('文件大小不能超过1MB', 'danger');
-                addLogEntry('文件大小超限', LOG_TYPES.ERROR, `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB, 最大允许: ${(maxFileSize / 1024).toFixed(0)} KB`);
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    // JSON解析错误处理
-                    let uploadedData;
-                    try {
-                        uploadedData = JSON.parse(e.target.result);
-                    } catch (parseError) {
-                        let errorDetail = parseError.message;
-                        // 提供更详细的解析错误信息
-                        if (errorDetail.includes('Unexpected token')) {
-                            const lineNumber = e.target.result.substring(0, parseError.position).split('\n').length;
-                            errorDetail += ` (第${lineNumber}行)`;
-                        }
-                        throw new Error(`JSON解析失败: ${errorDetail}`);
-                    }
-                    
-                    // 数据验证
-                    const validationErrors = validateNavData(uploadedData);
-                    
-                    // 处理验证错误
-                    if (validationErrors.length > 0) {
-                        // 尝试自动修复
-                        const repairResult = repairNavData(uploadedData);
-                        
-                        // 显示修复结果并确认是否使用修复后的数据
-                        const errorMessage = `发现${validationErrors.length}个数据结构错误，已尝试自动修复${repairResult.repairs.length}处`;
-                        showAlert(errorMessage, 'warning');
-                        
-                        // 记录修复信息
-                        addLogEntry('数据验证失败但已尝试修复', LOG_TYPES.WARNING, 
-                            `错误: ${validationErrors.length}个\n修复: ${repairResult.repairs.length}处\n修复详情: ${repairResult.repairs.join('\n')}`);
-                        
-                        // 使用修复后的数据
-                        uploadedData = repairResult.data;
-                    }
-                    
-                    // 使用验证/修复后的数据
-                    navData = uploadedData;
-                    
-                    // 更新界面
-                    try {
-                        renderTabs();
-                        renderSpecialSites();
-                        updateVersionDisplay();
-                        updateSpecialSectionVisibility();
-                        
-                        // 初始化拖拽功能
-                        setTimeout(() => {
-                            initSiteDragAndDrop();
-                            initTabDragAndDrop();
-                        }, 100);
-                        
-                        uploadModal.hide();
-                        showAlert('JSON文件上传成功', 'success');
-                        
-                        // 记录上传成功
-                        addLogEntry('JSON文件上传成功', LOG_TYPES.SUCCESS, 
-                            `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
-                    } catch (renderError) {
-                        throw new Error(`数据上传成功，但渲染界面时出错: ${renderError.message}`);
-                    }
-                } catch (error) {
-                    console.error('处理上传文件失败:', error);
-                    showAlert('处理上传文件失败: ' + error.message, 'danger');
-                    
-                    // 记录详细错误信息
-                    const errorDetails = {
-                        message: error.message,
-                        stack: error.stack,
-                        fileName: file.name,
-                        fileSize: (file.size / 1024).toFixed(2) + ' KB',
-                        timestamp: new Date().toISOString()
-                    };
-                    addLogEntry('文件处理失败', LOG_TYPES.ERROR, JSON.stringify(errorDetails, null, 2));
-                }
-            };
-            
-            reader.onerror = function(error) {
-                const errorMessage = '读取文件失败: ' + (error.target.error ? error.target.error.message : '未知错误');
-                showAlert(errorMessage, 'danger');
-                addLogEntry('文件读取失败', LOG_TYPES.ERROR, 
-                    `文件名: ${file.name}, 错误: ${error.target.error ? error.target.error.name : 'unknown'}`);
-            };
-            
-            reader.readAsText(file);
-        }
         
         // URL错误检查函数
         function checkUrlErrors() {

@@ -1,4 +1,3 @@
-// 简洁版深色模式控制器
 class DarkMode {
     constructor() {
         this.themeKey = 'dark-mode';

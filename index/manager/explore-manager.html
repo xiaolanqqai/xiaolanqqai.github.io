@@ -335,6 +335,10 @@
                 INFO: 'info'
             };
             
+            // 初始化模态框
+            const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));
+            const siteDetailModal = new bootstrap.Modal(document.getElementById('siteDetailModal'));
+            
             // 添加日志条目
             function addLogEntry(type, message, details = '') {
                 const logEntry = {
@@ -701,8 +705,7 @@
                 });
                 
                 // 打开模态框
-                const modal = new bootstrap.Modal(document.getElementById('siteDetailModal'));
-                modal.show();
+                siteDetailModal.show();
                 
                 // 增加访问次数
                 site.visits += 1;
@@ -904,8 +907,7 @@
                     mockSites.unshift(newSite);
                     
                     // 关闭模态框并重置表单
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addSiteModal'));
-                    modal.hide();
+                    addSiteModal.hide();
                     document.getElementById('addSiteForm').reset();
                     
                     // 更新UI

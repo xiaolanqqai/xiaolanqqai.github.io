@@ -541,6 +541,25 @@
             const encryptModal = new bootstrap.Modal(document.getElementById('encryptModal'));
             const githubSyncEncryptModal = new bootstrap.Modal(document.getElementById('githubSyncEncryptModal'));
             
+            // 检查是否是base64
+            function isBase64(str) {
+                try {
+                    // 检查是否只包含base64字符
+                    return /^[A-Za-z0-9+/]*={0,2}$/.test(str) && 
+                           // 检查长度是否是4的倍数
+                           (str.length % 4 === 0);
+                } catch {
+                    return false;
+                }
+            }
+
+            // 检查是否包含二进制数据
+            function containsBinaryData(str) {
+                // 检查是否包含不可打印字符（除了换行符、制表符等常见控制字符）
+                // 或者包含Unicode替换字符（表示解码错误）
+                return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
+            }
+            
             // 全局变量
             let entries = [];
             let draggedItem = null;
@@ -674,22 +693,6 @@
                             // 1. 检查是否以'data:'开头（完整的data URL）
                             // 2. 检查是否看起来是base64编码的内容
                             // 3. 检查是否包含不可打印字符或乱码（可能是二进制加密文件）
-                            function isBase64(str) {
-                                try {
-                                    // 检查是否只包含base64字符
-                                    return /^[A-Za-z0-9+/]*={0,2}$/.test(str) && 
-                                           // 检查长度是否是4的倍数
-                                           (str.length % 4 === 0);
-                                } catch {
-                                    return false;
-                                }
-                            }
-                            
-                            function containsBinaryData(str) {
-                                // 检查是否包含不可打印字符（除了换行符、制表符等常见控制字符）
-                                // 或者包含Unicode替换字符（表示解码错误）
-                                return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
-                            }
                             
                             if (content.startsWith('data:') || isBase64(content) || containsBinaryData(content)) {
                                 isEncryptedFile = true;
@@ -752,22 +755,6 @@
                         // 1. 检查是否以'data:'开头（完整的data URL）
                         // 2. 检查是否看起来是base64编码的内容
                         // 3. 检查是否包含不可打印字符或乱码（可能是二进制加密文件）
-                        function isBase64(str) {
-                            try {
-                                // 检查是否只包含base64字符
-                                return /^[A-Za-z0-9+/]*={0,2}$/.test(str) && 
-                                       // 检查长度是否是4的倍数
-                                       (str.length % 4 === 0);
-                            } catch {
-                                return false;
-                            }
-                        }
-                        
-                        function containsBinaryData(str) {
-                            // 检查是否包含不可打印字符（除了换行符、制表符等常见控制字符）
-                            // 或者包含Unicode替换字符（表示解码错误）
-                            return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
-                        }
                         
                         if (content.startsWith('data:') || isBase64(content) || containsBinaryData(content)) {
                             isEncryptedFile = true;
@@ -903,9 +890,6 @@
                     }
                     
                     // 如果内容包含不可打印字符，可能是二进制数据，尝试转换为base64
-                    function containsBinaryData(str) {
-                        return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
-                    }
                     
                     if (containsBinaryData(encryptedData)) {
                         // 对于二进制数据，我们需要重新以ArrayBuffer读取原始文件

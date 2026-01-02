@@ -46,7 +46,6 @@
 		<div id="password-section" class="mt-10">
 			<div class="password-container mw-500px mx-auto p-4 bg-white rounded-10 shadow-soft">
 				<h3 class="text-center mb-4">解密 MM 数据</h3>
-				<p class="text-center mb-4">请点击四位数图案密码 (A: □, B: △, C: ◇, D: ★)</p>
 				<div class="password-display mb-4" id="password-display">____</div>
 				<div class="pattern-container grid-4 grid-sm-2 gap-15 my-4" id="pattern-container"></div>
 				<div class="error-message" id="error-message"></div>
@@ -98,59 +97,6 @@
 
 		// AES加密解密功能 - 与MM-generator.html保持一致
 		class AESUtil {
-			// AES-256-CBC加密
-			static encrypt(text, password) {
-				const encoder = new TextEncoder();
-				const textData = encoder.encode(text);
-				const passwordData = encoder.encode(password.padEnd(32, ' '));
-				
-				const iv = crypto.getRandomValues(new Uint8Array(16));
-				const salt = crypto.getRandomValues(new Uint8Array(16));
-				
-				return window.crypto.subtle.importKey(
-					'raw',
-					passwordData,
-					{ name: 'PBKDF2' },
-					false,
-					['deriveKey']
-				).then(key => {
-					return window.crypto.subtle.deriveKey(
-						{
-							name: 'PBKDF2',
-							salt: salt,
-							iterations: 100000,
-							hash: 'SHA-256'
-						},
-						key,
-						{
-							name: 'AES-CBC',
-							length: 256
-						},
-						false,
-						['encrypt']
-					);
-				}).then(key => {
-					return window.crypto.subtle.encrypt(
-						{
-							name: 'AES-CBC',
-							iv: iv
-						},
-						key,
-						textData
-					);
-				}).then(encrypted => {
-					const encryptedData = new Uint8Array(encrypted);
-					const totalLength = salt.length + iv.length + encryptedData.length;
-					const combined = new Uint8Array(totalLength);
-					
-					combined.set(salt, 0);
-					combined.set(iv, salt.length);
-					combined.set(encryptedData, salt.length + iv.length);
-					
-					return btoa(String.fromCharCode.apply(null, combined));
-				});
-			}
-			
 			// AES-256-CBC解密
 			static decrypt(encryptedData, password) {
 				const combined = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
