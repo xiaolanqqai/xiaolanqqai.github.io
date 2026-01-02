@@ -48,8 +48,8 @@ var RENDERER = {
 		this.fishes.length = 0;
 		this.watchIds.length = 0;
 		this.intervalCount = this.MAX_INTERVAL_COUNT;
-		this.width = this.$window.width();
-		this.height = this.$window.height();
+		this.width = this.$container.width();
+		this.height = this.$container.height();
 		this.fishCount = this.FISH_COUNT * this.width / 500 * this.height / 500;
 		this.$canvas.attr({width : this.width, height : this.height});
 		this.reverse = false;
@@ -59,8 +59,8 @@ var RENDERER = {
 	},
 	watchWindowSize : function(){
 		this.clearTimer();
-		this.tmpWidth = this.$window.width();
-		this.tmpHeight = this.$window.height();
+		this.tmpWidth = this.$container.width();
+		this.tmpHeight = this.$container.height();
 		this.watchIds.push(setTimeout(this.jdugeToStopResize, this.WATCH_INTERVAL));
 	},
 	clearTimer : function(){
@@ -69,8 +69,8 @@ var RENDERER = {
 		}
 	},
 	jdugeToStopResize : function(){
-		var width = this.$window.width(),
-			height = this.$window.height(),
+		var width = this.$container.width(),
+			height = this.$container.height(),
 			stopped = (width == this.tmpWidth && height == this.tmpHeight);
 			
 		this.tmpWidth = width;
