@@ -173,60 +173,6 @@
         </div>
     </div>
     
-    <!-- 全局加载覆盖层 -->
-    <div id="loadingOverlay" class="loading-overlay d-none">
-        <div class="loading-spinner"></div>
-        <div class="loading-text" id="loadingText">加载中...</div>
-    </div>
-    
-    <style>
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: white;
-        }
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-    
-    <script>
-        function showLoadingOverlay(text = '加载中...') {
-            const overlay = document.getElementById('loadingOverlay');
-            const loadingText = document.getElementById('loadingText');
-            if (overlay && loadingText) {
-                loadingText.textContent = text;
-                overlay.classList.remove('d-none');
-            }
-        }
-        
-        function hideLoadingOverlay() {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.classList.add('d-none');
-            }
-        }
-    </script>
-    
     <!-- 添加网站模态框 -->
     <div class="modal fade" id="addSiteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -326,98 +272,35 @@
     <!-- 探索网页系统JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 操作日志系统
-            const operationLogs = [];
-            const LOG_TYPES = {
-                SUCCESS: 'success',
-                ERROR: 'error',
-                WARNING: 'warning',
-                INFO: 'info'
-            };
-            
             // 初始化模态框
             const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));
             const siteDetailModal = new bootstrap.Modal(document.getElementById('siteDetailModal'));
             
-            // 添加日志条目
-            function addLogEntry(type, message, details = '') {
-                const logEntry = {
-                    timestamp: new Date().toLocaleString('zh-CN'),
-                    type: type,
-                    message: message,
-                    details: details
-                };
-                
-                operationLogs.unshift(logEntry);
-                if (operationLogs.length > 100) operationLogs.pop();
-                renderLogs();
-            }
-            
-            // 渲染日志
-            function renderLogs() {
-                const logContainer = document.getElementById('logContainer');
-                const emptyLogMessage = document.getElementById('emptyLogMessage');
-                if (!logContainer || !emptyLogMessage) return;
-
-                if (operationLogs.length === 0) {
-                    emptyLogMessage.style.display = 'block';
-                    logContainer.innerHTML = '';
-                    return;
-                }
-                
-                emptyLogMessage.style.display = 'none';
-                logContainer.innerHTML = '';
-                
-                operationLogs.forEach(log => {
-                    const logElement = document.createElement('div');
-                    logElement.className = `log-entry ${log.type}`;
-                    logElement.style.padding = '8px';
-                    logElement.style.borderBottom = '1px solid #eee';
-                    logElement.style.fontSize = '12px';
-                    logElement.innerHTML = `
-                        <div style="color: #888;">${log.timestamp}</div>
-                        <div style="font-weight: bold; color: ${log.type === 'error' ? '#dc3545' : log.type === 'success' ? '#28a745' : '#333'};">${log.message}</div>
-                        ${log.details ? `<div style="color: #666;">${log.details}</div>` : ''}
-                    `;
-                    logContainer.appendChild(logElement);
+            // 清空日志
+            const clearLogsBtn = document.getElementById('clearLogsBtn');
+            if (clearLogsBtn) {
+                clearLogsBtn.addEventListener('click', () => {
+                    if (confirm('确定要清空所有操作日志吗？')) {
+                        common.clearLogs();
+                    }
                 });
             }
-
-            // 清空日志
-            document.getElementById('clearLogsBtn').addEventListener('click', () => {
-                operationLogs.length = 0;
-                renderLogs();
-            });
 
             // GitHub 相关逻辑
             const syncToGithubBtn = document.getElementById('syncToGithubBtn');
 
             // 同步到 GitHub
             syncToGithubBtn.addEventListener('click', async function() {
+                if (!common) return;
                 try {
-                    showLoadingOverlay('正在同步到 GitHub...');
                     const data = {
                         sites: mockSites,
                         favorites: favorites,
                         lastUpdated: new Date().toISOString()
                     };
-                    const dataStr = JSON.stringify(data, null, 2);
-                    const path = 'data/explore-data.json';
-                    
-                    const result = await window.githubHelper.updateFile(
-                        path, 
-                        dataStr, 
-                        `Update explore-data.json via Web Manager (${new Date().toLocaleString()})`
-                    );
-                    
-                    hideLoadingOverlay();
-                    showToast('数据已成功同步到 GitHub！');
-                    addLogEntry(LOG_TYPES.SUCCESS, 'GitHub 同步成功', `提交 SHA: ${result.content.sha}`);
+                    await common.syncToGithub('data/explore-data.json', data);
                 } catch (error) {
-                    hideLoadingOverlay();
-                    console.error('GitHub 同步失败:', error);
-                    showToast('同步失败: ' + error.message, 'error');
-                    addLogEntry(LOG_TYPES.ERROR, 'GitHub 同步失败', error.message);
+                    // 错误已由 common.syncToGithub 处理
                 }
             });
 
@@ -445,13 +328,13 @@
                         renderTrendingList(mockSites);
                         renderFavorites();
                         
-                        addLogEntry(LOG_TYPES.SUCCESS, '从 GitHub 加载数据成功');
+                        common.log('从 GitHub 加载数据成功', 'success');
                     }
                 } catch (error) {
                     console.error('从 GitHub 加载数据失败:', error);
                     // 如果文件不存在，这是正常的（第一次同步前）
                     if (error.status !== 404) {
-                        addLogEntry(LOG_TYPES.ERROR, '从 GitHub 加载数据失败', error.message);
+                        common.log('从 GitHub 加载数据失败', 'error', error.message);
                     }
                 }
             }
@@ -718,11 +601,11 @@
                 if (index === -1) {
                     // 添加到收藏
                     favorites.push(site);
-                    showToast(`已将${site.name}添加到收藏`);
+                    common.showAlert(`已将${site.name}添加到收藏`);
                 } else {
                     // 从收藏中移除
                     favorites.splice(index, 1);
-                    showToast(`已从收藏中移除${site.name}`);
+                    common.showAlert(`已从收藏中移除${site.name}`);
                 }
                 
                 // 保存到本地存储
@@ -738,7 +621,7 @@
             function removeFavorite(siteId) {
                 favorites = favorites.filter(fav => fav.id !== siteId);
                 localStorage.setItem('explore-favorites', JSON.stringify(favorites));
-                showToast('已从收藏中移除');
+                common.showAlert('已从收藏中移除');
             }
             
             // 更新所有收藏图标的状态
@@ -869,7 +752,7 @@
                         loadMoreButton.innerHTML = '<i class="fas fa-spinner"></i> 加载更多';
                         loadMoreButton.disabled = true;
                         loadMoreButton.textContent = '没有更多了';
-                        showToast('已加载更多推荐网站');
+                        common.showAlert('已加载更多推荐网站');
                     }, 1500);
                 });
             }
@@ -886,7 +769,7 @@
                     const imageUrl = document.getElementById('siteImageUrl').value.trim();
                     
                     if (!name || !url || !description || !category) {
-                        showToast('请填写所有必填字段', 'error');
+                        common.showAlert('请填写所有必填字段', 'error');
                         return;
                     }
                     
@@ -914,35 +797,9 @@
                     renderDiscoverCards(mockSites);
                     renderTrendingList(mockSites);
                     
-                    showToast(`已成功添加网站: ${name}`);
-                    addLogEntry(LOG_TYPES.SUCCESS, '添加了新网站', `名称: ${name}, 分类: ${category}`);
+                    common.showAlert(`已成功添加网站: ${name}`);
+                    common.log('添加了新网站', 'success', `名称: ${name}, 分类: ${category}`);
                 });
-            }
-            
-            // 显示提示信息
-            function showToast(message, type = 'success') {
-                // 创建提示元素
-                const toast = document.createElement('div');
-                toast.className = `feedback-toast ${type}`;
-                toast.textContent = message;
-                
-                // 添加到文档
-                document.body.appendChild(toast);
-                
-                // 显示提示
-                setTimeout(() => {
-                    toast.classList.add('show');
-                }, 10);
-                
-                // 自动关闭
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        if (document.body.contains(toast)) {
-                            document.body.removeChild(toast);
-                        }
-                    }, 300);
-                }, 3000);
             }
             
             // 初始化标签页切换
@@ -974,18 +831,12 @@
                 loadFromGithub();
                 
                 // 显示欢迎消息
-                showToast('欢迎使用探索网页系统！发现有趣的网站，开拓您的网络视野。');
-                addLogEntry(LOG_TYPES.INFO, '探索网页系统已加载');
+                common.showAlert('欢迎使用探索网页系统！发现有趣的网站，开拓您的网络视野。');
+                common.log('探索网页系统已加载', 'info');
             }
             
             // 启动应用
             init();
-            
-            // 注册页面日志
-            if (window.ManagerCommon && window.ManagerCommon.prototype.log) {
-                const managerCommon = new ManagerCommon();
-                managerCommon.log('探索网页系统已加载', 'info');
-            }
         });
     </script>
     

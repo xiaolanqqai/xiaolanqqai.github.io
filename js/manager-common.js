@@ -3,7 +3,12 @@
 class ManagerCommon {
     constructor() {
         this.logContainer = null;
-        this.maxLogs = 50;
+        this.maxLogs = 100; // 增加日志限制
+        this.config = {
+            iconPrefix: 'https://api.afmax.cn/so/ico/index.php?r=',
+            defaultIcon: '../../img/index.png',
+            corsProxy: 'https://api.allorigins.win/raw?url='
+        };
         this.init();
     }
 
@@ -15,9 +20,11 @@ class ManagerCommon {
         this.initErrorHandling();
         
         // 延迟初始化日志系统，确保DOM已加载
-        setTimeout(() => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initLogSystem());
+        } else {
             this.initLogSystem();
-        }, 100);
+        }
     }
 
 
@@ -74,33 +81,73 @@ class ManagerCommon {
 
     // 初始化日志系统
     initLogSystem() {
-        // 检查是否存在日志容器
-        this.logContainer = document.getElementById('log-container');
+        // 检查是否存在日志容器 (尝试寻找 ID 为 logContainer 或 log-container 的元素)
+        this.logContainer = document.getElementById('logContainer') || document.getElementById('log-container');
         
-        // 如果没有日志容器，尝试创建一个默认的
-        if (!this.logContainer) {
-            const logSection = document.createElement('div');
-            logSection.className = 'manager-card';
-            logSection.style.display = 'none'; // 默认隐藏
+        // 如果没有日志容器，且页面没有显式禁用日志系统，则尝试创建一个
+        if (!this.logContainer && !document.querySelector('[data-no-log-system]')) {
+            // 检查是否有 offcanvas 日志容器
+            const offcanvasBody = document.querySelector('#logOffcanvas .offcanvas-body');
+            if (offcanvasBody) {
+                this.logContainer = document.createElement('div');
+                this.logContainer.id = 'logContainer';
+                this.logContainer.className = 'log-container-shared';
+                offcanvasBody.insertBefore(this.logContainer, offcanvasBody.firstChild);
+            }
+        }
+
+        // 绑定清空日志按钮
+        const clearBtn = document.getElementById('clearLogsBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => this.clearLogs());
+        }
+    }
+
+    // 清空日志
+    clearLogs() {
+        if (this.logContainer) {
+            this.logContainer.innerHTML = '';
+            this.log('日志已清空', 'info');
+        }
+    }
+
+    // 共享工具：从 URL 获取网站标题
+    async fetchWebsiteTitle(url) {
+        try {
+            const proxyUrl = this.config.corsProxy + encodeURIComponent(url);
+            const response = await fetch(proxyUrl, {
+                method: 'GET',
+                headers: { 'Accept': 'text/html' }
+            });
             
-            const logHeader = document.createElement('div');
-            logHeader.className = 'manager-card-header';
-            logHeader.textContent = '操作日志';
-            
-            const logBody = document.createElement('div');
-            logBody.className = 'manager-card-body';
-            
-            this.logContainer = document.createElement('div');
-            this.logContainer.id = 'log-container';
-            this.logContainer.className = 'log-container';
-            
-            logBody.appendChild(this.logContainer);
-            logSection.appendChild(logHeader);
-            logSection.appendChild(logBody);
-            
-            // 将日志部分添加到页面底部
-            const mainContent = document.querySelector('.container-main') || document.body;
-            mainContent.appendChild(logSection);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const html = await response.text();
+            const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+            return titleMatch && titleMatch[1] ? titleMatch[1].trim().replace(/[\t\n\r]+/g, ' ') : null;
+        } catch (error) {
+            console.error('获取网站标题失败:', error);
+            return null;
+        }
+    }
+
+    // 共享工具：从 URL 提取网站名称
+    async extractSiteNameFromUrl(url) {
+        const title = await this.fetchWebsiteTitle(url);
+        if (title) return title.length > 30 ? title.substring(0, 30) + '...' : title;
+        
+        try {
+            const urlObj = new URL(url);
+            let hostname = urlObj.hostname.replace(/^www\./, '');
+            const parts = hostname.split('.');
+            if (parts.length >= 2) {
+                if (parts.length >= 3 && ['cn', 'net', 'org'].includes(parts[parts.length-1])) {
+                    return parts[parts.length-3];
+                }
+                return parts[parts.length-2];
+            }
+            return hostname;
+        } catch (e) {
+            return url.replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '').split('.')[0];
         }
     }
 
@@ -194,6 +241,11 @@ class ManagerCommon {
         }
     }
 
+    // 显示提示信息 (别名)
+    showAlert(message, type = 'info', duration = 3000) {
+        this.showToast(message, type, duration);
+    }
+
     // 显示提示信息
     showToast(message, type = 'info', duration = 3000) {
         // 创建提示元素
@@ -216,6 +268,16 @@ class ManagerCommon {
                 toast.remove();
             }, 300);
         }, duration);
+    }
+
+    // 显示加载指示器 (别名)
+    showLoadingOverlay(message = '加载中...') {
+        this.showLoading(message);
+    }
+
+    // 隐藏加载指示器 (别名)
+    hideLoadingOverlay() {
+        this.hideLoading();
     }
 
     // 显示加载指示器
@@ -326,6 +388,165 @@ class ManagerCommon {
                 setTimeout(() => inThrottle = false, limit);
             }
         };
+    }
+
+    // Cookie 管理工具
+    static Cookie = {
+        set(name, value, days) {
+            let expires = '';
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = '; expires=' + date.toUTCString();
+            }
+            document.cookie = name + '=' + (value || '')  + expires + '; path=/';
+        },
+        
+        get(name) {
+            const nameEQ = name + '=';
+            const ca = document.cookie.split(';');
+            for(let i=0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        },
+
+        delete(name) {
+            this.set(name, '', -1);
+        }
+    };
+
+    // AES 加密解密工具
+    static AES = {
+        // AES-256-CBC加密
+        async encrypt(text, password) {
+            const encoder = new TextEncoder();
+            const textData = encoder.encode(text);
+            const passwordData = encoder.encode(password.padEnd(32, ' '));
+            
+            const iv = crypto.getRandomValues(new Uint8Array(16));
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            
+            const key = await window.crypto.subtle.importKey(
+                'raw',
+                passwordData,
+                { name: 'PBKDF2' },
+                false,
+                ['deriveKey']
+            );
+
+            const derivedKey = await window.crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                key,
+                {
+                    name: 'AES-CBC',
+                    length: 256
+                },
+                false,
+                ['encrypt']
+            );
+
+            const encrypted = await window.crypto.subtle.encrypt(
+                {
+                    name: 'AES-CBC',
+                    iv: iv
+                },
+                derivedKey,
+                textData
+            );
+
+            const encryptedData = new Uint8Array(encrypted);
+            const totalLength = salt.length + iv.length + encryptedData.length;
+            const combined = new Uint8Array(totalLength);
+            
+            combined.set(salt, 0);
+            combined.set(iv, salt.length);
+            combined.set(encryptedData, salt.length + iv.length);
+            
+            return btoa(String.fromCharCode.apply(null, combined));
+        },
+        
+        // AES-256-CBC解密
+        async decrypt(encryptedData, password) {
+            const combined = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
+            const salt = combined.slice(0, 16);
+            const iv = combined.slice(16, 32);
+            const encrypted = combined.slice(32);
+            
+            const encoder = new TextEncoder();
+            const passwordData = encoder.encode(password.padEnd(32, ' '));
+            
+            const key = await window.crypto.subtle.importKey(
+                'raw',
+                passwordData,
+                { name: 'PBKDF2' },
+                false,
+                ['deriveKey']
+            );
+
+            const derivedKey = await window.crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                key,
+                {
+                    name: 'AES-CBC',
+                    length: 256
+                },
+                false,
+                ['decrypt']
+            );
+
+            const decrypted = await window.crypto.subtle.decrypt(
+                {
+                    name: 'AES-CBC',
+                    iv: iv
+                },
+                derivedKey,
+                encrypted
+            );
+
+            const decoder = new TextDecoder();
+            return decoder.decode(decrypted);
+        }
+    };
+
+    // GitHub 同步助手
+    async syncToGithub(path, data, commitMessage = null) {
+        if (!window.githubHelper) {
+            this.handleError(new Error('GitHub API Helper 未加载'), 'GitHub 同步');
+            return null;
+        }
+
+        const message = commitMessage || `Update ${path} via Web Manager (${new Date().toLocaleString()})`;
+        
+        try {
+            this.showLoading(`正在同步 ${path} 到 GitHub...`);
+            this.log(`开始同步到 GitHub: ${path}`, 'info');
+
+            const dataStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            const result = await window.githubHelper.updateFile(path, dataStr, message);
+
+            this.hideLoading();
+            this.showToast('数据已成功同步到 GitHub 仓库！', 'success');
+            this.log('GitHub 同步成功', 'success', `文件: ${path}, SHA: ${result.content.sha}`);
+            
+            return result;
+        } catch (error) {
+            this.hideLoading();
+            this.handleError(error, 'GitHub 同步');
+            throw error;
+        }
     }
 }
 

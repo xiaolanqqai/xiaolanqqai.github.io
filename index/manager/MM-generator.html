@@ -273,133 +273,6 @@
 
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
-        // AES加密解密功能
-        class AESUtil {
-            // AES-256-CBC加密
-            static encrypt(text, password) {
-                const encoder = new TextEncoder();
-                const textData = encoder.encode(text);
-                const passwordData = encoder.encode(password.padEnd(32, ' '));
-                
-                const iv = crypto.getRandomValues(new Uint8Array(16));
-                const salt = crypto.getRandomValues(new Uint8Array(16));
-                
-                return window.crypto.subtle.importKey(
-                    'raw',
-                    passwordData,
-                    { name: 'PBKDF2' },
-                    false,
-                    ['deriveKey']
-                ).then(key => {
-                    return window.crypto.subtle.deriveKey(
-                        {
-                            name: 'PBKDF2',
-                            salt: salt,
-                            iterations: 100000,
-                            hash: 'SHA-256'
-                        },
-                        key,
-                        {
-                            name: 'AES-CBC',
-                            length: 256
-                        },
-                        false,
-                        ['encrypt']
-                    );
-                }).then(key => {
-                    return window.crypto.subtle.encrypt(
-                        {
-                            name: 'AES-CBC',
-                            iv: iv
-                        },
-                        key,
-                        textData
-                    );
-                }).then(encrypted => {
-                    const encryptedData = new Uint8Array(encrypted);
-                    const totalLength = salt.length + iv.length + encryptedData.length;
-                    const combined = new Uint8Array(totalLength);
-                    
-                    combined.set(salt, 0);
-                    combined.set(iv, salt.length);
-                    combined.set(encryptedData, salt.length + iv.length);
-                    
-                    return btoa(String.fromCharCode.apply(null, combined));
-                });
-            }
-            
-            // AES-256-CBC解密
-            static decrypt(encryptedData, password) {
-                const combined = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
-                const salt = combined.slice(0, 16);
-                const iv = combined.slice(16, 32);
-                const encrypted = combined.slice(32);
-                
-                const encoder = new TextEncoder();
-                const passwordData = encoder.encode(password.padEnd(32, ' '));
-                
-                return window.crypto.subtle.importKey(
-                    'raw',
-                    passwordData,
-                    { name: 'PBKDF2' },
-                    false,
-                    ['deriveKey']
-                ).then(key => {
-                    return window.crypto.subtle.deriveKey(
-                        {
-                            name: 'PBKDF2',
-                            salt: salt,
-                            iterations: 100000,
-                            hash: 'SHA-256'
-                        },
-                        key,
-                        {
-                            name: 'AES-CBC',
-                            length: 256
-                        },
-                        false,
-                        ['decrypt']
-                    );
-                }).then(key => {
-                    return window.crypto.subtle.decrypt(
-                        {
-                            name: 'AES-CBC',
-                            iv: iv
-                        },
-                        key,
-                        encrypted
-                    );
-                }).then(decrypted => {
-                    const decoder = new TextDecoder();
-                    return decoder.decode(decrypted);
-                });
-            }
-        }
-        
-        // Cookie管理工具
-        class CookieUtil {
-            static set(name, value, days) {
-                let expires = '';
-                if (days) {
-                    const date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    expires = '; expires=' + date.toUTCString();
-                }
-                document.cookie = name + '=' + (value || '')  + expires + '; path=/';
-            }
-            
-            static get(name) {
-                const nameEQ = name + '=';
-                const ca = document.cookie.split(';');
-                for(let i=0; i < ca.length; i++) {
-                    let c = ca[i];
-                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-                }
-                return null;
-            }
-        }
-        
         // 图案密码工具
         class PatternPassword {
             constructor(modalType) {
@@ -451,7 +324,7 @@
                         // 解密时需要检查密码
                         if (this.modalType === 'decrypt') {
                             // 检查是否达到最大尝试次数
-                            const errorCount = parseInt(CookieUtil.get('mmks') || 0);
+                            const errorCount = parseInt(ManagerCommon.Cookie.get('mmks') || 0);
                             if (errorCount >= 3) {
                                 document.getElementById('decryptError').textContent = '密码错误次数过多，请24小时后再试！';
                                 return;
@@ -481,12 +354,13 @@
             reset() {
                 this.password = [];
                 this.updateUI();
-                document.getElementById(`${this.modalType}Error`).textContent = '';
+                const errorEl = document.getElementById(`${this.modalType}Error`);
+                if (errorEl) errorEl.textContent = '';
             }
             
             // 根据日期打乱图案顺序（仅解密时使用）
-            static shufflePatterns() {
-                if (this.modalType !== 'decrypt') return;
+            static shufflePatterns(modalType) {
+                if (modalType !== 'decrypt') return;
                 
                 const patterns = ['A', 'B', 'C', 'D'];
                 const today = new Date();
@@ -501,15 +375,19 @@
                 
                 // 更新按钮顺序
                 const patternButtons = document.querySelectorAll('.pattern-btn');
+                if (patternButtons.length === 0) return;
+                
                 const parent = patternButtons[0].parentElement;
                 
                 // 移除所有按钮
-                patternButtons.forEach(btn => parent.removeChild(btn));
+                patternButtons.forEach(btn => {
+                    if (parent.contains(btn)) parent.removeChild(btn);
+                });
                 
                 // 重新添加按钮（打乱顺序）
                 patterns.forEach(pattern => {
                     const btn = document.getElementById(`pattern${pattern}`);
-                    parent.appendChild(btn);
+                    if (btn) parent.appendChild(btn);
                 });
             }
         }
@@ -535,136 +413,82 @@
             const saveEditBtn = document.getElementById('saveEditBtn');
             const cancelEditBtn = document.getElementById('cancelEditBtn');
             const clearLogsBtn = document.getElementById('clearLogsBtn');
-            const logContainer = document.getElementById('logContainer');
-            const emptyLogMessage = document.getElementById('emptyLogMessage');
             const decryptModal = new bootstrap.Modal(document.getElementById('decryptModal'));
             const encryptModal = new bootstrap.Modal(document.getElementById('encryptModal'));
             const githubSyncEncryptModal = new bootstrap.Modal(document.getElementById('githubSyncEncryptModal'));
-            
-            // 检查是否是base64
-            function isBase64(str) {
-                try {
-                    // 检查是否只包含base64字符
-                    return /^[A-Za-z0-9+/]*={0,2}$/.test(str) && 
-                           // 检查长度是否是4的倍数
-                           (str.length % 4 === 0);
-                } catch {
-                    return false;
-                }
-            }
 
-            // 检查是否包含二进制数据
-            function containsBinaryData(str) {
-                // 检查是否包含不可打印字符（除了换行符、制表符等常见控制字符）
-                // 或者包含Unicode替换字符（表示解码错误）
-                return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
-            }
-            
-            // 全局变量
-            let entries = [];
-            let draggedItem = null;
-            let currentFileName = '';
-            let editingIndex = -1;
-            let currentFileContent = '';
-            let isEncryptedFile = false;
-            let currentFileArrayBuffer = null; // 保存网络加载的原始ArrayBuffer
-            
-            // 固定的URL地址
-            const FIXED_URL = '/data/MM.json';
-            
-            // 图案密码实例
-            let decryptPatternPassword = new PatternPassword('decrypt');
-            let encryptPatternPassword = new PatternPassword('encrypt');
-            let syncEncryptPatternPassword = new PatternPassword('syncEncrypt');
-            
-            // 快捷输入按钮事件处理
-            document.querySelectorAll('.quick-insert-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    const input = document.getElementById('passwordPattern');
-                    input.value = input.value + value;
-                    input.focus();
-                });
-            });
-            
-            document.querySelectorAll('.quick-insert-btn-edit').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const value = this.getAttribute('data-value');
-                    const input = document.getElementById('editPasswordPattern');
-                    input.value = input.value + value;
-                    input.focus();
-                });
-            });
-            
-            // 操作日志系统
-            const operationLogs = [];
-            const LOG_TYPES = {
-                SUCCESS: 'success',
-                ERROR: 'error',
-                WARNING: 'warning',
-                INFO: 'info'
-            };
-            
-            // 添加日志条目
-            function addLogEntry(type, message, details = '') {
-                const logEntry = {
-                    timestamp: new Date().toLocaleString('zh-CN'),
-                    type: type,
-                    message: message,
-                    details: details
-                };
-                
-                operationLogs.unshift(logEntry); // 最新的日志在最前面
-                
-                // 限制日志数量
-                if (operationLogs.length > 100) {
-                    operationLogs.pop();
-                }
-                
-                renderLogs();
-            }
-            
-            // 渲染日志
-            function renderLogs() {
-                if (operationLogs.length === 0) {
-                    emptyLogMessage.style.display = 'block';
-                    logContainer.innerHTML = '';
-                    return;
-                }
-                
-                emptyLogMessage.style.display = 'none';
-                logContainer.innerHTML = '';
-                
-                operationLogs.forEach(log => {
-                    const logElement = document.createElement('div');
-                    logElement.className = `log-entry ${log.type}`;
-                    logElement.innerHTML = `
-                        <div class="log-time">${log.timestamp}</div>
-                        <div class="log-message">${log.message}</div>
-                        ${log.details ? `<div class="log-details">${log.details}</div>` : ''}
-                    `;
-                    logContainer.appendChild(logElement);
-                });
-            }
-            
-            // 清空所有日志
-            function clearAllLogs() {
-                operationLogs.length = 0;
-                renderLogs();
-                addLogEntry(LOG_TYPES.INFO, '操作日志已清空');
-            }
-            
             // 绑定日志清除按钮事件
-            clearLogsBtn.addEventListener('click', clearAllLogs);
+            if (clearLogsBtn) {
+                clearLogsBtn.addEventListener('click', () => {
+                    common.clearLogs();
+                    common.log('操作日志已清空', 'info');
+                });
+            }
             
             // 页面加载时添加初始日志
-            addLogEntry(LOG_TYPES.INFO, '密码生成器系统启动');
+             common.log('密码生成器系统启动', 'info');
+         });
+ 
+         // 检查是否是base64
+         function isBase64(str) {
+             try {
+                 // 检查是否只包含base64字符
+                 return /^[A-Za-z0-9+/]*={0,2}$/.test(str) && 
+                        // 检查长度是否是4的倍数
+                        (str.length % 4 === 0);
+             } catch {
+                 return false;
+             }
+         }
+
+         // 检查是否包含二进制数据
+         function containsBinaryData(str) {
+             // 检查是否包含不可打印字符（除了换行符、制表符等常见控制字符）
+             // 或者包含Unicode替换字符（表示解码错误）
+             return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\ufffd]/.test(str);
+         }
+         
+         // 全局变量
+         let entries = [];
+         let draggedItem = null;
+         let currentFileName = '';
+         let editingIndex = -1;
+         let currentFileContent = '';
+         let isEncryptedFile = false;
+         let currentFileArrayBuffer = null; // 保存网络加载的原始ArrayBuffer
+         
+         // 固定的URL地址
+         const FIXED_URL = '/data/MM.json';
+         
+         // 图案密码实例
+         let decryptPatternPassword = new PatternPassword('decrypt');
+         let encryptPatternPassword = new PatternPassword('encrypt');
+         let syncEncryptPatternPassword = new PatternPassword('syncEncrypt');
+         
+         // 快捷输入按钮事件处理
+         document.querySelectorAll('.quick-insert-btn').forEach(btn => {
+             btn.addEventListener('click', function() {
+                 const value = this.getAttribute('data-value');
+                 const input = document.getElementById('passwordPattern');
+                 input.value = input.value + value;
+                 input.focus();
+             });
+         });
+         
+         document.querySelectorAll('.quick-insert-btn-edit').forEach(btn => {
+             btn.addEventListener('click', function() {
+                 const value = this.getAttribute('data-value');
+                 const input = document.getElementById('editPasswordPattern');
+                 input.value = input.value + value;
+                 input.focus();
+             });
+         });
             
             // 上传按钮点击事件
             uploadBtn.addEventListener('click', function() {
                 console.log('上传按钮被点击');
                 fileInput.click();
-                addLogEntry(LOG_TYPES.INFO, '点击了文件上传按钮');
+                common.log('点击了文件上传按钮', 'info');
             });
             
             // 文件选择事件
@@ -677,7 +501,7 @@
                     fileInfo.textContent = `已选择文件: ${file.name} (${formatFileSize(file.size)})`;
                     
                     // 记录开始加载
-                    addLogEntry(LOG_TYPES.INFO, '开始加载文件', `文件名: ${file.name}, 文件大小: ${formatFileSize(file.size)}, 来源: 本地上传`);
+                    common.log('开始加载文件', 'info', `文件名: ${file.name}, 文件大小: ${formatFileSize(file.size)}, 来源: 本地上传`);
                     
                     const reader = new FileReader();
                     
@@ -690,10 +514,6 @@
                             currentFileContent = content;
                             
                             // 检查是否是加密文件
-                            // 1. 检查是否以'data:'开头（完整的data URL）
-                            // 2. 检查是否看起来是base64编码的内容
-                            // 3. 检查是否包含不可打印字符或乱码（可能是二进制加密文件）
-                            
                             if (content.startsWith('data:') || isBase64(content) || containsBinaryData(content)) {
                                 isEncryptedFile = true;
                                 showDecryptModal();
@@ -705,23 +525,21 @@
                                 uploadSection.classList.add('d-none');
                                 mainContent.classList.remove('d-none');
                                 mainContent.classList.add('d-flex');
-                                addLogEntry(LOG_TYPES.SUCCESS, `文件上传成功`, `文件名: ${file.name}, 解析出 ${entries.length} 个条目, 来源: 本地上传`);
+                                common.log('文件上传成功', 'success', `文件名: ${file.name}, 解析出 ${entries.length} 个条目, 来源: 本地上传`);
                             }
                         } catch (error) {
                             console.error('文件解析失败:', error);
-                            alert('文件解析失败: ' + error.message);
+                            common.showAlert('文件解析失败: ' + error.message, 'danger');
                             fileInfo.textContent = '文件解析失败，请选择有效的文件';
-                            addLogEntry(LOG_TYPES.ERROR, `文件解析失败`, `文件名: ${file.name}, 错误信息: ${error.message}, 来源: 本地上传`);
+                            common.log('文件解析失败', 'error', `文件名: ${file.name}, 错误信息: ${error.message}, 来源: 本地上传`);
                         }
                     };
                     reader.onerror = function() {
                         console.error('文件读取错误');
                         fileInfo.textContent = '文件读取错误，请重试';
-                        addLogEntry(LOG_TYPES.ERROR, '文件读取失败', `文件名: ${file.name}, 无法读取选定的文件, 来源: 本地上传`);
+                        common.log('文件读取失败', 'error', `文件名: ${file.name}, 无法读取选定的文件, 来源: 本地上传`);
                     };
                     reader.readAsArrayBuffer(file);
-                } else {
-                    console.log('未选择文件');
                 }
             });
             
@@ -734,7 +552,7 @@
                 currentFileName = 'MM.json';
                 
                 // 记录开始加载
-                addLogEntry(LOG_TYPES.INFO, '开始从网络加载文件', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 来源: 网络加载`);
+                common.log('开始从网络加载文件', 'info', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 来源: 网络加载`);
                 
                 console.log('开始从URL加载文件:', FIXED_URL);
                 fetch(FIXED_URL)
@@ -752,10 +570,6 @@
                         currentFileArrayBuffer = arrayBuffer; // 保存原始ArrayBuffer
                         
                         // 检查是否是加密文件
-                        // 1. 检查是否以'data:'开头（完整的data URL）
-                        // 2. 检查是否看起来是base64编码的内容
-                        // 3. 检查是否包含不可打印字符或乱码（可能是二进制加密文件）
-                        
                         if (content.startsWith('data:') || isBase64(content) || containsBinaryData(content)) {
                             isEncryptedFile = true;
                             showDecryptModal();
@@ -769,7 +583,7 @@
                             mainContent.classList.add('d-flex');
                             
                             // 记录成功加载
-                            addLogEntry(LOG_TYPES.SUCCESS, '网络文件加载成功', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 解析出 ${entries.length} 个条目, 来源: 网络加载`);
+                            common.log('网络文件加载成功', 'success', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 解析出 ${entries.length} 个条目, 来源: 网络加载`);
                         }
                     })
                     .catch(error => {
@@ -777,7 +591,7 @@
                         urlError.textContent = `加载失败: ${error.message}`;
                         
                         // 记录加载失败
-                        addLogEntry(LOG_TYPES.ERROR, '网络文件加载失败', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 错误信息: ${error.message}, 来源: 网络加载`);
+                        common.log('网络文件加载失败', 'error', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 错误信息: ${error.message}, 来源: 网络加载`);
                     })
                     .finally(() => {
                         console.log('加载完成');
@@ -804,8 +618,8 @@
                     console.log(`JSON解析完成，找到 ${entries.length} 个条目`);
                 } catch (jsonError) {
                     console.error('JSON解析失败:', jsonError);
-                    alert('JSON文件解析失败: ' + jsonError.message);
-                    addLogEntry(LOG_TYPES.ERROR, 'JSON文件解析失败', `错误信息: ${jsonError.message}`);
+                    common.showAlert('JSON文件解析失败: ' + jsonError.message, 'danger');
+                    common.log('JSON文件解析失败', 'error', `错误信息: ${jsonError.message}`);
                     return;
                 }
                 
@@ -841,7 +655,7 @@
                         entries[editingIndex] = { platform, accountType, passwordPattern };
                         renderEntriesList();
                         cancelEdit();
-                        addLogEntry(LOG_TYPES.SUCCESS, '保存了条目编辑', `平台: ${oldEntry.platform} → ${platform}, 账号: ${oldEntry.accountType} → ${accountType}`);
+                        common.log('保存了条目编辑', 'success', `平台: ${oldEntry.platform} → ${platform}, 账号: ${oldEntry.accountType} → ${accountType}`);
                     }
                 }
             });
@@ -876,7 +690,7 @@
                 }
                 
                 try {
-                    const errorCount = parseInt(CookieUtil.get('mmks') || 0);
+                    const errorCount = parseInt(ManagerCommon.Cookie.get('mmks') || 0);
                     if (errorCount >= 3) {
                         document.getElementById('decryptError').textContent = '密码错误次数过多，请24小时后再试！';
                         return;
@@ -906,7 +720,7 @@
                                     const base64Data = btoa(binaryStr);
                                     
                                     // 重新解密
-                                    AESUtil.decrypt(base64Data, password)
+                                    ManagerCommon.AES.decrypt(base64Data, password)
                                         .then(decryptedContent => {
                                             // 解析解密后的内容
                                             parseFileContent(decryptedContent);
@@ -921,9 +735,9 @@
                                             decryptPatternPassword.reset();
                                             
                                             // 清除错误计数
-                                            CookieUtil.set('mmks', '0', 1);
+                                            ManagerCommon.Cookie.set('mmks', '0', 1);
                                             
-                                            addLogEntry(LOG_TYPES.SUCCESS, '文件解密成功', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
+                                            common.log('文件解密成功', 'success', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
                                         })
                                         .catch(error => {
                                             handleDecryptError(error);
@@ -942,7 +756,7 @@
                             const base64Data = btoa(binaryStr);
                             
                             // 重新解密
-                            AESUtil.decrypt(base64Data, password)
+                            ManagerCommon.AES.decrypt(base64Data, password)
                                 .then(decryptedContent => {
                                     // 解析解密后的内容
                                     parseFileContent(decryptedContent);
@@ -957,9 +771,9 @@
                                     decryptPatternPassword.reset();
                                     
                                     // 清除错误计数
-                                    CookieUtil.set('mmks', '0', 1);
+                                    ManagerCommon.Cookie.set('mmks', '0', 1);
                                     
-                                    addLogEntry(LOG_TYPES.SUCCESS, '文件解密成功', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
+                                    common.log('文件解密成功', 'success', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
                                 })
                                 .catch(error => {
                                     handleDecryptError(error);
@@ -972,14 +786,14 @@
                     }
                     
                     // 正常解密
-                    const decryptedContent = await AESUtil.decrypt(encryptedData, password);
+                    const decryptedContent = await ManagerCommon.AES.decrypt(encryptedData, password);
                     
                     function handleDecryptError(error) {
                         console.error('解密失败:', error);
                         
                         // 增加错误计数
-                        const errorCount = parseInt(CookieUtil.get('mmks') || 0) + 1;
-                        CookieUtil.set('mmks', errorCount.toString(), 1);
+                        const errorCount = parseInt(ManagerCommon.Cookie.get('mmks') || 0) + 1;
+                        ManagerCommon.Cookie.set('mmks', errorCount.toString(), 1);
                         
                         document.getElementById('decryptError').textContent = '密码错误，请重试！';
                         decryptPatternPassword.reset();
@@ -1000,7 +814,7 @@
                                 }, 3000);
                             });
                         
-                        addLogEntry(LOG_TYPES.ERROR, '文件解密失败', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
+                        common.log('文件解密失败', 'error', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
                         
                         // 显示错误提示
                         if (errorCount >= 3) {
@@ -1021,20 +835,20 @@
                     decryptPatternPassword.reset();
                     
                     // 清除错误计数
-                    CookieUtil.set('mmks', '0', 1);
+                    ManagerCommon.Cookie.set('mmks', '0', 1);
                     
-                    addLogEntry(LOG_TYPES.SUCCESS, '文件解密成功', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
+                    common.log('文件解密成功', 'success', `文件名: ${currentFileName}, 解析出 ${entries.length} 个条目`);
                 } catch (error) {
                     console.error('解密失败:', error);
                     
                     // 增加错误计数
-                    const errorCount = parseInt(CookieUtil.get('mmks') || 0) + 1;
-                    CookieUtil.set('mmks', errorCount.toString(), 1);
+                    const errorCount = parseInt(ManagerCommon.Cookie.get('mmks') || 0) + 1;
+                    ManagerCommon.Cookie.set('mmks', errorCount.toString(), 1);
                     
                     document.getElementById('decryptError').textContent = '密码错误，请重试！';
                     decryptPatternPassword.reset();
                     
-                    addLogEntry(LOG_TYPES.ERROR, '文件解密失败', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
+                    common.log('文件解密失败', 'error', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
                     
                     // 显示错误提示
                     if (errorCount >= 3) {
@@ -1056,7 +870,7 @@
                     const content = generateDownloadContent();
                     
                     // 加密内容
-                    const encryptedContent = await AESUtil.encrypt(content, password);
+                    const encryptedContent = await ManagerCommon.AES.encrypt(content, password);
                     
                     // 下载加密文件
                     const dataUrl = 'data:application/json;base64,' + encryptedContent;
@@ -1074,18 +888,18 @@
                     encryptModal.hide();
                     encryptPatternPassword.reset();
                     
-                    addLogEntry(LOG_TYPES.SUCCESS, '文件加密成功', `文件名: ${currentFileName}`);
+                    common.log('文件加密成功', 'success', `文件名: ${currentFileName}`);
                 } catch (error) {
                     console.error('加密失败:', error);
                     document.getElementById('encryptError').textContent = '加密失败，请重试！';
-                    addLogEntry(LOG_TYPES.ERROR, '文件加密失败', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
+                    common.log('文件加密失败', 'error', `文件名: ${currentFileName}, 错误信息: ${error.message}`);
                 }
             });
             
             // 下载文件
             downloadBtn.addEventListener('click', function() {
                 encryptModal.show();
-                addLogEntry(LOG_TYPES.INFO, '点击了下载按钮');
+                common.log('点击了下载按钮');
             });
             
             // GitHub 同步相关逻辑
@@ -1096,11 +910,12 @@
             githubSaveBtn.addEventListener('click', function() {
                 syncEncryptPatternPassword.reset();
                 githubSyncEncryptModal.show();
-                addLogEntry(LOG_TYPES.INFO, '准备同步到 GitHub');
+                common.log('准备同步到 GitHub');
             });
 
             // 确认同步到 GitHub
             confirmSyncToGithubBtn.addEventListener('click', async function() {
+                if (!common) return;
                 const password = syncEncryptPatternPassword.getPassword();
                 if (password.length !== 4) {
                     document.getElementById('syncEncryptError').textContent = '请输入完整的四位数密码';
@@ -1108,34 +923,19 @@
                 }
 
                 try {
-                    // 显示加载中状态
-                    confirmSyncToGithubBtn.disabled = true;
-                    confirmSyncToGithubBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>同步中...';
-                    
                     // 生成 JSON 内容
                     const content = generateDownloadContent();
                     
                     // 加密内容
-                    const encryptedContent = await AESUtil.encrypt(content, password);
+                    const encryptedContent = await ManagerCommon.AES.encrypt(content, password);
                     
                     // 同步到 GitHub
-                    const path = 'data/MM.json';
-                    const result = await window.githubHelper.updateFile(
-                        path,
-                        encryptedContent,
-                        `Update MM.json via MM-generator (${new Date().toLocaleString()})`
-                    );
+                    await common.syncToGithub('data/MM.json', encryptedContent);
 
                     githubSyncEncryptModal.hide();
-                    alert('数据已成功加密并同步到 GitHub 仓库！');
-                    addLogEntry(LOG_TYPES.SUCCESS, 'GitHub 同步成功', `文件: ${path}, SHA: ${result.content.sha}`);
                 } catch (error) {
                     console.error('GitHub 同步失败:', error);
                     document.getElementById('syncEncryptError').textContent = '同步失败: ' + error.message;
-                    addLogEntry(LOG_TYPES.ERROR, 'GitHub 同步失败', error.message);
-                } finally {
-                    confirmSyncToGithubBtn.disabled = false;
-                    confirmSyncToGithubBtn.innerHTML = '加密并同步';
                 }
             });
             
@@ -1154,14 +954,14 @@
                 
                 // 更新统计信息
                 updateStats();
-                addLogEntry(LOG_TYPES.WARNING, '点击了重置按钮', '将清空所有条目数据');
+                common.log('将清空所有条目数据', 'warning', '点击了重置按钮');
             });
             
             // 添加条目函数
             function addEntry(entry) {
                 entries.push(entry);
                 renderEntriesList();
-                addLogEntry(LOG_TYPES.SUCCESS, '添加了新条目', `平台: ${entry.platform}, 账号: ${entry.accountType}`);
+                common.log('添加了新条目', 'success', `平台: ${entry.platform}, 账号: ${entry.accountType}`);
             }
             
             // 渲染条目列表
@@ -1199,13 +999,13 @@
                         const deletedEntry = entries[index];
                         entries.splice(index, 1);
                         renderEntriesList();
-                        addLogEntry(LOG_TYPES.WARNING, '删除了条目', `平台: ${deletedEntry.platform}, 账号: ${deletedEntry.accountType}`);
+                        common.log('删除了条目', 'warning', `平台: ${deletedEntry.platform}, 账号: ${deletedEntry.accountType}`);
                     });
                     
                     // 添加双击编辑事件
                     entryItem.addEventListener('dblclick', function() {
                         startEditEntry(index);
-                        addLogEntry(LOG_TYPES.INFO, '开始编辑条目', `平台: ${entries[index].platform}, 账号: ${entries[index].accountType}`);
+                        common.log('开始编辑条目', 'info', `平台: ${entries[index].platform}, 账号: ${entries[index].accountType}`);
                     });
                     
                     // 添加拖拽事件
@@ -1285,7 +1085,7 @@
                         renderEntriesList();
                         
                         // 记录拖拽操作
-                        addLogEntry(LOG_TYPES.INFO, '拖拽移动了条目', `平台: ${movedItem.platform} 从位置 ${fromIndex + 1} 移动到位置 ${toIndex + 1}`);
+                        common.log('拖拽移动了条目', 'info', `平台: ${movedItem.platform} 从位置 ${fromIndex + 1}移动到位置 ${toIndex + 1}`);
                     }
                 });
             }

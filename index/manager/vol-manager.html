@@ -222,112 +222,63 @@
     
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
-        // 版本数据 - 初始为空
-        let versionData = {
-            versions: []
-        };
+        // 全局变量
+        let versionData = { versions: [] };
+        let common = null;
         
-        // DOM元素
-        const versionsContainer = document.getElementById('versionsContainer');
-        const versionTimeline = document.getElementById('versionTimeline');
-        const dataStatus = document.getElementById('dataStatus');
-        const addVersionModal = new bootstrap.Modal(document.getElementById('addVersionModal'));
-        const importModal = new bootstrap.Modal(document.getElementById('importModal'));
-        const confirmAddVersion = document.getElementById('confirmAddVersion');
-        const confirmImport = document.getElementById('confirmImport');
-        const sortByDateBtn = document.getElementById('sortByDateBtn');
-        const saveDataBtn = document.getElementById('saveDataBtn');
-        const githubSaveBtn = document.getElementById('githubSaveBtn');
-        const jsonFileInput = document.getElementById('jsonFile');
-        const dropArea = document.getElementById('dropArea');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const jsonPreview = document.getElementById('jsonPreview');
-        
+        // DOM 元素
+        let versionsContainer, versionTimeline, dataStatus, addVersionModal, importModal;
+        let confirmAddVersion, confirmImport, sortByDateBtn, saveDataBtn, githubSaveBtn;
+        let jsonFileInput, dropArea, fileInfo, fileName, jsonPreview;
+
         document.addEventListener('DOMContentLoaded', function() {
-            // 从本地JSON文件加载数据
+            // 初始化通用功能引用
+            common = window.managerCommon;
+            
+            // 初始化 DOM 元素
+            initDOMElements();
+            
+            // 加载初始数据
             loadVersionDataFromFile();
             
-            // 页面加载时渲染版本数据
-            updateDataStatus();
+            // 绑定事件
             setupEventListeners();
             
-            // 初始化日志系统
-            const logContainer = document.getElementById('logContainer');
-            const emptyLogMessage = document.getElementById('emptyLogMessage');
+            // 绑定清空日志按钮事件
             const clearLogsBtn = document.getElementById('clearLogsBtn');
-            let logEntries = [];
-            
-            // 日志类型常量
-            const LOG_TYPES = {
-                SUCCESS: 'success',
-                ERROR: 'error',
-                WARNING: 'warning',
-                INFO: 'info'
-            };
-            
-            // 添加日志条目
-            function addLogEntry(type, message, details = '') {
-                const timestamp = new Date().toLocaleTimeString('zh-CN');
-                const logEntry = {
-                    type: type,
-                    message: message,
-                    details: details,
-                    timestamp: timestamp
-                };
-                
-                logEntries.unshift(logEntry); // 最新的在前面
-                        renderLogs();
-                    }
-                    
-                    // 渲染日志
-                    function renderLogs() {
-                        if (logEntries.length === 0) {
-                            emptyLogMessage.classList.remove('d-none');
-                            logContainer.innerHTML = '';
-                            return;
-                        }
-                        
-                        emptyLogMessage.classList.add('d-none');
-                        logContainer.innerHTML = '';
-                
-                logEntries.forEach(entry => {
-                    const logElement = document.createElement('div');
-                    logElement.className = `log-entry ${entry.type}`;
-                    logElement.innerHTML = `
-                        <div class="log-time">${entry.timestamp}</div>
-                        <div class="log-message">${entry.message}</div>
-                        ${entry.details ? `<div class="log-details">${entry.details}</div>` : ''}
-                    `;
-                    logContainer.appendChild(logElement);
+            if (clearLogsBtn) {
+                clearLogsBtn.addEventListener('click', () => {
+                    common.clearLogs();
+                    common.log('清空了所有操作日志', 'info');
                 });
             }
             
-            // 清空日志
-            function clearAllLogs() {
-                logEntries = [];
-                renderLogs();
-                addLogEntry(LOG_TYPES.INFO, '清空了所有操作日志');
-            }
-            
-            // 绑定清空日志按钮事件
-            if (clearLogsBtn) {
-                clearLogsBtn.addEventListener('click', clearAllLogs);
-            }
-            
-            // 添加初始日志
-            addLogEntry(LOG_TYPES.INFO, '版本管理系统启动', '页面加载完成');
-            
-            // 将日志函数暴露给全局作用域
-            window.addLogEntry = addLogEntry;
-            window.LOG_TYPES = LOG_TYPES;
+            common.log('版本管理系统启动', 'info', '页面加载完成');
         });
-        
+
+        function initDOMElements() {
+            versionsContainer = document.getElementById('versionsContainer');
+            versionTimeline = document.getElementById('versionTimeline');
+            dataStatus = document.getElementById('dataStatus');
+            addVersionModal = new bootstrap.Modal(document.getElementById('addVersionModal'));
+            importModal = new bootstrap.Modal(document.getElementById('importModal'));
+            confirmAddVersion = document.getElementById('confirmAddVersion');
+            confirmImport = document.getElementById('confirmImport');
+            sortByDateBtn = document.getElementById('sortByDateBtn');
+            saveDataBtn = document.getElementById('saveDataBtn');
+            githubSaveBtn = document.getElementById('githubSaveBtn');
+            jsonFileInput = document.getElementById('jsonFile');
+            dropArea = document.getElementById('dropArea');
+            fileInfo = document.getElementById('fileInfo');
+            fileName = document.getElementById('fileName');
+            jsonPreview = document.getElementById('jsonPreview');
+        }
+
         function setupEventListeners() {
             confirmAddVersion.addEventListener('click', addNewVersion);
             confirmImport.addEventListener('click', processImportedFile);
             sortByDateBtn.addEventListener('click', sortVersionsByDate);
-            saveDataBtn.addEventListener('click', saveDataToStorage);
+            saveDataBtn.addEventListener('click', exportVersionData);
             
             // GitHub 相关事件
             githubSaveBtn.addEventListener('click', saveToGithub);
@@ -358,15 +309,11 @@
                 const files = e.dataTransfer.files;
                 if (files.length && files[0].type === 'application/json') {
                     jsonFileInput.files = files;
-                    if (window.addLogEntry) {
-                        window.addLogEntry(window.LOG_TYPES.INFO, '拖放上传文件', `文件名: ${files[0].name}, 大小: ${(files[0].size / 1024).toFixed(2)} KB`);
-                    }
+                    common.log('拖放上传文件', 'info', `文件名: ${files[0].name}, 大小: ${(files[0].size / 1024).toFixed(2)} KB`);
                     handleFileSelect(e);
                 } else {
-                    alert('请拖放有效的JSON文件');
-                    if (window.addLogEntry) {
-                        window.addLogEntry(window.LOG_TYPES.ERROR, '拖放上传失败', '文件类型不是有效的JSON格式');
-                    }
+                    common.showAlert('请拖放有效的JSON文件', 'danger');
+                    common.log('拖放上传失败', 'error', '文件类型不是有效的JSON格式');
                 }
             });
         }
@@ -374,11 +321,8 @@
         // 从本地JSON文件加载数据
         function loadVersionDataFromFile() {
             const filePath = '../../../data/vols.json';
-            const fullPath = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/') + filePath;
             
-            if (window.addLogEntry) {
-                window.addLogEntry(window.LOG_TYPES.INFO, '开始加载数据', `文件路径: ${filePath}, 完整路径: ${fullPath}, 来源: 本地文件`);
-            }
+            common.log('开始加载数据', 'info', `文件路径: ${filePath}, 来源: 本地文件`);
             
             fetch(filePath)
                 .then(response => {
@@ -390,9 +334,7 @@
                 .then(data => {
                     if (data.versions && Array.isArray(data.versions)) {
                         versionData = data;
-                        if (window.addLogEntry) {
-                            window.addLogEntry(window.LOG_TYPES.SUCCESS, '从本地文件加载数据成功', `成功加载 ${versionData.versions.length} 个版本记录，文件路径: ${filePath}, 来源: 本地文件`);
-                        }
+                        common.log('从本地文件加载数据成功', 'success', `成功加载 ${versionData.versions.length} 个版本记录，文件路径: ${filePath}`);
                     } else {
                         throw new Error('JSON文件格式不正确');
                     }
@@ -400,9 +342,7 @@
                 .catch(error => {
                     console.error('加载本地文件失败:', error);
                     versionData = { versions: [] };
-                    if (window.addLogEntry) {
-                        window.addLogEntry(window.LOG_TYPES.ERROR, '从本地文件加载数据失败', `文件路径: ${filePath}, 错误信息: ${error.message}, 来源: 本地文件`);
-                    }
+                    common.log('从本地文件加载数据失败', 'error', `文件路径: ${filePath}, 错误信息: ${error.message}`);
                 })
                 .finally(() => {
                     // 无论加载成功与否，都进行渲染
@@ -432,68 +372,20 @@
         // 保存数据为JSON文件
         // 同步到 GitHub
         async function saveToGithub() {
+            if (!common) return;
             try {
-                showLoadingOverlay('正在同步到 GitHub...');
-                
-                const dataStr = JSON.stringify(versionData, null, 2);
-                const path = 'data/vols.json'; // 版本历史数据文件路径
-                
-                const result = await window.githubHelper.updateFile(
-                    path, 
-                    dataStr, 
-                    `Update vols.json via Web Manager (${new Date().toLocaleString()})`
-                );
-
-                hideLoadingOverlay();
-                showAlert('数据已成功同步到 GitHub 仓库！', 'success');
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.SUCCESS, 'GitHub 同步成功', `提交 SHA: ${result.content.sha}`);
-                }
+                const path = 'data/vols.json';
+                await common.syncToGithub(path, versionData);
             } catch (error) {
-                hideLoadingOverlay();
-                console.error('GitHub 同步失败:', error);
-                showAlert('同步失败: ' + error.message, 'danger');
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.ERROR, 'GitHub 同步失败', error.message);
-                }
+                // 错误已由 common.syncToGithub 处理
             }
         }
 
-        function saveDataToStorage() {
-            try {
-                const dataStr = JSON.stringify(versionData, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = 'vols.json';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                showAlert('数据已保存为JSON文件', 'success');
-                
-                // 记录保存日志
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.SUCCESS, '数据保存成功', `保存了 ${versionData.versions.length} 个版本记录为JSON文件，文件大小: ${(dataStr.length / 1024).toFixed(2)} KB`);
-                }
-            } catch (e) {
-                console.error('保存数据为JSON文件失败:', e);
-                showAlert('保存数据为JSON文件失败', 'danger');
-                
-                // 记录保存失败日志
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.ERROR, '保存数据为JSON文件失败', e.message);
-                }
-            }
-        }
-        
         // 清空所有数据
         function clearAllData() {
             if (!versionData.versions || versionData.versions.length === 0) {
-                showAlert('当前没有数据可清空', 'warning');
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.WARNING, '清空数据失败', '当前没有数据可清空');
-                }
+                common.showAlert('当前没有数据可清空', 'warning');
+                common.log('清空数据失败', 'warning', '当前没有数据可清空');
                 return;
             }
             
@@ -508,16 +400,12 @@
                 renderTimeline();
                 updateDataStatus();
                 
-                showAlert(`已清空 ${deletedCount} 个版本记录`, 'success');
+                common.showAlert(`已清空 ${deletedCount} 个版本记录`, 'success');
                 
                 // 记录清空数据日志
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.WARNING, '清空了所有数据', `删除了 ${deletedCount} 个版本记录`);
-                }
+                common.log('清空了所有数据', 'warning', `删除了 ${deletedCount} 个版本记录`);
             } else {
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.INFO, '取消了清空数据操作', '用户取消了确认对话框');
-                }
+                common.log('取消了清空数据操作', 'info', '用户取消了确认对话框');
             }
         }
         
@@ -643,10 +531,8 @@
             const changesText = document.getElementById('versionChanges').value.trim();
             
             if (!name || !date || !changesText) {
-                alert('请填写所有字段');
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.ERROR, '添加版本失败', '请填写所有必填字段');
-                }
+                common.showAlert('请填写所有字段', 'danger');
+                common.log('添加版本失败', 'error', '请填写所有必填字段');
                 return;
             }
             
@@ -665,30 +551,24 @@
             renderVersions();
             renderTimeline();
             updateDataStatus();
-            saveDataToStorage(); // 自动保存数据
-            showAlert('版本已添加: ' + name, 'success');
+            exportVersionData(); // 自动保存数据
+            common.showAlert('版本已添加: ' + name, 'success');
             
             // 记录添加版本日志
-            if (window.addLogEntry) {
-                window.addLogEntry(window.LOG_TYPES.SUCCESS, '添加了新版本', `版本名称: ${name}, 发布日期: ${date}, 更新内容: ${changes.length} 条`);
-            }
+            common.log('添加了新版本', 'success', `版本名称: ${name}, 发布日期: ${date}, 更新内容: ${changes.length} 条`);
         }
         
         // 按日期排序
         function sortVersionsByDate() {
-            const originalOrder = versionData.versions.map(v => v.name);
             versionData.versions.sort((a, b) => new Date(b.date) - new Date(a.date));
-            const newOrder = versionData.versions.map(v => v.name);
             
             renderVersions();
             renderTimeline();
-            saveDataToStorage(); // 自动保存数据
-            showAlert('版本已按日期排序', 'success');
+            exportVersionData(); // 自动保存数据
+            common.showAlert('版本已按日期排序', 'success');
             
             // 记录排序日志
-            if (window.addLogEntry) {
-                window.addLogEntry(window.LOG_TYPES.INFO, '版本排序完成', `按日期重新排序了 ${versionData.versions.length} 个版本记录`);
-            }
+            common.log('版本排序完成', 'info', `按日期重新排序了 ${versionData.versions.length} 个版本记录`);
         }
         
         // 导出版本数据
@@ -703,20 +583,16 @@
                 link.click();
                 document.body.removeChild(link);
                 
-                showAlert('版本数据已导出', 'success');
+                common.showAlert('版本数据已导出', 'success');
                 
                 // 记录导出日志
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.SUCCESS, '数据导出完成', `导出了 ${versionData.versions.length} 个版本记录，文件大小: ${(dataStr.length / 1024).toFixed(2)} KB`);
-                }
+                common.log('数据导出完成', 'success', `导出了 ${versionData.versions.length} 个版本记录，文件大小: ${(dataStr.length / 1024).toFixed(2)} KB`);
             } catch (e) {
                 console.error('导出数据时出错:', e);
-                showAlert('导出数据时出错', 'danger');
+                common.showAlert('导出数据时出错', 'danger');
                 
                 // 记录导出失败日志
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.ERROR, '数据导出失败', e.message);
-                }
+                common.log('数据导出失败', 'error', e.message);
             }
         }
         
@@ -726,19 +602,15 @@
             if (!file) return;
             
             if (file.type !== 'application/json') {
-                alert('请选择JSON文件');
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.ERROR, '文件选择失败', '选择的文件不是JSON格式');
-                }
+                common.showAlert('请选择JSON文件', 'danger');
+                common.log('文件选择失败', 'error', '选择的文件不是JSON格式');
                 return;
             }
             
             fileName.textContent = `已选择文件：${file.name}`;
             fileInfo.classList.remove('d-none');
             
-            if (window.addLogEntry) {
-                window.addLogEntry(window.LOG_TYPES.INFO, '选择了JSON文件', `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
-            }
+            common.log('选择了JSON文件', 'info', `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
             
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -755,15 +627,11 @@
                     confirmImport.disabled = false;
                     window.importedData = jsonData;
                     
-                    if (window.addLogEntry) {
-                        window.addLogEntry(window.LOG_TYPES.SUCCESS, 'JSON文件解析成功', `包含 ${jsonData.versions.length} 个版本记录`);
-                    }
+                    common.log('JSON文件解析成功', 'success', `包含 ${jsonData.versions.length} 个版本记录`);
                 } catch (e) {
                     jsonPreview.textContent = `错误：${e.message}`;
                     confirmImport.disabled = true;
-                    if (window.addLogEntry) {
-                        window.addLogEntry(window.LOG_TYPES.ERROR, 'JSON文件解析失败', e.message);
-                    }
+                    common.log('JSON文件解析失败', 'error', e.message);
                 }
             };
             reader.readAsText(file);
@@ -780,14 +648,12 @@
                 renderVersions();
                 renderTimeline();
                 updateDataStatus();
-                saveDataToStorage(); // 自动保存数据
+                exportVersionData(); // 自动保存数据
                 importModal.hide();
-                showAlert('JSON文件已成功导入，加载了 ' + versionData.versions.length + ' 个版本记录', 'success');
+                common.showAlert('JSON文件已成功导入，加载了 ' + versionData.versions.length + ' 个版本记录', 'success');
                 
                 // 记录导入日志
-                if (window.addLogEntry) {
-                    window.addLogEntry(window.LOG_TYPES.SUCCESS, '数据导入完成', `原有 ${originalCount} 条记录，新增 ${addedCount} 条记录，总计 ${newCount} 条记录`);
-                }
+                common.log('数据导入完成', 'success', `原有 ${originalCount} 条记录，新增 ${addedCount} 条记录，总计 ${newCount} 条记录`);
                 
                 delete window.importedData;
                 jsonFileInput.value = '';
@@ -804,40 +670,6 @@
                 month: 'long',
                 day: 'numeric'
             });
-        }
-        
-        // 显示提示消息
-        function showAlert(message, type) {
-            const existingAlert = document.querySelector('.alert-floating');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
-            
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-' + type + ' alert-floating position-fixed';
-            alert.style.top = '20px';
-            alert.style.right = '20px';
-            alert.style.zIndex = '1050';
-            alert.style.minWidth = '300px';
-            alert.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-            alert.innerHTML = '<div class="d-flex align-items-center"><i class="fas ' + (type === 'success' ? 'fa-check-circle' : type === 'danger' ? 'fa-exclamation-circle' : 'fa-info-circle') + ' me-2"></i><div>' + message + '</div><button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button></div>';
-            document.body.appendChild(alert);
-            
-            // 记录日志
-            if (window.addLogEntry) {
-                let logType = window.LOG_TYPES.INFO;
-                if (type === 'success') logType = window.LOG_TYPES.SUCCESS;
-                else if (type === 'danger') logType = window.LOG_TYPES.ERROR;
-                else if (type === 'warning') logType = window.LOG_TYPES.WARNING;
-                
-                window.addLogEntry(logType, message);
-            }
-            
-            setTimeout(() => {
-                if (alert.parentNode) {
-                    alert.remove();
-                }
-            }, 5000);
         }
     </script>
     
@@ -866,8 +698,5 @@
             </div>
         </div>
     </div>
-    
-    <!-- 深色模式功能 -->
-    <script src="../../js/dark-mode.js"></script>
 </body>
 </html>
