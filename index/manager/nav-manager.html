@@ -454,7 +454,8 @@
         let currentPage = 'index';
         
         // 快捷访问 managerCommon
-        const common = window.managerCommon;
+        const common = window.managerCommon || new ManagerCommon();
+        if (!window.managerCommon) window.managerCommon = common;
 
         // 辅助函数：获取图标URL
         function getIconUrl(url) {
@@ -3353,8 +3354,5 @@
         // 页面加载时添加初始日志
         common.log('导航数据管理系统已启动', 'info', '系统初始化完成');
     </script>
-    
-    <!-- 深色模式功能 -->
-    <script src="../../js/dark-mode.js"></script>
 </body>
 </html>

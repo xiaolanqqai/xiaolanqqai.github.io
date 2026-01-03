@@ -5,16 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>探索网页系统</title>
     
-    <!-- 引入样式 -->
-    <link href="../../css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/all.min.css">
-    <link href="../../css/style-main/index.css" rel="stylesheet">
-    <link href="../../css/manager-styles.css" rel="stylesheet">
-    <!-- 深色模式样式 -->
-    <link rel="stylesheet" href="../../css/dark-mode.css">
+    <!-- 模块化 Header 组件 -->
+    <script src="../../js/components/header-component.js"></script>
+    
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
-    <script src="../../js/dark-mode.js"></script>
     <script src="../../js/github-api-helper.js"></script>
 </head>
 <body class="manager-body">
@@ -271,6 +266,10 @@
     
     <!-- 探索网页系统JavaScript -->
     <script>
+        // 快捷访问 managerCommon
+        const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
+        if (common && !window.managerCommon) window.managerCommon = common;
+
         document.addEventListener('DOMContentLoaded', function() {
             // 初始化模态框
             const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));

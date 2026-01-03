@@ -550,16 +550,12 @@ class ManagerCommon {
     }
 }
 
-// 初始化通用功能
-let managerCommon = null;
+// 初始化通用功能并暴露到全局
+const managerCommon = new ManagerCommon();
+window.managerCommon = managerCommon;
+window.ManagerCommon = ManagerCommon; // 暴露类本身，以便访问静态方法
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 创建全局实例
-    managerCommon = new ManagerCommon();
-    
-    // 暴露到全局供页面使用
-    window.managerCommon = managerCommon;
-    
     // 页面加载完成日志
     managerCommon.log('页面加载完成', 'success');
 });

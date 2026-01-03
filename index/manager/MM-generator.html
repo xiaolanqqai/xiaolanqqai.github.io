@@ -162,10 +162,7 @@
             </div>
             
             <div id="loading" class="mt-4 d-none">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">正在加载...</span>
-                </div>
-                <p class="mt-2">正在加载文件...</p>
+                <!-- 冗余的加载指示器已由 manager-common.js 接管 -->
             </div>
         </div>
         
@@ -273,6 +270,10 @@
 
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
+        // 快捷访问 managerCommon
+        const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
+        if (common && !window.managerCommon) window.managerCommon = common;
+
         // 图案密码工具
         class PatternPassword {
             constructor(modalType) {
@@ -403,7 +404,6 @@
             const fileInfo = document.getElementById('fileInfo');
             const loadUrlBtn = document.getElementById('loadUrlBtn');
             const urlError = document.getElementById('urlError');
-            const loading = document.getElementById('loading');
             const entryForm = document.getElementById('entryForm');
             const editForm = document.getElementById('editForm');
             const entriesList = document.getElementById('entriesList');
@@ -546,8 +546,8 @@
             // 从固定URL加载文件
             loadUrlBtn.addEventListener('click', function() {
                 console.log('加载URL按钮被点击');
-                // 显示加载中
-                loading.classList.remove('d-none');
+                // 使用通用加载指示器
+                common.showLoading('正在从网络加载数据...');
                 urlError.textContent = '';
                 currentFileName = 'MM.json';
                 
@@ -595,7 +595,7 @@
                     })
                     .finally(() => {
                         console.log('加载完成');
-                        loading.classList.add('d-none');
+                        common.hideLoading();
                     });
             });
             

@@ -4,16 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>版本管理系统</title>
-    <meta name="description" content="版本管理工具">
-    <link href="../../css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../../css/all.min.css">
-    <link href="../../css/manager-styles.css" rel="stylesheet">
-    <!-- 深色模式样式 -->
-    <link rel="stylesheet" href="../../css/dark-mode.css">
+    <!-- 模块化 Header 组件 -->
+    <script src="../../js/components/header-component.js"></script>
+    
     <!-- 引入通用脚本 -->
     <script src="../../js/manager-common.js"></script>
     <script src="../../js/github-api-helper.js"></script>
-    <script src="../../js/dark-mode.js"></script>
 </head>
 <body class="manager-body">
     <!-- 返回首页按钮 -->
@@ -222,9 +218,12 @@
     
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
+        // 快捷访问 managerCommon
+        const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
+        if (common && !window.managerCommon) window.managerCommon = common;
+
         // 全局变量
         let versionData = { versions: [] };
-        let common = null;
         
         // DOM 元素
         let versionsContainer, versionTimeline, dataStatus, addVersionModal, importModal;
@@ -232,9 +231,6 @@
         let jsonFileInput, dropArea, fileInfo, fileName, jsonPreview;
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化通用功能引用
-            common = window.managerCommon;
-            
             // 初始化 DOM 元素
             initDOMElements();
             
