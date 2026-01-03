@@ -83,18 +83,33 @@
         <div class="manager-card mb-4">
             <div class="manager-card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-bookmark me-2"></i>浏览器收藏夹</h5>
-                <button id="refreshBookmarks" class="btn btn-sm btn-light">
-                    <i class="fas fa-sync-alt"></i> 刷新
-                </button>
+                <div class="btn-group">
+                    <button id="syncLocalBtn" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-sync me-1"></i> 本地同步
+                    </button>
+                    <button id="importBookmarksBtn" class="btn btn-sm btn-primary">
+                        <i class="fas fa-file-import me-1"></i> 导入 HTML
+                    </button>
+                    <button id="refreshBookmarks" class="btn btn-sm btn-light">
+                        <i class="fas fa-sync-alt"></i> 刷新
+                    </button>
+                </div>
+                <input type="file" id="importBookmarksFile" accept=".html" style="display:none">
             </div>
             <div class="manager-card-body">
-                <p class="text-muted mb-3 small">以下是您浏览器中的收藏网站，按文件夹分类显示：</p>
+                <div class="alert alert-info py-2 mb-3 small">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    由于浏览器安全限制，无法直接访问收藏夹。您可以：<br>
+                    1. 运行本地脚本 <code>node scripts/get_bookmarks.js</code> 自动同步（推荐）；<br>
+                    2. 在浏览器中将收藏夹导出为 <strong>HTML 文件</strong>，然后点击“导入”按钮。
+                </div>
+                <p class="text-muted mb-3 small">以下是已导入的收藏网站，按文件夹分类显示：</p>
                 
                 <!-- 收藏夹内容将由JavaScript动态生成 -->
                 <div id="bookmarksContainer">
                     <div class="text-center py-5">
                         <i class="fas fa-bookmark fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">点击上方刷新按钮加载浏览器收藏夹</p>
+                        <p class="text-muted">点击上方“导入”按钮上传浏览器导出的 HTML 收藏夹文件</p>
                     </div>
                 </div>
             </div>
@@ -842,134 +857,220 @@
     <!-- 工具箱模块JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 模拟浏览器收藏夹数据
-            const mockBookmarks = {
-                title: "根文件夹",
-                children: [
-                    {
-                        title: "常用工具",
-                        children: [
-                            {title: "百度", url: "https://www.baidu.com", iconUrl: "../../img/图床/baidu.gif"},
-                            {title: "Google", url: "https://www.google.com", iconUrl: "../../img/图床/google.gif"},
-                            {title: "Bing", url: "https://www.bing.com", iconUrl: "../../img/图床/bing.webp"},
-                            {title: "GitHub", url: "https://github.com", iconUrl: ""}
-                        ]
-                    },
-                    {
-                        title: "视频网站",
-                        children: [
-                            {title: "哔哩哔哩", url: "https://www.bilibili.com", iconUrl: "../../img/图床/bilibili.gif"},
-                            {title: "YouTube", url: "https://www.youtube.com", iconUrl: ""}
-                        ]
-                    },
-                    {
-                        title: "开发资源",
-                        children: [
-                            {title: "MDN Web Docs", url: "https://developer.mozilla.org", iconUrl: ""},
-                            {title: "Stack Overflow", url: "https://stackoverflow.com", iconUrl: ""},
-                            {title: "Bootstrap", url: "https://getbootstrap.com", iconUrl: ""}
-                        ]
+            const syncLocalBtn = document.getElementById('syncLocalBtn');
+            const importBtn = document.getElementById('importBookmarksBtn');
+            const fileInput = document.getElementById('importBookmarksFile');
+            const refreshBtn = document.getElementById('refreshBookmarks');
+            const container = document.getElementById('bookmarksContainer');
+            
+            // 从本地存储加载收藏夹
+            let savedBookmarks = JSON.parse(localStorage.getItem('imported-bookmarks')) || null;
+            
+            // 本地同步按钮点击
+            syncLocalBtn.addEventListener('click', async function() {
+                try {
+                    const response = await fetch('../../data/local-bookmarks.json?t=' + Date.now());
+                    if (!response.ok) throw new Error('未找到本地同步文件，请先运行 scripts/get_bookmarks.py');
+                    
+                    const data = await response.json();
+                    savedBookmarks = data;
+                    localStorage.setItem('imported-bookmarks', JSON.stringify(savedBookmarks));
+                    renderBookmarks(savedBookmarks, container);
+                    
+                    if (window.managerCommon) {
+                        window.managerCommon.showAlert('本地同步成功！', 'success');
+                        window.managerCommon.log('成功从本地同步了收藏夹', 'success');
                     }
-                ]
-            };
+                } catch (error) {
+                    console.error('Sync failed:', error);
+                    if (window.managerCommon) {
+                        window.managerCommon.showAlert(error.message, 'error');
+                    } else {
+                        alert(error.message);
+                    }
+                }
+            });
             
             // 渲染收藏夹函数
             function renderBookmarks(bookmarks, container) {
                 container.innerHTML = '';
                 
-                if (bookmarks && bookmarks.children && bookmarks.children.length > 0) {
-                    bookmarks.children.forEach(folder => {
-                        // 创建文件夹元素
-                        const folderElement = document.createElement('div');
-                        folderElement.className = 'bookmark-folder';
-                        
-                        // 创建文件夹标题
-                        const folderHeader = document.createElement('div');
-                        folderHeader.className = 'bookmark-folder-header';
-                        folderHeader.innerHTML = `
-                            <i class="fas fa-chevron-right"></i>
-                            <span>${folder.title}</span>
-                            <span class="ml-2 badge bg-primary">${folder.children ? folder.children.length : 0}</span>
-                        `;
-                        
-                        // 创建书签项目容器
-                        const bookmarkItemsContainer = document.createElement('div');
-                        bookmarkItemsContainer.className = 'bookmark-items';
-                        
-                        // 绑定折叠/展开事件
-                        folderHeader.addEventListener('click', function() {
-                            folderHeader.classList.toggle('collapsed');
-                            if (bookmarkItemsContainer.style.display === 'none') {
-                                bookmarkItemsContainer.style.display = 'grid';
-                            } else {
-                                bookmarkItemsContainer.style.display = 'none';
-                            }
-                        });
-                        
-                        // 添加书签项目
-                        if (folder.children) {
-                            folder.children.forEach(bookmark => {
-                                const bookmarkItem = document.createElement('a');
-                                bookmarkItem.className = 'bookmark-item';
-                                bookmarkItem.href = bookmark.url;
-                                bookmarkItem.target = '_blank';
-                                
-                                // 获取favicon或使用默认图标
-                                let faviconHtml = '';
-                                if (bookmark.iconUrl) {
-                                    faviconHtml = `<img src="${bookmark.iconUrl}" alt="图标" class="bookmark-favicon">`;
-                                } else {
-                                    // 尝试使用favicon服务
-                                    const domain = new URL(bookmark.url).hostname;
-                                    faviconHtml = `<img src="https://www.google.com/s2/favicons?domain=${domain}" alt="图标" class="bookmark-favicon">`;
-                                }
-                                
-                                bookmarkItem.innerHTML = `
-                                    ${faviconHtml}
-                                    <span class="bookmark-title">${bookmark.title}</span>
-                                `;
-                                
-                                bookmarkItemsContainer.appendChild(bookmarkItem);
-                            });
-                        }
-                        
-                        // 组装文件夹元素
-                        folderElement.appendChild(folderHeader);
-                        folderElement.appendChild(bookmarkItemsContainer);
-                        
-                        container.appendChild(folderElement);
-                    });
-                } else {
+                if (!bookmarks || !bookmarks.children || bookmarks.children.length === 0) {
                     container.innerHTML = `
-                        <div class="alert alert-warning text-center py-4">
-                            <i class="fas fa-exclamation-triangle text-warning mb-2"></i>
-                            <p>未找到收藏夹数据</p>
+                        <div class="text-center py-5">
+                            <i class="fas fa-bookmark fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">暂无导入的数据，请点击上方“导入”按钮</p>
                         </div>
                     `;
+                    return;
                 }
+
+                // 递归渲染文件夹和书签
+                function renderLevel(items, parentContainer) {
+                    items.forEach(item => {
+                        if (item.children) {
+                            // 文件夹
+                            const folderElement = document.createElement('div');
+                            folderElement.className = 'bookmark-folder';
+                            
+                            const folderHeader = document.createElement('div');
+                            folderHeader.className = 'bookmark-folder-header';
+                            folderHeader.innerHTML = `
+                                <i class="fas fa-chevron-right"></i>
+                                <span>${item.title}</span>
+                                <span class="ms-2 badge bg-primary rounded-pill">${item.children.length}</span>
+                            `;
+                            
+                            const bookmarkItemsContainer = document.createElement('div');
+                            bookmarkItemsContainer.className = 'bookmark-items';
+                            bookmarkItemsContainer.style.display = 'none'; // 默认折叠
+                            
+                            folderHeader.addEventListener('click', function() {
+                                const icon = folderHeader.querySelector('i');
+                                icon.classList.toggle('fa-chevron-down');
+                                icon.classList.toggle('fa-chevron-right');
+                                folderHeader.classList.toggle('active');
+                                bookmarkItemsContainer.style.display = bookmarkItemsContainer.style.display === 'none' ? 'grid' : 'none';
+                            });
+                            
+                            renderLevel(item.children, bookmarkItemsContainer);
+                            
+                            folderElement.appendChild(folderHeader);
+                            folderElement.appendChild(bookmarkItemsContainer);
+                            parentContainer.appendChild(folderElement);
+                        } else {
+                            // 书签
+                            const bookmarkItem = document.createElement('a');
+                            bookmarkItem.className = 'bookmark-item';
+                            bookmarkItem.href = item.url;
+                            bookmarkItem.target = '_blank';
+                            
+                            let faviconHtml = '';
+                            if (item.iconUrl && item.iconUrl.startsWith('data:')) {
+                                faviconHtml = `<img src="${item.iconUrl}" alt="" class="bookmark-favicon">`;
+                            } else {
+                                const domain = new URL(item.url).hostname;
+                                faviconHtml = `<img src="https://www.google.com/s2/favicons?domain=${domain}" alt="" class="bookmark-favicon">`;
+                            }
+                            
+                            bookmarkItem.innerHTML = `
+                                ${faviconHtml}
+                                <span class="bookmark-title" title="${item.title}">${item.title}</span>
+                            `;
+                            
+                            parentContainer.appendChild(bookmarkItem);
+                        }
+                    });
+                }
+
+                renderLevel(bookmarks.children, container);
             }
             
-            // 刷新按钮事件
-            document.getElementById('refreshBookmarks').addEventListener('click', function() {
-                const container = document.getElementById('bookmarksContainer');
+            // 解析 HTML 收藏夹 (Netscape Bookmark 格式)
+            function parseBookmarksHTML(htmlContent) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlContent, 'text/html');
+                const rootDL = doc.querySelector('dl'); // Netscape 格式通常使用小写或大写
                 
-                // 显示加载状态
-                container.innerHTML = `
-                    <div class="text-center py-6">
-                        <div class="spinner-border text-primary mb-3" role="status"></div>
-                        <p class="text-muted">正在加载收藏夹...</p>
-                    </div>
-                `;
-                
-                // 模拟加载延迟
-                setTimeout(() => {
-                    renderBookmarks(mockBookmarks, container);
-                }, 800);
+                if (!rootDL) {
+                    // 尝试更通用的查询
+                    const anyDL = doc.getElementsByTagName('dl')[0];
+                    if (!anyDL) return null;
+                    return { title: "导入的收藏夹", children: parseDL(anyDL) };
+                }
+
+                function parseDL(dl) {
+                    const children = [];
+                    // 获取直接子元素 DT
+                    const dts = Array.from(dl.children).filter(child => child.tagName === 'DT');
+                    
+                    dts.forEach(dt => {
+                        const h3 = dt.querySelector(':scope > h3');
+                        const a = dt.querySelector(':scope > a');
+                        const nextDL = dt.querySelector(':scope > dl');
+
+                        if (h3 && nextDL) {
+                            // 文件夹
+                            children.push({
+                                title: h3.textContent,
+                                children: parseDL(nextDL)
+                            });
+                        } else if (a) {
+                            // 书签
+                            children.push({
+                                title: a.textContent,
+                                url: a.href,
+                                iconUrl: a.getAttribute('icon') || ''
+                            });
+                        }
+                    });
+                    return children;
+                }
+
+                return {
+                    title: "导入的收藏夹",
+                    children: parseDL(rootDL)
+                };
+            }
+            
+            // 导入按钮点击
+            importBtn.addEventListener('click', () => fileInput.click());
+            
+            // 文件选择处理
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const content = event.target.result;
+                    const parsed = parseBookmarksHTML(content);
+                    
+                    if (parsed && parsed.children && parsed.children.length > 0) {
+                        savedBookmarks = parsed;
+                        localStorage.setItem('imported-bookmarks', JSON.stringify(savedBookmarks));
+                        renderBookmarks(savedBookmarks, container);
+                        if (window.managerCommon) {
+                            window.managerCommon.showAlert('收藏夹导入成功！', 'success');
+                            window.managerCommon.log('成功导入了浏览器收藏夹', 'success');
+                        }
+                    } else {
+                        if (window.managerCommon) {
+                            window.managerCommon.showAlert('无法解析该文件，请确保它是有效的浏览器导出的 HTML 收藏夹。', 'error');
+                        } else {
+                            alert('无法解析该文件');
+                        }
+                    }
+                };
+                reader.readAsText(file);
+                // 重置 input 以便下次选择同一文件也能触发 change
+                fileInput.value = '';
             });
             
-            // 页面加载时自动尝试加载收藏夹
-            // 在实际环境中，由于浏览器安全限制，这里会显示提示信息
-            // 用户需要点击刷新按钮来加载模拟数据
+            // 刷新按钮
+            refreshBtn.addEventListener('click', () => {
+                if (savedBookmarks) {
+                    // 显示加载状态
+                    container.innerHTML = `
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary mb-3" role="status"></div>
+                            <p class="text-muted">正在刷新收藏夹...</p>
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        renderBookmarks(savedBookmarks, container);
+                        if (window.managerCommon) window.managerCommon.showAlert('收藏夹已刷新');
+                    }, 500);
+                } else {
+                    if (window.managerCommon) window.managerCommon.showAlert('请先导入收藏夹文件');
+                }
+            });
+            
+            // 页面加载时自动加载已保存的收藏夹
+            if (savedBookmarks) {
+                renderBookmarks(savedBookmarks, container);
+            }
         });
     </script>
     

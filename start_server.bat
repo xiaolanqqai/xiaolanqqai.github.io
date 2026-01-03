@@ -35,6 +35,15 @@ if '%errorlevel%' NEQ '0' (
         exit /B
     )
 
+    :: Sync Bookmarks
+    echo [INFO] Syncing browser bookmarks...
+    if exist "scripts\get_bookmarks.js" (
+        node scripts\get_bookmarks.js
+    ) else (
+        echo [WARN] Bookmark sync script not found. Skipping.
+    )
+    echo.
+
     :: Create a temporary server script if not exists
     set SERVER_JS=%temp%\xiaolan_server.js
     echo const http = require('http'); > "%SERVER_JS%"
