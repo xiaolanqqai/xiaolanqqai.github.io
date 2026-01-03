@@ -35,7 +35,7 @@ class GitHubAPIHelper {
             token: _t,
             owner: 'xiaolanqqai',
             repo: 'xiaolanqqai.github.io',
-            branch: 'main'
+            branch: 'master'
         };
     }
 

@@ -457,6 +457,10 @@
         const common = window.managerCommon || new ManagerCommon();
         if (!window.managerCommon) window.managerCommon = common;
 
+        // 全局兼容性变量
+        const ICON_PREFIX = common.config.iconPrefix;
+        const DEFAULT_ICON = common.config.defaultIcon;
+
         // 辅助函数：获取图标URL
         function getIconUrl(url) {
             try {
@@ -1679,8 +1683,10 @@
                 return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>此选项卡中没有网站</p></div>';
             }
             
+            const iconPrefix = common.config.iconPrefix;
+            
             return sites.map((site, siteIndex) => {
-                const iconUrl = site.icon || ICON_PREFIX + encodeURIComponent(site.url);
+                const iconUrl = site.icon || iconPrefix + encodeURIComponent(site.url);
                 return '<div class="site-card" data-site-index="'+siteIndex+'" data-tab-index="'+tabIndex+'" draggable="true" data-drag-type="site">' +
                     '<div class="delete-corner" data-tab-index="'+tabIndex+'" data-site-index="'+siteIndex+'">' +
                         '<i class="fas fa-times"></i>' +
@@ -1775,8 +1781,10 @@
                 return;
             }
             
+            const iconPrefix = common.config.iconPrefix;
+            
             sites.forEach((site, index) => {
-                const iconUrl = site.icon || ICON_PREFIX + encodeURIComponent(site.url);
+                const iconUrl = site.icon || iconPrefix + encodeURIComponent(site.url);
                 const siteCard = document.createElement('div');
                 siteCard.className = 'site-card';
                 siteCard.innerHTML = `

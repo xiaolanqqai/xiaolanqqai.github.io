@@ -64,10 +64,19 @@ if '%errorlevel%' NEQ '0' (
     echo       res.end(content, 'utf-8'); >> "%SERVER_JS%"
     echo     } >> "%SERVER_JS%"
     echo   }); >> "%SERVER_JS%"
-    echo }).listen(port); >> "%SERVER_JS%"
-    echo console.log('Server running at http://localhost/'); >> "%SERVER_JS%"
-    echo console.log('Press Ctrl+C to stop the server.'); >> "%SERVER_JS%"
-
+    echo }).listen(port, () =^> { >> "%SERVER_JS%"
+    echo   console.log('Server running at http://localhost/'); >> "%SERVER_JS%"
+    echo   console.log('Press Ctrl+C to stop the server.'); >> "%SERVER_JS%"
+    echo }).on('error', (err) =^> { >> "%SERVER_JS%"
+    echo   if (err.code === 'EADDRINUSE') { >> "%SERVER_JS%"
+    echo     console.error('[ERROR] Port 80 is already in use by another application.'); >> "%SERVER_JS%"
+    echo     console.error('Please close other programs using port 80 (like IIS, Skype, or other servers) and try again.'); >> "%SERVER_JS%"
+    echo   } else { >> "%SERVER_JS%"
+    echo     console.error('[ERROR] Failed to start server:', err.message); >> "%SERVER_JS%"
+    echo   } >> "%SERVER_JS%"
+    echo   process.exit(1); >> "%SERVER_JS%"
+    echo }); >> "%SERVER_JS%"
+    
     :: Start the server
     echo [INFO] Starting server on port 80...
     
