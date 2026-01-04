@@ -837,6 +837,10 @@
           {
             "name": "苦力怕bbs",
             "url": "https://klpbbs.com"
+          },
+          {
+            "name": "geekpeer",
+            "url": "https://www.geekpeer.cn/"
           }
         ]
       },
@@ -1117,6 +1121,18 @@
           {
             "name": "betaflight调试",
             "url": "https://app.betaflight.com"
+          },
+          {
+            "name": "GeekFix",
+            "url": "https://www.geekfix.com/"
+          },
+          {
+            "name": "BETAFPV 中文支持",
+            "url": "https://support.betafpv.com/hc/zh-cn"
+          },
+          {
+            "name": "百达技术支持",
+            "url": "https://flowus.cn/betafpv/share/b14a0c79-43f4-4ed6-9192-7db7f996fd18"
           }
         ]
       },
