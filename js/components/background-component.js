@@ -45,7 +45,7 @@
             // 粒子总数限制
             // 建议范围: 50 (高性能) - 1000 (密集效果)
             // 注意: 数量过多会严重影响低端设备性能
-            particleCount: 1000, 
+            particleCount: 100000, 
 
             // 粒子颜色
             // 格式: HEX (#75A5B7), RGB (rgb(117, 165, 183)), 或 RGBA
@@ -115,7 +115,6 @@
         },
 
         createParticles: function() {
-            this.particles = [];
             // 根据屏幕大小调整粒子数量，但允许用户配置更高的数量
             // 基础密度：每 10000 像素 1 个粒子
             const density = Math.floor(window.innerWidth * window.innerHeight / 10000);
@@ -126,125 +125,142 @@
             
             // 如果是在手机等小屏幕上，为了性能还是适当减少一点，但保证有足够数量
             if (window.innerWidth < 768) {
-                count = Math.min(count, 300); // 移动端限制
+                count = Math.min(count, 1000); // 移动端限制
             }
 
+            this.count = count;
+            
+            // Initialize Float32Arrays for better performance
+            this.pX = new Float32Array(count);
+            this.pY = new Float32Array(count);
+            this.pVx = new Float32Array(count);
+            this.pVy = new Float32Array(count);
+            this.pBaseVx = new Float32Array(count);
+            this.pBaseVy = new Float32Array(count);
+            this.pSize = new Float32Array(count);
+
             for (let i = 0; i < count; i++) {
-                this.particles.push({
-                    x: Math.random() * this.canvas.width,
-                    y: Math.random() * this.canvas.height,
-                    vx: (Math.random() - 0.5) * this.config.baseSpeed,
-                    vy: (Math.random() - 0.5) * this.config.baseSpeed,
-                    size: Math.random() * 2 + 1,
-                    // 存储原始速度以便恢复
-                    baseVx: (Math.random() - 0.5) * this.config.baseSpeed,
-                    baseVy: (Math.random() - 0.5) * this.config.baseSpeed
-                });
+                this.pX[i] = Math.random() * this.canvas.width;
+                this.pY[i] = Math.random() * this.canvas.height;
+                const vx = (Math.random() - 0.5) * this.config.baseSpeed;
+                const vy = (Math.random() - 0.5) * this.config.baseSpeed;
+                this.pVx[i] = vx;
+                this.pVy[i] = vy;
+                this.pBaseVx[i] = vx;
+                this.pBaseVy[i] = vy;
+                this.pSize[i] = Math.random() * 2 + 1;
             }
         },
 
         animate: function() {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            const width = this.canvas.width;
+            const height = this.canvas.height;
+            const ctx = this.ctx;
+            const count = this.count;
             
-            this.particles.forEach(p => {
+            // Pre-calculate constants
+            const mouseRadiusSq = this.config.mouseRadius * this.config.mouseRadius;
+            const baseSpeedSq = (this.config.baseSpeed * 2) * (this.config.baseSpeed * 2);
+            const minReboundSpeed = this.config.baseSpeed * 1.5;
+            
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = this.config.color;
+            
+            // Batch rendering optimization: beginPath once
+            ctx.beginPath();
+            
+            for (let i = 0; i < count; i++) {
                 // 1. 基础移动
-                p.x += p.vx;
-                p.y += p.vy;
+                this.pX[i] += this.pVx[i];
+                this.pY[i] += this.pVy[i];
 
                 // 2. 交互逻辑 (聚拢 vs 排斥)
                 if (this.isGathering && this.mouse.x != null) {
                     // --- 聚拢模式 ---
-                    const dx = this.mouse.x - p.x; // 注意方向：指向鼠标
-                    const dy = this.mouse.y - p.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    const dx = this.mouse.x - this.pX[i]; 
+                    const dy = this.mouse.y - this.pY[i];
+                    // Using squared distance check to avoid sqrt where possible
+                    const distSq = dx * dx + dy * dy;
                     
-                    // 简单的引力模型
-                    // 距离越远，引力越大，但设置上限防止过快
-                    // 距离越近，引力减小，防止穿模震荡
-                    if (distance > 1) {
-                        const force = 0.05; // 引力系数
-                        p.vx += dx * force * 0.05; // 缓动跟随
-                        p.vy += dy * force * 0.05;
+                    if (distSq > 1) {
+                        const force = 0.1;
+                        this.pVx[i] += dx * force * 0.1; 
+                        this.pVy[i] += dy * force * 0.1;
                         
-                        // 施加较强的摩擦力，防止粒子在鼠标位置反复弹射过快
-                        p.vx *= 0.9;
-                        p.vy *= 0.9;
+                        this.pVx[i] *= 0.85; 
+                        this.pVy[i] *= 0.85;
                     }
                 } else if (this.mouse.x != null) {
-                    // --- 排斥模式 (原有逻辑) ---
-                    const dx = p.x - this.mouse.x;
-                    const dy = p.y - this.mouse.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    // --- 排斥模式 ---
+                    const dx = this.pX[i] - this.mouse.x;
+                    const dy = this.pY[i] - this.mouse.y;
+                    const distSq = dx * dx + dy * dy;
 
-                    if (distance < this.config.mouseRadius) {
+                    if (distSq < mouseRadiusSq) {
+                        const distance = Math.sqrt(distSq); // Only calculate sqrt when necessary
                         const forceDirectionX = dx / distance;
                         const forceDirectionY = dy / distance;
                         const force = (this.config.mouseRadius - distance) / this.config.mouseRadius;
                         
-                        // 施加排斥力
                         const repulseX = forceDirectionX * force * this.config.mouseForce;
                         const repulseY = forceDirectionY * force * this.config.mouseForce;
                         
-                        p.vx += repulseX;
-                        p.vy += repulseY;
+                        this.pVx[i] += repulseX;
+                        this.pVy[i] += repulseY;
                     }
                 }
 
-                // 3. 摩擦力/速度恢复 (让粒子慢慢平静下来)
-                // 仅在非聚拢模式或无鼠标时应用标准物理恢复，避免干扰聚拢效果
+                // 3. 摩擦力/速度恢复
                 if (!this.isGathering || this.mouse.x == null) {
-                    const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-                    if (speed > this.config.baseSpeed * 2) {
-                        p.vx *= 0.95;
-                        p.vy *= 0.95;
+                    const speedSq = this.pVx[i] * this.pVx[i] + this.pVy[i] * this.pVy[i];
+                    if (speedSq > baseSpeedSq) {
+                        this.pVx[i] *= 0.95;
+                        this.pVy[i] *= 0.95;
                     } else {
-                        // 缓慢恢复到原始游荡状态
-                        p.vx += (p.baseVx - p.vx) * 0.05;
-                        p.vy += (p.baseVy - p.vy) * 0.05;
+                        this.pVx[i] += (this.pBaseVx[i] - this.pVx[i]) * 0.05;
+                        this.pVy[i] += (this.pBaseVy[i] - this.pVy[i]) * 0.05;
                     }
                 }
 
                 // 4. 边界检查与反弹优化
-                // 当粒子碰到边界时，不仅反转速度，还要强制将其拉回画布内一点点，防止卡在边缘
-                // 修复：增加反弹时的最小速度，防止因动能耗尽粘在墙上
-                const padding = p.size; // 边距缓冲
-                const minReboundSpeed = this.config.baseSpeed * 1.5; // 反弹最小速度
+                const padding = this.pSize[i];
 
-                if (p.x < padding) {
-                    p.x = padding;
-                    p.vx = Math.abs(p.vx); 
-                    if (p.vx < minReboundSpeed) p.vx = minReboundSpeed + Math.random(); // 确保有足够动能离开墙壁
-                } else if (p.x > this.canvas.width - padding) {
-                    p.x = this.canvas.width - padding;
-                    p.vx = -Math.abs(p.vx);
-                    if (Math.abs(p.vx) < minReboundSpeed) p.vx = -(minReboundSpeed + Math.random());
+                if (this.pX[i] < padding) {
+                    this.pX[i] = padding;
+                    this.pVx[i] = Math.abs(this.pVx[i]); 
+                    if (this.pVx[i] < minReboundSpeed) this.pVx[i] = minReboundSpeed + Math.random();
+                } else if (this.pX[i] > width - padding) {
+                    this.pX[i] = width - padding;
+                    this.pVx[i] = -Math.abs(this.pVx[i]);
+                    if (Math.abs(this.pVx[i]) < minReboundSpeed) this.pVx[i] = -(minReboundSpeed + Math.random());
                 }
 
-                if (p.y < padding) {
-                    p.y = padding;
-                    p.vy = Math.abs(p.vy);
-                    if (p.vy < minReboundSpeed) p.vy = minReboundSpeed + Math.random();
-                } else if (p.y > this.canvas.height - padding) {
-                    p.y = this.canvas.height - padding;
-                    p.vy = -Math.abs(p.vy);
-                    if (Math.abs(p.vy) < minReboundSpeed) p.vy = -(minReboundSpeed + Math.random());
+                if (this.pY[i] < padding) {
+                    this.pY[i] = padding;
+                    this.pVy[i] = Math.abs(this.pVy[i]);
+                    if (this.pVy[i] < minReboundSpeed) this.pVy[i] = minReboundSpeed + Math.random();
+                } else if (this.pY[i] > height - padding) {
+                    this.pY[i] = height - padding;
+                    this.pVy[i] = -Math.abs(this.pVy[i]);
+                    if (Math.abs(this.pVy[i]) < minReboundSpeed) this.pVy[i] = -(minReboundSpeed + Math.random());
                 }
 
-                // 额外保险：如果粒子被鼠标用力推得太远（例如推到了负无穷），重置到画布中心
-                if (p.x < -100 || p.x > this.canvas.width + 100 || p.y < -100 || p.y > this.canvas.height + 100) {
-                    p.x = Math.random() * this.canvas.width;
-                    p.y = Math.random() * this.canvas.height;
-                    p.vx = (Math.random() - 0.5) * this.config.baseSpeed;
-                    p.vy = (Math.random() - 0.5) * this.config.baseSpeed;
+                // 额外保险
+                if (this.pX[i] < -100 || this.pX[i] > width + 100 || this.pY[i] < -100 || this.pY[i] > height + 100) {
+                    this.pX[i] = Math.random() * width;
+                    this.pY[i] = Math.random() * height;
+                    this.pVx[i] = (Math.random() - 0.5) * this.config.baseSpeed;
+                    this.pVy[i] = (Math.random() - 0.5) * this.config.baseSpeed;
                 }
 
-                // 5. 绘制
-                this.ctx.beginPath();
-                this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                this.ctx.fillStyle = this.config.color;
-                this.ctx.fill();
-            });
-
+                // 5. 绘制 - 使用 rect 替代 arc 以极大提升性能
+                // 对于极小的粒子（1-3px），正方形在视觉上和圆形区别很小，但绘制开销小得多
+                ctx.rect(this.pX[i], this.pY[i], this.pSize[i], this.pSize[i]);
+            }
+            
+            // 一次性填充所有粒子
+            ctx.fill();
+            
             requestAnimationFrame(() => this.animate());
         }
     };
