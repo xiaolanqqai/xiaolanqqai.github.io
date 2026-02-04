@@ -13,16 +13,16 @@ class ManagerCommon {
     }
 
     init() {
-        // 初始化页面加载进度条
-        this.initProgressBar();
-        
-        // 初始化错误处理
-        this.initErrorHandling();
-        
-        // 延迟初始化日志系统，确保DOM已加载
+        // 确保DOM已加载
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.initLogSystem());
+            document.addEventListener('DOMContentLoaded', () => {
+                this.initProgressBar();
+                this.initErrorHandling();
+                this.initLogSystem();
+            });
         } else {
+            this.initProgressBar();
+            this.initErrorHandling();
             this.initLogSystem();
         }
     }

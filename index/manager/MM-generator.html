@@ -677,7 +677,7 @@
             // 显示解密模态框
             function showDecryptModal() {
                 // 根据日期打乱解密时的图案顺序
-                PatternPassword.shufflePatterns();
+                PatternPassword.shufflePatterns('decrypt');
                 decryptModal.show();
             }
             
@@ -1196,6 +1196,6 @@
     
     
     <!-- 深色模式功能 -->
-    <script src="../../js/dark-mode.js"></script>
+    <!-- 已经由 header-component.js 引入，此处不再重复引入 -->
 </body>
 </html>
