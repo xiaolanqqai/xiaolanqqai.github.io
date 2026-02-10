@@ -58,29 +58,56 @@
 
 	// 延迟加载非关键资源
 	document.addEventListener('DOMContentLoaded', function () {
-		// 加载Bootstrap
+		// 并行加载资源
+
+		// 1. 加载Bootstrap
 		loadScript('js/bootstrap.bundle.min.js', function() {
-			// 加载诗词API
-			loadScript('https://sdk.jinrishici.com/v2/browser/jinrishici.js', function() {
+			// Bootstrap加载完成
+		});
+
+		// 2. 加载诗词API
+		loadScript('https://sdk.jinrishici.com/v2/browser/jinrishici.js', function() {
+			if (window.jinrishici) {
 				jinrishici.load(function(result) {
-					document.getElementById('jinrishici-sentence').innerHTML = result.data.content;
+					const el = document.getElementById('jinrishici-sentence');
+					if (el) el.innerHTML = result.data.content;
 				});
-			});
-			
-			// 加载导航数据
-			fetch('data/nav-data.json')
-				.then(response => response.json())
+			}
+		});
+		
+		// 3. 加载导航数据 (独立加载，带重试机制)
+		function loadNavData(retryCount = 0) {
+			// 添加时间戳防止缓存
+			fetch('data/nav-data.json?t=' + new Date().getTime())
+				.then(response => {
+					if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
+					return response.json();
+				})
 				.then(data => {
 					renderNavigation(data.index);
 					loadVersionInfo(data);
 				})
 				.catch(error => {
-					console.error('加载导航数据时出错:', error);
-					document.getElementById('nav-tabs-container').innerHTML = '<div class="alert alert-info">暂无导航数据，请先上传JSON文件</div>';
-					document.getElementById('uptime1').textContent = 'Beta:error';
-					document.getElementById('state1').textContent = 'Error';
+					console.error('加载导航数据时出错 (第 ' + (retryCount + 1) + ' 次尝试):', error);
+					
+					// 失败重试 (最多重试2次)
+					if (retryCount < 2) {
+						setTimeout(() => loadNavData(retryCount + 1), 1000);
+					} else {
+						// 最终失败处理
+						const container = document.getElementById('nav-tabs-container');
+						if (container) container.innerHTML = '<div class="alert alert-danger">加载数据失败，请检查网络或刷新页面</div>';
+						
+						const uptime = document.getElementById('uptime1');
+						if (uptime) uptime.textContent = 'Beta:error';
+						
+						const state = document.getElementById('state1');
+						if (state) state.textContent = 'Error';
+					}
 				});
-		});
+		}
+
+		loadNavData();
 	});
 
 	function renderNavigation(navData) {
