@@ -316,7 +316,7 @@
         
         // 从本地JSON文件加载数据
         function loadVersionDataFromFile() {
-            const filePath = '../../../data/vols.json';
+            const filePath = '/data/version-history.json';
             
             common.log('开始加载数据', 'info', `文件路径: ${filePath}, 来源: 本地文件`);
             
@@ -370,7 +370,7 @@
         async function saveToGithub() {
             if (!common) return;
             try {
-                const path = 'data/vols.json';
+                const path = 'data/version-history.json';
                 await common.syncToGithub(path, versionData);
             } catch (error) {
                 // 错误已由 common.syncToGithub 处理
@@ -574,7 +574,7 @@
                 const dataBlob = new Blob([dataStr], {type: 'application/json'});
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(dataBlob);
-                link.download = 'vols.json';
+                link.download = 'version-history.json';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
