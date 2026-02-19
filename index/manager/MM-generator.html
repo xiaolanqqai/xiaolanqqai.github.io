@@ -362,33 +362,31 @@
             // 根据日期打乱图案顺序（仅解密时使用）
             static shufflePatterns(modalType) {
                 if (modalType !== 'decrypt') return;
-                
+                const container = document.querySelector('#decryptModal .pattern-buttons');
+                if (!container) return;
+
                 const patterns = ['A', 'B', 'C', 'D'];
                 const today = new Date();
                 const dayOfMonth = today.getDate();
-                
-                // 根据日期生成伪随机数
+
                 const seed = dayOfMonth;
                 for (let i = patterns.length - 1; i > 0; i--) {
                     const j = (seed + i) % (i + 1);
                     [patterns[i], patterns[j]] = [patterns[j], patterns[i]];
                 }
-                
-                // 更新按钮顺序
-                const patternButtons = document.querySelectorAll('.pattern-btn');
-                if (patternButtons.length === 0) return;
-                
-                const parent = patternButtons[0].parentElement;
-                
-                // 移除所有按钮
-                patternButtons.forEach(btn => {
-                    if (parent.contains(btn)) parent.removeChild(btn);
-                });
-                
-                // 重新添加按钮（打乱顺序）
+
+                const buttonsMap = {};
                 patterns.forEach(pattern => {
                     const btn = document.getElementById(`pattern${pattern}`);
-                    if (btn) parent.appendChild(btn);
+                    if (btn && container.contains(btn)) {
+                        buttonsMap[pattern] = btn;
+                    }
+                });
+
+                container.innerHTML = '';
+                patterns.forEach(pattern => {
+                    const btn = buttonsMap[pattern];
+                    if (btn) container.appendChild(btn);
                 });
             }
         }
