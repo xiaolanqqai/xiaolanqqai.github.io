@@ -188,11 +188,11 @@
                                 <label for="passwordPattern" class="form-label">MM:</label>
                                 <input type="text" class="form-control" id="passwordPattern" placeholder="例如: 大经典、错位小@数字">
                                 <div class="mt-2 d-flex flex-wrap gap-2">
-                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="大经典">大经典</button>
-                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="小经典">小经典</button>
-                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="错位小">错位小</button>
-                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="@">@</button>
-                                    <button class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="数字">数字</button>
+                                    <button type="button" class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="大经典">大经典</button>
+                                    <button type="button" class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="小经典">小经典</button>
+                                    <button type="button" class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="错位小">错位小</button>
+                                    <button type="button" class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="@">@</button>
+                                    <button type="button" class="quick-insert-btn btn btn-sm btn-outline-primary" data-value="数字">数字</button>
                                 </div>
                             </div>
                             
@@ -215,11 +215,11 @@
                                 <label for="editPasswordPattern" class="form-label">MM:</label>
                                 <input type="text" class="form-control" id="editPasswordPattern" placeholder="例如: 大经典、错位小@数字">
                                 <div class="mt-2 d-flex flex-wrap gap-2">
-                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="大经典">大经典</button>
-                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="小经典">小经典</button>
-                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="错位小">错位小</button>
-                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="@">@</button>
-                                    <button class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="数字">数字</button>
+                                    <button type="button" class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="大经典">大经典</button>
+                                    <button type="button" class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="小经典">小经典</button>
+                                    <button type="button" class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="错位小">错位小</button>
+                                    <button type="button" class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="@">@</button>
+                                    <button type="button" class="quick-insert-btn-edit btn btn-sm btn-outline-primary" data-value="数字">数字</button>
                                 </div>
                             </div>
                             
@@ -552,7 +552,9 @@
                 common.log('开始从网络加载文件', 'info', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 来源: 网络加载`);
                 
                 console.log('开始从URL加载文件:', FIXED_URL);
-                fetch(FIXED_URL)
+                // 添加时间戳防止缓存
+                const fetchUrl = FIXED_URL + (FIXED_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+                fetch(fetchUrl, { cache: 'no-cache' })
                     .then(response => {
                         console.log('收到响应:', response.status);
                         if (!response.ok) {
@@ -910,12 +912,18 @@
                 try {
                     // 生成 JSON 内容
                     const content = generateDownloadContent();
+                    console.log(`准备同步 ${entries.length} 个条目到 GitHub`);
+                    common.log('开始同步到 GitHub', 'info', `待同步条目数: ${entries.length}`);
                     
                     // 加密内容
                     const encryptedContent = await ManagerCommon.AES.encrypt(content, password);
                     
                     // 同步到 GitHub
-                    await common.syncToGithub('data/MM.json', encryptedContent);
+                    const result = await common.syncToGithub('data/MM.json', encryptedContent);
+                    
+                    if (result) {
+                        common.log('GitHub 同步任务提交成功', 'success', `SHA: ${result.content.sha}`);
+                    }
 
                     githubSyncEncryptModal.hide();
                 } catch (error) {
