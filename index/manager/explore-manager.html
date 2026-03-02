@@ -9,6 +9,7 @@
     <script src="../../js/components/header-component.js"></script>
     
     <!-- 引入通用脚本 -->
+    <script src="../../js/bootstrap.bundle.min.js"></script>
     <script src="../../js/manager-common.js"></script>
     <script src="../../js/github-api-helper.js"></script>
 </head>
@@ -916,12 +917,21 @@
                 container.innerHTML = '';
                 pagedRecords.forEach(record => {
                     const tr = document.createElement('tr');
+                    tr.style.cursor = 'pointer';
                     tr.innerHTML = `
                         <td><input type="checkbox" class="history-item-checkbox" data-url="${record.url}" data-title="${record.title}" data-count="${record.count}"></td>
                         <td class="text-truncate" style="max-width: 200px;" title="${record.title}">${record.title}</td>
-                        <td class="text-truncate" style="max-width: 300px;"><a href="${record.url}" target="_blank">${record.url}</a></td>
+                        <td class="text-truncate" style="max-width: 300px;"><a href="${record.url}" target="_blank" class="history-link">${record.url}</a></td>
                         <td><span class="badge bg-info">${record.count}</span></td>
                     `;
+                    
+                    // 点击行时打开链接（排除点击复选框和链接本身的情况）
+                     tr.addEventListener('click', (e) => {
+                         if (!e.target.classList.contains('history-item-checkbox') && e.target.tagName !== 'A') {
+                             window.open(record.url, '_blank');
+                         }
+                     });
+                    
                     container.appendChild(tr);
                 });
 

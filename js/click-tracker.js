@@ -17,9 +17,20 @@
     const recordClick = debounce(function(url, title) {
         if (!url || url.startsWith('javascript:') || url.startsWith('#')) return;
 
-        // 生成简易 md5 (此处使用简单的哈希模拟，或直接使用 URL，根据要求使用 md5)
-        // 为简单起见，这里直接使用 URL 作为 key 的一部分，实际项目中建议引入 md5 库
-        const storageKey = `nav_history_click_${btoa(url).substring(0, 16)}`;
+        // 使用 URL 的一部分作为 key，确保跨字符集兼容
+        // 使用 encodeURIComponent 处理 URL 以防 btoa 报错
+        let safeUrlKey;
+        try {
+            safeUrlKey = btoa(encodeURIComponent(url)).substring(0, 16);
+        } catch (e) {
+            // 回退方案：使用简单的哈希
+            safeUrlKey = url.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0).toString(16);
+        }
+        
+        const storageKey = `nav_history_click_${safeUrlKey}`;
         
         try {
             const now = new Date().toISOString();
@@ -51,9 +62,12 @@
     document.addEventListener('click', function(e) {
         const anchor = e.target.closest('a');
         if (anchor && anchor.href) {
+            // 排除一些不需要追踪的情况，比如内部脚本跳转、空链接等
             const url = anchor.href;
+            if (!url || url.startsWith('javascript:') || url.startsWith('#') || url.includes('MM-generator.html')) return;
+            
             const title = anchor.innerText.trim() || anchor.title || anchor.getAttribute('aria-label');
             recordClick(url, title);
         }
-    }, true);
+    }, false); // 改为冒泡阶段，减少对其他捕获型监听器的干扰
 })();
