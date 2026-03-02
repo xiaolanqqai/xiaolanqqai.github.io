@@ -41,6 +41,9 @@
         
         <!-- 深色模式逻辑 (自动加载) -->
         <script src="${basePath}js/dark-mode.js" defer></script>
+        
+        <!-- 点击追踪逻辑 -->
+        <script src="${basePath}js/click-tracker.js" defer></script>
     `;
 
     document.write(headContent);

@@ -76,6 +76,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="trending-tab" data-bs-toggle="tab" data-bs-target="#trending" type="button" role="tab" aria-controls="trending" aria-selected="false">热门</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">最近点击</button>
+                </li>
             </ul>
         </div>
         
@@ -162,6 +165,42 @@
                         <i class="fas fa-star text-warning mb-3 fs-1"></i>
                         <h4>还没有收藏网站</h4>
                         <p class="mb-0">浏览"发现"或"热门"标签页，点击星标图标收藏您喜欢的网站</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 最近点击标签页 -->
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                <div class="manager-card border-info">
+                    <div class="manager-card-header bg-info text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>最近点击 (点击次数 ≥ 2)</h5>
+                        <div class="btn-group">
+                            <button id="selectAllHistory" class="btn btn-sm btn-light">全选</button>
+                            <button id="generateHistoryBtn" class="btn btn-sm btn-primary">生成 History 类目</button>
+                        </div>
+                    </div>
+                    <div class="manager-card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="historyTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="40"><input type="checkbox" id="historyMainCheckbox"></th>
+                                        <th>网站标题</th>
+                                        <th>URL</th>
+                                        <th width="100">点击次数</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyList">
+                                    <!-- 历史记录将在这里动态生成 -->
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>正在加载历史记录...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="historyPagination" class="p-3 d-flex justify-content-center"></div>
                     </div>
                 </div>
             </div>
@@ -824,8 +863,181 @@
                     button.addEventListener('shown.bs.tab', () => {
                         if (button.id === 'favorites-tab') {
                             renderFavorites();
+                        } else if (button.id === 'history-tab') {
+                            renderHistoryList();
                         }
                     });
+                });
+            }
+
+            // --- 最近点击 (History) 功能逻辑 ---
+            let historyRecords = [];
+            const HISTORY_PAGE_SIZE = 10;
+            let currentHistoryPage = 1;
+
+            // 加载历史记录
+            function loadHistoryRecords() {
+                historyRecords = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('nav_history_click_')) {
+                        try {
+                            const data = JSON.parse(localStorage.getItem(key));
+                            // 过滤点击次数 >= 2
+                            if (data && data.count >= 2) {
+                                historyRecords.push(data);
+                            }
+                        } catch (e) {
+                            console.error('解析历史记录失败:', e);
+                        }
+                    }
+                }
+                // 按点击次数降序排列
+                historyRecords.sort((a, b) => b.count - a.count);
+            }
+
+            // 渲染历史记录列表
+            function renderHistoryList() {
+                loadHistoryRecords();
+                const container = document.getElementById('historyList');
+                const paginationContainer = document.getElementById('historyPagination');
+                
+                if (historyRecords.length === 0) {
+                    container.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">暂无点击次数超过2次的记录</td></tr>`;
+                    paginationContainer.innerHTML = '';
+                    return;
+                }
+
+                const totalPages = Math.ceil(historyRecords.length / HISTORY_PAGE_SIZE);
+                const start = (currentHistoryPage - 1) * HISTORY_PAGE_SIZE;
+                const end = start + HISTORY_PAGE_SIZE;
+                const pagedRecords = historyRecords.slice(start, end);
+
+                container.innerHTML = '';
+                pagedRecords.forEach(record => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><input type="checkbox" class="history-item-checkbox" data-url="${record.url}" data-title="${record.title}" data-count="${record.count}"></td>
+                        <td class="text-truncate" style="max-width: 200px;" title="${record.title}">${record.title}</td>
+                        <td class="text-truncate" style="max-width: 300px;"><a href="${record.url}" target="_blank">${record.url}</a></td>
+                        <td><span class="badge bg-info">${record.count}</span></td>
+                    `;
+                    container.appendChild(tr);
+                });
+
+                // 渲染分页
+                renderHistoryPagination(totalPages);
+                
+                // 重置全选状态
+                document.getElementById('historyMainCheckbox').checked = false;
+            }
+
+            function renderHistoryPagination(totalPages) {
+                const container = document.getElementById('historyPagination');
+                if (totalPages <= 1) {
+                    container.innerHTML = '';
+                    return;
+                }
+
+                let html = '<nav><ul class="pagination pagination-sm mb-0">';
+                for (let i = 1; i <= totalPages; i++) {
+                    html += `<li class="page-item ${i === currentHistoryPage ? 'active' : ''}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+                }
+                html += '</ul></nav>';
+                container.innerHTML = html;
+
+                container.querySelectorAll('.page-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentHistoryPage = parseInt(link.dataset.page);
+                        renderHistoryList();
+                    });
+                });
+            }
+
+            // 初始化历史记录功能
+            function initHistoryActions() {
+                const mainCheckbox = document.getElementById('historyMainCheckbox');
+                const selectAllBtn = document.getElementById('selectAllHistory');
+                const generateBtn = document.getElementById('generateHistoryBtn');
+
+                // 全选/反选 (当前页)
+                mainCheckbox.addEventListener('change', () => {
+                    document.querySelectorAll('.history-item-checkbox').forEach(cb => {
+                        cb.checked = mainCheckbox.checked;
+                    });
+                });
+
+                // 全选按钮 (所有页)
+                selectAllBtn.addEventListener('click', () => {
+                    const isAllSelected = Array.from(document.querySelectorAll('.history-item-checkbox')).every(cb => cb.checked);
+                    document.querySelectorAll('.history-item-checkbox').forEach(cb => {
+                        cb.checked = !isAllSelected;
+                    });
+                    mainCheckbox.checked = !isAllSelected;
+                });
+
+                // 生成 History 类目并写入 JSON
+                generateBtn.addEventListener('click', async () => {
+                    const selectedCheckboxes = document.querySelectorAll('.history-item-checkbox:checked');
+                    if (selectedCheckboxes.length === 0) {
+                        common.showAlert('请至少勾选一条记录', 'warning');
+                        return;
+                    }
+
+                    const selectedSites = Array.from(selectedCheckboxes).map(cb => ({
+                        title: cb.dataset.title,
+                        url: cb.dataset.url,
+                        count: parseInt(cb.dataset.count),
+                        icon: `https://api.afmax.cn/so/ico/index.php?r=${encodeURIComponent(cb.dataset.url)}`
+                    }));
+
+                    try {
+                        common.showLoading('正在更新导航数据...');
+                        
+                        // 获取当前的 nav-data.json
+                        const response = await fetch('../../data/nav-data.json?t=' + Date.now());
+                        if (!response.ok) throw new Error('读取 nav-data.json 失败');
+                        const navData = await response.json();
+
+                        // 确保 History 类目存在
+                        if (!navData.index.tabs.find(t => t.name === 'History')) {
+                            // 查找 Network 的位置
+                            const networkIndex = navData.index.tabs.findIndex(t => t.name === 'Network');
+                            const historyTab = {
+                                name: "History",
+                                items: selectedSites
+                            };
+                            
+                            if (networkIndex !== -1) {
+                                navData.index.tabs.splice(networkIndex + 1, 0, historyTab);
+                            } else {
+                                navData.index.tabs.push(historyTab);
+                            }
+                        } else {
+                            // 更新现有的 History 类目
+                            const historyTab = navData.index.tabs.find(t => t.name === 'History');
+                            // 合并并去重
+                            selectedSites.forEach(newSite => {
+                                const existingIndex = historyTab.items.findIndex(s => s.url === newSite.url);
+                                if (existingIndex !== -1) {
+                                    historyTab.items[existingIndex] = newSite;
+                                } else {
+                                    historyTab.items.push(newSite);
+                                }
+                            });
+                        }
+
+                        // 同步到 GitHub (借用 common.syncToGithub)
+                        await common.syncToGithub('data/nav-data.json', navData, `Update History category with ${selectedSites.length} sites`);
+                        
+                        common.hideLoading();
+                        common.showAlert(`成功生成并同步！导入了 ${selectedSites.length} 条记录。`, 'success');
+                        common.log('成功更新了 History 类目', 'success', `导入记录数: ${selectedSites.length}`);
+                    } catch (error) {
+                        common.hideLoading();
+                        common.handleError(error, '生成 History 类目');
+                    }
                 });
             }
             
@@ -840,6 +1052,7 @@
                 initLoadMore();
                 initAddSiteForm();
                 initTabs();
+                initHistoryActions(); // 初始化历史记录动作
                 
                 // 尝试从 GitHub 加载最新数据
                 loadFromGithub();

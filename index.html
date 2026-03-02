@@ -123,6 +123,10 @@
 			tabElement.className = `nav-link btn nav-top ${index === 0 ? 'active' : ''}`;
 			tabElement.textContent = tab.name;
 			tabElement.setAttribute('data-tab', tabId);
+			if (tab.name === 'History') {
+				tabElement.title = '最近常点';
+				// 添加 tooltip 初始化逻辑 (如果使用了 bootstrap tooltip)
+			}
 			tabElement.href = '#';
 			
 			// 点击切换
