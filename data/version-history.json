@@ -1,4 +1,10 @@
 {
+  "dependencies": {
+    "bootstrap": "BOOSTRAP_v5.3.0-alpha3",
+    "jquery": "JQuery_v3.5.1",
+    "particles": "Particles_v2.2.3",
+    "site_data": "网站数据_v4.3_20260302"
+  },
   "versions": [
     {
       "name": "BETA 4.3",

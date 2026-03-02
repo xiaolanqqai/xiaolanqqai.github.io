@@ -88,6 +88,18 @@
                 </div>
             </div>
             <div class="col-md-3">
+                <div class="card manager-feature-card h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-warning mb-3"><i class="fas fa-layer-group"></i></div>
+                        <h5>核心依赖版本</h5>
+                        <p class="flex-grow-1">更新系统核心库版本信息</p>
+                        <button class="btn btn-outline-warning mt-2" data-bs-toggle="modal" data-bs-target="#editDepsModal">
+                            <i class="fas fa-edit me-1"></i>编辑依赖
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="card manager-feature-card h-100 border-primary shadow-sm">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-info mb-3"><i class="fab fa-github"></i></div>
@@ -177,6 +189,42 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                     <button type="button" class="btn manager-btn-primary" id="confirmAddVersion">添加版本</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑依赖模态框 -->
+    <div class="modal fade" id="editDepsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑核心依赖版本</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDepsForm">
+                        <div class="mb-3">
+                            <label for="depBootstrap" class="form-label">Bootstrap 版本</label>
+                            <input type="text" class="form-control" id="depBootstrap" placeholder="例如: BOOSTRAP_v5.3.0-alpha3">
+                        </div>
+                        <div class="mb-3">
+                            <label for="depJquery" class="form-label">jQuery 版本</label>
+                            <input type="text" class="form-control" id="depJquery" placeholder="例如: JQuery_v3.5.1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="depParticles" class="form-label">Particles 版本</label>
+                            <input type="text" class="form-control" id="depParticles" placeholder="例如: Particles_v2.2.3">
+                        </div>
+                        <div class="mb-3">
+                            <label for="depSiteData" class="form-label">网站数据版本</label>
+                            <input type="text" class="form-control" id="depSiteData" placeholder="例如: 网站数据_v4.3_20260302">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning" id="confirmEditDeps">保存修改</button>
                 </div>
             </div>
         </div>
@@ -272,6 +320,7 @@
 
         function setupEventListeners() {
             confirmAddVersion.addEventListener('click', addNewVersion);
+            document.getElementById('confirmEditDeps').addEventListener('click', saveDeps);
             confirmImport.addEventListener('click', processImportedFile);
             sortByDateBtn.addEventListener('click', sortVersionsByDate);
             saveDataBtn.addEventListener('click', exportVersionData);
@@ -282,6 +331,16 @@
             // 为添加版本模态框添加显示事件监听器，设置默认值
             document.getElementById('addVersionModal').addEventListener('show.bs.modal', function() {
                 setDefaultValues();
+            });
+
+            // 为编辑依赖模态框添加显示事件监听器，回显当前值
+            document.getElementById('editDepsModal').addEventListener('show.bs.modal', function() {
+                if (versionData.dependencies) {
+                    document.getElementById('depBootstrap').value = versionData.dependencies.bootstrap || '';
+                    document.getElementById('depJquery').value = versionData.dependencies.jquery || '';
+                    document.getElementById('depParticles').value = versionData.dependencies.particles || '';
+                    document.getElementById('depSiteData').value = versionData.dependencies.site_data || '';
+                }
             });
             
             jsonFileInput.addEventListener('change', handleFileSelect);
@@ -481,6 +540,25 @@
             return changes.map(change => {
                 return `<div class="border-bottom py-2">${change}</div>`;
             }).join('');
+        }
+
+        // 保存依赖信息
+        function saveDeps() {
+            const bootstrapVal = document.getElementById('depBootstrap').value.trim();
+            const jqueryVal = document.getElementById('depJquery').value.trim();
+            const particlesVal = document.getElementById('depParticles').value.trim();
+            const siteDataVal = document.getElementById('depSiteData').value.trim();
+
+            if (!versionData.dependencies) versionData.dependencies = {};
+            
+            versionData.dependencies.bootstrap = bootstrapVal;
+            versionData.dependencies.jquery = jqueryVal;
+            versionData.dependencies.particles = particlesVal;
+            versionData.dependencies.site_data = siteDataVal;
+
+            bootstrap.Modal.getInstance(document.getElementById('editDepsModal')).hide();
+            common.showAlert('依赖版本信息已更新，请记得同步到云端', 'success');
+            common.log('更新了核心依赖版本信息', 'info');
         }
         
         // 设置添加版本表单的默认值

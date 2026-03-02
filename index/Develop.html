@@ -21,14 +21,10 @@
             <div id="nav-content-container"></div>
             
             <div class="mt-3">
-                <div class="alert alert-success shadow" role="alert">
-                    <h5 class="alert-heading">BOOSTRAP_v5.3.0-alpha3</h5>
-                    <h5 class="alert-heading">JQuery_v3.5.1</h5>
-                    <h5 class="alert-heading">Particles_v2.2.3</h5>
-                    <hr class="my-2">
-                    <h5 class="alert-heading">网站数据_v1.0_20250901</h5>
-                    <hr class="my-2">
-                    <div id="version-history"></div>
+                <div class="alert alert-success shadow" role="alert" id="dependency-info">
+                    <div class="text-center p-3">
+                        <i class="fas fa-spinner fa-spin me-2"></i>正在加载系统信息...
+                    </div>
                 </div>
                 <div class="alert alert-info shadow" role="alert">旧站点版本 2.4 --><a href="https://xiaolanqqai.github.io/" class="badge badge-light">网址</a></div>
                 <div class="alert alert-info shadow" role="alert">旧站点版本 1.0 --><a href="https://xiaolanqqai.github.io/" class="badge badge-light">网址</a></div>
@@ -102,9 +98,25 @@
         });
 
         // 加载版本信息
-        fetch('../data/vols.json')
+        fetch('../data/version-history.json')
             .then(response => response.json())
             .then(data => {
+                // 1. 渲染依赖信息
+                const depContainer = document.getElementById('dependency-info');
+                if (depContainer && data.dependencies) {
+                    const deps = data.dependencies;
+                    depContainer.innerHTML = `
+                        <h5 class="alert-heading">${deps.bootstrap || 'Bootstrap'}</h5>
+                        <h5 class="alert-heading">${deps.jquery || 'jQuery'}</h5>
+                        <h5 class="alert-heading">${deps.particles || 'Particles'}</h5>
+                        <hr class="my-2">
+                        <h5 class="alert-heading">${deps.site_data || '网站数据'}</h5>
+                        <hr class="my-2">
+                        <div id="version-history"></div>
+                    `;
+                }
+
+                // 2. 渲染版本历史
                 const versionContainer = document.getElementById('version-history');
                 if (!versionContainer) return;
                 let html = '';
