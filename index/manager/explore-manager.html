@@ -119,8 +119,8 @@
             </div>
         </div>
 
-        <!-- 分类过滤 -->
-        <div class="mb-4">
+        <!-- 分类过滤 (仅在收藏和热门标签页显示) -->
+        <div class="mb-4" id="categoryFilterContainer">
             <h6 class="mb-3 text-muted small"><i class="fas fa-filter me-2"></i>按分类发现</h6>
             <div class="tag-cloud" id="categoryFilter">
                 <a href="#" class="category-tag active" data-category="all">全部</a>
@@ -133,6 +133,14 @@
                 <a href="#" class="category-tag" data-category="news">新闻</a>
                 <a href="#" class="category-tag" data-category="social">社交</a>
                 <a href="#" class="category-tag" data-category="other">其他</a>
+            </div>
+        </div>
+
+        <!-- 发现结果区域 (新增) -->
+        <div id="discoverResultsContainer" class="mb-5 d-none">
+            <h6 class="mb-3 text-muted small"><i class="fas fa-search me-2"></i>发现结果</h6>
+            <div class="row" id="discoverResults">
+                <!-- 发现结果卡片将在这里渲染 -->
             </div>
         </div>
         
@@ -721,14 +729,17 @@
             function initSearch() {
                 const searchInput = document.getElementById('searchInput');
                 const searchButton = document.getElementById('searchButton');
+                const discoverResultsContainer = document.getElementById('discoverResultsContainer');
                 
                 function performSearch() {
                     const query = searchInput.value.toLowerCase().trim();
                     if (!query) {
+                        discoverResultsContainer.classList.add('d-none');
                         renderDiscoverCards(mockSites);
                         return;
                     }
                     
+                    discoverResultsContainer.classList.remove('d-none');
                     const results = mockSites.filter(site => 
                         site.name.toLowerCase().includes(query) ||
                         site.description.toLowerCase().includes(query) ||
@@ -747,6 +758,7 @@
             // 分类过滤功能
             function initCategoryFilter() {
                 const categoryTags = document.querySelectorAll('.category-tag');
+                const discoverResultsContainer = document.getElementById('discoverResultsContainer');
                 
                 categoryTags.forEach(tag => {
                     tag.addEventListener('click', (e) => {
@@ -759,8 +771,10 @@
                         const category = tag.getAttribute('data-category');
                         
                         if (category === 'all') {
+                            discoverResultsContainer.classList.add('d-none');
                             renderDiscoverCards(mockSites);
                         } else {
+                            discoverResultsContainer.classList.remove('d-none');
                             const filtered = mockSites.filter(site => site.category.includes(category));
                             renderDiscoverCards(filtered);
                         }
@@ -859,13 +873,23 @@
             // 初始化标签页切换
             function initTabs() {
                 const tabButtons = document.querySelectorAll('#exploreTabs button');
+                const categoryFilterContainer = document.getElementById('categoryFilterContainer');
+                const discoverResultsContainer = document.getElementById('discoverResultsContainer');
                 
                 tabButtons.forEach(button => {
                     button.addEventListener('shown.bs.tab', () => {
                         if (button.id === 'favorites-tab') {
                             renderFavorites();
+                            categoryFilterContainer.classList.remove('d-none');
+                            discoverResultsContainer.classList.add('d-none');
                         } else if (button.id === 'history-tab') {
                             renderHistoryList();
+                            categoryFilterContainer.classList.add('d-none');
+                            discoverResultsContainer.classList.add('d-none');
+                        } else if (button.id === 'trending-tab') {
+                            renderTrendingList(mockSites);
+                            categoryFilterContainer.classList.remove('d-none');
+                            discoverResultsContainer.classList.add('d-none');
                         }
                     });
                 });
