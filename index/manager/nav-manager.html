@@ -5,45 +5,13 @@
     <title>导航数据管理系统</title>
     <!-- 模块化 Header 组件 -->
     <script src="../../js/components/header-component.js"></script>
+    <script src="../../js/components/manager-component.js"></script>
     
     <!-- 引入通用脚本 -->
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
 </head>
 <body class="manager-body">
-    <!-- 返回首页按钮 -->
-    <a href="../../index.html" class="home-button" title="返回首页">
-        <i class="fas fa-home"></i>
-    </a>
-    
-    <!-- 主题切换按钮将由manager-common.js自动创建 -->
-    
-    <!-- 管理页面导航栏 -->
-    <div class="manager-nav">
-        <a href="nav-manager.html" class="manager-nav-button active" title="导航数据管理">
-            <i class="fas fa-sitemap"></i>
-        </a>
-        <a href="MM-generator.html" class="manager-nav-button" title="密码生成器">
-            <i class="fas fa-key"></i>
-        </a>
-        <a href="vol-manager.html" class="manager-nav-button" title="版本管理">
-            <i class="fas fa-code-branch"></i>
-        </a>
-        <a href="explore-manager.html" class="manager-nav-button" title="探索网页">
-            <i class="fas fa-compass"></i>
-        </a>
-        <!-- 操作日志按钮 -->
-        <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
-            <i class="fas fa-exclamation-circle"></i>
-        </button>
-    </div>
-    <div class="manager-header header-gradient py-4 mb-4">
-        <div class="container">
-            <h1 class="text-center mb-2 text-light">导航数据管理系统</h1>
-            <p class="text-center mb-0 text-light opacity-75">管理您的网站导航选项卡内容</p>
-        </div>
-    </div>
-    
     <div class="container container-main">
         <!-- 版本信息 -->
         <div class="version-info p-3 mb-3">

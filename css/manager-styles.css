@@ -181,32 +181,6 @@ body {
     transition: width 0.3s ease;
 }
 
-/* 返回首页按钮 */
-.home-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--dark-color);
-    color: var(--text-light);
-    border: none;
-    box-shadow: var(--shadow);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    z-index: 1000;
-    transition: var(--transition);
-}
-
-.home-button:hover {
-    transform: scale(1.1);
-    box-shadow: var(--shadow-lg);
-    color: white;
-}
-
 /* 管理页面导航栏 */
 .manager-nav {
     display: flex;
