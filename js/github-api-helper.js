@@ -76,6 +76,31 @@ class GitHubAPIHelper {
     }
 
     /**
+     * 获取 GitHub 上的文件内容
+     * @param {string} path 文件路径
+     */
+    async getFile(path) {
+        if (!this.isConfigured()) {
+            throw new Error('GitHub Token 未配置或无效。');
+        }
+
+        const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/contents/${path}?ref=${this.config.branch}`;
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `token ${this.config.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (!response.ok) {
+            if (response.status === 404) return null;
+            throw new Error(`获取文件失败: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
+    /**
      * 更新 GitHub 上的文件
      * @param {string} path 文件路径
      * @param {string} content 文件内容（字符串）

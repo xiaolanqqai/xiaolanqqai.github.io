@@ -521,31 +521,59 @@ class ManagerCommon {
         }
     };
 
-    // GitHub 同步助手
-    async syncToGithub(path, data, commitMessage = null) {
+    // --- GitHub API 统一管理 ---
+
+    /**
+     * 同步数据到 GitHub
+     * @param {string} path 文件路径
+     * @param {Object|string} data 数据对象或字符串
+     * @param {string} message 提交信息
+     */
+    async syncToGithub(path, data, message = 'Update data via Web Manager') {
         if (!window.githubHelper) {
-            this.handleError(new Error('GitHub API Helper 未加载'), 'GitHub 同步');
+            this.handleError(new Error('GitHub API 助手未加载'), 'GitHub 同步');
             return null;
         }
 
-        const message = commitMessage || `Update ${path} via Web Manager (${new Date().toLocaleString()})`;
-        
         try {
-            this.showLoading(`正在同步 ${path} 到 GitHub...`);
-            this.log(`开始同步到 GitHub: ${path}`, 'info');
-
-            const dataStr = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
-            const result = await window.githubHelper.updateFile(path, dataStr, message);
-
-            this.hideLoading();
-            this.showToast('数据已成功同步到 GitHub 仓库！', 'success');
-            this.log('GitHub 同步成功', 'success', `文件: ${path}, SHA: ${result.content.sha}`);
+            this.showLoading('正在同步到 GitHub...');
+            const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            const result = await window.githubHelper.updateFile(path, content, message);
             
+            this.hideLoading();
+            this.showToast('同步成功！数据已更新到仓库。', 'success');
+            this.log('GitHub 同步成功', 'success', `路径: ${path}`);
             return result;
         } catch (error) {
             this.hideLoading();
             this.handleError(error, 'GitHub 同步');
-            throw error;
+            return null;
+        }
+    }
+
+    /**
+     * 从 GitHub 获取数据
+     * @param {string} path 文件路径
+     */
+    async getFromGithub(path) {
+        if (!window.githubHelper) {
+            this.handleError(new Error('GitHub API 助手未加载'), 'GitHub 加载');
+            return null;
+        }
+
+        try {
+            this.log(`正在从 GitHub 加载: ${path}`, 'info');
+            const response = await window.githubHelper.getFile(path);
+            
+            if (response && response.content) {
+                // 解码 Base64 内容 (处理中文字符)
+                const decodedContent = decodeURIComponent(escape(atob(response.content)));
+                return JSON.parse(decodedContent);
+            }
+            return null;
+        } catch (error) {
+            this.handleError(error, 'GitHub 加载');
+            return null;
         }
     }
 }

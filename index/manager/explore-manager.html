@@ -10,8 +10,8 @@
     
     <!-- 引入通用脚本 -->
     <script src="../../js/bootstrap.bundle.min.js"></script>
-    <script src="../../js/manager-common.js"></script>
     <script src="../../js/github-api-helper.js"></script>
+    <script src="../../js/manager-common.js"></script>
 </head>
 <body class="manager-body">
     <!-- 返回首页按钮 -->
@@ -216,12 +216,8 @@
             // 从 GitHub 加载数据
             async function loadFromGithub() {
                 try {
-                    const path = 'data/explore-data.json';
-                    const response = await window.githubHelper.getFile(path);
-                    if (response && response.content) {
-                        const decodedContent = decodeURIComponent(escape(atob(response.content)));
-                        const data = JSON.parse(decodedContent);
-                        
+                    const data = await common.getFromGithub('data/explore-data.json');
+                    if (data) {
                         if (data.favorites) {
                             favorites.length = 0;
                             favorites.push(...data.favorites);
@@ -229,15 +225,10 @@
                         }
                         
                         renderFavorites();
-                        
-                        common.log('从 GitHub 加载数据成功', 'success');
+                        common.log('从 GitHub 加载收藏数据成功', 'success');
                     }
                 } catch (error) {
                     console.error('从 GitHub 加载数据失败:', error);
-                    // 如果文件不存在，这是正常的（第一次同步前）
-                    if (error.status !== 404) {
-                        common.log('从 GitHub 加载数据失败', 'error', error.message);
-                    }
                 }
             }
 
