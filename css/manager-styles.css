@@ -190,11 +190,11 @@ body {
     border-radius: 0;
     margin-bottom: 20px;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: center !important; /* 强制居中 */
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100% !important; /* 强制全宽 */
     z-index: 999;
     box-shadow: var(--shadow-md);
     transition: var(--transition);

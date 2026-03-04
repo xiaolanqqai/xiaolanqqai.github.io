@@ -8,12 +8,11 @@
     <script src="../../js/components/manager-component.js"></script>
     
     <!-- 引入通用脚本 -->
-    <script src="../../js/bootstrap.bundle.min.js"></script>
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
 </head>
-<body class="manager-body d-flex flex-column min-vh-100 p-3">
-    <div class="container flex-grow-1 d-flex flex-column">
+<body class="manager-body">
+    <div class="container container-main">
         
         <!-- 解密模态框 -->
         <div class="modal fade" id="decryptModal" tabindex="-1" aria-labelledby="decryptModalLabel" aria-hidden="true">
@@ -1134,7 +1133,14 @@
         </div>
     </div>
 
-    <!-- 深色模式功能 -->
-    <!-- 已经由 header-component.js 引入，此处不再重复引入 -->
+    <!-- 页脚 -->
+    <div class="manager-footer py-3 mt-4">
+        <div class="container text-center">
+            <p class="mb-1 text-muted">密码生成器系统 &copy; 2023 Xiaolan</p>
+            <p class="mb-0"><a href="../../index.html" class="text-decoration-none">返回主页</a></p>
+        </div>
+    </div>
+
+    <script src="../../js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

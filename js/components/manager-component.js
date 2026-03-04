@@ -18,7 +18,7 @@
     // 标题配置
     const headerData = {
         'nav-manager.html': { title: '导航数据管理系统', desc: '管理您的网站导航选项卡内容' },
-        'MM-generator.html': { title: 'MM-generator', desc: '上传、编辑并下载HTML文件' },
+        'MM-generator.html': { title: '密码生成器系统', desc: '上传、编辑并下载加密 HTML 文件' },
         'vol-manager.html': { title: '版本管理系统', desc: '加载版本历史记录，添加新版本信息' },
         'explore-manager.html': { title: '探索网页系统', desc: '发现新的有趣网站，开拓您的网络视野' }
     };
@@ -62,18 +62,13 @@
             </div>
         `;
 
-        // 寻找注入位置
-        const mainContainer = document.querySelector('.container-main') || document.querySelector('.container');
-        if (mainContainer) {
-            if (page === 'MM-generator.html') {
-                // MM-generator 结构稍有不同，放在容器内部最上方
-                mainContainer.prepend(headerDiv);
-            } else {
-                // 其他页面放在容器上方
-                mainContainer.parentNode.insertBefore(headerDiv, mainContainer);
-            }
+        // 寻找注入位置：始终在 body 的最前面（导航栏之后）
+        // 这样可以确保所有页面的布局一致
+        const firstContainer = document.querySelector('.container, .container-fluid');
+        if (firstContainer) {
+            firstContainer.parentNode.insertBefore(headerDiv, firstContainer);
         } else {
-            document.body.prepend(headerDiv);
+            document.body.appendChild(headerDiv);
         }
     }
 
