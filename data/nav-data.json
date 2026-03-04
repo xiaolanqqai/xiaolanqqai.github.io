@@ -112,6 +112,29 @@
             "url": "http://192.168.66.1"
           }
         ]
+      },
+      {
+        "name": "History",
+        "items": [
+          {
+            "title": "探索网页",
+            "url": "https://xiaolanqqai.xyz/index/manager/nav-manager.html",
+            "count": 51,
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fxiaolanqqai.xyz%2Findex%2Fmanager%2Fnav-manager.html"
+          },
+          {
+            "title": "版本管理",
+            "url": "https://xiaolanqqai.xyz/index/manager/vol-manager.html",
+            "count": 3,
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fxiaolanqqai.xyz%2Findex%2Fmanager%2Fvol-manager.html"
+          },
+          {
+            "title": "豆包",
+            "url": "https://www.doubao.com/",
+            "count": 2,
+            "icon": "https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.doubao.com%2F"
+          }
+        ]
       }
     ]
   },
