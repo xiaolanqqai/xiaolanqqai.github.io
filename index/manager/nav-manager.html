@@ -7,7 +7,8 @@
     <script src="../../js/components/header-component.js"></script>
     <script src="../../js/components/manager-component.js"></script>
     
-    <!-- 引入通用脚本 -->
+    <!-- 引入 Bootstrap JS (必需在 manager-common.js 之前，因为 common 依赖 Bootstrap) -->
+    <script src="../../js/bootstrap.bundle.min.js"></script>
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
 </head>
@@ -328,83 +329,6 @@
                 <button type="button" class="btn btn-danger" id="confirmDelete">确认删除</button>
             </div>
         </div></div>
-    </div>
-    
-    <!-- 操作日志 Offcanvas 组件 -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="logOffcanvas" aria-labelledby="logOffcanvasLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="logOffcanvasLabel">
-                <i class="fas fa-history me-2"></i>操作日志
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted">系统操作记录</span>
-                <button class="btn btn-sm btn-outline-secondary" id="clearLogsBtn">
-                    <i class="fas fa-trash me-1"></i>清空日志
-                </button>
-            </div>
-            
-            <!-- 日志容器 -->
-            <div id="logContainer" class="mb-3"></div>
-            <div id="emptyLogMessage" class="text-center text-muted py-3">
-                <i class="fas fa-history me-2"></i>暂无操作日志
-            </div>
-            
-            <!-- 新增功能按钮区域 -->
-            <div class="mt-4 p-3 bg-light rounded">
-                <h6 class="text-muted mb-2"><i class="fas fa-tools me-2"></i>工具功能</h6>
-                <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-primary" id="checkUrlBtn">
-                        <i class="fas fa-link me-1"></i>检查URL错误
-                    </button>
-                    <button class="btn btn-sm btn-success" id="checkAccessibilityBtn">
-                        <i class="fas fa-check-circle me-1"></i>检查可访问性
-                    </button>
-                    <button class="btn btn-sm btn-info" id="pingSearchEnginesBtn">
-                        <i class="fas fa-network-wired me-1"></i>搜索引擎Ping值
-                    </button>
-                </div>
-                
-                <!-- Ping值显示区域 -->
-                <div id="pingResults" class="mt-3 p-2 bg-white rounded d-none">
-                    <h6 class="text-sm font-medium mb-2">搜索引擎Ping值 (毫秒)</h6>
-                    <div class="ping-items"></div>
-                </div>
-            </div>
-            
-            <!-- URL错误检查结果显示区域 -->
-            <div id="urlErrorsDisplay" class="mt-4 p-3 bg-light rounded d-none">
-                <h6 class="text-muted mb-2"><i class="fas fa-exclamation-triangle me-2"></i>URL错误检查结果</h6>
-                <div id="urlErrorsContent" class="bg-white p-2 rounded"></div>
-            </div>
-            
-            <!-- URL修复确认模态框 -->
-            <div class="modal fade" id="urlFixModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">URL错误检查结果</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="urlCheckResults" class="mb-3"></div>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="selectAllUrls">
-                                <label class="form-check-label" for="selectAllUrls">全选所有错误</label>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                            <button type="button" class="btn btn-primary" id="confirmFixUrls">确认修复所选</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-
-        </div>
     </div>
     
     <script src="../../js/bootstrap.bundle.min.js"></script>

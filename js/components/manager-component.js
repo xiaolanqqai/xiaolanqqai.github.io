@@ -77,14 +77,70 @@
         }
     }
 
+    /**
+     * 创建并注入操作日志 Offcanvas
+     */
+    function injectLogOffcanvas() {
+        // 如果已经存在则不注入
+        if (document.getElementById('logOffcanvas')) return;
+
+        const offcanvasDiv = document.createElement('div');
+        offcanvasDiv.className = 'offcanvas offcanvas-end';
+        offcanvasDiv.id = 'logOffcanvas';
+        offcanvasDiv.tabIndex = -1;
+        offcanvasDiv.setAttribute('aria-labelledby', 'logOffcanvasLabel');
+        
+        offcanvasDiv.innerHTML = `
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title" id="logOffcanvasLabel">
+                    <i class="fas fa-history me-2"></i>操作日志
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted small">系统实时操作记录</span>
+                    <button class="btn btn-sm btn-outline-danger" id="clearLogsBtn">
+                        <i class="fas fa-trash-alt me-1"></i>清空
+                    </button>
+                </div>
+                
+                <!-- 日志容器 -->
+                <div id="logContainer" class="log-container-shared"></div>
+                
+                <div id="emptyLogMessage" class="text-center text-muted py-5 d-none">
+                    <i class="fas fa-clipboard-list fa-3x mb-3 opacity-25"></i>
+                    <p>暂无操作日志</p>
+                </div>
+
+                <!-- 工具功能 (可选) -->
+                <div class="mt-5 p-3 bg-light rounded border">
+                    <h6 class="text-muted mb-3 small fw-bold"><i class="fas fa-tools me-2"></i>辅助工具</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-sm btn-outline-primary text-start" id="checkUrlBtn">
+                            <i class="fas fa-link me-2 w-20px"></i>检查 URL 格式
+                        </button>
+                        <button class="btn btn-sm btn-outline-success text-start" id="checkAccessibilityBtn">
+                            <i class="fas fa-check-circle me-2 w-20px"></i>检查可访问性
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(offcanvasDiv);
+    }
+
     // 初始化
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             injectNav();
             injectHeader();
+            injectLogOffcanvas();
         });
     } else {
         injectNav();
         injectHeader();
+        injectLogOffcanvas();
     }
 })();
