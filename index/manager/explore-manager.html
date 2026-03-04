@@ -135,14 +135,6 @@
         </div>
     </div>
     
-    <!-- 页脚 -->
-    <div class="manager-footer py-3 mt-4">
-        <div class="container text-center">
-            <p class="mb-1 text-muted">探索网页系统 &copy; 2023 Xiaolan</p>
-            <p class="mb-0"><a href="../../index.html" class="text-decoration-none">返回主页</a></p>
-        </div>
-    </div>
-    
     <!-- 探索网页系统JavaScript -->
     <script>
         // 快捷访问 managerCommon
@@ -153,32 +145,24 @@
             // 初始化模态框
             // (所有模态框已移除)
             
-            // 清空日志
-            const clearLogsBtn = document.getElementById('clearLogsBtn');
-            if (clearLogsBtn) {
-                clearLogsBtn.addEventListener('click', () => {
-                    if (confirm('确定要清空所有操作日志吗？')) {
-                        common.clearLogs();
-                    }
-                });
-            }
-
             // GitHub 相关逻辑
             const syncToGithubBtn = document.getElementById('syncToGithubBtn');
 
             // 同步到 GitHub
-            syncToGithubBtn.addEventListener('click', async function() {
-                if (!common) return;
-                try {
-                    const data = {
-                        favorites: favorites,
-                        lastUpdated: new Date().toISOString()
-                    };
-                    await common.syncToGithub('data/explore-data.json', data);
-                } catch (error) {
-                    // 错误已由 common.syncToGithub 处理
-                }
-            });
+            if (syncToGithubBtn) {
+                syncToGithubBtn.addEventListener('click', async function() {
+                    if (!common) return;
+                    try {
+                        const data = {
+                            favorites: favorites,
+                            lastUpdated: new Date().toISOString()
+                        };
+                        await common.syncToGithub('data/explore-data.json', data);
+                    } catch (error) {
+                        // 错误已由 common.syncToGithub 处理
+                    }
+                });
+            }
 
             // 从 GitHub 加载数据
             async function loadFromGithub() {
@@ -694,6 +678,5 @@
     
     <!-- 深色模式功能 -->
     <script src="../../js/dark-mode.js"></script>
-    <script src="../../js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

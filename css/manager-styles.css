@@ -103,6 +103,12 @@ body {
     line-height: 1.6;
 }
 
+.manager-body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+}
+
 /* 滚动条美化 */
 ::-webkit-scrollbar {
     width: 8px;
@@ -195,9 +201,10 @@ body {
     top: 0;
     left: 0;
     width: 100% !important; /* 强制全宽 */
-    z-index: 999;
+    z-index: 1000; /* 提高层级 */
     box-shadow: var(--shadow-md);
     transition: var(--transition);
+    align-items: center;
 }
 
 .manager-nav-button {

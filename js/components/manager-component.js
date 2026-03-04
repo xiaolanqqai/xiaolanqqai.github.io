@@ -26,17 +26,57 @@
     const currentHeader = headerData[page] || { title: document.title, desc: '' };
 
     /**
+     * 注入必要的 JS 依赖
+     */
+    function injectScripts() {
+        const scripts = [
+            '../../js/bootstrap.bundle.min.js'
+        ];
+        
+        scripts.forEach(src => {
+            if (!document.querySelector(`script[src="${src}"]`)) {
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = false;
+                document.head.appendChild(script);
+            }
+        });
+    }
+
+    /**
+     * 创建并注入页脚
+     */
+    function injectFooter() {
+        if (document.querySelector('.manager-footer')) return;
+
+        const footerDiv = document.createElement('div');
+        footerDiv.className = 'manager-footer py-3 mt-4';
+        
+        footerDiv.innerHTML = `
+            <div class="container text-center">
+                <p class="mb-1 text-muted">${currentHeader.title} &copy; 2026 Xiaolan</p>
+                <p class="mb-0 small"><a href="../../index.html" class="text-decoration-none text-secondary">返回首页</a></p>
+            </div>
+        `;
+        
+        document.body.appendChild(footerDiv);
+    }
+
+    /**
      * 创建并注入导航栏
      */
     function injectNav() {
         const navDiv = document.createElement('div');
         navDiv.className = 'manager-nav';
         
-        let navHtml = navItems.map(item => `
-            <a href="${item.href}" class="manager-nav-button ${page === item.id ? 'active' : ''}" title="${item.title}">
-                <i class="fas ${item.icon}"></i>
-            </a>
-        `).join('');
+        let navHtml = navItems.map(item => {
+            const isActive = page === item.id || (item.id !== 'home' && page.includes(item.id));
+            return `
+                <a href="${item.href}" class="manager-nav-button ${isActive ? 'active' : ''}" title="${item.title}">
+                    <i class="fas ${item.icon}"></i>
+                </a>
+            `;
+        }).join('');
         
         navHtml += `
             <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
@@ -127,15 +167,19 @@
     }
 
     // 初始化
+    injectScripts(); // 立即注入脚本，不需要等待 DOM
+    
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             injectNav();
             injectHeader();
             injectLogOffcanvas();
+            injectFooter();
         });
     } else {
         injectNav();
         injectHeader();
         injectLogOffcanvas();
+        injectFooter();
     }
 })();
