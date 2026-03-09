@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,12 @@
     <!-- 模块化 Header 组件 -->
     <script src="../../js/components/header-component.js"></script>
     <script src="../../js/components/manager-component.js"></script>
-    
+
     <!-- 引入通用脚本 -->
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
 </head>
+
 <body class="manager-body">
     <div class="container container-main">
         <!-- 数据状态提示 -->
@@ -19,7 +21,7 @@
             <i class="fas fa-info-circle me-2"></i>
             <span>当前没有加载任何版本数据，请先导入JSON文件或添加新版本</span>
         </div>
-        
+
         <!-- 功能卡片区域 -->
         <div class="row mb-4 g-3">
             <div class="col-md-3">
@@ -28,7 +30,8 @@
                         <div class="feature-icon text-primary mb-3"><i class="fas fa-plus-circle"></i></div>
                         <h5>添加新版本</h5>
                         <p class="flex-grow-1">创建新的版本记录</p>
-                        <button class="btn manager-btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addVersionModal">
+                        <button class="btn manager-btn-primary mt-2" data-bs-toggle="modal"
+                            data-bs-target="#addVersionModal">
                             <i class="fas fa-plus me-1"></i>添加版本
                         </button>
                     </div>
@@ -40,7 +43,8 @@
                         <div class="feature-icon text-success mb-3"><i class="fas fa-file-import"></i></div>
                         <h5>导入版本数据</h5>
                         <p class="flex-grow-1">从JSON文件导入版本数据</p>
-                        <button class="btn manager-btn-success mt-2" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <button class="btn manager-btn-success mt-2" data-bs-toggle="modal"
+                            data-bs-target="#importModal">
                             <i class="fas fa-file-import me-1"></i>导入数据
                         </button>
                     </div>
@@ -64,7 +68,8 @@
                         <div class="feature-icon text-warning mb-3"><i class="fas fa-layer-group"></i></div>
                         <h5>核心依赖版本</h5>
                         <p class="flex-grow-1">更新系统核心库版本信息</p>
-                        <button class="btn btn-outline-warning mt-2" data-bs-toggle="modal" data-bs-target="#editDepsModal">
+                        <button class="btn btn-outline-warning mt-2" data-bs-toggle="modal"
+                            data-bs-target="#editDepsModal">
                             <i class="fas fa-edit me-1"></i>编辑依赖
                         </button>
                     </div>
@@ -84,7 +89,7 @@
             </div>
 
         </div>
-        
+
         <!-- 版本列表区域 -->
         <div class="card manager-card mb-4">
             <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
@@ -119,338 +124,329 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title">添加新版本</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addVersionForm">
+                                <div class="mb-3">
+                                    <label for="versionName" class="form-label">版本名称</label>
+                                    <input type="text" class="form-control" id="versionName"
+                                        placeholder="例如: BETA 3.7.2" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="versionDate" class="form-label">发布日期</label>
+                                    <input type="date" class="form-control" id="versionDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="versionChanges" class="form-label">更新内容</label>
+                                    <textarea class="form-control" id="versionChanges" rows="5"
+                                        placeholder="每行输入一个更新内容，例如：&#10;1：优化搜索算法&#10;2：更新UI设计" required></textarea>
+                                    <div class="form-text">每行输入一个更新内容，以数字和冒号开头</div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn manager-btn-primary" id="confirmAddVersion">添加版本</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="manager-footer py-3 mt-4">
-        <div class="container text-center">
-            <p class="mb-1 text-muted">版本管理系统 &copy; 2023 Xiaolan</p>
-            <p class="mb-0"><a href="../../index.html" class="text-decoration-none">返回主页</a></p>
-        </div>
-    </div>
-    
-    <!-- 添加版本模态框 -->
-    <div class="modal fade" id="addVersionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">添加新版本</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addVersionForm">
-                        <div class="mb-3">
-                            <label for="versionName" class="form-label">版本名称</label>
-                            <input type="text" class="form-control" id="versionName" placeholder="例如: BETA 3.7.2" required>
+
+            <!-- 编辑依赖模态框 -->
+            <div class="modal fade" id="editDepsModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">编辑核心依赖版本</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="mb-3">
-                            <label for="versionDate" class="form-label">发布日期</label>
-                            <input type="date" class="form-control" id="versionDate" required>
+                        <div class="modal-body">
+                            <form id="editDepsForm">
+                                <div class="mb-3">
+                                    <label for="depBootstrap" class="form-label">Bootstrap 版本</label>
+                                    <input type="text" class="form-control" id="depBootstrap"
+                                        placeholder="例如: BOOSTRAP_v5.3.0-alpha3">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="depJquery" class="form-label">jQuery 版本</label>
+                                    <input type="text" class="form-control" id="depJquery"
+                                        placeholder="例如: JQuery_v3.5.1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="depParticles" class="form-label">Particles 版本</label>
+                                    <input type="text" class="form-control" id="depParticles"
+                                        placeholder="例如: Particles_v2.2.3">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="depSiteData" class="form-label">网站数据版本</label>
+                                    <input type="text" class="form-control" id="depSiteData"
+                                        placeholder="例如: 网站数据_v4.3_20260302">
+                                </div>
+                            </form>
                         </div>
-                        <div class="mb-3">
-                            <label for="versionChanges" class="form-label">更新内容</label>
-                            <textarea class="form-control" id="versionChanges" rows="5" placeholder="每行输入一个更新内容，例如：&#10;1：优化搜索算法&#10;2：更新UI设计" required></textarea>
-                            <div class="form-text">每行输入一个更新内容，以数字和冒号开头</div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-warning" id="confirmEditDeps">保存修改</button>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn manager-btn-primary" id="confirmAddVersion">添加版本</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 编辑依赖模态框 -->
-    <div class="modal fade" id="editDepsModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">编辑核心依赖版本</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editDepsForm">
-                        <div class="mb-3">
-                            <label for="depBootstrap" class="form-label">Bootstrap 版本</label>
-                            <input type="text" class="form-control" id="depBootstrap" placeholder="例如: BOOSTRAP_v5.3.0-alpha3">
-                        </div>
-                        <div class="mb-3">
-                            <label for="depJquery" class="form-label">jQuery 版本</label>
-                            <input type="text" class="form-control" id="depJquery" placeholder="例如: JQuery_v3.5.1">
-                        </div>
-                        <div class="mb-3">
-                            <label for="depParticles" class="form-label">Particles 版本</label>
-                            <input type="text" class="form-control" id="depParticles" placeholder="例如: Particles_v2.2.3">
-                        </div>
-                        <div class="mb-3">
-                            <label for="depSiteData" class="form-label">网站数据版本</label>
-                            <input type="text" class="form-control" id="depSiteData" placeholder="例如: 网站数据_v4.3_20260302">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-warning" id="confirmEditDeps">保存修改</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 导入数据模态框 -->
-    <div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">导入版本数据</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="upload-area p-4 mb-3" id="dropArea">
-                        <div class="upload-icon mb-2"><i class="fas fa-cloud-upload-alt"></i></div>
-                        <h5>拖放JSON文件到这里</h5>
-                        <p class="text-muted">或者</p>
-                        <label for="jsonFile" class="btn manager-btn-primary"><i class="fas fa-folder-open me-1"></i>选择文件</label>
-                        <input type="file" id="jsonFile" accept=".json" class="d-none">
-                        <div class="mt-3"><small class="text-muted">支持标准的JSON格式文件</small></div>
-                    </div>
-                    <div id="fileInfo" class="d-none">
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <span id="fileName">已选择文件：</span>
-                        </div>
-                        <h6 class="mt-4">JSON预览：</h6>
-                        <div class="json-preview p-3" id="jsonPreview"></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn manager-btn-primary" id="confirmImport" disabled>确认导入</button>
+            </div>
+
+            <!-- 导入数据模态框 -->
+            <div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">导入版本数据</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="upload-area p-4 mb-3" id="dropArea">
+                                <div class="upload-icon mb-2"><i class="fas fa-cloud-upload-alt"></i></div>
+                                <h5>拖放JSON文件到这里</h5>
+                                <p class="text-muted">或者</p>
+                                <label for="jsonFile" class="btn manager-btn-primary"><i
+                                        class="fas fa-folder-open me-1"></i>选择文件</label>
+                                <input type="file" id="jsonFile" accept=".json" class="d-none">
+                                <div class="mt-3"><small class="text-muted">支持标准的JSON格式文件</small></div>
+                            </div>
+                            <div id="fileInfo" class="d-none">
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <span id="fileName">已选择文件：</span>
+                                </div>
+                                <h6 class="mt-4">JSON预览：</h6>
+                                <div class="json-preview p-3" id="jsonPreview"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn manager-btn-primary" id="confirmImport"
+                                disabled>确认导入</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <script src="../../js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 快捷访问 managerCommon
-        const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
-        if (common && !window.managerCommon) window.managerCommon = common;
 
-        // 全局变量
-        let versionData = { versions: [] };
-        
-        // DOM 元素
-        let versionsContainer, versionTimeline, dataStatus, addVersionModal, importModal;
-        let confirmAddVersion, confirmImport, sortByDateBtn, saveDataBtn, githubSaveBtn;
-        let jsonFileInput, dropArea, fileInfo, fileName, jsonPreview;
+            <script src="../../js/bootstrap.bundle.min.js"></script>
+            <script>
+                // 快捷访问 managerCommon
+                const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
+                if (common && !window.managerCommon) window.managerCommon = common;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // 初始化 DOM 元素
-            initDOMElements();
-            
-            // 加载初始数据
-            loadVersionDataFromFile();
-            
-            // 绑定事件
-            setupEventListeners();
-            
-            // 绑定清空日志按钮事件
-            const clearLogsBtn = document.getElementById('clearLogsBtn');
-            if (clearLogsBtn) {
-                clearLogsBtn.addEventListener('click', () => {
-                    common.clearLogs();
-                    common.log('清空了所有操作日志', 'info');
-                });
-            }
-            
-            common.log('版本管理系统启动', 'info', '页面加载完成');
-        });
+                // 全局变量
+                let versionData = { versions: [] };
 
-        function initDOMElements() {
-            versionsContainer = document.getElementById('versionsContainer');
-            versionTimeline = document.getElementById('versionTimeline');
-            dataStatus = document.getElementById('dataStatus');
-            addVersionModal = new bootstrap.Modal(document.getElementById('addVersionModal'));
-            importModal = new bootstrap.Modal(document.getElementById('importModal'));
-            confirmAddVersion = document.getElementById('confirmAddVersion');
-            confirmImport = document.getElementById('confirmImport');
-            sortByDateBtn = document.getElementById('sortByDateBtn');
-            saveDataBtn = document.getElementById('saveDataBtn');
-            githubSaveBtn = document.getElementById('githubSaveBtn');
-            jsonFileInput = document.getElementById('jsonFile');
-            dropArea = document.getElementById('dropArea');
-            fileInfo = document.getElementById('fileInfo');
-            fileName = document.getElementById('fileName');
-            jsonPreview = document.getElementById('jsonPreview');
-        }
+                // DOM 元素
+                let versionsContainer, versionTimeline, dataStatus, addVersionModal, importModal;
+                let confirmAddVersion, confirmImport, sortByDateBtn, saveDataBtn, githubSaveBtn;
+                let jsonFileInput, dropArea, fileInfo, fileName, jsonPreview;
 
-        function setupEventListeners() {
-            confirmAddVersion.addEventListener('click', addNewVersion);
-            document.getElementById('confirmEditDeps').addEventListener('click', saveDeps);
-            confirmImport.addEventListener('click', processImportedFile);
-            sortByDateBtn.addEventListener('click', sortVersionsByDate);
-            saveDataBtn.addEventListener('click', exportVersionData);
-            
-            // GitHub 相关事件
-            githubSaveBtn.addEventListener('click', saveToGithub);
-            
-            // 为添加版本模态框添加显示事件监听器，设置默认值
-            document.getElementById('addVersionModal').addEventListener('show.bs.modal', function() {
-                setDefaultValues();
-            });
+                document.addEventListener('DOMContentLoaded', function () {
+                    // 初始化 DOM 元素
+                    initDOMElements();
 
-            // 为编辑依赖模态框添加显示事件监听器，回显当前值
-            document.getElementById('editDepsModal').addEventListener('show.bs.modal', function() {
-                if (versionData.dependencies) {
-                    document.getElementById('depBootstrap').value = versionData.dependencies.bootstrap || '';
-                    document.getElementById('depJquery').value = versionData.dependencies.jquery || '';
-                    document.getElementById('depParticles').value = versionData.dependencies.particles || '';
-                    document.getElementById('depSiteData').value = versionData.dependencies.site_data || '';
-                }
-            });
-            
-            jsonFileInput.addEventListener('change', handleFileSelect);
-            dropArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                dropArea.style.borderColor = '#6a11cb';
-                dropArea.style.backgroundColor = '#e9ecef';
-            });
-            dropArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                dropArea.style.borderColor = '#dee2e6';
-                dropArea.style.backgroundColor = '#f8f9fa';
-            });
-            dropArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                dropArea.style.borderColor = '#dee2e6';
-                dropArea.style.backgroundColor = '#f8f9fa';
-                const files = e.dataTransfer.files;
-                if (files.length && files[0].type === 'application/json') {
-                    jsonFileInput.files = files;
-                    common.log('拖放上传文件', 'info', `文件名: ${files[0].name}, 大小: ${(files[0].size / 1024).toFixed(2)} KB`);
-                    handleFileSelect(e);
-                } else {
-                    common.showAlert('请拖放有效的JSON文件', 'danger');
-                    common.log('拖放上传失败', 'error', '文件类型不是有效的JSON格式');
-                }
-            });
-        }
-        
-        // 从本地JSON文件加载数据
-        function loadVersionDataFromFile() {
-            const filePath = '/data/version-history.json';
-            
-            common.log('开始加载数据', 'info', `文件路径: ${filePath}, 来源: 本地文件`);
-            
-            fetch(filePath)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('网络响应不正常');
+                    // 加载初始数据
+                    loadVersionDataFromFile();
+
+                    // 绑定事件
+                    setupEventListeners();
+
+                    // 绑定清空日志按钮事件
+                    const clearLogsBtn = document.getElementById('clearLogsBtn');
+                    if (clearLogsBtn) {
+                        clearLogsBtn.addEventListener('click', () => {
+                            common.clearLogs();
+                            common.log('清空了所有操作日志', 'info');
+                        });
                     }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.versions && Array.isArray(data.versions)) {
-                        versionData = data;
-                        common.log('从本地文件加载数据成功', 'success', `成功加载 ${versionData.versions.length} 个版本记录，文件路径: ${filePath}`);
+
+                    common.log('版本管理系统启动', 'info', '页面加载完成');
+                });
+
+                function initDOMElements() {
+                    versionsContainer = document.getElementById('versionsContainer');
+                    versionTimeline = document.getElementById('versionTimeline');
+                    dataStatus = document.getElementById('dataStatus');
+                    addVersionModal = new bootstrap.Modal(document.getElementById('addVersionModal'));
+                    importModal = new bootstrap.Modal(document.getElementById('importModal'));
+                    confirmAddVersion = document.getElementById('confirmAddVersion');
+                    confirmImport = document.getElementById('confirmImport');
+                    sortByDateBtn = document.getElementById('sortByDateBtn');
+                    saveDataBtn = document.getElementById('saveDataBtn');
+                    githubSaveBtn = document.getElementById('githubSaveBtn');
+                    jsonFileInput = document.getElementById('jsonFile');
+                    dropArea = document.getElementById('dropArea');
+                    fileInfo = document.getElementById('fileInfo');
+                    fileName = document.getElementById('fileName');
+                    jsonPreview = document.getElementById('jsonPreview');
+                }
+
+                function setupEventListeners() {
+                    confirmAddVersion.addEventListener('click', addNewVersion);
+                    document.getElementById('confirmEditDeps').addEventListener('click', saveDeps);
+                    confirmImport.addEventListener('click', processImportedFile);
+                    sortByDateBtn.addEventListener('click', sortVersionsByDate);
+                    saveDataBtn.addEventListener('click', exportVersionData);
+
+                    // GitHub 相关事件
+                    githubSaveBtn.addEventListener('click', saveToGithub);
+
+                    // 为添加版本模态框添加显示事件监听器，设置默认值
+                    document.getElementById('addVersionModal').addEventListener('show.bs.modal', function () {
+                        setDefaultValues();
+                    });
+
+                    // 为编辑依赖模态框添加显示事件监听器，回显当前值
+                    document.getElementById('editDepsModal').addEventListener('show.bs.modal', function () {
+                        if (versionData.dependencies) {
+                            document.getElementById('depBootstrap').value = versionData.dependencies.bootstrap || '';
+                            document.getElementById('depJquery').value = versionData.dependencies.jquery || '';
+                            document.getElementById('depParticles').value = versionData.dependencies.particles || '';
+                            document.getElementById('depSiteData').value = versionData.dependencies.site_data || '';
+                        }
+                    });
+
+                    jsonFileInput.addEventListener('change', handleFileSelect);
+                    dropArea.addEventListener('dragover', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropArea.style.borderColor = '#6a11cb';
+                        dropArea.style.backgroundColor = '#e9ecef';
+                    });
+                    dropArea.addEventListener('dragleave', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropArea.style.borderColor = '#dee2e6';
+                        dropArea.style.backgroundColor = '#f8f9fa';
+                    });
+                    dropArea.addEventListener('drop', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropArea.style.borderColor = '#dee2e6';
+                        dropArea.style.backgroundColor = '#f8f9fa';
+                        const files = e.dataTransfer.files;
+                        if (files.length && files[0].type === 'application/json') {
+                            jsonFileInput.files = files;
+                            common.log('拖放上传文件', 'info', `文件名: ${files[0].name}, 大小: ${(files[0].size / 1024).toFixed(2)} KB`);
+                            handleFileSelect(e);
+                        } else {
+                            common.showAlert('请拖放有效的JSON文件', 'danger');
+                            common.log('拖放上传失败', 'error', '文件类型不是有效的JSON格式');
+                        }
+                    });
+                }
+
+                // 从本地JSON文件加载数据
+                function loadVersionDataFromFile() {
+                    const filePath = '/data/version-history.json';
+
+                    common.log('开始加载数据', 'info', `文件路径: ${filePath}, 来源: 本地文件`);
+
+                    fetch(filePath)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('网络响应不正常');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.versions && Array.isArray(data.versions)) {
+                                versionData = data;
+                                common.log('从本地文件加载数据成功', 'success', `成功加载 ${versionData.versions.length} 个版本记录，文件路径: ${filePath}`);
+                            } else {
+                                throw new Error('JSON文件格式不正确');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('加载本地文件失败:', error);
+                            versionData = { versions: [] };
+                            common.log('从本地文件加载数据失败', 'error', `文件路径: ${filePath}, 错误信息: ${error.message}`);
+                        })
+                        .finally(() => {
+                            // 无论加载成功与否，都进行渲染
+                            renderVersions();
+                            renderTimeline();
+                            updateDataStatus();
+                        });
+                }
+
+                // 更新数据状态显示
+                function updateDataStatus() {
+                    const hasData = versionData.versions && versionData.versions.length > 0;
+
+                    if (hasData) {
+                        dataStatus.className = 'data-status has-data p-3 mb-4';
+                        dataStatus.innerHTML = `<i class="fas fa-check-circle me-2"></i><span>已加载 ${versionData.versions.length} 个版本记录</span>`;
+                        sortByDateBtn.disabled = false;
+                        saveDataBtn.disabled = false;
                     } else {
-                        throw new Error('JSON文件格式不正确');
+                        dataStatus.className = 'data-status no-data p-3 mb-4';
+                        dataStatus.innerHTML = `<i class="fas fa-info-circle me-2"></i><span>当前没有加载任何版本数据，请先导入JSON文件或添加新版本</span>`;
+                        sortByDateBtn.disabled = true;
+                        saveDataBtn.disabled = true;
                     }
-                })
-                .catch(error => {
-                    console.error('加载本地文件失败:', error);
-                    versionData = { versions: [] };
-                    common.log('从本地文件加载数据失败', 'error', `文件路径: ${filePath}, 错误信息: ${error.message}`);
-                })
-                .finally(() => {
-                    // 无论加载成功与否，都进行渲染
-                    renderVersions();
-                    renderTimeline();
-                    updateDataStatus();
-                });
-        }
-        
-        // 更新数据状态显示
-        function updateDataStatus() {
-            const hasData = versionData.versions && versionData.versions.length > 0;
-            
-            if (hasData) {
-                dataStatus.className = 'data-status has-data p-3 mb-4';
-                dataStatus.innerHTML = `<i class="fas fa-check-circle me-2"></i><span>已加载 ${versionData.versions.length} 个版本记录</span>`;
-                sortByDateBtn.disabled = false;
-                saveDataBtn.disabled = false;
-            } else {
-                dataStatus.className = 'data-status no-data p-3 mb-4';
-                dataStatus.innerHTML = `<i class="fas fa-info-circle me-2"></i><span>当前没有加载任何版本数据，请先导入JSON文件或添加新版本</span>`;
-                sortByDateBtn.disabled = true;
-                saveDataBtn.disabled = true;
-            }
-        }
-        
-        // 保存数据为JSON文件
-        // 同步到 GitHub
-        async function saveToGithub() {
-            if (!common) return;
-            try {
-                const path = 'data/version-history.json';
-                await common.syncToGithub(path, versionData);
-            } catch (error) {
-                // 错误已由 common.syncToGithub 处理
-            }
-        }
+                }
 
-        // 清空所有数据
-        function clearAllData() {
-            if (!versionData.versions || versionData.versions.length === 0) {
-                common.showAlert('当前没有数据可清空', 'warning');
-                common.log('清空数据失败', 'warning', '当前没有数据可清空');
-                return;
-            }
-            
-            const deletedCount = versionData.versions.length;
-            
-            if (confirm(`确定要清空所有版本数据吗？此操作将删除 ${deletedCount} 个版本记录，且不可撤销！`)) {
-                // 清空数据
-                versionData.versions = [];
-                
-                // 重新渲染
-                renderVersions();
-                renderTimeline();
-                updateDataStatus();
-                
-                common.showAlert(`已清空 ${deletedCount} 个版本记录`, 'success');
-                
-                // 记录清空数据日志
-                common.log('清空了所有数据', 'warning', `删除了 ${deletedCount} 个版本记录`);
-            } else {
-                common.log('取消了清空数据操作', 'info', '用户取消了确认对话框');
-            }
-        }
-        
-        // 渲染版本列表
-        function renderVersions() {
-            versionsContainer.innerHTML = '';
-            
-            if (!versionData.versions || versionData.versions.length === 0) {
-                versionsContainer.innerHTML = '<div class="text-center p-5 text-muted"><i class="fas fa-history fa-3x mb-3"></i><p>暂无版本记录，请先导入JSON文件或添加版本</p></div>';
-                return;
-            }
-            
-            // 按日期排序（最新的在前面）
-            const sortedVersions = [...versionData.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            sortedVersions.forEach((version, index) => {
-                const versionCard = document.createElement('div');
-                versionCard.className = 'card version-card mb-3';
-                versionCard.innerHTML = `
+                // 保存数据为JSON文件
+                // 同步到 GitHub
+                async function saveToGithub() {
+                    if (!common) return;
+                    try {
+                        const path = 'data/version-history.json';
+                        await common.syncToGithub(path, versionData);
+                    } catch (error) {
+                        // 错误已由 common.syncToGithub 处理
+                    }
+                }
+
+                // 清空所有数据
+                function clearAllData() {
+                    if (!versionData.versions || versionData.versions.length === 0) {
+                        common.showAlert('当前没有数据可清空', 'warning');
+                        common.log('清空数据失败', 'warning', '当前没有数据可清空');
+                        return;
+                    }
+
+                    const deletedCount = versionData.versions.length;
+
+                    if (confirm(`确定要清空所有版本数据吗？此操作将删除 ${deletedCount} 个版本记录，且不可撤销！`)) {
+                        // 清空数据
+                        versionData.versions = [];
+
+                        // 重新渲染
+                        renderVersions();
+                        renderTimeline();
+                        updateDataStatus();
+
+                        common.showAlert(`已清空 ${deletedCount} 个版本记录`, 'success');
+
+                        // 记录清空数据日志
+                        common.log('清空了所有数据', 'warning', `删除了 ${deletedCount} 个版本记录`);
+                    } else {
+                        common.log('取消了清空数据操作', 'info', '用户取消了确认对话框');
+                    }
+                }
+
+                // 渲染版本列表
+                function renderVersions() {
+                    versionsContainer.innerHTML = '';
+
+                    if (!versionData.versions || versionData.versions.length === 0) {
+                        versionsContainer.innerHTML = '<div class="text-center p-5 text-muted"><i class="fas fa-history fa-3x mb-3"></i><p>暂无版本记录，请先导入JSON文件或添加版本</p></div>';
+                        return;
+                    }
+
+                    // 按日期排序（最新的在前面）
+                    const sortedVersions = [...versionData.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    sortedVersions.forEach((version, index) => {
+                        const versionCard = document.createElement('div');
+                        versionCard.className = 'card version-card mb-3';
+                        versionCard.innerHTML = `
                     <div class="version-header p-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-2">${version.name}</h5>
@@ -470,26 +466,26 @@
                         </div>
                     </div>
                 `;
-                versionsContainer.appendChild(versionCard);
-            });
-        }
-        
-        // 渲染时间线
-        function renderTimeline() {
-            versionTimeline.innerHTML = '';
-            
-            if (!versionData.versions || versionData.versions.length === 0) {
-                versionTimeline.innerHTML = '<div class="text-center p-4 text-muted"><i class="fas fa-stream fa-2x mb-2"></i><p>暂无版本时间线</p></div>';
-                return;
-            }
-            
-            // 按日期排序（最新的在前面）
-            const sortedVersions = [...versionData.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            sortedVersions.forEach((version, index) => {
-                const timelineItem = document.createElement('div');
-                timelineItem.className = 'timeline-item';
-                timelineItem.innerHTML = `
+                        versionsContainer.appendChild(versionCard);
+                    });
+                }
+
+                // 渲染时间线
+                function renderTimeline() {
+                    versionTimeline.innerHTML = '';
+
+                    if (!versionData.versions || versionData.versions.length === 0) {
+                        versionTimeline.innerHTML = '<div class="text-center p-4 text-muted"><i class="fas fa-stream fa-2x mb-2"></i><p>暂无版本时间线</p></div>';
+                        return;
+                    }
+
+                    // 按日期排序（最新的在前面）
+                    const sortedVersions = [...versionData.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    sortedVersions.forEach((version, index) => {
+                        const timelineItem = document.createElement('div');
+                        timelineItem.className = 'timeline-item';
+                        timelineItem.innerHTML = `
                     <div class="timeline-date">${formatDate(version.date)}</div>
                     <div class="timeline-content">
                         <strong>${version.name}</strong>
@@ -498,225 +494,226 @@
                         </div>
                     </div>
                 `;
-                versionTimeline.appendChild(timelineItem);
-            });
-        }
-        
-        // 渲染更新内容
-        function renderChanges(changes) {
-            if (!changes || changes.length === 0) {
-                return '<p class="text-muted">暂无更新内容</p>';
-            }
-            
-            return changes.map(change => {
-                return `<div class="border-bottom py-2">${change}</div>`;
-            }).join('');
-        }
-
-        // 保存依赖信息
-        function saveDeps() {
-            const bootstrapVal = document.getElementById('depBootstrap').value.trim();
-            const jqueryVal = document.getElementById('depJquery').value.trim();
-            const particlesVal = document.getElementById('depParticles').value.trim();
-            const siteDataVal = document.getElementById('depSiteData').value.trim();
-
-            if (!versionData.dependencies) versionData.dependencies = {};
-            
-            versionData.dependencies.bootstrap = bootstrapVal;
-            versionData.dependencies.jquery = jqueryVal;
-            versionData.dependencies.particles = particlesVal;
-            versionData.dependencies.site_data = siteDataVal;
-
-            bootstrap.Modal.getInstance(document.getElementById('editDepsModal')).hide();
-            common.showAlert('依赖版本信息已更新，请记得同步到云端', 'success');
-            common.log('更新了核心依赖版本信息', 'info');
-        }
-        
-        // 设置添加版本表单的默认值
-        function setDefaultValues() {
-            // 设置发布日期为当前日期
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('versionDate').value = today;
-            
-            // 计算并设置下一个版本号
-            const nextVersion = getNextVersionNumber();
-            document.getElementById('versionName').value = nextVersion;
-        }
-        
-        // 获取下一个版本号
-        function getNextVersionNumber() {
-            if (!versionData.versions || versionData.versions.length === 0) {
-                return 'BETA 1.0.0';
-            }
-            
-            // 找到最新版本
-            const sortedVersions = [...versionData.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
-            const latestVersion = sortedVersions[0].name;
-            
-            // 提取版本号部分
-            const versionMatch = latestVersion.match(/\d+\.\d+\.\d+/);
-            if (!versionMatch) {
-                return 'BETA 1.0.0';
-            }
-            
-            const versionParts = versionMatch[0].split('.').map(Number);
-            
-            // 增加修订号
-            versionParts[2] += 1;
-            
-            // 保持前缀不变，只更新版本号部分
-            const prefix = latestVersion.split(/\d+\.\d+\.\d+/)[0];
-            return prefix + versionParts.join('.');
-        }
-        
-        // 添加新版本
-        function addNewVersion() {
-            const name = document.getElementById('versionName').value.trim();
-            const date = document.getElementById('versionDate').value;
-            const changesText = document.getElementById('versionChanges').value.trim();
-            
-            if (!name || !date || !changesText) {
-                common.showAlert('请填写所有字段', 'danger');
-                common.log('添加版本失败', 'error', '请填写所有必填字段');
-                return;
-            }
-            
-            // 解析更新内容
-            const changes = changesText.split('\n').filter(line => line.trim() !== '');
-            
-            // 将新版本添加到数组开头（最新的在前面）
-            versionData.versions.unshift({
-                name: name,
-                date: date,
-                changes: changes
-            });
-            
-            addVersionModal.hide();
-            document.getElementById('addVersionForm').reset();
-            renderVersions();
-            renderTimeline();
-            updateDataStatus();
-            exportVersionData(); // 自动保存数据
-            common.showAlert('版本已添加: ' + name, 'success');
-            
-            // 记录添加版本日志
-            common.log('添加了新版本', 'success', `版本名称: ${name}, 发布日期: ${date}, 更新内容: ${changes.length} 条`);
-        }
-        
-        // 按日期排序
-        function sortVersionsByDate() {
-            versionData.versions.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            renderVersions();
-            renderTimeline();
-            exportVersionData(); // 自动保存数据
-            common.showAlert('版本已按日期排序', 'success');
-            
-            // 记录排序日志
-            common.log('版本排序完成', 'info', `按日期重新排序了 ${versionData.versions.length} 个版本记录`);
-        }
-        
-        // 导出版本数据
-        function exportVersionData() {
-            try {
-                const dataStr = JSON.stringify(versionData, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = 'version-history.json';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                common.showAlert('版本数据已导出', 'success');
-                
-                // 记录导出日志
-                common.log('数据导出完成', 'success', `导出了 ${versionData.versions.length} 个版本记录，文件大小: ${(dataStr.length / 1024).toFixed(2)} KB`);
-            } catch (e) {
-                console.error('导出数据时出错:', e);
-                common.showAlert('导出数据时出错', 'danger');
-                
-                // 记录导出失败日志
-                common.log('数据导出失败', 'error', e.message);
-            }
-        }
-        
-        // 处理文件选择
-        function handleFileSelect(event) {
-            const file = jsonFileInput.files[0];
-            if (!file) return;
-            
-            if (file.type !== 'application/json') {
-                common.showAlert('请选择JSON文件', 'danger');
-                common.log('文件选择失败', 'error', '选择的文件不是JSON格式');
-                return;
-            }
-            
-            fileName.textContent = `已选择文件：${file.name}`;
-            fileInfo.classList.remove('d-none');
-            
-            common.log('选择了JSON文件', 'info', `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const content = e.target.result;
-                    const jsonData = JSON.parse(content);
-                    
-                    // 验证数据结构
-                    if (!jsonData.versions || !Array.isArray(jsonData.versions)) {
-                        throw new Error('JSON文件格式不正确，缺少versions数组');
-                    }
-                    
-                    jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
-                    confirmImport.disabled = false;
-                    window.importedData = jsonData;
-                    
-                    common.log('JSON文件解析成功', 'success', `包含 ${jsonData.versions.length} 个版本记录`);
-                } catch (e) {
-                    jsonPreview.textContent = `错误：${e.message}`;
-                    confirmImport.disabled = true;
-                    common.log('JSON文件解析失败', 'error', e.message);
+                        versionTimeline.appendChild(timelineItem);
+                    });
                 }
-            };
-            reader.readAsText(file);
-        }
-        
-        // 处理导入的文件
-        function processImportedFile() {
-            if (window.importedData) {
-                const originalCount = versionData.versions.length;
-                const newCount = window.importedData.versions.length;
-                const addedCount = newCount - originalCount;
-                
-                versionData = window.importedData;
-                renderVersions();
-                renderTimeline();
-                updateDataStatus();
-                exportVersionData(); // 自动保存数据
-                importModal.hide();
-                common.showAlert('JSON文件已成功导入，加载了 ' + versionData.versions.length + ' 个版本记录', 'success');
-                
-                // 记录导入日志
-                common.log('数据导入完成', 'success', `原有 ${originalCount} 条记录，新增 ${addedCount} 条记录，总计 ${newCount} 条记录`);
-                
-                delete window.importedData;
-                jsonFileInput.value = '';
-                fileInfo.classList.add('d-none');
-                confirmImport.disabled = true;
-            }
-        }
-        
-        // 格式化日期
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('zh-CN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-    </script>
-    
+
+                // 渲染更新内容
+                function renderChanges(changes) {
+                    if (!changes || changes.length === 0) {
+                        return '<p class="text-muted">暂无更新内容</p>';
+                    }
+
+                    return changes.map(change => {
+                        return `<div class="border-bottom py-2">${change}</div>`;
+                    }).join('');
+                }
+
+                // 保存依赖信息
+                function saveDeps() {
+                    const bootstrapVal = document.getElementById('depBootstrap').value.trim();
+                    const jqueryVal = document.getElementById('depJquery').value.trim();
+                    const particlesVal = document.getElementById('depParticles').value.trim();
+                    const siteDataVal = document.getElementById('depSiteData').value.trim();
+
+                    if (!versionData.dependencies) versionData.dependencies = {};
+
+                    versionData.dependencies.bootstrap = bootstrapVal;
+                    versionData.dependencies.jquery = jqueryVal;
+                    versionData.dependencies.particles = particlesVal;
+                    versionData.dependencies.site_data = siteDataVal;
+
+                    bootstrap.Modal.getInstance(document.getElementById('editDepsModal')).hide();
+                    common.showAlert('依赖版本信息已更新，请记得同步到云端', 'success');
+                    common.log('更新了核心依赖版本信息', 'info');
+                }
+
+                // 设置添加版本表单的默认值
+                function setDefaultValues() {
+                    // 设置发布日期为当前日期
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('versionDate').value = today;
+
+                    // 计算并设置下一个版本号
+                    const nextVersion = getNextVersionNumber();
+                    document.getElementById('versionName').value = nextVersion;
+                }
+
+                // 获取下一个版本号
+                function getNextVersionNumber() {
+                    if (!versionData.versions || versionData.versions.length === 0) {
+                        return 'BETA 1.0.0';
+                    }
+
+                    // 找到最新版本
+                    const sortedVersions = [...versionData.versions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                    const latestVersion = sortedVersions[0].name;
+
+                    // 提取版本号部分
+                    const versionMatch = latestVersion.match(/\d+\.\d+\.\d+/);
+                    if (!versionMatch) {
+                        return 'BETA 1.0.0';
+                    }
+
+                    const versionParts = versionMatch[0].split('.').map(Number);
+
+                    // 增加修订号
+                    versionParts[2] += 1;
+
+                    // 保持前缀不变，只更新版本号部分
+                    const prefix = latestVersion.split(/\d+\.\d+\.\d+/)[0];
+                    return prefix + versionParts.join('.');
+                }
+
+                // 添加新版本
+                function addNewVersion() {
+                    const name = document.getElementById('versionName').value.trim();
+                    const date = document.getElementById('versionDate').value;
+                    const changesText = document.getElementById('versionChanges').value.trim();
+
+                    if (!name || !date || !changesText) {
+                        common.showAlert('请填写所有字段', 'danger');
+                        common.log('添加版本失败', 'error', '请填写所有必填字段');
+                        return;
+                    }
+
+                    // 解析更新内容
+                    const changes = changesText.split('\n').filter(line => line.trim() !== '');
+
+                    // 将新版本添加到数组开头（最新的在前面）
+                    versionData.versions.unshift({
+                        name: name,
+                        date: date,
+                        changes: changes
+                    });
+
+                    addVersionModal.hide();
+                    document.getElementById('addVersionForm').reset();
+                    renderVersions();
+                    renderTimeline();
+                    updateDataStatus();
+                    exportVersionData(); // 自动保存数据
+                    common.showAlert('版本已添加: ' + name, 'success');
+
+                    // 记录添加版本日志
+                    common.log('添加了新版本', 'success', `版本名称: ${name}, 发布日期: ${date}, 更新内容: ${changes.length} 条`);
+                }
+
+                // 按日期排序
+                function sortVersionsByDate() {
+                    versionData.versions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    renderVersions();
+                    renderTimeline();
+                    exportVersionData(); // 自动保存数据
+                    common.showAlert('版本已按日期排序', 'success');
+
+                    // 记录排序日志
+                    common.log('版本排序完成', 'info', `按日期重新排序了 ${versionData.versions.length} 个版本记录`);
+                }
+
+                // 导出版本数据
+                function exportVersionData() {
+                    try {
+                        const dataStr = JSON.stringify(versionData, null, 2);
+                        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(dataBlob);
+                        link.download = 'version-history.json';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        common.showAlert('版本数据已导出', 'success');
+
+                        // 记录导出日志
+                        common.log('数据导出完成', 'success', `导出了 ${versionData.versions.length} 个版本记录，文件大小: ${(dataStr.length / 1024).toFixed(2)} KB`);
+                    } catch (e) {
+                        console.error('导出数据时出错:', e);
+                        common.showAlert('导出数据时出错', 'danger');
+
+                        // 记录导出失败日志
+                        common.log('数据导出失败', 'error', e.message);
+                    }
+                }
+
+                // 处理文件选择
+                function handleFileSelect(event) {
+                    const file = jsonFileInput.files[0];
+                    if (!file) return;
+
+                    if (file.type !== 'application/json') {
+                        common.showAlert('请选择JSON文件', 'danger');
+                        common.log('文件选择失败', 'error', '选择的文件不是JSON格式');
+                        return;
+                    }
+
+                    fileName.textContent = `已选择文件：${file.name}`;
+                    fileInfo.classList.remove('d-none');
+
+                    common.log('选择了JSON文件', 'info', `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
+
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        try {
+                            const content = e.target.result;
+                            const jsonData = JSON.parse(content);
+
+                            // 验证数据结构
+                            if (!jsonData.versions || !Array.isArray(jsonData.versions)) {
+                                throw new Error('JSON文件格式不正确，缺少versions数组');
+                            }
+
+                            jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
+                            confirmImport.disabled = false;
+                            window.importedData = jsonData;
+
+                            common.log('JSON文件解析成功', 'success', `包含 ${jsonData.versions.length} 个版本记录`);
+                        } catch (e) {
+                            jsonPreview.textContent = `错误：${e.message}`;
+                            confirmImport.disabled = true;
+                            common.log('JSON文件解析失败', 'error', e.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+
+                // 处理导入的文件
+                function processImportedFile() {
+                    if (window.importedData) {
+                        const originalCount = versionData.versions.length;
+                        const newCount = window.importedData.versions.length;
+                        const addedCount = newCount - originalCount;
+
+                        versionData = window.importedData;
+                        renderVersions();
+                        renderTimeline();
+                        updateDataStatus();
+                        exportVersionData(); // 自动保存数据
+                        importModal.hide();
+                        common.showAlert('JSON文件已成功导入，加载了 ' + versionData.versions.length + ' 个版本记录', 'success');
+
+                        // 记录导入日志
+                        common.log('数据导入完成', 'success', `原有 ${originalCount} 条记录，新增 ${addedCount} 条记录，总计 ${newCount} 条记录`);
+
+                        delete window.importedData;
+                        jsonFileInput.value = '';
+                        fileInfo.classList.add('d-none');
+                        confirmImport.disabled = true;
+                    }
+                }
+
+                // 格式化日期
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+            </script>
+
 </body>
+
 </html>

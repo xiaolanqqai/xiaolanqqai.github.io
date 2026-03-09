@@ -2,13 +2,12 @@
  * Manager Component
  * Modularizes Navigation and Header for Management Pages
  */
-(function() {
+(function () {
     const path = window.location.pathname;
     const page = path.split('/').pop();
-    
+
     // 导航配置
     const navItems = [
-        { href: '../../index.html', icon: 'fa-home', title: '返回首页', id: 'home' },
         { href: 'nav-manager.html', icon: 'fa-sitemap', title: '导航数据管理', id: 'nav-manager.html' },
         { href: 'MM-generator.html', icon: 'fa-key', title: '密码生成器', id: 'MM-generator.html' },
         { href: 'vol-manager.html', icon: 'fa-code-branch', title: '版本管理', id: 'vol-manager.html' },
@@ -18,9 +17,9 @@
     // 标题配置
     const headerData = {
         'nav-manager.html': { title: '导航数据管理系统', desc: '管理您的网站导航选项卡内容' },
-        'MM-generator.html': { title: '密码生成器系统', desc: '上传、编辑并下载加密 HTML 文件' },
-        'vol-manager.html': { title: '版本管理系统', desc: '加载版本历史记录，添加新版本信息' },
-        'explore-manager.html': { title: '探索网页系统', desc: '发现新的有趣网站，开拓您的网络视野' }
+        'MM-generator.html': { title: '密码生成器系统', desc: '加密 HTML 文件导出、编辑与管理' },
+        'vol-manager.html': { title: '版本管理系统', desc: '加载版本历史记录，同步最新发布信息' },
+        'explore-manager.html': { title: '探索网页系统', desc: '管理您的浏览器收藏夹、发现有趣的网站' }
     };
 
     const currentHeader = headerData[page] || { title: document.title, desc: '' };
@@ -32,7 +31,7 @@
         const scripts = [
             '../../js/bootstrap.bundle.min.js'
         ];
-        
+
         scripts.forEach(src => {
             if (!document.querySelector(`script[src="${src}"]`)) {
                 const script = document.createElement('script');
@@ -51,14 +50,14 @@
 
         const footerDiv = document.createElement('div');
         footerDiv.className = 'manager-footer py-3 mt-4';
-        
+
         footerDiv.innerHTML = `
             <div class="container text-center">
                 <p class="mb-1 text-muted">${currentHeader.title} &copy; 2026 Xiaolan</p>
                 <p class="mb-0 small"><a href="../../index.html" class="text-decoration-none text-secondary">返回首页</a></p>
             </div>
         `;
-        
+
         document.body.appendChild(footerDiv);
     }
 
@@ -68,8 +67,19 @@
     function injectNav() {
         const navDiv = document.createElement('div');
         navDiv.className = 'manager-nav';
-        
-        let navHtml = navItems.map(item => {
+
+        // 1. 返回首页按钮
+        let navHtml = `
+            <div class="nav-group-start">
+                <a href="../../index.html" class="manager-nav-button" title="返回首页">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        `;
+
+        // 2. 主导航项
+        navHtml += `<div class="nav-group-center">`;
+        navHtml += navItems.map(item => {
             const isActive = page === item.id || (item.id !== 'home' && page.includes(item.id));
             return `
                 <a href="${item.href}" class="manager-nav-button ${isActive ? 'active' : ''}" title="${item.title}">
@@ -77,24 +87,40 @@
                 </a>
             `;
         }).join('');
-        
+        navHtml += `</div>`;
+
+        // 3. 功能按钮 (深色模式 + 日志)
         navHtml += `
-            <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
-                <i class="fas fa-exclamation-circle"></i>
-            </button>
+            <div class="nav-group-end">
+                <button id="themeToggle" class="manager-nav-button" title="切换主题">
+                    <i id="themeIcon" class="fas fa-adjust"></i>
+                </button>
+                <button class="manager-nav-button bg-warning" title="操作日志" data-bs-toggle="offcanvas" data-bs-target="#logOffcanvas">
+                    <i class="fas fa-exclamation-circle"></i>
+                </button>
+            </div>
         `;
-        
+
         navDiv.innerHTML = navHtml;
         document.body.prepend(navDiv);
+
+        // 初始化深色模式按钮逻辑 (如果 DarkMode 已加载)
+        if (window.darkModeInstance) {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            window.darkModeInstance.updateIcon(currentTheme);
+        }
     }
 
     /**
      * 创建并注入头部大标题
      */
     function injectHeader() {
+        // 如果页面已经有 manager-header，则不再注入
+        if (document.querySelector('.manager-header')) return;
+
         const headerDiv = document.createElement('div');
         headerDiv.className = 'manager-header header-gradient py-4 mb-4';
-        
+
         headerDiv.innerHTML = `
             <div class="container">
                 <h1 class="text-center mb-2 text-light">${currentHeader.title}</h1>
@@ -124,7 +150,7 @@
         offcanvasDiv.id = 'logOffcanvas';
         offcanvasDiv.tabIndex = -1;
         offcanvasDiv.setAttribute('aria-labelledby', 'logOffcanvasLabel');
-        
+
         offcanvasDiv.innerHTML = `
             <div class="offcanvas-header border-bottom">
                 <h5 class="offcanvas-title" id="logOffcanvasLabel">
@@ -162,13 +188,13 @@
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(offcanvasDiv);
     }
 
     // 初始化
     injectScripts(); // 立即注入脚本，不需要等待 DOM
-    
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             injectNav();

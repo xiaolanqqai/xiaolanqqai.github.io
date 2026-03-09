@@ -190,36 +190,56 @@ body {
 /* 管理页面导航栏 */
 .manager-nav {
     display: flex;
-    gap: 10px;
-    padding: 15px;
+    padding: 10px 20px;
     background-color: var(--bg-secondary);
     border-radius: 0;
     margin-bottom: 20px;
-    flex-wrap: wrap;
-    justify-content: center !important; /* 强制居中 */
+    flex-wrap: nowrap;
+    justify-content: space-between !important;
+    align-items: center;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100% !important; /* 强制全宽 */
-    z-index: 1000; /* 提高层级 */
+    width: 100% !important;
+    z-index: 1100;
     box-shadow: var(--shadow-md);
     transition: var(--transition);
-    align-items: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-group-start, .nav-group-end {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+}
+
+.nav-group-center {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex: 2;
+}
+
+.nav-group-end {
+    justify-content: flex-end;
 }
 
 .manager-nav-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: var(--border-radius);
     border: none;
     background-color: var(--primary-color);
-    color: white;
+    color: white !important;
     cursor: pointer;
     transition: var(--transition);
-    min-width: 50px;
-    position: relative;
+    min-width: 44px;
+    height: 44px;
+    text-decoration: none !important;
 }
 
 .manager-nav-button:hover {
@@ -235,33 +255,24 @@ body {
 
 .manager-nav-button i {
     font-size: 1.1rem;
-    width: 1.1rem;
-    height: 1.1rem;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 确保版本管理系统中的图标大小与其他管理系统一致 */
-.manager-nav a[href="vol-manager.html"] i,
-.manager-nav a[href="MM-generator.html"] i,
-.manager-nav a[href="nav-manager.html"] i {
-    font-size: 1.1rem !important;
-    width: 1.1rem !important;
-    height: 1.1rem !important;
+/* 导航项在小屏幕上的适配 */
+@media (max-width: 992px) {
+    .nav-group-center {
+        display: none; /* 暂时隐藏中间的主导向，后续可以考虑折叠菜单 */
+    }
+    .nav-group-start, .nav-group-end {
+        flex: 1;
+    }
 }
 
-/* 管理页面导航栏 - 响应式 */
 @media (max-width: 576px) {
     .manager-nav {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .manager-nav-button {
-        width: 100%;
-        justify-content: flex-start;
-        padding-left: 16px;
+        padding: 10px;
     }
 }
 

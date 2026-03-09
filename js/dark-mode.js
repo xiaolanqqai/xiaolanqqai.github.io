@@ -54,58 +54,33 @@ if (typeof DarkMode === 'undefined') {
         updateIcon(theme) {
             const icon = document.getElementById(this.iconId);
             if (icon) {
-                if (this.isIconFont) {
-                    // FontAwesome 图标: 深色模式下显示太阳(提示可切浅色)，浅色模式下显示月亮
+                // 如果是 FontAwesome 图标 (由 manager-component.js 创建)
+                if (icon.classList.contains('fas')) {
                     icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
                 } else {
-                    // Emoji 图标: 保持原有逻辑
+                    // Emoji 图标 (首页悬浮按钮)
                     icon.textContent = theme === 'dark' ? '☀️' : '🌙';
                 }
             }
         }
 
         createButton() {
-            // 1. 尝试查找管理页面的导航栏 (.manager-nav)
-            const managerNav = document.querySelector('.manager-nav');
+            // 场景 B: 首页/其他页面 (右上角悬浮)
+            // 管理页面的按钮现在由 manager-component.js 统一创建
+            if (document.querySelector('.manager-nav')) return;
+
+            const btn = document.createElement('button');
+            btn.id = this.btnId;
+            btn.className = 'btn btn-sm btn-outline-secondary rounded-circle shadow';
+            btn.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); background-color: rgba(255,255,255,0.1); border: 1px solid var(--border-color, #ccc);';
+            btn.setAttribute('aria-label', '切换主题');
             
-            if (managerNav) {
-                // 场景 A: 集成到管理页面导航栏
-                this.isIconFont = true; // 标记使用字体图标
-                
-                const btn = document.createElement('a');
-                btn.id = this.btnId;
-                btn.className = 'manager-nav-button'; // 复用管理页面按钮样式
-                btn.href = 'javascript:void(0)';
-                btn.title = '切换主题';
-                btn.style.float = 'right'; // 浮动靠右
-                btn.style.marginLeft = 'auto'; // Flex布局下的靠右
-                
-                const icon = document.createElement('i');
-                icon.id = this.iconId;
-                icon.className = 'fas fa-adjust'; // 初始占位
-                
-                btn.appendChild(icon);
-                managerNav.appendChild(btn);
-                
-            } else {
-                // 场景 B: 首页/其他页面 (右上角悬浮)
-                // 用户要求：首页就在右上角，去除右下角兜底
-                this.isIconFont = false; // 使用 Emoji
-                
-                const btn = document.createElement('button');
-                btn.id = this.btnId;
-                btn.className = 'btn btn-sm btn-outline-secondary rounded-circle shadow';
-                // 固定在右上角，层级设高
-                btn.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); background-color: rgba(255,255,255,0.1); border: 1px solid var(--border-color, #ccc);';
-                btn.setAttribute('aria-label', '切换主题');
-                
-                const icon = document.createElement('span');
-                icon.id = this.iconId;
-                icon.style.fontSize = '1.2rem';
-                btn.appendChild(icon);
-                
-                document.body.appendChild(btn);
-            }
+            const icon = document.createElement('span');
+            icon.id = this.iconId;
+            icon.style.fontSize = '1.2rem';
+            btn.appendChild(icon);
+            
+            document.body.appendChild(btn);
         }
     }
 
