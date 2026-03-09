@@ -585,6 +585,8 @@
         const deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
         const confirmDeleteBtn = document.getElementById('confirmDelete');
         const deleteSiteName = document.getElementById('deleteSiteName');
+        const addTabModal = new bootstrap.Modal(document.getElementById('addTabModal'));
+        const confirmAddTabBtn = document.getElementById('confirmAddTab');
 
         // GitHub API 相关变量
         const githubSaveBtn = document.getElementById('githubSaveBtn');
@@ -618,6 +620,17 @@
             confirmEditSite.addEventListener('click', saveEditedSite);
             confirmDeleteBtn.addEventListener('click', deleteSite);
             saveVersionBtn.addEventListener('click', saveVersionInfo);
+            confirmAddTabBtn.addEventListener('click', function () {
+                const tabNameInput = document.getElementById('tabName');
+                const tabName = tabNameInput.value.trim();
+                if (tabName) {
+                    addNewTabWithName(tabName);
+                    addTabModal.hide();
+                    common.showAlert(`选项卡 "${tabName}" 添加成功`, 'success');
+                } else {
+                    common.showAlert('请输入选项卡名称', 'warning');
+                }
+            });
 
             // GitHub API 相关事件
             githubSaveBtn.addEventListener('click', saveToGithub);
@@ -642,7 +655,13 @@
         const selectAllUrls = document.getElementById('selectAllUrls');
         const confirmFixUrls = document.getElementById('confirmFixUrls');
         const pingResults = document.getElementById('pingResults');
-        const urlFixModal = new bootstrap.Modal(document.getElementById('urlFixModal'));
+
+        // 安全初始化模态框
+        let urlFixModal = null;
+        const urlFixModalElem = document.getElementById('urlFixModal');
+        if (urlFixModalElem) {
+            urlFixModal = new bootstrap.Modal(urlFixModalElem);
+        }
 
         if (checkUrlBtn) {
             checkUrlBtn.addEventListener('click', checkUrlErrors);
@@ -944,6 +963,11 @@
                 navTabContent.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>' + getPageDisplayName(currentPage) + '中没有导航数据</p><button class="btn btn-primary mt-2" id="addFirstTab"><i class="fas fa-plus me-1"></i>添加第一个选项卡</button></div>';
                 document.getElementById('addFirstTab').addEventListener('click', showAddTabModal);
                 return;
+            }
+
+            function showAddTabModal() {
+                document.getElementById('addTabForm').reset();
+                addTabModal.show();
             }
 
             navData[currentPage].tabs.forEach((tab, index) => {
@@ -1345,6 +1369,16 @@
                 document.querySelectorAll('.site-card.drag-over').forEach(el => {
                     el.classList.remove('drag-over');
                 });
+            }
+        }
+
+        // 记录用户操作日志
+        function logUserAction(action, details = {}) {
+            const timestamp = new Date().toLocaleString();
+            const detailsStr = typeof details === 'object' ? JSON.stringify(details) : String(details);
+            console.log(`[Action Log] ${timestamp} - ${action}:`, details);
+            if (window.common && window.common.log) {
+                common.log(`用户操作: ${action}`, 'info', detailsStr);
             }
         }
 
