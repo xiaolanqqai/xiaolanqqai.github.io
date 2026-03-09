@@ -67,19 +67,21 @@ if (typeof DarkMode === 'undefined') {
         createButton() {
             // 场景 B: 首页/其他页面 (右上角悬浮)
             // 管理页面的按钮现在由 manager-component.js 统一创建
-            if (document.querySelector('.manager-nav')) return;
+            // 增加路径判断，防止在管理页面加载过程中由于 DOM 延迟注入导致的重复创建
+            const isManagerPage = window.location.pathname.includes('/manager/');
+            if (isManagerPage || document.querySelector('.manager-nav')) return;
 
             const btn = document.createElement('button');
             btn.id = this.btnId;
             btn.className = 'btn btn-sm btn-outline-secondary rounded-circle shadow';
             btn.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); background-color: rgba(255,255,255,0.1); border: 1px solid var(--border-color, #ccc);';
             btn.setAttribute('aria-label', '切换主题');
-            
+
             const icon = document.createElement('span');
             icon.id = this.iconId;
             icon.style.fontSize = '1.2rem';
             btn.appendChild(icon);
-            
+
             document.body.appendChild(btn);
         }
     }

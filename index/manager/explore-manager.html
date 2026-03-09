@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <title>探索网页系统</title>
-    
+
     <!-- 模块化 Header 组件 -->
     <script src="../../js/components/header-component.js"></script>
     <script src="../../js/components/manager-component.js"></script>
-    
+
     <!-- 引入通用脚本 -->
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
 </head>
+
 <body class="manager-body">
     <div class="container container-main">
         <!-- GitHub 同步功能卡片 -->
@@ -39,14 +41,16 @@
         <div class="mb-4">
             <ul class="nav nav-tabs" id="exploreTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="favorites-tab" data-bs-toggle="tab" data-bs-target="#favorites" type="button" role="tab" aria-controls="favorites" aria-selected="true">我的收藏</button>
+                    <button class="nav-link active" id="favorites-tab" data-bs-toggle="tab" data-bs-target="#favorites"
+                        type="button" role="tab" aria-controls="favorites" aria-selected="true">我的收藏</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">最近点击</button>
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history"
+                        type="button" role="tab" aria-controls="history" aria-selected="false">最近点击</button>
                 </li>
             </ul>
         </div>
-        
+
         <!-- 工具箱模块 -->
         <div class="manager-card mb-4">
             <div class="manager-card-header d-flex justify-content-between align-items-center">
@@ -66,13 +70,13 @@
             </div>
             <div class="manager-card-body">
                 <div class="alert alert-info py-2 mb-3 small">
-                    <i class="fas fa-info-circle me-1"></i> 
+                    <i class="fas fa-info-circle me-1"></i>
                     由于浏览器安全限制，无法直接访问收藏夹。您可以：<br>
                     1. 运行本地脚本 <code>node scripts/get_bookmarks.js</code> 自动同步（推荐）；<br>
                     2. 在浏览器中将收藏夹导出为 <strong>HTML 文件</strong>，然后点击“导入”按钮。
                 </div>
                 <p class="text-muted mb-3 small">以下是已导入的收藏网站，按文件夹分类显示：</p>
-                
+
                 <!-- 收藏夹内容将由JavaScript动态生成 -->
                 <div id="bookmarksContainer">
                     <div class="text-center py-5">
@@ -85,7 +89,7 @@
 
         <!-- 标签页内容 -->
         <div class="tab-content border-0 p-0 bg-transparent" id="exploreTabContent">
-            
+
             <!-- 收藏标签页 -->
             <div class="tab-pane fade show active" id="favorites" role="tabpanel" aria-labelledby="favorites-tab">
                 <div class="favorites-list" id="favoritesList">
@@ -96,11 +100,12 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- 最近点击标签页 -->
             <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
                 <div class="manager-card border-info">
-                    <div class="manager-card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <div
+                        class="manager-card-header bg-info text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0"><i class="fas fa-history me-2"></i>最近点击 (点击次数 ≥ 2)</h5>
                         <div class="btn-group">
                             <button id="selectAllHistory" class="btn btn-sm btn-light">全选</button>
@@ -134,23 +139,23 @@
             </div>
         </div>
     </div>
-    
+
     <!-- 探索网页系统JavaScript -->
     <script>
         // 快捷访问 managerCommon
         const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
         if (common && !window.managerCommon) window.managerCommon = common;
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 初始化模态框
             // (所有模态框已移除)
-            
+
             // GitHub 相关逻辑
             const syncToGithubBtn = document.getElementById('syncToGithubBtn');
 
             // 同步到 GitHub
             if (syncToGithubBtn) {
-                syncToGithubBtn.addEventListener('click', async function() {
+                syncToGithubBtn.addEventListener('click', async function () {
                     if (!common) return;
                     try {
                         const data = {
@@ -174,7 +179,7 @@
                             favorites.push(...data.favorites);
                             localStorage.setItem('explore-favorites', JSON.stringify(favorites));
                         }
-                        
+
                         renderFavorites();
                         common.log('从 GitHub 加载收藏数据成功', 'success');
                     }
@@ -185,11 +190,11 @@
 
             // 获取本地存储的收藏网站
             let favorites = JSON.parse(localStorage.getItem('explore-favorites')) || [];
-            
+
             // 渲染收藏列表
             function renderFavorites() {
                 const container = document.getElementById('favoritesList');
-                
+
                 if (favorites.length === 0) {
                     container.innerHTML = `
                         <div class="alert alert-info text-center p-5">
@@ -200,13 +205,13 @@
                     `;
                     return;
                 }
-                
+
                 container.innerHTML = '';
-                
+
                 favorites.forEach(site => {
                     const listItem = document.createElement('div');
                     listItem.className = 'list-group-item favorites-list-item p-4';
-                    
+
                     listItem.innerHTML = `
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -223,29 +228,29 @@
                             </div>
                         </div>
                     `;
-                    
+
                     // 添加移除收藏点击事件
                     listItem.querySelector('.remove-favorite').addEventListener('click', (e) => {
                         e.stopPropagation();
                         removeFavorite(site.id);
                         renderFavorites();
                     });
-                    
+
                     container.appendChild(listItem);
                 });
             }
-            
+
             // 移除收藏
             function removeFavorite(siteId) {
                 favorites = favorites.filter(fav => fav.id !== siteId);
                 localStorage.setItem('explore-favorites', JSON.stringify(favorites));
                 common.showAlert('已从收藏中移除');
             }
-            
+
             // 初始化标签页切换
             function initTabs() {
                 const tabButtons = document.querySelectorAll('#exploreTabs button');
-                
+
                 tabButtons.forEach(button => {
                     button.addEventListener('shown.bs.tab', () => {
                         if (button.id === 'favorites-tab') {
@@ -288,7 +293,7 @@
                 loadHistoryRecords();
                 const container = document.getElementById('historyList');
                 const paginationContainer = document.getElementById('historyPagination');
-                
+
                 if (historyRecords.length === 0) {
                     container.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">暂无点击次数超过2次的记录</td></tr>`;
                     paginationContainer.innerHTML = '';
@@ -310,20 +315,20 @@
                         <td class="text-truncate" style="max-width: 300px;"><a href="${record.url}" target="_blank" class="history-link">${record.url}</a></td>
                         <td><span class="badge bg-info">${record.count}</span></td>
                     `;
-                    
+
                     // 点击行时打开链接（排除点击复选框和链接本身的情况）
-                     tr.addEventListener('click', (e) => {
-                         if (!e.target.classList.contains('history-item-checkbox') && e.target.tagName !== 'A') {
-                             window.open(record.url, '_blank');
-                         }
-                     });
-                    
+                    tr.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('history-item-checkbox') && e.target.tagName !== 'A') {
+                            window.open(record.url, '_blank');
+                        }
+                    });
+
                     container.appendChild(tr);
                 });
 
                 // 渲染分页
                 renderHistoryPagination(totalPages);
-                
+
                 // 重置全选状态
                 document.getElementById('historyMainCheckbox').checked = false;
             }
@@ -390,7 +395,7 @@
 
                     try {
                         common.showLoading('正在更新导航数据...');
-                        
+
                         // 获取当前的 nav-data.json
                         const response = await fetch('../../data/nav-data.json?t=' + Date.now());
                         if (!response.ok) throw new Error('读取 nav-data.json 失败');
@@ -404,7 +409,7 @@
                                 name: "History",
                                 items: selectedSites
                             };
-                            
+
                             if (networkIndex !== -1) {
                                 navData.index.tabs.splice(networkIndex + 1, 0, historyTab);
                             } else {
@@ -426,7 +431,7 @@
 
                         // 同步到 GitHub (借用 common.syncToGithub)
                         await common.syncToGithub('data/nav-data.json', navData, `Update History category with ${selectedSites.length} sites`);
-                        
+
                         common.hideLoading();
                         common.showAlert(`成功生成并同步！导入了 ${selectedSites.length} 条记录。`, 'success');
                         common.log('成功更新了 History 类目', 'success', `导入记录数: ${selectedSites.length}`);
@@ -436,49 +441,49 @@
                     }
                 });
             }
-            
+
             // 初始化所有功能
             function init() {
                 renderFavorites();
                 initTabs();
                 initHistoryActions(); // 初始化历史记录动作
-                
+
                 // 尝试从 GitHub 加载最新数据
                 loadFromGithub();
-                
+
                 // 显示欢迎消息
                 common.showAlert('欢迎使用探索网页系统！管理您的个人收藏和浏览历史。');
                 common.log('探索网页系统已加载', 'info');
             }
-            
+
             // 启动应用
             init();
         });
     </script>
-    
+
     <!-- 工具箱模块JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const syncLocalBtn = document.getElementById('syncLocalBtn');
             const importBtn = document.getElementById('importBookmarksBtn');
             const fileInput = document.getElementById('importBookmarksFile');
             const refreshBtn = document.getElementById('refreshBookmarks');
             const container = document.getElementById('bookmarksContainer');
-            
+
             // 从本地存储加载收藏夹
             let savedBookmarks = JSON.parse(localStorage.getItem('imported-bookmarks')) || null;
-            
+
             // 本地同步按钮点击
-            syncLocalBtn.addEventListener('click', async function() {
+            syncLocalBtn.addEventListener('click', async function () {
                 try {
                     const response = await fetch('../../data/local-bookmarks.json?t=' + Date.now());
                     if (!response.ok) throw new Error('未找到本地同步文件，请先运行 scripts/get_bookmarks.py');
-                    
+
                     const data = await response.json();
                     savedBookmarks = data;
                     localStorage.setItem('imported-bookmarks', JSON.stringify(savedBookmarks));
                     renderBookmarks(savedBookmarks, container);
-                    
+
                     if (window.managerCommon) {
                         window.managerCommon.showAlert('本地同步成功！', 'success');
                         window.managerCommon.log('成功从本地同步了收藏夹', 'success');
@@ -492,11 +497,11 @@
                     }
                 }
             });
-            
+
             // 渲染收藏夹函数
             function renderBookmarks(bookmarks, container) {
                 container.innerHTML = '';
-                
+
                 if (!bookmarks || !bookmarks.children || bookmarks.children.length === 0) {
                     container.innerHTML = `
                         <div class="text-center py-5">
@@ -514,7 +519,7 @@
                             // 文件夹
                             const folderElement = document.createElement('div');
                             folderElement.className = 'bookmark-folder';
-                            
+
                             const folderHeader = document.createElement('div');
                             folderHeader.className = 'bookmark-folder-header';
                             folderHeader.innerHTML = `
@@ -522,21 +527,21 @@
                                 <span>${item.title}</span>
                                 <span class="ms-2 badge bg-primary rounded-pill">${item.children.length}</span>
                             `;
-                            
+
                             const bookmarkItemsContainer = document.createElement('div');
                             bookmarkItemsContainer.className = 'bookmark-items';
                             bookmarkItemsContainer.style.display = 'none'; // 默认折叠
-                            
-                            folderHeader.addEventListener('click', function() {
+
+                            folderHeader.addEventListener('click', function () {
                                 const icon = folderHeader.querySelector('i');
                                 icon.classList.toggle('fa-chevron-down');
                                 icon.classList.toggle('fa-chevron-right');
                                 folderHeader.classList.toggle('active');
                                 bookmarkItemsContainer.style.display = bookmarkItemsContainer.style.display === 'none' ? 'grid' : 'none';
                             });
-                            
+
                             renderLevel(item.children, bookmarkItemsContainer);
-                            
+
                             folderElement.appendChild(folderHeader);
                             folderElement.appendChild(bookmarkItemsContainer);
                             parentContainer.appendChild(folderElement);
@@ -546,7 +551,7 @@
                             bookmarkItem.className = 'bookmark-item';
                             bookmarkItem.href = item.url;
                             bookmarkItem.target = '_blank';
-                            
+
                             let faviconHtml = '';
                             if (item.iconUrl && item.iconUrl.startsWith('data:')) {
                                 faviconHtml = `<img src="${item.iconUrl}" alt="" class="bookmark-favicon">`;
@@ -554,12 +559,12 @@
                                 const domain = new URL(item.url).hostname;
                                 faviconHtml = `<img src="https://www.google.com/s2/favicons?domain=${domain}" alt="" class="bookmark-favicon">`;
                             }
-                            
+
                             bookmarkItem.innerHTML = `
                                 ${faviconHtml}
                                 <span class="bookmark-title" title="${item.title}">${item.title}</span>
                             `;
-                            
+
                             parentContainer.appendChild(bookmarkItem);
                         }
                     });
@@ -567,13 +572,13 @@
 
                 renderLevel(bookmarks.children, container);
             }
-            
+
             // 解析 HTML 收藏夹 (Netscape Bookmark 格式)
             function parseBookmarksHTML(htmlContent) {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlContent, 'text/html');
                 const rootDL = doc.querySelector('dl'); // Netscape 格式通常使用小写或大写
-                
+
                 if (!rootDL) {
                     // 尝试更通用的查询
                     const anyDL = doc.getElementsByTagName('dl')[0];
@@ -585,7 +590,7 @@
                     const children = [];
                     // 获取直接子元素 DT
                     const dts = Array.from(dl.children).filter(child => child.tagName === 'DT');
-                    
+
                     dts.forEach(dt => {
                         const h3 = dt.querySelector(':scope > h3');
                         const a = dt.querySelector(':scope > a');
@@ -614,20 +619,20 @@
                     children: parseDL(rootDL)
                 };
             }
-            
+
             // 导入按钮点击
             importBtn.addEventListener('click', () => fileInput.click());
-            
+
             // 文件选择处理
             fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
 
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     const content = event.target.result;
                     const parsed = parseBookmarksHTML(content);
-                    
+
                     if (parsed && parsed.children && parsed.children.length > 0) {
                         savedBookmarks = parsed;
                         localStorage.setItem('imported-bookmarks', JSON.stringify(savedBookmarks));
@@ -648,7 +653,7 @@
                 // 重置 input 以便下次选择同一文件也能触发 change
                 fileInput.value = '';
             });
-            
+
             // 刷新按钮
             refreshBtn.addEventListener('click', () => {
                 if (savedBookmarks) {
@@ -659,7 +664,7 @@
                             <p class="text-muted">正在刷新收藏夹...</p>
                         </div>
                     `;
-                    
+
                     setTimeout(() => {
                         renderBookmarks(savedBookmarks, container);
                         if (window.managerCommon) window.managerCommon.showAlert('收藏夹已刷新');
@@ -668,15 +673,16 @@
                     if (window.managerCommon) window.managerCommon.showAlert('请先导入收藏夹文件');
                 }
             });
-            
+
             // 页面加载时自动加载已保存的收藏夹
             if (savedBookmarks) {
                 renderBookmarks(savedBookmarks, container);
             }
         });
     </script>
-    
+
     <!-- 深色模式功能 -->
     <script src="../../js/dark-mode.js"></script>
 </body>
+
 </html>
