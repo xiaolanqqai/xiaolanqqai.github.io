@@ -104,10 +104,50 @@
         navDiv.innerHTML = navHtml;
         document.body.prepend(navDiv);
 
-        // 初始化深色模式按钮逻辑 (如果 DarkMode 已加载)
-        if (window.darkModeInstance) {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            window.darkModeInstance.updateIcon(currentTheme);
+        // 注入完导航后，立即绑定深色模式按钮
+        // 不能依赖 dark-mode.js 的 DOMContentLoaded 事件，因为两者并发执行，顺序不确定
+        bindThemeToggle();
+    }
+
+    /**
+     * 绑定深色模式切换按钮
+     * 需要在导航注入后调用，也需要在 dark-mode.js 加载后调用
+     * 使用轮询确保无论哪个先执行都能正确绑定
+     */
+    function bindThemeToggle() {
+        const btn = document.getElementById('themeToggle');
+        if (!btn) return;
+
+        // 直接绑定切换逻辑（不依赖 darkModeInstance）
+        btn.onclick = function () {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('dark-mode', next);
+            updateThemeIcon(next);
+
+            // 若 darkModeInstance 存在，同步更新（以保持单例状态一致）
+            if (window.darkModeInstance) {
+                window.darkModeInstance.setTheme(next);
+            }
+        };
+
+        // 初始化图标
+        const savedTheme = localStorage.getItem('dark-mode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+        // 确保 html 上的 data-theme 已应用
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+    }
+
+    /**
+     * 根据主题更新导航栏内的图标
+     */
+    function updateThemeIcon(theme) {
+        const icon = document.getElementById('themeIcon');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
     }
 
