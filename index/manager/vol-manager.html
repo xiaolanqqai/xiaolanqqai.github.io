@@ -271,8 +271,16 @@
                     versionsContainer = document.getElementById('versionsContainer');
                     versionTimeline = document.getElementById('versionTimeline');
                     dataStatus = document.getElementById('dataStatus');
-                    addVersionModal = new bootstrap.Modal(document.getElementById('addVersionModal'));
-                    importModal = new bootstrap.Modal(document.getElementById('importModal'));
+
+                    const addVersionModalEl = document.getElementById('addVersionModal');
+                    if (addVersionModalEl) {
+                        addVersionModal = new bootstrap.Modal(addVersionModalEl);
+                    }
+                    const importModalEl = document.getElementById('importModal');
+                    if (importModalEl) {
+                        importModal = new bootstrap.Modal(importModalEl);
+                    }
+
                     confirmAddVersion = document.getElementById('confirmAddVersion');
                     confirmImport = document.getElementById('confirmImport');
                     sortByDateBtn = document.getElementById('sortByDateBtn');

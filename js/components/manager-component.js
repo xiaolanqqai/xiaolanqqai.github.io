@@ -230,6 +230,18 @@
         `;
 
         document.body.appendChild(offcanvasDiv);
+
+        // 等待 Bootstrap 加载后初始化 Offcanvas 并注册关闭钩子
+        // 不能直接 new bootstrap.Offcanvas()，因为 bootstrap 可能还没准备好
+        // 所以用事件监听方式，在第一次打开时延迟初始化
+        offcanvasDiv.addEventListener('hidden.bs.offcanvas', function () {
+            // 强制清除残留 backdrop，防止页面无法响应点击
+            const backdrops = document.querySelectorAll('.offcanvas-backdrop');
+            backdrops.forEach(el => el.remove());
+            document.body.classList.remove('offcanvas-open');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+        });
     }
 
     // 初始化
