@@ -1576,13 +1576,14 @@
             const iconPrefix = common.config.iconPrefix;
             
             return sites.map((site, siteIndex) => {
+                const siteName = site.name || site.title || '未命名网站';
                 const iconUrl = site.icon || iconPrefix + encodeURIComponent(site.url);
                 return '<div class="site-card" data-site-index="'+siteIndex+'" data-tab-index="'+tabIndex+'" draggable="true" data-drag-type="site">' +
                     '<div class="delete-corner" data-tab-index="'+tabIndex+'" data-site-index="'+siteIndex+'">' +
                         '<i class="fas fa-times"></i>' +
                     '</div>' +
-                    '<img src="'+iconUrl+'" class="site-icon" alt="'+site.name+'" onerror="this.src=\'../img/index.png\'">' +
-                    '<div class="site-name">'+site.name+'</div>' +
+                    '<img src="'+iconUrl+'" class="site-icon" alt="'+siteName+'" onerror="this.src=\'../img/index.png\'">' +
+                    '<div class="site-name">'+siteName+'</div>' +
                 '</div>';
             }).join('');
         }
@@ -1911,7 +1912,16 @@
                 })
                 .catch(error => {
                     console.error('加载本地JSON文件失败:', error);
-                    common.showAlert('加载本地JSON文件失败: ' + error.message, 'danger');
+                    
+                    let errorMsg = error.message;
+                    // 检测是否为本地文件加载导致的 CORS 错误
+                    if (window.location.protocol === 'file:' && (errorMsg.includes('fetch') || errorMsg.includes('NetworkError'))) {
+                        errorMsg = '浏览器安全策略限制：直接打开本地 HTML 文件无法读取 JSON 数据。请运行根目录下的 "start_preview.bat" 进行预览，或点击左侧 "上传JSON" 按钮手动选择文件。';
+                        common.showAlert(errorMsg, 'warning', 10000);
+                    } else {
+                        common.showAlert('加载本地JSON文件失败: ' + errorMsg, 'danger');
+                    }
+                    
                     common.log('JSON文件加载失败', 'error', `路径: ${filePath}, 错误: ${error.message}`);
                     
                     navData = {
@@ -1926,7 +1936,7 @@
                         develop: { tabs: [] }
                     };
                     
-                    document.getElementById('navTabContent').innerHTML = '<div class="empty-state"><i class="fas fa-cloud-upload-alt"></i><p>暂无数据，请先上传JSON文件或添加内容</p></div>';
+                    document.getElementById('navTabContent').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>${errorMsg}</p></div>`;
                 });
         }
 
