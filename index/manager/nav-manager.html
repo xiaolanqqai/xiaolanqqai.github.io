@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <title>导航数据管理系统</title>
     <!-- 模块化 Header 组件 -->
     <script src="../../js/components/header-component.js"></script>
     <script src="../../js/components/manager-component.js"></script>
-    
-    <!-- 引入通用脚本 -->
+
+    <!-- 引入基础库 -->
+    <script src="../../js/bootstrap.bundle.min.js"></script>
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
 </head>
+
 <body class="manager-body">
     <div class="container container-main">
         <!-- 版本信息 -->
@@ -28,19 +31,24 @@
                 </button>
             </div>
         </div>
-        
+
         <!-- 页面选择器 -->
         <div class="bg-light rounded p-3 mb-4">
             <h5 class="mb-3">选择要管理的页面:</h5>
             <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-outline-primary fs-085r active page-btn" data-page="index">主页 (index.html)</button>
-                <button type="button" class="btn btn-outline-primary fs-085r page-btn" data-page="more">更多页面 (More.html)</button>
-                <button type="button" class="btn btn-outline-primary fs-085r page-btn" data-page="dd">DD页面 (DD.html)</button>
-                <button type="button" class="btn btn-outline-primary fs-085r page-btn" data-page="download">下载页面 (Download.html)</button>
-                <button type="button" class="btn btn-outline-primary fs-085r page-btn" data-page="develop">开发页面 (Develop.html)</button>
+                <button type="button" class="btn btn-outline-primary fs-085r active page-btn" data-page="index">主页
+                    (index.html)</button>
+                <button type="button" class="btn btn-outline-primary fs-085r page-btn" data-page="more">更多页面
+                    (More.html)</button>
+                <button type="button" class="btn btn-outline-primary fs-085r page-btn" data-page="dd">DD页面
+                    (DD.html)</button>
+                <button type="button" class="btn btn-outline-primary fs-085r page-btn" data-page="download">下载页面
+                    (Download.html)</button>
+                <button type="button" class="btn btn-outline-primary fs-085r page-btn" data-page="develop">开发页面
+                    (Develop.html)</button>
             </div>
         </div>
-        
+
         <!-- 功能卡片 -->
         <div class="row mb-4 g-3">
             <div class="col-lg-2 col-md-4 col-sm-6">
@@ -49,7 +57,8 @@
                         <div class="text-primary mb-3 feature-icon"><i class="fas fa-file-upload"></i></div>
                         <h6>上传JSON</h6>
                         <p class="flex-grow-1 xsmall">从设备上传JSON文件</p>
-                        <button class="btn btn-sm manager-btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <button class="btn btn-sm manager-btn-primary mt-2" data-bs-toggle="modal"
+                            data-bs-target="#uploadModal">
                             <i class="fas fa-upload me-1"></i>上传
                         </button>
                     </div>
@@ -106,7 +115,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 主要管理区域 -->
         <div class="card manager-card mb-4">
             <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
@@ -121,10 +130,10 @@
                 <div class="alert alert-info mb-4">
                     <strong>使用说明：</strong> 您可以在此页面管理导航选项卡和其中的网站链接。修改后请点击"保存数据"按钮。
                 </div>
-                
+
                 <ul class="nav nav-tabs manager-nav-tabs mb-4" id="navTabs" role="tablist"></ul>
                 <div class="tab-content" id="navTabContent"></div>
-                
+
                 <!-- 特殊栏目管理区域 -->
                 <div id="specialSection">
                     <div class="special-section p-3 mb-3">
@@ -148,7 +157,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- 页脚 -->
     <div class="manager-footer py-3 mt-4">
         <div class="container text-center">
@@ -156,7 +165,7 @@
             <p class="mb-0"><a href="../../index.html" class="text-decoration-none">返回主页</a></p>
         </div>
     </div>
-    
+
     <!-- 模态框部分保持不变 -->
     <!-- 版本信息编辑模态框 -->
     <div class="modal fade" id="versionModal" tabindex="-1" aria-hidden="true">
@@ -187,149 +196,192 @@
             </div>
         </div>
     </div>
-    
+
     <div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">上传JSON文件</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <div class="upload-area" id="dropArea">
-                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <h5>拖放JSON文件到这里</h5><p class="text-muted">或者</p>
-                    <label for="jsonFile" class="btn manager-btn-primary"><i class="fas fa-folder-open me-1"></i>选择文件</label>
-                    <input type="file" id="jsonFile" accept=".json" class="d-none">
-                    <div class="mt-3"><small class="text-muted">支持标准的JSON格式文件</small></div>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">上传JSON文件</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <!-- 上传进度条 -->
-                <div id="uploadProgressContainer" class="d-none mt-3">
-                <div class="d-flex justify-content-between items-center mb-1">
-                    <p class="mb-1">正在处理：<span id="progressFileName"></span></p>
-                    <span id="progressPercentage" class="text-muted small">0%</span>
+                <div class="modal-body">
+                    <div class="upload-area" id="dropArea">
+                        <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <h5>拖放JSON文件到这里</h5>
+                        <p class="text-muted">或者</p>
+                        <label for="jsonFile" class="btn manager-btn-primary"><i
+                                class="fas fa-folder-open me-1"></i>选择文件</label>
+                        <input type="file" id="jsonFile" accept=".json" class="d-none">
+                        <div class="mt-3"><small class="text-muted">支持标准的JSON格式文件</small></div>
+                    </div>
+                    <!-- 上传进度条 -->
+                    <div id="uploadProgressContainer" class="d-none mt-3">
+                        <div class="d-flex justify-content-between items-center mb-1">
+                            <p class="mb-1">正在处理：<span id="progressFileName"></span></p>
+                            <span id="progressPercentage" class="text-muted small">0%</span>
+                        </div>
+                        <div class="progress progress-bar-animation mb-1">
+                            <div id="uploadProgressBar"
+                                class="progress-bar progress-bar-striped progress-bar-animated w-0p" role="progressbar"
+                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p id="progressMessage" class="text-sm text-muted">准备中...</p>
+                    </div>
+                    <div id="fileInfo" class="d-none">
+                        <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i><span
+                                id="fileName">已选择文件：</span></div>
+                        <h6 class="mt-4">JSON预览：</h6>
+                        <div class="json-preview" id="jsonPreview"></div>
+                    </div>
                 </div>
-                <div class="progress progress-bar-animation mb-1">
-                    <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated w-0p" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn manager-btn-primary" id="confirmUpload" disabled>确认上传</button>
                 </div>
-                <p id="progressMessage" class="text-sm text-muted">准备中...</p>
             </div>
-                <div id="fileInfo" class="d-none">
-                    <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i><span id="fileName">已选择文件：</span></div>
-                    <h6 class="mt-4">JSON预览：</h6><div class="json-preview" id="jsonPreview"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn manager-btn-primary" id="confirmUpload" disabled>确认上传</button>
-            </div>
-        </div></div>
+        </div>
     </div>
     <div class="modal fade" id="addSiteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">添加新网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <!-- 网站图标显示区域 -->
-                <div class="text-center mb-3" id="siteIconPreview">
-                    <div id="defaultIcon" class="site-icon-default">
-                        <i class="fas fa-globe fa-3x"></i>
-                    </div>
-                    <img src="" alt="网站图标" id="siteIconImage" class="site-icon img-fluid d-none">
-                    <div id="loadingIcon" class="site-icon-loading d-none">
-                        <i class="fas fa-spinner fa-spin fa-3x"></i>
-                    </div>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加新网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <form id="addSiteForm">
-                    <div class="mb-3"><label for="siteName" class="form-label">网站名称</label><input type="text" class="form-control" id="siteName" required></div>
-                    <div class="mb-3">
-                        <label for="siteUrl" class="form-label">网站地址</label>
-                        <div class="input-group">
-                            <input type="url" class="form-control" id="siteUrl" required>
-                            <button type="button" class="btn btn-outline-secondary" id="clipboardBtn">黏贴</button>
+                <div class="modal-body">
+                    <!-- 网站图标显示区域 -->
+                    <div class="text-center mb-3" id="siteIconPreview">
+                        <div id="defaultIcon" class="site-icon-default">
+                            <i class="fas fa-globe fa-3x"></i>
+                        </div>
+                        <img src="" alt="网站图标" id="siteIconImage" class="site-icon img-fluid d-none">
+                        <div id="loadingIcon" class="site-icon-loading d-none">
+                            <i class="fas fa-spinner fa-spin fa-3x"></i>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <div class="alert alert-info">
-                            <small><i class="fas fa-info-circle me-1"></i>图标将自动使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
+                    <form id="addSiteForm">
+                        <div class="mb-3"><label for="siteName" class="form-label">网站名称</label><input type="text"
+                                class="form-control" id="siteName" required></div>
+                        <div class="mb-3">
+                            <label for="siteUrl" class="form-label">网站地址</label>
+                            <div class="input-group">
+                                <input type="url" class="form-control" id="siteUrl" required>
+                                <button type="button" class="btn btn-outline-secondary" id="clipboardBtn">黏贴</button>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                        <div class="mb-3">
+                            <div class="alert alert-info">
+                                <small><i class="fas fa-info-circle me-1"></i>图标将自动使用:
+                                    https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn manager-btn-primary" id="confirmAddSite">添加</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn manager-btn-primary" id="confirmAddSite">添加</button>
-            </div>
-        </div></div>
+        </div>
     </div>
-   
-        </div></div>
+
+    </div>
+    </div>
     </div>
     <div class="modal fade" id="editSiteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">编辑网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <form id="editSiteForm">
-                    <input type="hidden" id="editSiteTabIndex">
-                    <input type="hidden" id="editSiteIndex">
-                    <div class="mb-3"><label for="editSiteName" class="form-label">网站名称</label><input type="text" class="form-control" id="editSiteName" required></div>
-                    <div class="mb-3"><label for="editSiteUrl" class="form-label">网站地址</label><input type="url" class="form-control" id="editSiteUrl" required></div>
-                    <div class="mb-3">
-                        <div class="alert alert-info">
-                            <small><i class="fas fa-info-circle me-1"></i>图标将自动使用: https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editSiteForm">
+                        <input type="hidden" id="editSiteTabIndex">
+                        <input type="hidden" id="editSiteIndex">
+                        <div class="mb-3"><label for="editSiteName" class="form-label">网站名称</label><input type="text"
+                                class="form-control" id="editSiteName" required></div>
+                        <div class="mb-3"><label for="editSiteUrl" class="form-label">网站地址</label><input type="url"
+                                class="form-control" id="editSiteUrl" required></div>
+                        <div class="mb-3">
+                            <div class="alert alert-info">
+                                <small><i class="fas fa-info-circle me-1"></i>图标将自动使用:
+                                    https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirmEditSite">保存</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="confirmEditSite">保存</button>
-            </div>
-        </div></div>
+        </div>
     </div>
     <div class="modal fade" id="addTabModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">添加新选项卡</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <form id="addTabForm">
-                    <div class="mb-3"><label for="tabName" class="form-label">选项卡名称</label><input type="text" class="form-control" id="tabName" required></div>
-                </form>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加新选项卡</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTabForm">
+                        <div class="mb-3"><label for="tabName" class="form-label">选项卡名称</label><input type="text"
+                                class="form-control" id="tabName" required></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirmAddTab">添加</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="confirmAddTab">添加</button>
-            </div>
-        </div></div>
+        </div>
     </div>
     <div class="modal fade" id="confirmClearModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">确认清空数据</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>您确定要清空所有已加载的导航数据吗？此操作不可撤销！
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">确认清空数据</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <p class="mt-3">当前页面: <span id="currentPageName">主页</span></p>
-                <p>将删除所有选项卡和网站数据</p>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>您确定要清空所有已加载的导航数据吗？此操作不可撤销！
+                    </div>
+                    <p class="mt-3">当前页面: <span id="currentPageName">主页</span></p>
+                    <p>将删除所有选项卡和网站数据</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning" id="confirmClear">确认清空</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-warning" id="confirmClear">确认清空</button>
-            </div>
-        </div></div>
+        </div>
     </div>
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">确认删除</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-            <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>您确定要删除这个网站吗？此操作不可撤销！
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">确认删除</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-                <p class="mt-3">网站名称: <span id="deleteSiteName"></span></p>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>您确定要删除这个网站吗？此操作不可撤销！
+                    </div>
+                    <p class="mt-3">网站名称: <span id="deleteSiteName"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="deleteTabIndex">
+                    <input type="hidden" id="deleteSiteIndex">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">确认删除</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <input type="hidden" id="deleteTabIndex">
-                <input type="hidden" id="deleteSiteIndex">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">确认删除</button>
-            </div>
-        </div></div>
+        </div>
     </div>
-    
+
     <script>
         // 全局变量
         let navigationData = [];
@@ -342,7 +394,7 @@
         };
         let currentTabIndex = 0;
         let currentPage = 'index';
-        
+
         // 快捷访问 managerCommon
         const common = window.managerCommon || new ManagerCommon();
         if (!window.managerCommon) window.managerCommon = common;
@@ -366,19 +418,19 @@
             const siteUrlInput = document.getElementById('siteUrl');
             const clipboardBtn = document.getElementById('clipboardBtn');
             const siteNameInput = document.getElementById('siteName');
-            
+
             if (!siteUrlInput || !clipboardBtn || !siteNameInput) return;
-            
+
             // 初始化按钮文本
             clipboardBtn.textContent = siteUrlInput.value.trim() === '' ? '黏贴' : '检索';
-            
+
             // 监听输入框实时变化，即时切换按钮文本
-            siteUrlInput.addEventListener('input', function() {
+            siteUrlInput.addEventListener('input', function () {
                 clipboardBtn.textContent = this.value.trim() === '' ? '黏贴' : '检索';
             });
-            
+
             // 按钮点击事件
-            clipboardBtn.addEventListener('click', async function() {
+            clipboardBtn.addEventListener('click', async function () {
                 if (siteUrlInput.value.trim() === '') {
                     // 粘贴功能
                     try {
@@ -405,7 +457,7 @@
                     clipboardBtn.disabled = true;
                     clipboardBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 检索中...';
                     showSiteIcon(url);
-                    
+
                     try {
                         const siteName = await common.extractSiteNameFromUrl(url);
                         if (siteName) {
@@ -425,8 +477,8 @@
                     }
                 }
             });
-            
-            siteUrlInput.addEventListener('change', async function() {
+
+            siteUrlInput.addEventListener('change', async function () {
                 const url = this.value.trim();
                 if (url && url.match(/^https?:\/\//i)) {
                     showSiteIcon(url);
@@ -440,23 +492,23 @@
                 }
             });
         }
-        
+
         // 在模态框显示时初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const addSiteModalElement = document.getElementById('addSiteModal');
             if (addSiteModalElement) {
-                addSiteModalElement.addEventListener('shown.bs.modal', function() {
+                addSiteModalElement.addEventListener('shown.bs.modal', function () {
                     setTimeout(() => {
                         const siteIconImage = document.getElementById('siteIconImage');
                         const defaultIcon = document.getElementById('defaultIcon');
                         const loadingIcon = document.getElementById('loadingIcon');
-                        
+
                         if (siteIconImage && defaultIcon && loadingIcon) {
                             defaultIcon.style.display = 'block';
                             siteIconImage.style.display = 'none';
                             loadingIcon.style.display = 'none';
                         }
-                        
+
                         initClipboardButton();
                         const siteUrlInput = document.getElementById('siteUrl');
                         const clipboardBtn = document.getElementById('clipboardBtn');
@@ -467,28 +519,28 @@
                 });
             }
         });
-        
+
         // 显示网站图标
         function showSiteIcon(url) {
             const siteIconImage = document.getElementById('siteIconImage');
             const defaultIcon = document.getElementById('defaultIcon');
             const loadingIcon = document.getElementById('loadingIcon');
-            
+
             if (siteIconImage && defaultIcon && loadingIcon) {
                 defaultIcon.style.display = 'none';
                 siteIconImage.style.display = 'none';
                 loadingIcon.style.display = 'block';
-                
+
                 const iconUrl = `${common.config.iconPrefix}${encodeURIComponent(url)}`;
                 const img = new Image();
                 img.src = iconUrl;
-                
+
                 img.onload = () => {
                     siteIconImage.src = iconUrl;
                     loadingIcon.style.display = 'none';
                     siteIconImage.style.display = 'block';
                 };
-                
+
                 img.onerror = () => {
                     siteIconImage.src = common.config.defaultIcon;
                     loadingIcon.style.display = 'none';
@@ -496,10 +548,10 @@
                 };
             }
         }
-        
+
         // 全局变量存储需要修复的URL错误信息
         let urlErrorsToFix = [];
-        
+
         const navTabs = document.getElementById('navTabs');
         const navTabContent = document.getElementById('navTabContent');
         const saveBtn = document.getElementById('saveBtn');
@@ -533,13 +585,13 @@
         const deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
         const confirmDeleteBtn = document.getElementById('confirmDelete');
         const deleteSiteName = document.getElementById('deleteSiteName');
-        
+
         // GitHub API 相关变量
         const githubSaveBtn = document.getElementById('githubSaveBtn');
-        
+
         // 数据修改状态标志
         let dataHasChanged = false;
-        
+
         // 兼容性包装函数
         const LOG_TYPES = {
             SUCCESS: 'success',
@@ -548,13 +600,13 @@
             INFO: 'info'
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 页面加载时尝试从本地JSON文件加载数据
             loadFromJsonFile();
             setupEventListeners();
             updateVersionDisplay();
         });
-        
+
         function setupEventListeners() {
             saveBtn.addEventListener('click', saveNavData);
             // 移除直接绑定的点击事件，改用setupAddTabButton中设置的新交互
@@ -566,23 +618,23 @@
             confirmEditSite.addEventListener('click', saveEditedSite);
             confirmDeleteBtn.addEventListener('click', deleteSite);
             saveVersionBtn.addEventListener('click', saveVersionInfo);
-            
+
             // GitHub API 相关事件
             githubSaveBtn.addEventListener('click', saveToGithub);
-            
+
             // 日志管理
             clearLogsBtn.addEventListener('click', clearAllLogs);
-            
+
             // 初始化添加选项卡按钮的新交互
             setupAddTabButton();
-            
+
             // 添加拖拽相关的CSS样式
             addDragDropStyles();
-            
+
             // 初始化数据更新标识
             updateDataChangeIndicator();
         }
-        
+
         // 绑定新功能按钮事件
         const checkUrlBtn = document.getElementById('checkUrlBtn');
         const checkAccessibilityBtn = document.getElementById('checkAccessibilityBtn');
@@ -591,88 +643,88 @@
         const confirmFixUrls = document.getElementById('confirmFixUrls');
         const pingResults = document.getElementById('pingResults');
         const urlFixModal = new bootstrap.Modal(document.getElementById('urlFixModal'));
-        
+
         if (checkUrlBtn) {
             checkUrlBtn.addEventListener('click', checkUrlErrors);
         }
-        
+
         if (checkAccessibilityBtn) {
             checkAccessibilityBtn.addEventListener('click', checkWebsitesAccessibility);
         }
-        
+
         if (pingSearchEnginesBtn) {
             pingSearchEnginesBtn.addEventListener('click', pingSearchEngines);
         }
-        
+
         if (selectAllUrls) {
-            selectAllUrls.addEventListener('change', function() {
+            selectAllUrls.addEventListener('change', function () {
                 const checkboxes = document.querySelectorAll('#urlCheckResults input[type="checkbox"]');
                 checkboxes.forEach(checkbox => {
                     checkbox.checked = this.checked;
                 });
             });
         }
-        
+
         if (confirmFixUrls) {
             confirmFixUrls.addEventListener('click', applyUrlFixes);
         }
-            
-            // 特殊栏目管理
-            addSpecialSiteBtn.addEventListener('click', showAddSpecialSiteModal);
-            
-            // 版本信息编辑
-            document.querySelector('.version-info .btn').addEventListener('click', function() {
-                document.getElementById('webVol').value = navData.version.web_vol;
-                document.getElementById('webData').value = navData.version.web_data;
+
+        // 特殊栏目管理
+        addSpecialSiteBtn.addEventListener('click', showAddSpecialSiteModal);
+
+        // 版本信息编辑
+        document.querySelector('.version-info .btn').addEventListener('click', function () {
+            document.getElementById('webVol').value = navData.version.web_vol;
+            document.getElementById('webData').value = navData.version.web_data;
+        });
+
+        pageButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                pageButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentPage = this.getAttribute('data-page');
+                updatePageTitle();
+                updateSpecialSectionVisibility();
+                renderTabs();
             });
-            
-            pageButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    pageButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentPage = this.getAttribute('data-page');
-                    updatePageTitle();
-                    updateSpecialSectionVisibility();
-                    renderTabs();
-                });
-            });
-            
-            jsonFileInput.addEventListener('change', handleFileSelect);
-            dropArea.addEventListener('dragover', function(e) {
-                e.preventDefault();e.stopPropagation();
-                dropArea.style.borderColor = '#6a11cb';
-                dropArea.style.backgroundColor = '#e9ecef';
-            });
-            dropArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();e.stopPropagation();
-                dropArea.style.borderColor = '#dee2e6';
-                dropArea.style.backgroundColor = '#f8f9fa';
-            });
-            dropArea.addEventListener('drop', function(e) {
-                e.preventDefault();e.stopPropagation();
-                dropArea.style.borderColor = '#dee2e6';
-                dropArea.style.backgroundColor = '#f8f9fa';
-                const files = e.dataTransfer.files;
-                if (files.length && files[0].type === 'application/json') {
-                    jsonFileInput.files = files;
-                    handleFileSelect(e);
-                } else {
-                    common.showAlert('请拖放有效的JSON文件', 'danger');
+        });
+
+        jsonFileInput.addEventListener('change', handleFileSelect);
+        dropArea.addEventListener('dragover', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            dropArea.style.borderColor = '#6a11cb';
+            dropArea.style.backgroundColor = '#e9ecef';
+        });
+        dropArea.addEventListener('dragleave', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            dropArea.style.borderColor = '#dee2e6';
+            dropArea.style.backgroundColor = '#f8f9fa';
+        });
+        dropArea.addEventListener('drop', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            dropArea.style.borderColor = '#dee2e6';
+            dropArea.style.backgroundColor = '#f8f9fa';
+            const files = e.dataTransfer.files;
+            if (files.length && files[0].type === 'application/json') {
+                jsonFileInput.files = files;
+                handleFileSelect(e);
+            } else {
+                common.showAlert('请拖放有效的JSON文件', 'danger');
             }
         });
-        
-        
+
+
         function updatePageTitle() {
             const titles = {
                 'index': '主页 - 导航选项卡管理',
-                'more': '更多页面 - 导航选项卡管理', 
+                'more': '更多页面 - 导航选项卡管理',
                 'dd': 'DD页面 - 导航选项卡管理',
                 'download': '下载页面 - 导航选项卡管理',
                 'develop': '开发页面 - 导航选项卡管理'
             };
             pageTitle.textContent = titles[currentPage] || '导航选项卡管理';
         }
-        
+
         function updateSpecialSectionVisibility() {
             if (currentPage === 'more') {
                 specialSection.style.display = 'block';
@@ -680,54 +732,54 @@
                 specialSection.style.display = 'none';
             }
         }
-        
+
         function updateVersionDisplay() {
             if (navData.version) {
                 currentWebVol.textContent = navData.version.web_vol;
                 currentWebData.textContent = navData.version.web_data;
             }
         }
-        
+
         function saveVersionInfo() {
             const webVol = document.getElementById('webVol').value.trim();
             const webData = document.getElementById('webData').value.trim();
-            
+
             if (!webVol || !webData) {
                 common.showAlert('请填写所有版本字段', 'warning');
                 return;
             }
-            
+
             // 确保version对象存在
             if (!navData.version) {
                 navData.version = {};
             }
-            
+
             navData.version.web_vol = webVol;
             navData.version.web_data = webData;
-            
+
             versionModal.hide();
             updateVersionDisplay();
             common.showAlert('版本信息已更新', 'success');
         }
-        
 
-        
+
+
         function showClearConfirmModal() {
             currentPageName.textContent = getPageDisplayName(currentPage);
             confirmClearModal.show();
         }
-        
+
         function getPageDisplayName(page) {
             const names = {
                 'index': '主页',
                 'more': '更多页面',
-                'dd': 'DD页面', 
+                'dd': 'DD页面',
                 'download': '下载页面',
                 'develop': '开发页面'
             };
             return names[page] || page;
         }
-        
+
         function clearAllData() {
             if (navData[currentPage]) {
                 navData[currentPage] = { tabs: [] };
@@ -738,60 +790,60 @@
             }
             confirmClearModal.hide();
         }
-        
+
         function handleFileSelect(event) {
             const file = jsonFileInput.files[0];
             if (!file) return;
-            
+
             // 显示进度条
-              const progressContainer = document.getElementById('uploadProgressContainer');
-              const progressBar = document.getElementById('uploadProgressBar');
-              const progressFileName = document.getElementById('progressFileName');
-              const progressPercentage = document.getElementById('progressPercentage');
-              const progressMessage = document.getElementById('progressMessage');
-              
-              // 更新进度条的辅助函数
-              function updateProgressBar(percent, message) {
-                  progressBar.style.width = `${percent}%`;
-                  progressBar.setAttribute('aria-valuenow', percent);
-                  progressPercentage.textContent = `${percent}%`;
-                  progressMessage.textContent = message;
-              }
-              
-              progressContainer.classList.remove('d-none');
-              progressFileName.textContent = file.name;
-              updateProgressBar(0, '准备中...');
-            
+            const progressContainer = document.getElementById('uploadProgressContainer');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const progressFileName = document.getElementById('progressFileName');
+            const progressPercentage = document.getElementById('progressPercentage');
+            const progressMessage = document.getElementById('progressMessage');
+
+            // 更新进度条的辅助函数
+            function updateProgressBar(percent, message) {
+                progressBar.style.width = `${percent}%`;
+                progressBar.setAttribute('aria-valuenow', percent);
+                progressPercentage.textContent = `${percent}%`;
+                progressMessage.textContent = message;
+            }
+
+            progressContainer.classList.remove('d-none');
+            progressFileName.textContent = file.name;
+            updateProgressBar(0, '准备中...');
+
             if (file.type !== 'application/json') {
                 common.showAlert('请选择JSON文件', 'danger');
                 progressContainer.classList.add('d-none');
                 common.log('上传文件类型错误', 'error', `文件名: ${file.name}, 类型: ${file.type}`);
                 return;
             }
-            
+
             fileName.textContent = `已选择文件：${file.name}`;
             fileInfo.classList.remove('d-none');
-            
+
             // 记录日志
             common.log('开始处理上传文件', 'info', `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
-            
+
             // 模拟初始进度
             setTimeout(() => {
                 updateProgressBar(30, '正在验证文件格式...');
             }, 100);
-            
+
             const reader = new FileReader();
-            reader.onloadstart = function() {
+            reader.onloadstart = function () {
                 updateProgressBar(50, '正在解析JSON数据...');
             };
-            
-            reader.onload = function(e) {
+
+            reader.onload = function (e) {
                 try {
                     updateProgressBar(70, '正在验证数据结构...');
-                    
+
                     const content = e.target.result;
                     const jsonData = JSON.parse(content);
-                    
+
                     // 验证JSON结构并确保版本信息存在
                     if (!jsonData.version) {
                         jsonData.version = {
@@ -799,20 +851,20 @@
                             web_data: jsonData.version?.web_data || new Date().toISOString().split('T')[0].replace(/-/g, '.')
                         };
                     }
-                    
+
                     // 验证必要的数据结构
                     if (!jsonData.index || typeof jsonData.index !== 'object') {
                         throw new Error('JSON数据必须包含index对象');
                     }
-                    
+
                     updateProgressBar(90, '准备完成，等待确认...');
-                    
+
                     jsonPreview.textContent = JSON.stringify(jsonData, null, 2);
                     confirmUpload.disabled = false;
                     window.uploadedData = jsonData;
-                    
+
                     updateProgressBar(100, '处理完成！');
-                    
+
                     common.log('文件处理完成', 'success', `文件名: ${file.name}`);
                 } catch (e) {
                     jsonPreview.textContent = `错误：${e.message}`;
@@ -825,20 +877,20 @@
             };
             reader.readAsText(file);
         }
-        
+
         // 数据处理函数
         function processUploadedFile() {
             try {
                 // 显示全局加载动画
                 common.showLoading('正在导入数据...');
-                
+
                 if (!window.uploadedData) {
                     common.showAlert('没有待上传的数据', 'warning');
                     common.log('上传失败', 'warning', '没有待上传的数据');
                     common.hideLoading();
                     return;
                 }
-                
+
                 // 验证数据完整性
                 if (!validateNavData(window.uploadedData)) {
                     common.showAlert('数据结构验证失败，请检查文件格式', 'danger');
@@ -846,30 +898,30 @@
                     common.hideLoading();
                     return;
                 }
-                
+
                 navData = window.uploadedData;
                 updateVersionDisplay();
                 renderTabs();
                 renderSpecialSites();
                 updateSpecialSectionVisibility();
-                
+
                 // 隐藏进度条
                 document.getElementById('uploadProgressContainer').classList.add('d-none');
-                
+
                 // 重置文件输入
                 jsonFileInput.value = '';
                 fileInfo.classList.add('d-none');
                 confirmUpload.disabled = true;
-                
+
                 // 初始化拖拽功能
                 setTimeout(() => {
                     initSiteDragAndDrop();
                     initTabDragAndDrop();
-                    
+
                     // 隐藏模态框和加载动画
                     uploadModal.hide();
                     common.hideLoading();
-                    
+
                     common.showAlert('JSON文件已成功上传并加载', 'success');
                     common.log('JSON文件导入成功', 'success', `版本: ${navData.version?.web_vol || '未知'}`);
                     // 显示上传标识
@@ -883,17 +935,17 @@
                 console.error('上传处理错误:', error);
             }
         }
-        
+
         function renderTabs() {
             navTabs.innerHTML = '';
             navTabContent.innerHTML = '';
-            
+
             if (!navData[currentPage] || !navData[currentPage].tabs || navData[currentPage].tabs.length === 0) {
-                navTabContent.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>'+getPageDisplayName(currentPage)+'中没有导航数据</p><button class="btn btn-primary mt-2" id="addFirstTab"><i class="fas fa-plus me-1"></i>添加第一个选项卡</button></div>';
+                navTabContent.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>' + getPageDisplayName(currentPage) + '中没有导航数据</p><button class="btn btn-primary mt-2" id="addFirstTab"><i class="fas fa-plus me-1"></i>添加第一个选项卡</button></div>';
                 document.getElementById('addFirstTab').addEventListener('click', showAddTabModal);
                 return;
             }
-            
+
             navData[currentPage].tabs.forEach((tab, index) => {
                 const tabNav = document.createElement('li');
                 tabNav.className = 'nav-item';
@@ -909,11 +961,11 @@
                 tabLink.setAttribute('aria-controls', 'tab-' + index);
                 tabLink.setAttribute('aria-selected', (index === 0 ? 'true' : 'false'));
                 tabLink.textContent = tab.name;
-                
+
                 // 添加双击编辑功能
-                tabLink.addEventListener('dblclick', function(e) {
+                tabLink.addEventListener('dblclick', function (e) {
                     e.preventDefault(); // 阻止默认的选项卡切换行为
-                    
+
                     // 创建输入框
                     const input = document.createElement('input');
                     input.type = 'text';
@@ -928,17 +980,17 @@
                     input.style.fontSize = '0.875rem';
                     input.style.lineHeight = '1.5';
                     input.style.borderRadius = '0.2rem';
-                    
+
                     // 保存原始内容和元素
                     const originalContent = tabLink.textContent;
-                    
+
                     // 替换文本为输入框
                     tabLink.innerHTML = '';
                     tabLink.appendChild(input);
                     input.focus();
-                    
+
                     // 处理Enter键保存
-                    input.addEventListener('keydown', function(e) {
+                    input.addEventListener('keydown', function (e) {
                         if (e.key === 'Enter') {
                             const newName = input.value.trim();
                             if (newName && newName !== originalContent) {
@@ -963,9 +1015,9 @@
                             tabLink.textContent = originalContent;
                         }
                     });
-                    
+
                     // 处理失焦事件
-                    input.addEventListener('blur', function() {
+                    input.addEventListener('blur', function () {
                         const newName = input.value.trim();
                         if (newName && newName !== originalContent) {
                             // 更新数据
@@ -986,42 +1038,42 @@
                         }
                     });
                 });
-                
+
                 tabNav.appendChild(tabLink);
                 navTabs.appendChild(tabNav);
-                
+
                 const tabContent = document.createElement('div');
-                tabContent.className = 'tab-pane fade '+(index === 0 ? 'show active' : '');
-                tabContent.id = 'tab-'+index;
+                tabContent.className = 'tab-pane fade ' + (index === 0 ? 'show active' : '');
+                tabContent.id = 'tab-' + index;
                 tabContent.setAttribute('role', 'tabpanel');
-                tabContent.innerHTML = '<div class="d-flex justify-content-between align-items-center mb-3"><h5>'+tab.name+' 选项卡中的网站</h5><button class="btn btn-sm btn-primary add-site-btn" data-tab-index="'+index+'"><i class="fas fa-plus me-1"></i>添加网站</button></div><div class="sites-container" id="sites-container-'+index+'">'+renderSites(tab.items, index)+'</div>';
+                tabContent.innerHTML = '<div class="d-flex justify-content-between align-items-center mb-3"><h5>' + tab.name + ' 选项卡中的网站</h5><button class="btn btn-sm btn-primary add-site-btn" data-tab-index="' + index + '"><i class="fas fa-plus me-1"></i>添加网站</button></div><div class="sites-container" id="sites-container-' + index + '">' + renderSites(tab.items, index) + '</div>';
                 navTabContent.appendChild(tabContent);
             });
-            
+
             // 绑定添加网站按钮事件
             document.querySelectorAll('.add-site-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     currentTabIndex = parseInt(this.getAttribute('data-tab-index'));
                     document.getElementById('addSiteForm').reset();
                     document.getElementById('addSiteForm').removeAttribute('data-special');
                     addSiteModal.show();
                 });
             });
-            
+
             // 初始化选项卡拖拽功能
             initTabDragAndDrop();
-            
+
             // 初始化网站拖拽功能
             initSiteDragAndDrop();
         }
-        
+
         // 初始化选项卡拖拽排序功能
         function initTabDragAndDrop() {
             // 为选项卡容器添加拖放事件
             navTabs.addEventListener('dragover', handleTabDragOver);
             navTabs.addEventListener('drop', handleTabDrop);
             navTabs.addEventListener('dragleave', handleTabDragLeave);
-            
+
             // 为所有选项卡添加拖拽事件
             document.querySelectorAll('.nav-item[data-drag-type="tab"]').forEach(tab => {
                 tab.addEventListener('dragstart', handleTabDragStart);
@@ -1029,12 +1081,12 @@
                 tab.addEventListener('dragenter', handleTabDragEnter);
             });
         }
-        
+
         // 处理选项卡拖拽开始
         function handleTabDragStart(e) {
             // 添加拖拽样式
             this.classList.add('dragging');
-            
+
             // 创建拖拽时的视觉指示器
             const dragImage = this.cloneNode(true);
             dragImage.style.position = 'absolute';
@@ -1043,38 +1095,38 @@
             dragImage.style.opacity = '0.8';
             dragImage.style.width = this.offsetWidth + 'px';
             document.body.appendChild(dragImage);
-            
+
             // 设置拖拽图像
             e.dataTransfer.setDragImage(dragImage, this.offsetWidth / 2, this.offsetHeight / 2);
-            
+
             // 设置拖拽数据
             const tabIndex = this.getAttribute('data-tab-index');
             e.dataTransfer.setData('text/plain', JSON.stringify({
                 type: 'tab',
                 tabIndex: parseInt(tabIndex)
             }));
-            
+
             // 添加动画类
             this.classList.add('drag-start');
         }
-        
+
         // 处理选项卡拖拽结束
         function handleTabDragEnd() {
             // 移除所有拖拽相关样式
             document.querySelectorAll('.nav-item.dragging, .nav-item.drag-over, .nav-item.drag-start').forEach(el => {
                 el.classList.remove('dragging', 'drag-over', 'drag-start');
             });
-            
+
             // 移除拖拽占位符
             const placeholder = document.getElementById('tab-placeholder');
             if (placeholder) placeholder.remove();
-            
+
             // 移除拖拽图像
             document.querySelectorAll('[style*="left: -9999px"]').forEach(el => {
                 if (el.parentNode === document.body) el.remove();
             });
         }
-        
+
         // 处理选项卡拖拽进入
         function handleTabDragEnter(e) {
             e.preventDefault();
@@ -1084,7 +1136,7 @@
                     const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
                     if (dragData.type === 'tab') {
                         this.classList.add('drag-over');
-                        
+
                         // 创建并移动占位符
                         let placeholder = document.getElementById('tab-placeholder');
                         if (!placeholder) {
@@ -1098,7 +1150,7 @@
                             placeholder.style.margin = this.style.margin;
                             placeholder.style.borderRadius = '0.375rem';
                         }
-                        
+
                         // 插入占位符到当前元素位置
                         this.parentNode.insertBefore(placeholder, this);
                     }
@@ -1107,13 +1159,13 @@
                 }
             }
         }
-        
+
         // 处理选项卡拖拽悬停
         function handleTabDragOver(e) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
         }
-        
+
         // 处理选项卡拖拽离开
         function handleTabDragLeave(e) {
             // 检查是否真的离开了容器
@@ -1124,28 +1176,28 @@
                 });
             }
         }
-        
+
         // 处理选项卡放置
         function handleTabDrop(e) {
             e.preventDefault();
-            
+
             try {
                 // 获取拖拽数据
                 const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
-                
+
                 if (dragData.type === 'tab') {
                     // 获取目标位置信息
                     const targetElement = e.target.closest('.nav-item[data-drag-type="tab"]');
-                    
+
                     if (targetElement && targetElement !== e.currentTarget) {
                         const targetTabIndex = parseInt(targetElement.getAttribute('data-tab-index'));
-                        
+
                         // 执行拖拽排序
                         reorderTabs(dragData.tabIndex, targetTabIndex);
-                        
+
                         // 显示成功提示
                         common.showAlert('选项卡排序成功', 'success');
-                        
+
                         // 记录用户操作日志
                         logUserAction('reorder_tabs', {
                             fromIndex: dragData.tabIndex,
@@ -1161,27 +1213,27 @@
                 handleTabDragEnd();
             }
         }
-        
+
         // 重新排序选项卡
         function reorderTabs(fromIndex, toIndex) {
             const tabs = navData[currentPage].tabs;
-            
+
             // 从原位置移除
             const [movedTab] = tabs.splice(fromIndex, 1);
-            
+
             // 插入到新位置
             tabs.splice(toIndex, 0, movedTab);
-            
+
             // 标记数据已修改
             setDataChanged();
-            
+
             // 重新渲染所有选项卡
             renderTabs();
-            
+
             // 记录日志
             common.log(`重新排序选项卡: ${movedTab.name}`, 'success');
         }
-        
+
         // 初始化网站拖拽排序功能
         function initSiteDragAndDrop() {
             // 为所有站点容器添加拖放事件
@@ -1190,7 +1242,7 @@
                 container.addEventListener('drop', handleSiteDrop);
                 container.addEventListener('dragleave', handleSiteDragLeave);
             });
-            
+
             // 为所有网站卡片添加拖拽事件
             document.querySelectorAll('.site-card').forEach(card => {
                 card.addEventListener('dragstart', handleSiteDragStart);
@@ -1198,12 +1250,12 @@
                 card.addEventListener('dragenter', handleSiteDragEnter);
             });
         }
-        
+
         // 处理网站拖拽开始
         function handleSiteDragStart(e) {
             // 添加拖拽样式
             this.classList.add('dragging');
-            
+
             // 创建拖拽时的视觉指示器
             const dragImage = this.cloneNode(true);
             dragImage.style.position = 'absolute';
@@ -1212,10 +1264,10 @@
             dragImage.style.opacity = '0.8';
             dragImage.style.width = this.offsetWidth + 'px';
             document.body.appendChild(dragImage);
-            
+
             // 设置拖拽图像
             e.dataTransfer.setDragImage(dragImage, this.offsetWidth / 2, this.offsetHeight / 2);
-            
+
             // 设置拖拽数据
             const tabIndex = this.getAttribute('data-tab-index');
             const siteIndex = this.getAttribute('data-site-index');
@@ -1224,28 +1276,28 @@
                 tabIndex: parseInt(tabIndex),
                 siteIndex: parseInt(siteIndex)
             }));
-            
+
             // 添加动画类
             this.classList.add('drag-start');
         }
-        
+
         // 处理网站拖拽结束
         function handleSiteDragEnd() {
             // 移除所有拖拽相关样式
             document.querySelectorAll('.site-card.dragging, .site-card.drag-over, .site-card.drag-start').forEach(el => {
                 el.classList.remove('dragging', 'drag-over', 'drag-start');
             });
-            
+
             // 移除拖拽占位符
             const placeholder = document.getElementById('site-placeholder');
             if (placeholder) placeholder.remove();
-            
+
             // 移除拖拽图像
             document.querySelectorAll('[style*="left: -9999px"]').forEach(el => {
                 if (el.parentNode === document.body) el.remove();
             });
         }
-        
+
         // 处理网站拖拽进入
         function handleSiteDragEnter(e) {
             e.preventDefault();
@@ -1255,7 +1307,7 @@
                     const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
                     if (dragData.type === 'site') {
                         this.classList.add('drag-over');
-                        
+
                         // 创建并移动占位符
                         let placeholder = document.getElementById('site-placeholder');
                         if (!placeholder) {
@@ -1269,7 +1321,7 @@
                             placeholder.style.margin = this.style.margin;
                             placeholder.style.borderRadius = '8px';
                         }
-                        
+
                         // 插入占位符到当前元素位置
                         this.parentNode.insertBefore(placeholder, this);
                     }
@@ -1278,13 +1330,13 @@
                 }
             }
         }
-        
+
         // 处理网站拖拽悬停
         function handleSiteDragOver(e) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
         }
-        
+
         // 处理网站拖拽离开
         function handleSiteDragLeave(e) {
             // 检查是否真的离开了容器
@@ -1295,25 +1347,25 @@
                 });
             }
         }
-        
+
         // 处理网站放置
         function handleSiteDrop(e) {
             e.preventDefault();
-            
+
             try {
                 // 获取拖拽数据
                 const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
-                
+
                 if (dragData.type === 'site') {
                     // 获取目标位置信息
                     const targetElement = e.target.closest('.site-card');
                     const dropContainer = this;
                     const containerId = dropContainer.id;
                     const targetTabIndex = parseInt(containerId.replace('sites-container-', ''));
-                    
+
                     if (targetElement) {
                         const targetSiteIndex = parseInt(targetElement.getAttribute('data-site-index'));
-                        
+
                         // 执行拖拽排序
                         if (dragData.tabIndex === targetTabIndex) {
                             // 同一个选项卡内排序
@@ -1324,7 +1376,7 @@
                             moveSiteBetweenTabs(dragData.tabIndex, dragData.siteIndex, targetTabIndex, targetSiteIndex);
                             common.showAlert('网站移动成功', 'success');
                         }
-                        
+
                         // 记录用户操作日志
                         logUserAction('reorder_sites', {
                             fromTabIndex: dragData.tabIndex,
@@ -1348,22 +1400,22 @@
                 handleSiteDragEnd();
             }
         }
-        
+
         // 在同一个选项卡内重新排序网站
         function reorderSitesWithinTab(tabIndex, fromIndex, toIndex) {
             // 确保目标选项卡的数据结构存在
             if (!navData[currentPage].tabs[tabIndex].items) {
                 navData[currentPage].tabs[tabIndex].items = [];
             }
-            
+
             const sites = navData[currentPage].tabs[tabIndex].items;
-            
+
             // 从原位置移除
             const [movedSite] = sites.splice(fromIndex, 1);
-            
+
             // 插入到新位置
             sites.splice(toIndex, 0, movedSite);
-            
+
             // 刷新显示
             const container = document.getElementById(`sites-container-${tabIndex}`);
             if (container) {
@@ -1371,59 +1423,59 @@
                 bindSiteActions();
                 initSiteDragAndDrop(); // 重新绑定拖拽事件
             }
-            
+
             // 标记数据已修改
             setDataChanged();
-            
+
             // 记录日志
             common.log(`重新排序网站: ${movedSite.name}`, 'success');
         }
-        
+
         // 在不同选项卡之间移动网站
         function moveSiteBetweenTabs(fromTabIndex, fromSiteIndex, toTabIndex, toSiteIndex = null) {
             // 确保目标选项卡的数据结构存在
             if (!navData[currentPage].tabs[toTabIndex].items) {
                 navData[currentPage].tabs[toTabIndex].items = [];
             }
-            
+
             const fromSites = navData[currentPage].tabs[fromTabIndex].items;
             const toSites = navData[currentPage].tabs[toTabIndex].items;
-            
+
             // 从原位置移除
             const [movedSite] = fromSites.splice(fromSiteIndex, 1);
-            
+
             // 插入到新位置
             if (toSiteIndex !== null && toSiteIndex >= 0 && toSiteIndex <= toSites.length) {
                 toSites.splice(toSiteIndex, 0, movedSite);
             } else {
                 toSites.push(movedSite);
             }
-            
+
             // 刷新显示
             const fromContainer = document.getElementById(`sites-container-${fromTabIndex}`);
             const toContainer = document.getElementById(`sites-container-${toTabIndex}`);
-            
+
             if (fromContainer) {
                 fromContainer.innerHTML = renderSites(fromSites, fromTabIndex);
             }
-            
+
             if (toContainer) {
                 toContainer.innerHTML = renderSites(toSites, toTabIndex);
             }
-            
+
             // 重新绑定事件
             bindSiteActions();
             initSiteDragAndDrop();
-            
+
             // 标记数据已修改
             setDataChanged();
-            
+
             // 记录日志
             const fromTabName = navData[currentPage].tabs[fromTabIndex].name;
             const toTabName = navData[currentPage].tabs[toTabIndex].name;
             common.log(`移动网站: ${movedSite.name} 从 "${fromTabName}" 到 "${toTabName}"`, 'success');
         }
-        
+
         // 添加拖拽相关的CSS样式
         function addDragDropStyles() {
             const style = document.createElement('style');
@@ -1566,43 +1618,43 @@
             `;
             document.head.appendChild(style);
         }
-        
+
         // 渲染网站卡片
         function renderSites(sites, tabIndex) {
             if (!sites || sites.length === 0) {
                 return '<div class="empty-state"><i class="fas fa-folder-open"></i><p>此选项卡中没有网站</p></div>';
             }
-            
+
             const iconPrefix = common.config.iconPrefix;
-            
+
             return sites.map((site, siteIndex) => {
                 const siteName = site.name || site.title || '未命名网站';
                 const iconUrl = site.icon || iconPrefix + encodeURIComponent(site.url);
-                return '<div class="site-card" data-site-index="'+siteIndex+'" data-tab-index="'+tabIndex+'" draggable="true" data-drag-type="site">' +
-                    '<div class="delete-corner" data-tab-index="'+tabIndex+'" data-site-index="'+siteIndex+'">' +
-                        '<i class="fas fa-times"></i>' +
+                return '<div class="site-card" data-site-index="' + siteIndex + '" data-tab-index="' + tabIndex + '" draggable="true" data-drag-type="site">' +
+                    '<div class="delete-corner" data-tab-index="' + tabIndex + '" data-site-index="' + siteIndex + '">' +
+                    '<i class="fas fa-times"></i>' +
                     '</div>' +
-                    '<img src="'+iconUrl+'" class="site-icon" alt="'+siteName+'" onerror="this.src=\'../img/index.png\'">' +
-                    '<div class="site-name">'+siteName+'</div>' +
-                '</div>';
+                    '<img src="' + iconUrl + '" class="site-icon" alt="' + siteName + '" onerror="this.src=\'../img/index.png\'">' +
+                    '<div class="site-name">' + siteName + '</div>' +
+                    '</div>';
             }).join('');
         }
-        
+
         function bindSiteActions() {
             // 绑定卡片点击事件（编辑）
             document.querySelectorAll('.site-card').forEach(card => {
-                card.addEventListener('click', function(e) {
+                card.addEventListener('click', function (e) {
                     if (e.target.closest('.delete-corner')) return;
-                    
+
                     const tabIndex = parseInt(this.getAttribute('data-tab-index'));
                     const siteIndex = parseInt(this.getAttribute('data-site-index'));
                     editSite(tabIndex, siteIndex);
                 });
             });
-            
+
             // 绑定删除按钮事件
             document.querySelectorAll('.delete-corner').forEach(btn => {
-                btn.addEventListener('click', function(e) {
+                btn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     const tabIndex = parseInt(this.getAttribute('data-tab-index'));
                     const siteIndex = parseInt(this.getAttribute('data-site-index'));
@@ -1610,7 +1662,7 @@
                 });
             });
         }
-        
+
         function editSite(tabIndex, siteIndex) {
             const site = navData[currentPage].tabs[tabIndex].items[siteIndex];
             document.getElementById('editSiteTabIndex').value = tabIndex;
@@ -1619,7 +1671,7 @@
             document.getElementById('editSiteUrl').value = site.url;
             editSiteModal.show();
         }
-        
+
         function showDeleteConfirm(tabIndex, siteIndex) {
             const site = navData[currentPage].tabs[tabIndex].items[siteIndex];
             document.getElementById('deleteTabIndex').value = tabIndex;
@@ -1627,53 +1679,53 @@
             document.getElementById('deleteSiteName').textContent = site.name;
             deleteConfirmModal.show();
         }
-        
+
         function deleteSite() {
             const tabIndex = parseInt(document.getElementById('deleteTabIndex').value);
             const siteIndex = parseInt(document.getElementById('deleteSiteIndex').value);
             const siteName = navData[currentPage].tabs[tabIndex].items[siteIndex].name;
-            
+
             navData[currentPage].tabs[tabIndex].items.splice(siteIndex, 1);
-            
+
             deleteConfirmModal.hide();
             renderTabs();
-            
+
             // 初始化拖拽功能
             setTimeout(() => {
                 initSiteDragAndDrop();
                 initTabDragAndDrop();
             }, 100);
-            
+
             // 标记数据已修改
             setDataChanged();
-            
+
             common.showAlert('已删除网站: ' + siteName, 'success');
         }
-        
+
         // 特殊栏目管理功能
         function renderSpecialSites() {
             specialSitesContainer.innerHTML = '';
-            
+
             // 检查特殊栏目是否存在
             if (!navData.more || !navData.more.special || !navData.more.special.sites) {
                 // 如果不存在，创建默认结构
                 if (!navData.more) navData.more = {};
                 if (!navData.more.special) navData.more.special = {};
                 navData.more.special.sites = [];
-                
+
                 specialSitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无特殊栏目网站，请添加网站</p></div>';
                 return;
             }
-            
+
             const sites = navData.more.special.sites;
-            
+
             if (sites.length === 0) {
                 specialSitesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>暂无特殊栏目网站，请添加网站</p></div>';
                 return;
             }
-            
+
             const iconPrefix = common.config.iconPrefix;
-            
+
             sites.forEach((site, index) => {
                 const iconUrl = site.icon || iconPrefix + encodeURIComponent(site.url);
                 const siteCard = document.createElement('div');
@@ -1686,30 +1738,30 @@
                     <div class="site-name">${site.name}</div>
                 `;
                 specialSitesContainer.appendChild(siteCard);
-                
+
                 // 添加点击编辑事件
-                siteCard.addEventListener('click', function(e) {
+                siteCard.addEventListener('click', function (e) {
                     if (!e.target.closest('.delete-corner')) {
                         showEditSpecialSiteModal(index);
                     }
                 });
-                
+
                 // 添加删除事件
-                siteCard.querySelector('.delete-corner').addEventListener('click', function(e) {
+                siteCard.querySelector('.delete-corner').addEventListener('click', function (e) {
                     e.stopPropagation();
                     const siteIndex = this.getAttribute('data-site-index');
                     deleteSpecialSite(siteIndex);
                 });
             });
         }
-        
+
         function showAddSpecialSiteModal() {
             document.getElementById('siteName').value = '';
             document.getElementById('siteUrl').value = '';
             document.getElementById('addSiteForm').setAttribute('data-special', 'true');
             addSiteModal.show();
         }
-        
+
         function showEditSpecialSiteModal(siteIndex) {
             const site = navData.more.special.sites[siteIndex];
             document.getElementById('editSiteName').value = site.name;
@@ -1717,7 +1769,7 @@
             document.getElementById('editSiteForm').setAttribute('data-special-index', siteIndex);
             editSiteModal.show();
         }
-        
+
         function deleteSpecialSite(siteIndex) {
             if (confirm('确定要删除这个特殊栏目网站吗？')) {
                 navData.more.special.sites.splice(siteIndex, 1);
@@ -1725,76 +1777,76 @@
                 common.showAlert('特殊栏目网站已删除', 'success');
             }
         }
-        
+
         // 修改添加网站函数以支持特殊栏目
         function addNewSite() {
             const isSpecial = document.getElementById('addSiteForm').hasAttribute('data-special');
             const siteName = document.getElementById('siteName').value.trim();
             const siteUrl = document.getElementById('siteUrl').value.trim();
-            
+
             if (!siteName || !siteUrl) {
                 common.showAlert('请填写所有字段', 'warning');
                 return;
             }
-            
+
             if (isSpecial) {
                 // 添加到特殊栏目
                 if (!navData.more.special.sites) {
                     navData.more.special.sites = [];
                 }
-                
+
                 navData.more.special.sites.push({
                     name: siteName,
                     url: siteUrl
                     // 不保存icon字段，渲染时自动生成
                 });
-                
+
                 addSiteModal.hide();
                 renderSpecialSites();
-                
+
                 // 标记数据已修改
                 setDataChanged();
-                
-                common.showAlert('网站已添加到特殊栏目: '+siteName, 'success');
+
+                common.showAlert('网站已添加到特殊栏目: ' + siteName, 'success');
             } else {
                 // 普通添加网站逻辑
                 if (!navData[currentPage].tabs[currentTabIndex].items) {
                     navData[currentPage].tabs[currentTabIndex].items = [];
                 }
-                
+
                 navData[currentPage].tabs[currentTabIndex].items.push({
                     name: siteName,
                     url: siteUrl
                     // 不保存icon字段，渲染时自动生成
                 });
-                
+
                 addSiteModal.hide();
                 renderTabs();
-                
+
                 // 初始化拖拽功能
                 setTimeout(() => {
                     initSiteDragAndDrop();
                     initTabDragAndDrop();
                 }, 100);
-                
+
                 // 标记数据已修改
                 setDataChanged();
-                
-                common.showAlert('已添加网站: '+siteName, 'success');
+
+                common.showAlert('已添加网站: ' + siteName, 'success');
             }
         }
-        
+
         // 修改保存编辑网站函数以支持特殊栏目
         function saveEditedSite() {
             const isSpecial = document.getElementById('editSiteForm').hasAttribute('data-special-index');
             const siteName = document.getElementById('editSiteName').value.trim();
             const siteUrl = document.getElementById('editSiteUrl').value.trim();
-            
+
             if (!siteName || !siteUrl) {
                 common.showAlert('请填写所有字段', 'warning');
                 return;
             }
-            
+
             if (isSpecial) {
                 // 编辑特殊栏目网站
                 const siteIndex = parseInt(document.getElementById('editSiteForm').getAttribute('data-special-index'));
@@ -1803,14 +1855,14 @@
                     url: siteUrl
                     // 不保存icon字段，渲染时自动生成
                 };
-                
+
                 editSiteModal.hide();
                 renderSpecialSites();
-                
+
                 // 标记数据已修改
                 setDataChanged();
-                
-                common.showAlert('特殊栏目网站已更新: '+siteName, 'success');
+
+                common.showAlert('特殊栏目网站已更新: ' + siteName, 'success');
             } else {
                 // 普通编辑网站逻辑
                 const tabIndex = parseInt(document.getElementById('editSiteTabIndex').value);
@@ -1820,17 +1872,17 @@
                     url: siteUrl
                     // 不保存icon字段，渲染时自动生成
                 };
-                
+
                 editSiteModal.hide();
                 renderTabs();
-                
+
                 // 标记数据已修改
                 setDataChanged();
-                
-                common.showAlert('网站已更新: '+siteName, 'success');
+
+                common.showAlert('网站已更新: ' + siteName, 'success');
             }
         }
-        
+
         async function saveToGithub() {
             if (!common) return;
             try {
@@ -1853,21 +1905,21 @@
             try {
                 // 创建下载链接
                 const dataStr = JSON.stringify(navData, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(dataBlob);
                 link.download = 'nav-data.json';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                
+
                 common.showAlert('导航数据已保存并准备好下载', 'success');
             } catch (e) {
                 console.error('保存数据时出错:', e);
                 common.showAlert('保存数据时出错', 'danger');
             }
         }
-        
+
 
 
 
@@ -1879,9 +1931,9 @@
 
         function loadFromJsonFile() {
             const filePath = '../../data/nav-data.json';
-            
+
             common.log('开始加载导航数据', 'info', `路径: ${filePath}`);
-            
+
             fetch(filePath)
                 .then(response => {
                     if (!response.ok) throw new Error('网络响应不正常');
@@ -1894,25 +1946,25 @@
                             web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.')
                         };
                     }
-                    
+
                     navData = data;
                     renderTabs();
                     renderSpecialSites();
                     updateVersionDisplay();
                     updateSpecialSectionVisibility();
-                    
+
                     setTimeout(() => {
                         initSiteDragAndDrop();
                         initTabDragAndDrop();
                     }, 100);
-                    
+
                     common.showAlert('数据已从本地JSON文件加载', 'success');
                     common.log('JSON文件加载成功', 'success', `路径: ${filePath}`);
                     showDataSourceIndicator('local');
                 })
                 .catch(error => {
                     console.error('加载本地JSON文件失败:', error);
-                    
+
                     let errorMsg = error.message;
                     // 检测是否为本地文件加载导致的 CORS 错误
                     if (window.location.protocol === 'file:' && (errorMsg.includes('fetch') || errorMsg.includes('NetworkError'))) {
@@ -1921,9 +1973,9 @@
                     } else {
                         common.showAlert('加载本地JSON文件失败: ' + errorMsg, 'danger');
                     }
-                    
+
                     common.log('JSON文件加载失败', 'error', `路径: ${filePath}, 错误: ${error.message}`);
-                    
+
                     navData = {
                         version: {
                             web_vol: "1.0.0",
@@ -1935,7 +1987,7 @@
                         download: { tabs: [] },
                         develop: { tabs: [] }
                     };
-                    
+
                     document.getElementById('navTabContent').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>${errorMsg}</p></div>`;
                 });
         }
@@ -1945,13 +1997,13 @@
             // 获取保存按钮所在的卡片容器
             const saveCard = document.getElementById('saveBtn').closest('.feature-card');
             if (!saveCard) return;
-            
+
             // 移除旧的标识
             const existingBadge = saveCard.querySelector('.data-change-badge');
             if (existingBadge) {
                 existingBadge.remove();
             }
-            
+
             // 如果数据已修改，添加新标识
             if (dataHasChanged) {
                 const badge = document.createElement('span');
@@ -1962,16 +2014,16 @@
                 saveCard.appendChild(badge);
             }
         }
-        
+
         // 显示数据加载来源标识
         function showDataSourceIndicator(source) {
             // 移除所有卡片上的加载来源标识
             document.querySelectorAll('.data-source-badge').forEach(badge => badge.remove());
-            
+
             let targetCard;
             let badgeText;
             let badgeBg;
-            
+
             if (source === 'local') {
                 // 本地文件加载
                 targetCard = document.getElementById('loadFromLocalBtn').closest('.feature-card');
@@ -1984,7 +2036,7 @@
                 badgeText = '已上传';
                 badgeBg = 'bg-info';
             }
-            
+
             if (targetCard) {
                 targetCard.style.position = 'relative';
                 const badge = document.createElement('span');
@@ -1994,39 +2046,39 @@
                 targetCard.appendChild(badge);
             }
         }
-        
+
         // 设置数据已修改
         function setDataChanged() {
             dataHasChanged = true;
             updateDataChangeIndicator();
         }
-        
+
         // 重置数据修改状态
         function resetDataChanged() {
             dataHasChanged = false;
             updateDataChangeIndicator();
         }
-        
+
         function saveNavData() {
             try {
                 // 保存前先验证数据
                 const validationErrors = validateNavData(navData);
-                
+
                 if (validationErrors.length > 0) {
                     // 尝试自动修复
                     const repairResult = repairNavData(navData);
-                    
+
                     // 显示修复结果
                     common.showAlert(`发现${validationErrors.length}个数据结构问题，已自动修复${repairResult.repairs.length}处，现在保存数据`, 'info');
-                    
+
                     // 记录修复信息
-                    common.log('保存前数据验证失败，已自动修复', 'info', 
+                    common.log('保存前数据验证失败，已自动修复', 'info',
                         `问题: ${validationErrors.length}个\n修复: ${repairResult.repairs.length}处\n修复详情: ${repairResult.repairs.join('\n')}`);
-                    
+
                     // 使用修复后的数据
                     navData = repairResult.data;
                 }
-                
+
                 // 序列化数据为JSON
                 let dataStr;
                 try {
@@ -2034,31 +2086,31 @@
                 } catch (stringifyError) {
                     throw new Error(`数据序列化失败: ${stringifyError.message}`);
                 }
-                
+
                 // 创建下载链接
                 try {
-                    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(dataBlob);
-                    
+
                     // 生成带时间戳的文件名
                     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
                     link.download = `nav-data-${timestamp}.json`;
-                    
+
                     document.body.appendChild(link);
                     link.click();
-                    
+
                     // 清理
                     setTimeout(() => {
                         document.body.removeChild(link);
                         URL.revokeObjectURL(link.href);
                     }, 100);
-                    
+
                     // 重置数据修改状态
                     resetDataChanged();
-                    
+
                     common.showAlert('导航数据已保存并准备好下载', 'success');
-                    
+
                     // 记录保存操作
                     common.log('数据保存成功', 'success', '导航数据已导出为JSON文件');
                 } catch (downloadError) {
@@ -2080,7 +2132,7 @@
             } catch (e) {
                 console.error('保存数据时出错:', e);
                 common.showAlert('保存数据时出错: ' + e.message, 'danger');
-                
+
                 // 记录详细错误信息
                 common.log('数据保存失败', 'error', JSON.stringify({
                     message: e.message,
@@ -2090,17 +2142,17 @@
                 }, null, 2));
             }
         }
-        
+
         // 完整的导航数据验证函数
         function validateNavData(data) {
             const errors = [];
-            
+
             // 检查数据是否为对象
             if (!data || typeof data !== 'object') {
                 errors.push('数据必须是一个有效的JSON对象');
                 return errors;
             }
-            
+
             // 检查必要的顶层字段
             if (!data.version) {
                 errors.push('缺少必要的version字段');
@@ -2114,23 +2166,23 @@
                     errors.push('version.web_vol必须是一个字符串');
                 }
             }
-            
+
             // 检查至少有一个页面数据
-            const hasPages = Object.keys(data).some(key => key !== 'version' && 
-                                                     typeof data[key] === 'object' && 
-                                                     data[key].tabs);
-            
+            const hasPages = Object.keys(data).some(key => key !== 'version' &&
+                typeof data[key] === 'object' &&
+                data[key].tabs);
+
             if (!hasPages) {
                 errors.push('数据中必须包含至少一个有效的页面配置');
             }
-            
+
             // 对每个页面进行验证
             Object.keys(data).forEach(pageKey => {
                 if (pageKey === 'version') return;
-                
+
                 const page = data[pageKey];
                 if (!page || typeof page !== 'object') return;
-                
+
                 // 验证选项卡配置
                 if (page.tabs) {
                     if (!Array.isArray(page.tabs)) {
@@ -2142,13 +2194,13 @@
                                 errors.push(`页面 ${pageKey} 的选项卡 ${tabIndex + 1} 不能为空`);
                                 return;
                             }
-                            
+
                             if (!tab.name) {
                                 errors.push(`页面 ${pageKey} 的选项卡 ${tabIndex + 1} 缺少name字段`);
                             } else if (typeof tab.name !== 'string' || tab.name.trim() === '') {
                                 errors.push(`页面 ${pageKey} 的选项卡 ${tabIndex + 1} 的name必须是非空字符串`);
                             }
-                            
+
                             // 验证选项卡中的网站
                             if (tab.items) {
                                 if (!Array.isArray(tab.items)) {
@@ -2159,7 +2211,7 @@
                                             errors.push(`页面 ${pageKey} 的选项卡 "${tab.name || tabIndex + 1}" 中的网站 ${siteIndex + 1} 不能为空`);
                                             return;
                                         }
-                                        
+
                                         const siteErrors = validateSiteData(site, pageKey, tab.name || tabIndex + 1, siteIndex + 1);
                                         if (siteErrors.length > 0) {
                                             errors.push(...siteErrors);
@@ -2170,7 +2222,7 @@
                         });
                     }
                 }
-                
+
                 // 验证特殊栏目（如果存在）
                 if (pageKey === 'more' && page.special && page.special.sites) {
                     if (!Array.isArray(page.special.sites)) {
@@ -2181,7 +2233,7 @@
                                 errors.push(`特殊栏目中的网站 ${siteIndex + 1} 不能为空`);
                                 return;
                             }
-                            
+
                             const siteErrors = validateSiteData(site, '特殊栏目', '', siteIndex + 1);
                             if (siteErrors.length > 0) {
                                 errors.push(...siteErrors);
@@ -2190,22 +2242,22 @@
                     }
                 }
             });
-            
+
             return errors;
         }
-        
+
         // 验证单个网站数据
         function validateSiteData(site, page, tab, index) {
             const errors = [];
             const siteIdentifier = site.name || index;
             const locationInfo = `页面 ${page} ${tab ? '选项卡 "' + tab + '" ' : ''}中的网站 "${siteIdentifier}"`;
-            
+
             // 确保site是对象
             if (!site || typeof site !== 'object') {
                 errors.push(`${locationInfo} 数据不是有效的对象`);
                 return errors;
             }
-            
+
             // 验证name字段
             if (!site.name) {
                 errors.push(`${locationInfo} 缺少name字段`);
@@ -2216,7 +2268,7 @@
             } else if (site.name.length > 100) {
                 errors.push(`${locationInfo} 的name字段长度不能超过100个字符（当前${site.name.length}个）`);
             }
-            
+
             // 验证url字段
             if (!site.url) {
                 errors.push(`${locationInfo} 缺少url字段`);
@@ -2231,7 +2283,7 @@
                     errors.push(`${locationInfo} 的URL有错误: ${urlErrors.join(', ')}`);
                 }
             }
-            
+
             // 验证icon字段（如果存在）
             if (site.icon !== undefined) {
                 if (typeof site.icon !== 'string') {
@@ -2243,7 +2295,7 @@
                     }
                 }
             }
-            
+
             // 验证color字段（如果存在）
             if (site.color !== undefined) {
                 if (typeof site.color !== 'string') {
@@ -2255,7 +2307,7 @@
                     }
                 }
             }
-            
+
             // 验证id字段（如果存在）
             if (site.id !== undefined) {
                 if (typeof site.id !== 'string') {
@@ -2266,21 +2318,21 @@
                     errors.push(`${locationInfo} 的id长度不能超过50个字符`);
                 }
             }
-            
+
             // 验证description字段（如果存在）
             if (site.description !== undefined && typeof site.description !== 'string') {
                 errors.push(`${locationInfo} 的description字段必须是字符串类型`);
             } else if (site.description && site.description.length > 500) {
                 errors.push(`${locationInfo} 的description长度不能超过500个字符`);
             }
-            
+
             // 验证category字段（如果存在）
             if (site.category !== undefined && typeof site.category !== 'string') {
                 errors.push(`${locationInfo} 的category字段必须是字符串类型`);
             } else if (site.category && site.category.length > 50) {
                 errors.push(`${locationInfo} 的category长度不能超过50个字符`);
             }
-            
+
             // 验证tags字段（如果存在）
             if (site.tags !== undefined && !Array.isArray(site.tags)) {
                 errors.push(`${locationInfo} 的tags字段必须是数组类型`);
@@ -2294,58 +2346,60 @@
                     }
                 }
             }
-            
+
             return errors;
         }
-        
+
         // 数据修复函数
         function repairNavData(data) {
             const repairedData = JSON.parse(JSON.stringify(data)); // 深拷贝
             const repairs = [];
-            
+
             // 确保data是对象
             if (!repairedData || typeof repairedData !== 'object') {
-                return { data: { version: { web_vol: '1.0.0', web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.') } }, 
-                         repairs: ['创建了全新的数据结构，原始数据无效'] };
+                return {
+                    data: { version: { web_vol: '1.0.0', web_data: new Date().toISOString().split('T')[0].replace(/-/g, '.') } },
+                    repairs: ['创建了全新的数据结构，原始数据无效']
+                };
             }
-            
+
             // 确保version对象存在
             if (!repairedData.version || typeof repairedData.version !== 'object') {
                 repairedData.version = {};
                 repairs.push('创建了缺失的version对象');
             }
-            
+
             // 确保版本字段存在且为字符串类型
             if (!repairedData.version.web_vol || typeof repairedData.version.web_vol !== 'string') {
                 repairedData.version.web_vol = '1.0.0';
                 repairs.push('添加/修复了缺失的version.web_vol字段，设置为默认值 "1.0.0"');
             }
-            
+
             if (!repairedData.version.web_data || typeof repairedData.version.web_data !== 'string') {
                 repairedData.version.web_data = new Date().toISOString().split('T')[0].replace(/-/g, '.');
                 repairs.push('添加/修复了缺失的version.web_data字段，设置为当前日期');
             }
-            
+
             // 修复每个页面的数据
             Object.keys(repairedData).forEach(pageKey => {
                 // 跳过版本对象
                 if (pageKey === 'version') return;
-                
+
                 let pageData = repairedData[pageKey];
-                
+
                 // 确保页面数据是对象
                 if (!pageData || typeof pageData !== 'object') {
                     pageData = { tabs: [] };
                     repairedData[pageKey] = pageData;
                     repairs.push(`页面 ${pageKey} 数据无效，创建了新的页面结构`);
                 }
-                
+
                 // 确保tabs数组存在
                 if (!pageData.tabs || !Array.isArray(pageData.tabs)) {
                     pageData.tabs = [];
                     repairs.push(`页面 ${pageKey} 缺少tabs数组，已创建`);
                 }
-                
+
                 // 修复每个选项卡
                 pageData.tabs.forEach((tab, tabIndex) => {
                     // 确保选项卡有名称
@@ -2353,13 +2407,13 @@
                         tab.name = `未命名选项卡 ${tabIndex + 1}`;
                         repairs.push(`页面 ${pageKey} 选项卡 ${tabIndex + 1} 缺少名称，已设置为默认名称`);
                     }
-                    
+
                     // 确保items数组存在
                     if (!tab.items || !Array.isArray(tab.items)) {
                         tab.items = [];
                         repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 缺少items数组，已创建`);
                     }
-                    
+
                     // 修复每个网站
                     tab.items.forEach((site, siteIndex) => {
                         if (!site || typeof site !== 'object') {
@@ -2371,7 +2425,7 @@
                             repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 ${siteIndex + 1} 数据无效，已重置`);
                             return;
                         }
-                        
+
                         // 修复name字段
                         if (!site.name || typeof site.name !== 'string' || site.name.trim() === '') {
                             site.name = `未命名网站 ${siteIndex + 1}`;
@@ -2380,7 +2434,7 @@
                             site.name = site.name.substring(0, 97) + '...';
                             repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name.substring(0, 20)}..." 名称过长，已截断`);
                         }
-                        
+
                         // 修复url字段
                         if (!site.url || typeof site.url !== 'string' || site.url.trim() === '') {
                             site.url = '#';
@@ -2397,7 +2451,7 @@
                                 }
                             }
                         }
-                        
+
                         // 修复icon字段（如果存在）
                         if (site.icon !== undefined) {
                             if (typeof site.icon !== 'string') {
@@ -2411,7 +2465,7 @@
                                 }
                             }
                         }
-                        
+
                         // 修复color字段（如果存在）
                         if (site.color !== undefined) {
                             if (typeof site.color !== 'string') {
@@ -2425,7 +2479,7 @@
                                 }
                             }
                         }
-                        
+
                         // 修复id字段（如果存在）
                         if (site.id !== undefined) {
                             if (typeof site.id !== 'string') {
@@ -2449,7 +2503,7 @@
                                 }
                             }
                         }
-                        
+
                         // 修复description字段（如果存在）
                         if (site.description !== undefined) {
                             if (typeof site.description !== 'string') {
@@ -2460,7 +2514,7 @@
                                 repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 描述过长，已截断`);
                             }
                         }
-                        
+
                         // 修复category字段（如果存在）
                         if (site.category !== undefined) {
                             if (typeof site.category !== 'string') {
@@ -2471,7 +2525,7 @@
                                 repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 类别过长，已截断`);
                             }
                         }
-                        
+
                         // 修复tags字段（如果存在）
                         if (site.tags !== undefined) {
                             if (!Array.isArray(site.tags)) {
@@ -2487,7 +2541,7 @@
                                     repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 中的网站 "${site.name}" 移除了无效标签`);
                                     return false;
                                 });
-                                
+
                                 // 修复过长的标签
                                 site.tags = site.tags.map(tag => {
                                     if (tag.length > 30) {
@@ -2499,7 +2553,7 @@
                             }
                         }
                     });
-                    
+
                     // 移除重复的网站
                     const siteNames = new Set();
                     const uniqueSites = [];
@@ -2509,23 +2563,23 @@
                             uniqueSites.push(site);
                         }
                     });
-                    
+
                     if (uniqueSites.length < tab.items.length) {
                         tab.items = uniqueSites;
                         repairs.push(`页面 ${pageKey} 选项卡 "${tab.name}" 移除了重复的网站`);
                     }
                 });
-                
+
                 // 移除空选项卡
-                const nonEmptyTabs = pageData.tabs.filter(tab => 
+                const nonEmptyTabs = pageData.tabs.filter(tab =>
                     tab && tab.items && tab.items.length > 0
                 );
-                
+
                 if (nonEmptyTabs.length < pageData.tabs.length) {
                     pageData.tabs = nonEmptyTabs;
                     repairs.push(`页面 ${pageKey} 移除了空选项卡`);
                 }
-                
+
                 // 如果页面没有选项卡，创建一个默认选项卡
                 if (pageData.tabs.length === 0) {
                     pageData.tabs.push({
@@ -2535,21 +2589,21 @@
                     repairs.push(`页面 ${pageKey} 缺少选项卡，已创建默认选项卡`);
                 }
             });
-            
+
             return { data: repairedData, repairs };
         }
         // 原始函数实现已被完全替换为上面的新版本
-        
+
         // URL错误检查函数
         function checkUrlErrors() {
             if (!navData || Object.keys(navData).length === 0) {
                 common.showAlert('请先加载导航数据', 'warning');
                 return;
             }
-            
+
             urlErrorsToFix = [];
             let errorCount = 0;
-            
+
             // 检查所有页面的选项卡中的网站URL
             Object.keys(navData).forEach(page => {
                 if (navData[page] && navData[page].tabs) {
@@ -2576,7 +2630,7 @@
                     });
                 }
             });
-            
+
             // 检查特殊栏目中的网站URL
             if (navData.more && navData.more.special && navData.more.special.sites) {
                 navData.more.special.sites.forEach((site, siteIndex) => {
@@ -2596,10 +2650,10 @@
                     }
                 });
             }
-            
+
             // 显示在工具功能下方
             displayUrlErrorsInMainArea();
-            
+
             if (errorCount === 0) {
                 common.showAlert('未发现URL错误', 'success');
                 common.log('URL检查完成', 'success', '所有URL格式正确');
@@ -2608,73 +2662,73 @@
                 common.log(`发现${errorCount}个URL错误`, 'warning', '请在工具功能下方查看详情');
             }
         }
-        
+
         // 检查单个URL的错误
         function checkSingleUrl(url) {
             const errors = [];
-            
+
             // 检查是否为空
             if (!url || url.trim() === '') {
                 errors.push('URL为空');
                 return errors;
             }
-            
+
             // 检查是否缺少协议
             if (!url.match(/^https?:\/\//i)) {
                 errors.push('缺少http/https协议');
             }
-            
+
             // 检查是否有多余的空格
             if (url.trim() !== url) {
                 errors.push('包含多余的空格');
             }
-            
+
             // 检查是否有多余的斜杠
             if (url.match(/\/{3,}/)) {
                 errors.push('包含连续多个斜杠');
             }
-            
+
             // 检查是否有无效字符
             if (!url.match(/^[a-zA-Z0-9:\/?#\[\]@!$&'()*+,;=._~-]+$/)) {
                 errors.push('包含无效字符');
             }
-            
+
             return errors;
         }
-        
+
         // 修复URL错误
         function fixUrl(url) {
             let fixed = url;
-            
+
             // 去除多余的空格
             fixed = fixed.trim();
-            
+
             // 添加协议
             if (!fixed.match(/^https?:\/\//i)) {
                 fixed = 'https://' + fixed;
             }
-            
+
             // 替换多个斜杠为单个斜杠
             fixed = fixed.replace(/\/(?=\/)/g, '');
-            
+
             return fixed;
         }
-        
+
         // 显示URL错误
         // 在工具功能下方显示URL错误结果
         function displayUrlErrorsInMainArea() {
             const urlErrorsDisplay = document.getElementById('urlErrorsDisplay');
             const urlErrorsContent = document.getElementById('urlErrorsContent');
-            
+
             if (!urlErrorsDisplay || !urlErrorsContent) return;
-            
+
             urlErrorsDisplay.classList.remove('d-none');
-            
+
             if (urlErrorsToFix.length === 0) {
                 urlErrorsContent.innerHTML = '<div class="text-center text-success py-2">未发现URL错误</div>';
                 return;
             }
-            
+
             // 添加错误统计和操作按钮
             urlErrorsContent.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -2689,7 +2743,7 @@
                     </div>
                 </div>
             `;
-            
+
             // 添加每个错误项
             urlErrorsToFix.forEach((error, index) => {
                 const errorItem = document.createElement('div');
@@ -2708,26 +2762,26 @@
                 `;
                 urlErrorsContent.appendChild(errorItem);
             });
-            
+
             // 绑定全选按钮事件
-            document.getElementById('selectAllUrlErrors').addEventListener('click', function() {
+            document.getElementById('selectAllUrlErrors').addEventListener('click', function () {
                 const checkboxes = document.querySelectorAll('.url-error-checkbox');
                 const allChecked = Array.from(checkboxes).every(cb => cb.checked);
                 checkboxes.forEach(cb => cb.checked = !allChecked);
             });
-            
+
             // 绑定修复选中按钮事件
-            document.getElementById('fixSelectedUrls').addEventListener('click', function() {
+            document.getElementById('fixSelectedUrls').addEventListener('click', function () {
                 applyUrlFixesFromMainArea();
             });
-            
+
 
         }
-        
+
         // 从主界面应用URL修复
         function applyUrlFixesFromMainArea() {
             let fixedCount = 0;
-            
+
             urlErrorsToFix.forEach((error, index) => {
                 const checkbox = document.getElementById(`urlError${index}`);
                 if (checkbox && checkbox.checked) {
@@ -2740,7 +2794,7 @@
                         navData[error.page].tabs[error.tabIndex].items[error.siteIndex].url = error.fixedUrl;
                     }
                     fixedCount++;
-                    
+
                     // 移除已修复的错误项
                     const errorItem = checkbox.closest('.p-3.border.rounded.mb-2.bg-white');
                     if (errorItem) {
@@ -2748,17 +2802,17 @@
                     }
                 }
             });
-            
+
             if (fixedCount > 0) {
                 common.showAlert(`成功修复${fixedCount}个URL错误`, 'success');
                 common.log(`修复了${fixedCount}个URL错误`, 'success');
-                
+
                 // 更新错误计数
                 urlErrorsToFix = urlErrorsToFix.filter((error, index) => {
                     const checkbox = document.getElementById(`urlError${index}`);
                     return !(checkbox && checkbox.checked);
                 });
-                
+
                 // 如果没有错误了，更新显示
                 const urlErrorsContent = document.getElementById('urlErrorsContent');
                 if (urlErrorsToFix.length === 0 && urlErrorsContent) {
@@ -2772,14 +2826,14 @@
                 }
             }
         }
-        
+
         // 在模态框中显示URL错误结果
         function displayUrlErrors() {
             const urlCheckResults = document.getElementById('urlCheckResults');
             if (!urlCheckResults) return;
-            
+
             urlCheckResults.innerHTML = '';
-            
+
             urlErrorsToFix.forEach((error, index) => {
                 const errorCard = document.createElement('div');
                 errorCard.className = 'p-3 border rounded mb-2';
@@ -2796,11 +2850,11 @@
                 urlCheckResults.appendChild(errorCard);
             });
         }
-        
+
         // 应用URL修复
         function applyUrlFixes() {
             let fixedCount = 0;
-            
+
             urlErrorsToFix.forEach((error, index) => {
                 const checkbox = document.getElementById(`fixUrl${index}`);
                 if (checkbox && checkbox.checked) {
@@ -2815,7 +2869,7 @@
                     fixedCount++;
                 }
             });
-            
+
             if (fixedCount > 0) {
                 common.showAlert(`成功修复${fixedCount}个URL错误`, 'success');
                 common.log(`修复了${fixedCount}个URL错误`, 'success');
@@ -2824,27 +2878,27 @@
                 // 刷新页面显示
                 renderCurrentPage();
             }
-            
+
             urlFixModal.hide();
         }
-        
+
         // 检查网站可访问性
         async function checkWebsitesAccessibility() {
             if (!navData || Object.keys(navData).length === 0) {
                 common.showAlert('请先加载导航数据', 'warning');
                 return;
             }
-            
+
             common.showAlert('开始检查网站可访问性，请耐心等待...', 'info');
             common.log('开始检查网站可访问性', 'info');
-            
+
             let totalSites = 0;
             let accessibleSites = 0;
             let inaccessibleSites = [];
-            
+
             // 收集所有网站URL
             const allSites = [];
-            
+
             // 收集普通选项卡中的网站
             Object.keys(navData).forEach(page => {
                 if (navData[page] && navData[page].tabs) {
@@ -2866,7 +2920,7 @@
                     });
                 }
             });
-            
+
             // 收集特殊栏目中的网站
             if (navData.more && navData.more.special && navData.more.special.sites) {
                 navData.more.special.sites.forEach((site, siteIndex) => {
@@ -2881,20 +2935,20 @@
                     }
                 });
             }
-            
+
             // 批量检查可访问性（控制并发数）
             const concurrencyLimit = 5;
             const batches = [];
-            
+
             for (let i = 0; i < allSites.length; i += concurrencyLimit) {
                 batches.push(allSites.slice(i, i + concurrencyLimit));
             }
-            
+
             // 逐个批次检查
             for (const batch of batches) {
                 const batchPromises = batch.map(site => checkSiteAccessibility(site));
                 const batchResults = await Promise.allSettled(batchPromises);
-                
+
                 batchResults.forEach((result, index) => {
                     const site = batch[index];
                     if (result.status === 'fulfilled' && result.value) {
@@ -2903,18 +2957,18 @@
                         inaccessibleSites.push(site);
                     }
                 });
-                
+
                 // 每批之间等待1秒，避免请求过快
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
-            
+
             // 显示结果
             const message = `可访问性检查完成: 总计${totalSites}个网站，${accessibleSites}个可访问，${inaccessibleSites.length}个不可访问`;
             common.showAlert(message, inaccessibleSites.length > 0 ? 'warning' : 'success');
-            
+
             // 记录日志
             common.log('网站可访问性检查完成', 'info', message);
-            
+
             if (inaccessibleSites.length > 0) {
                 let details = '不可访问的网站：\n';
                 inaccessibleSites.forEach(site => {
@@ -2923,14 +2977,14 @@
                 common.log(`发现${inaccessibleSites.length}个不可访问的网站`, 'warning', details);
             }
         }
-        
+
         // 检查单个网站的可访问性
         async function checkSiteAccessibility(site) {
             try {
                 // 使用HEAD请求检查网站是否可访问（更轻量）
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
-                
+
                 const response = await fetch(site.url, {
                     method: 'HEAD',
                     mode: 'cors',
@@ -2939,14 +2993,14 @@
                     },
                     signal: controller.signal
                 });
-                
+
                 clearTimeout(timeoutId);
                 return response.ok;
             } catch (error) {
                 return false;
             }
         }
-        
+
         // 检测搜索引擎Ping值
         async function pingSearchEngines() {
             const searchEngines = [
@@ -2956,35 +3010,35 @@
                 { name: '搜狗', url: 'https://www.sogou.com' },
                 { name: '360搜索', url: 'https://www.so.com' }
             ];
-            
+
             // 获取pingResults元素
             const pingResults = document.getElementById('pingResults');
             if (!pingResults) {
                 common.showAlert('未找到Ping值显示元素', 'error');
                 return;
             }
-            
+
             // 显示加载状态
             const pingItems = pingResults.querySelector('.ping-items');
             if (pingItems) {
                 pingItems.innerHTML = '<div class="text-center py-2"><i class="fas fa-spinner fa-spin"></i> 正在检测...</div>';
             }
-            
+
             pingResults.classList.remove('d-none');
-            
+
             // 开始检测
             const pingResultsList = [];
-            
+
             for (const engine of searchEngines) {
                 const startTime = performance.now();
                 try {
                     // 使用CORS代理服务来绕过跨域限制
                     // 注意：实际使用时可能需要更换为更可靠的代理服务
                     const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(engine.url);
-                    
+
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 5000); // 延长超时时间到5秒
-                    
+
                     await fetch(proxyUrl, {
                         method: 'GET', // 使用GET而不是HEAD，有些代理可能不支持HEAD
                         headers: {
@@ -2992,43 +3046,43 @@
                         },
                         signal: controller.signal
                     });
-                    
+
                     clearTimeout(timeoutId);
                     const endTime = performance.now();
                     const pingTime = Math.round(endTime - startTime);
-                    
+
                     pingResultsList.push({
                         ...engine,
                         ping: pingTime,
                         success: true
                     });
-                    
+
                     common.log(`成功检测${engine.name}Ping值`, 'success', `耗时: ${pingTime}ms`);
                 } catch (error) {
                     let errorMessage = '请求失败';
                     if (error.name === 'AbortError') {
                         errorMessage = '请求超时';
                     }
-                    
+
                     pingResultsList.push({
                         ...engine,
                         ping: -1,
                         success: false
                     });
-                    
+
                     common.log(`检测${engine.name}Ping值失败`, 'warning', errorMessage);
                 }
-                
+
                 // 更新显示
                 updatePingResults(pingResultsList);
-                
+
                 // 避免请求过快
                 await new Promise(resolve => setTimeout(resolve, 800));
             }
-            
+
             const successCount = pingResultsList.filter(r => r.success).length;
             common.log(`搜索引擎Ping值检测完成`, 'info', `${successCount}/${searchEngines.length}个成功`);
-            
+
             // 提示用户检查结果
             if (successCount > 0) {
                 common.showAlert(`成功检测到${successCount}个搜索引擎的连接速度`, 'success');
@@ -3036,21 +3090,21 @@
                 common.showAlert('所有搜索引擎连接检测失败，可能是代理服务问题或网络限制', 'warning');
             }
         }
-        
+
         // 更新Ping值显示
         function updatePingResults(results) {
             const pingItems = pingResults.querySelector('.ping-items');
             if (!pingItems) return;
-            
+
             pingItems.innerHTML = '';
-            
+
             results.forEach(result => {
                 const item = document.createElement('div');
                 item.className = 'd-flex justify-content-between align-items-center py-1 border-b';
-                
+
                 let pingDisplay;
                 let pingClass;
-                
+
                 if (result.success) {
                     pingDisplay = `${result.ping} ms`;
                     if (result.ping < 100) {
@@ -3064,7 +3118,7 @@
                     pingDisplay = '超时';
                     pingClass = 'text-danger';
                 }
-                
+
                 item.innerHTML = `
                     <div class="d-flex align-items-center">
                         <i class="fas fa-search me-2"></i>
@@ -3075,15 +3129,15 @@
                 pingItems.appendChild(item);
             });
         }
-        
+
         // 初始化添加选项卡按钮的新交互
         function setupAddTabButton() {
             const addTabBtn = document.getElementById('addTabBtn');
             let isEditing = false;
             let inputElement = null;
-            
+
             // 点击按钮时显示输入框
-            addTabBtn.addEventListener('click', function(e) {
+            addTabBtn.addEventListener('click', function (e) {
                 if (isEditing) {
                     // 如果已经处于编辑模式，保存输入
                     saveNewTab();
@@ -3092,13 +3146,13 @@
                     enableTabEditMode();
                 }
             });
-            
+
             // 启用选项卡编辑模式
             function enableTabEditMode() {
                 if (isEditing) return;
-                
+
                 isEditing = true;
-                
+
                 // 创建输入框元素
                 inputElement = document.createElement('input');
                 inputElement.type = 'text';
@@ -3119,33 +3173,33 @@
                     background-color: #fff;
                     z-index: 1000;
                 `;
-                
+
                 // 将输入框添加到按钮容器中
                 // 确保按钮容器有相对定位
                 if (addTabBtn.parentNode.style.position !== 'absolute' && addTabBtn.parentNode.style.position !== 'relative') {
                     addTabBtn.parentNode.style.position = 'relative';
                 }
                 addTabBtn.parentNode.appendChild(inputElement);
-                
+
                 // 更改按钮文本为"完成"
                 addTabBtn.textContent = '完成';
-                
+
                 // 聚焦输入框
                 setTimeout(() => inputElement.focus(), 100);
-                
+
                 // 添加键盘事件监听
                 inputElement.addEventListener('keydown', handleKeyDown);
-                
+
                 // 添加失焦事件监听（自动保存）
                 inputElement.addEventListener('blur', handleBlur);
-                
+
                 // 防止点击按钮时输入框失焦
                 addTabBtn.addEventListener('click', preventInputBlur);
-                
+
                 // 全局点击事件，点击其他地方时保存
                 document.addEventListener('click', handleDocumentClick);
             }
-            
+
             // 处理键盘事件
             function handleKeyDown(e) {
                 if (e.key === 'Enter') {
@@ -3156,7 +3210,7 @@
                     cancelTabEdit();
                 }
             }
-            
+
             // 处理失焦事件
             function handleBlur() {
                 // 失焦时自动保存
@@ -3166,12 +3220,12 @@
                     }
                 }, 200);
             }
-            
+
             // 防止点击按钮时输入框失焦
             function preventInputBlur(e) {
                 e.stopPropagation();
             }
-            
+
             // 处理文档点击事件
             function handleDocumentClick(e) {
                 // 点击按钮或输入框以外的区域时，保存并退出编辑模式
@@ -3179,56 +3233,56 @@
                     saveNewTab();
                 }
             }
-            
+
             // 保存新选项卡
             function saveNewTab() {
                 if (!isEditing || !inputElement) return;
-                
+
                 const tabName = inputElement.value.trim();
-                
+
                 if (tabName) {
                     // 使用现有的addNewTab函数添加选项卡
                     addNewTabWithName(tabName);
-                    
+
                     // 记录操作日志
                     common.log(`添加选项卡: ${tabName}`);
-                    
+
                     // 显示成功提示
                     common.showAlert(`选项卡 "${tabName}" 添加成功`, 'success');
                 }
-                
+
                 // 清理并退出编辑模式
                 cleanupEditMode();
             }
-            
+
             // 取消选项卡编辑
             function cancelTabEdit() {
                 cleanupEditMode();
             }
-            
+
             // 清理编辑模式
             function cleanupEditMode() {
                 if (!isEditing) return;
-                
+
                 // 移除事件监听
                 inputElement?.removeEventListener('keydown', handleKeyDown);
                 inputElement?.removeEventListener('blur', handleBlur);
                 addTabBtn.removeEventListener('click', preventInputBlur);
                 document.removeEventListener('click', handleDocumentClick);
-                
+
                 // 移除输入框
                 if (inputElement && inputElement.parentNode) {
                     inputElement.parentNode.removeChild(inputElement);
                 }
-                
+
                 // 恢复按钮文本
                 addTabBtn.textContent = '+ 添加选项卡';
-                
+
                 // 重置状态
                 isEditing = false;
                 inputElement = null;
             }
-            
+
             // 添加新选项卡的函数（基于现有的addNewTab函数逻辑）
             function addNewTabWithName(tabName) {
                 // 检查选项卡名称是否已存在
@@ -3237,30 +3291,31 @@
                     common.showAlert('选项卡名称已存在，请使用其他名称', 'warning');
                     return;
                 }
-                
+
                 // 创建新选项卡对象
                 const newTab = {
                     id: Date.now().toString(),
                     name: tabName,
                     sites: []
                 };
-                
+
                 // 添加到数据中
                 navData.tabs.push(newTab);
-                
+
                 // 刷新选项卡显示
                 renderTabs();
-                
+
                 // 自动切换到新添加的选项卡
                 selectTab(newTab.id);
-                
+
                 // 标记数据已修改
                 setDataChanged();
             }
         }
-        
+
         // 页面加载时添加初始日志
         common.log('导航数据管理系统已启动', 'info', '系统初始化完成');
     </script>
 </body>
+
 </html>
