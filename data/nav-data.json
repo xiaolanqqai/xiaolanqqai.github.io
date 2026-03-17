@@ -1207,6 +1207,10 @@
           {
             "name": "Microsoft Clarity",
             "url": "https://clarity.microsoft.com/"
+          },
+          {
+            "name": "cloudns",
+            "url": "https://www.cloudns.net/"
           }
         ]
       }
