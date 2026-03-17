@@ -3312,8 +3312,16 @@
 
             // 添加新选项卡的函数（基于现有的addNewTab函数逻辑）
             function addNewTabWithName(tabName) {
+                // 确保当前页面数据结构存在
+                if (!navData[currentPage]) {
+                    navData[currentPage] = { tabs: [] };
+                }
+                if (!navData[currentPage].tabs) {
+                    navData[currentPage].tabs = [];
+                }
+
                 // 检查选项卡名称是否已存在
-                const isDuplicate = navData.tabs.some(tab => tab.name === tabName);
+                const isDuplicate = navData[currentPage].tabs.some(tab => tab.name === tabName);
                 if (isDuplicate) {
                     common.showAlert('选项卡名称已存在，请使用其他名称', 'warning');
                     return;
@@ -3323,17 +3331,23 @@
                 const newTab = {
                     id: Date.now().toString(),
                     name: tabName,
-                    sites: []
+                    items: []
                 };
 
                 // 添加到数据中
-                navData.tabs.push(newTab);
+                navData[currentPage].tabs.push(newTab);
 
                 // 刷新选项卡显示
                 renderTabs();
 
                 // 自动切换到新添加的选项卡
-                selectTab(newTab.id);
+                const newTabIndex = navData[currentPage].tabs.length - 1;
+                const newTabLink = document.getElementById(`tab-${newTabIndex}-nav`);
+                if (newTabLink) {
+                    const bsTab = new bootstrap.Tab(newTabLink);
+                    bsTab.show();
+                    currentTabIndex = newTabIndex;
+                }
 
                 // 标记数据已修改
                 setDataChanged();

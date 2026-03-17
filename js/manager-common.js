@@ -567,11 +567,22 @@ class ManagerCommon {
             
             if (response && response.content) {
                 // 解码 Base64 内容 (处理中文字符)
-                const decodedContent = decodeURIComponent(escape(atob(response.content)));
+                // 使用更健壮的 Base64 解码方式，处理 Unicode 字符
+                const binaryString = atob(response.content);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                const decodedContent = new TextDecoder('utf-8').decode(bytes);
                 return JSON.parse(decodedContent);
             }
             return null;
         } catch (error) {
+            // 如果是 404 错误，不视为致命错误，可能文件尚未创建
+            if (error.message.includes('404')) {
+                this.log(`GitHub 文件不存在 (404): ${path}`, 'warning');
+                return null;
+            }
             this.handleError(error, 'GitHub 加载');
             return null;
         }
