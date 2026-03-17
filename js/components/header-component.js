@@ -44,6 +44,15 @@
         
         <!-- 点击追踪逻辑 -->
         <script src="${basePath}js/click-tracker.js" defer></script>
+        
+        <!-- Microsoft Clarity Tracking Code -->
+        <script type="text/javascript">
+            (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "vx0ai1ey2z");
+        </script>
     `;
 
     document.write(headContent);
