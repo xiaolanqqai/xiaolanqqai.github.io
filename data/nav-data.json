@@ -1211,6 +1211,10 @@
           {
             "name": "cloudns",
             "url": "https://www.cloudns.net/"
+          },
+          {
+            "name": "Free dynamic DNS for IPv6",
+            "url": "https://dynv6.com/"
           }
         ]
       }
