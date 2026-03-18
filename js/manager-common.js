@@ -19,11 +19,182 @@ class ManagerCommon {
                 this.initProgressBar();
                 this.initErrorHandling();
                 this.initLogSystem();
+                this.initSyncLock(); // 初始化同步锁定逻辑
             });
         } else {
             this.initProgressBar();
             this.initErrorHandling();
             this.initLogSystem();
+            this.initSyncLock(); // 初始化同步锁定逻辑
+        }
+    }
+
+    // --- GitHub 同步锁定逻辑 ---
+
+    /**
+     * 初始化同步锁定
+     */
+    initSyncLock() {
+        this.syncLockKey = 'github_sync_lock_time';
+        this.syncLockDuration = 5 * 60 * 1000; // 5分钟
+        this.syncLockTimer = null;
+
+        // 检查当前是否处于锁定状态
+        this.checkSyncLock();
+
+        // 监听存储变化（实现跨标签页同步）
+        window.addEventListener('storage', (e) => {
+            if (e.key === this.syncLockKey) {
+                this.checkSyncLock();
+            }
+        });
+    }
+
+    /**
+     * 检查并应用同步锁定状态
+     */
+    checkSyncLock() {
+        const lockTime = localStorage.getItem(this.syncLockKey);
+        if (!lockTime) {
+            this.removeSyncOverlay();
+            return;
+        }
+
+        const now = Date.now();
+        const elapsed = now - parseInt(lockTime);
+
+        if (elapsed < this.syncLockDuration) {
+            const remaining = this.syncLockDuration - elapsed;
+            this.applySyncOverlay(remaining);
+            
+            // 启动定时器更新倒计时
+            if (this.syncLockTimer) clearInterval(this.syncLockTimer);
+            this.syncLockTimer = setInterval(() => {
+                const currentNow = Date.now();
+                const currentElapsed = currentNow - parseInt(lockTime);
+                if (currentElapsed >= this.syncLockDuration) {
+                    clearInterval(this.syncLockTimer);
+                    this.removeSyncOverlay();
+                } else {
+                    this.updateSyncOverlay(this.syncLockDuration - currentElapsed);
+                }
+            }, 1000);
+        } else {
+            this.removeSyncOverlay();
+        }
+    }
+
+    /**
+     * 锁定同步功能
+     */
+    lockSync() {
+        localStorage.setItem(this.syncLockKey, Date.now().toString());
+        this.checkSyncLock();
+    }
+
+    /**
+     * 获取所有可能的同步按钮
+     */
+    getSyncButtons() {
+        return [
+            document.getElementById('githubSaveBtn'),
+            document.getElementById('syncToGithubBtn')
+        ].filter(btn => btn !== null);
+    }
+
+    /**
+     * 应用遮罩层
+     */
+    applySyncOverlay(remainingMs) {
+        const buttons = this.getSyncButtons();
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            
+            // 查找或创建遮罩层
+            let container = btn.closest('.card') || btn.parentElement;
+            if (!container) return;
+
+            // 确保容器是相对定位
+            if (window.getComputedStyle(container).position === 'static') {
+                container.style.position = 'relative';
+            }
+
+            let overlay = container.querySelector('.sync-lock-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'sync-lock-overlay';
+                overlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.6);
+                    color: white;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                    border-radius: inherit;
+                    backdrop-filter: blur(2px);
+                    transition: opacity 0.3s ease;
+                    pointer-events: all;
+                `;
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-clock mb-2';
+                icon.style.fontSize = '1.5rem';
+                
+                const text = document.createElement('div');
+                text.className = 'sync-lock-text';
+                text.style.fontWeight = 'bold';
+                
+                const subtext = document.createElement('small');
+                subtext.textContent = '同步功能冷却中';
+                subtext.style.opacity = '0.8';
+
+                overlay.appendChild(icon);
+                overlay.appendChild(text);
+                overlay.appendChild(subtext);
+                container.appendChild(overlay);
+            }
+            
+            this.updateSyncOverlay(remainingMs, overlay);
+        });
+    }
+
+    /**
+     * 更新遮罩层倒计时
+     */
+    updateSyncOverlay(remainingMs, specificOverlay = null) {
+        const seconds = Math.ceil(remainingMs / 1000);
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+        const overlays = specificOverlay ? [specificOverlay] : document.querySelectorAll('.sync-lock-overlay');
+        overlays.forEach(overlay => {
+            const textEl = overlay.querySelector('.sync-lock-text');
+            if (textEl) textEl.textContent = timeStr;
+        });
+    }
+
+    /**
+     * 移除遮罩层
+     */
+    removeSyncOverlay() {
+        const buttons = this.getSyncButtons();
+        buttons.forEach(btn => btn.disabled = false);
+        
+        document.querySelectorAll('.sync-lock-overlay').forEach(overlay => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 300);
+        });
+        
+        if (this.syncLockTimer) {
+            clearInterval(this.syncLockTimer);
+            this.syncLockTimer = null;
         }
     }
 
@@ -543,6 +714,10 @@ class ManagerCommon {
             this.hideLoading();
             this.showToast('同步成功！数据已更新到仓库。', 'success');
             this.log('GitHub 同步成功', 'success', `路径: ${path}`);
+            
+            // 锁定同步功能 5 分钟
+            this.lockSync();
+            
             return result;
         } catch (error) {
             this.hideLoading();
