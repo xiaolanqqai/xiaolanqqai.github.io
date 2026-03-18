@@ -110,6 +110,14 @@
           {
             "name": "鲲鹏路由",
             "url": "http://192.168.66.1"
+          },
+          {
+            "name": "局域网分享",
+            "url": "192.168.1.8:3000"
+          },
+          {
+            "name": "虎大ERP",
+            "url": "192.168.1.8:4000"
           }
         ]
       },
@@ -502,10 +510,6 @@
           {
             "name": "一个工具箱",
             "url": "https://www.atoolbox.net"
-          },
-          {
-            "name": "Smallpdf",
-            "url": "https://smallpdf.com/"
           }
         ]
       },
