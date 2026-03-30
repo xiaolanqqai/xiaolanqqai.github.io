@@ -7,6 +7,29 @@
   },
   "versions": [
     {
+      "name": "BETA 4.5.2",
+      "date": "2026-03-18",
+      "changes": [
+        "1：GitHub 同步冷却机制：在 manager-common.js 中引入了同步锁定逻辑。同步成功后，将自动在浏览器缓存（LocalStorage）记录时间，并对全站管理页面的同步按钮所在容器应用 5 分钟的倒计时遮罩",
+        "2：跨页面同步锁定：利用 Storage 事件监听，实现了 4 个管理页面（导航管理、版本管理、探索管理、MM 生成器）同步状态的实时对齐，任何页面同步成功都会同时触发所有页面的冷却倒计时",
+        "3：UI/UX 增强：为同步冷却状态设计了美观的半透明遮罩层，包含倒计时提示与模糊背景（backdrop-filter），且在页面刷新或重启浏览器后倒计时依然有效"
+      ]
+    },
+    {
+      "name": "BETA 4.4",
+      "date": "2026-03-17",
+      "changes": [
+        "1：流量分析集成：通过模块复用的方式，在 header-component.js 中集成了 Microsoft Clarity 追踪代码，实现全站（含所有管理页面及功能页）的用户行为追踪与分析",
+        "2：代码优化：统一了追踪代码的注入逻辑，确保在页面加载时异步初始化，不影响首屏渲染性能",
+        "3：版本管理系统修复：修复了 vol-manager.html 中模态框结构错位导致的 addEventListener 报错及添加版本功能失效问题",
+        "4：GitHub 同步增强：优化了 manager-common.js 中的 getFromGithub 函数，采用 TextDecoder 处理 Base64 解码，彻底解决中文字符乱码导致的解析失败",
+        "5：稳定性优化：改进了 GitHub 文件的 404 错误处理逻辑，将文件缺失由报错降级为日志警告，提升探索系统的初始化稳定性",
+        "6：导航管理系统修复：修复添加新选项卡时因 navData 结构访问错误导致的 \"Cannot read properties of undefined (reading 'some')\" 报错",
+        "7：逻辑完善：修正 addNewTabWithName 函数中的数据路径，支持多页面（index, more, dd等）的选项卡独立添加",
+        "8：体验优化：补全缺失的 selectTab 功能，实现新选项卡添加后自动切换并聚焦，同时修正新选项卡初始数据结构（sites -> items）以匹配全局 JSON 规范"
+      ]
+    },
+    {
       "name": "BETA 4.3",
       "date": "2026-03-02",
       "changes": [

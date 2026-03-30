@@ -37,9 +37,14 @@
                         <span class="badge bg-light text-dark">数据版本: <span id="currentWebData">-</span></span>
                     </div>
                 </div>
-                <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#versionModal">
-                    <i class="fas fa-edit me-1"></i>编辑版本
-                </button>
+                <div class="d-flex gap-2">
+                    <button id="syncVersionBtn" class="btn btn-primary btn-sm">
+                        <i class="fas fa-sync me-1"></i>同步最新
+                    </button>
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#versionModal">
+                        <i class="fas fa-edit me-1"></i>编辑版本
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -121,18 +126,6 @@
                         <p class="flex-grow-1 xsmall">清除当前已加载的所有数据</p>
                         <button id="clearDataBtn" class="btn btn-sm manager-btn-warning mt-2">
                             <i class="fas fa-broom me-1"></i>清空
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-2 col-md-4 col-sm-6">
-                <div class="card feature-card h-100 border-info">
-                    <div class="card-body text-center d-flex flex-column">
-                        <div class="text-info mb-3 feature-icon"><i class="fas fa-sync-alt"></i></div>
-                        <h6>同步版本</h6>
-                        <p class="flex-grow-1 xsmall">从历史记录同步最新版本</p>
-                        <button id="syncVersionBtn" class="btn btn-sm btn-info mt-2 text-white">
-                            <i class="fas fa-sync me-1"></i>同步
                         </button>
                     </div>
                 </div>
