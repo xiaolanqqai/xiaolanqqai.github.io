@@ -112,7 +112,7 @@
 					col.innerHTML = `
 						<a href="${item.url}" rel="nofollow" target="_blank" class="nav-ban-item">
 							<img class="nav-ban-icon" src="${iconUrl}" loading="lazy" onerror="this.src='../img/index.png'">
-							<h6 class="nav-ban-text">${item.name}</h6>
+							<h6 class="nav-ban-text">${item.name || item.title || '未命名'}</h6>
 						</a>`;
 					grid.appendChild(col);
 				});

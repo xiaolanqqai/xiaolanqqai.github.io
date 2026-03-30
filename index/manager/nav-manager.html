@@ -482,9 +482,12 @@
                         const loadingIcon = document.getElementById('loadingIcon');
 
                         if (siteIconImage && defaultIcon && loadingIcon) {
-                            defaultIcon.style.display = 'block';
-                            siteIconImage.style.display = 'none';
-                            loadingIcon.style.display = 'none';
+                            const isEditMode = document.getElementById('isEditMode').value === 'true';
+                            if (!isEditMode) {
+                                defaultIcon.style.display = 'block';
+                                siteIconImage.style.display = 'none';
+                                loadingIcon.style.display = 'none';
+                            }
                         }
 
                         initClipboardButton();
