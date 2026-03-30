@@ -12,6 +12,17 @@
     <script src="../../js/bootstrap.bundle.min.js"></script>
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
+    <style>
+        /* 拟态框靠下一点点 */
+        .modal-dialog {
+            margin-top: 10vh !important;
+        }
+        
+        .site-card {
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
 </head>
 
 <body class="manager-body">
@@ -253,6 +264,9 @@
                         </div>
                     </div>
                     <form id="addSiteForm">
+                        <input type="hidden" id="editSiteTabIndex">
+                        <input type="hidden" id="editSiteIndex">
+                        <input type="hidden" id="isEditMode" value="false">
                         <div class="mb-3"><label for="siteName" class="form-label">网站名称</label><input type="text"
                                 class="form-control" id="siteName" required></div>
                         <div class="mb-3">
@@ -281,36 +295,7 @@
     </div>
     </div>
     </div>
-    <div class="modal fade" id="editSiteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">编辑网站</h5><button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editSiteForm">
-                        <input type="hidden" id="editSiteTabIndex">
-                        <input type="hidden" id="editSiteIndex">
-                        <div class="mb-3"><label for="editSiteName" class="form-label">网站名称</label><input type="text"
-                                class="form-control" id="editSiteName" required></div>
-                        <div class="mb-3"><label for="editSiteUrl" class="form-label">网站地址</label><input type="url"
-                                class="form-control" id="editSiteUrl" required></div>
-                        <div class="mb-3">
-                            <div class="alert alert-info">
-                                <small><i class="fas fa-info-circle me-1"></i>图标将自动使用:
-                                    https://api.afmax.cn/so/ico/index.php?r=网站地址</small>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="confirmEditSite">保存</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <div class="modal fade" id="addTabModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -560,8 +545,8 @@
         const specialSitesContainer = document.getElementById('specialSitesContainer');
 
         // 其他变量声明
-        const addSiteModal = new bootstrap.Modal(document.getElementById('addSiteModal'));
-        const editSiteModal = new bootstrap.Modal(document.getElementById('editSiteModal'));
+        const addSiteModalElement = document.getElementById('addSiteModal');
+        const addSiteModal = new bootstrap.Modal(addSiteModalElement);
         const uploadModal = new bootstrap.Modal(document.getElementById('uploadModal'));
         const confirmAddSite = document.getElementById('confirmAddSite');
         const confirmEditSite = document.getElementById('confirmEditSite');
@@ -610,7 +595,6 @@
             confirmUpload.addEventListener('click', processUploadedFile);
             clearDataBtn.addEventListener('click', showClearConfirmModal);
             confirmClearBtn.addEventListener('click', clearAllData);
-            confirmEditSite.addEventListener('click', saveEditedSite);
             confirmDeleteBtn.addEventListener('click', deleteSite);
             saveVersionBtn.addEventListener('click', saveVersionInfo);
             confirmAddTabBtn.addEventListener('click', function () {
@@ -1073,6 +1057,12 @@
                     currentTabIndex = parseInt(this.getAttribute('data-tab-index'));
                     document.getElementById('addSiteForm').reset();
                     document.getElementById('addSiteForm').removeAttribute('data-special');
+                    
+                    // 重置为添加模式
+                    document.getElementById('isEditMode').value = 'false';
+                    addSiteModalElement.querySelector('.modal-title').textContent = '添加新网站';
+                    document.getElementById('confirmAddSite').textContent = '添加';
+                    
                     addSiteModal.show();
                 });
             });
@@ -1082,6 +1072,9 @@
 
             // 初始化网站拖拽功能
             initSiteDragAndDrop();
+
+            // 绑定网站卡片操作（双击编辑和删除）
+            bindSiteActions();
         }
 
         // 初始化选项卡拖拽排序功能
@@ -1669,9 +1662,9 @@
         }
 
         function bindSiteActions() {
-            // 绑定卡片点击事件（编辑）
+            // 绑定卡片双击事件（编辑）
             document.querySelectorAll('.site-card').forEach(card => {
-                card.addEventListener('click', function (e) {
+                card.addEventListener('dblclick', function (e) {
                     if (e.target.closest('.delete-corner')) return;
 
                     const tabIndex = parseInt(this.getAttribute('data-tab-index'));
@@ -1693,11 +1686,25 @@
 
         function editSite(tabIndex, siteIndex) {
             const site = navData[currentPage].tabs[tabIndex].items[siteIndex];
+            
+            // 设置编辑模式和索引
+            document.getElementById('isEditMode').value = 'true';
             document.getElementById('editSiteTabIndex').value = tabIndex;
             document.getElementById('editSiteIndex').value = siteIndex;
-            document.getElementById('editSiteName').value = site.name;
-            document.getElementById('editSiteUrl').value = site.url;
-            editSiteModal.show();
+            document.getElementById('addSiteForm').removeAttribute('data-special');
+            
+            // 填充数据
+            document.getElementById('siteName').value = site.name;
+            document.getElementById('siteUrl').value = site.url;
+            
+            // 更新UI
+            addSiteModalElement.querySelector('.modal-title').textContent = '编辑网站信息';
+            document.getElementById('confirmAddSite').textContent = '保存修改';
+            
+            // 显示图标
+            showSiteIcon(site.url);
+            
+            addSiteModal.show();
         }
 
         function showDeleteConfirm(tabIndex, siteIndex) {
@@ -1767,8 +1774,8 @@
                 `;
                 specialSitesContainer.appendChild(siteCard);
 
-                // 添加点击编辑事件
-                siteCard.addEventListener('click', function (e) {
+                // 添加双击编辑事件
+                siteCard.addEventListener('dblclick', function (e) {
                     if (!e.target.closest('.delete-corner')) {
                         showEditSpecialSiteModal(index);
                     }
@@ -1784,18 +1791,37 @@
         }
 
         function showAddSpecialSiteModal() {
-            document.getElementById('siteName').value = '';
-            document.getElementById('siteUrl').value = '';
+            document.getElementById('addSiteForm').reset();
             document.getElementById('addSiteForm').setAttribute('data-special', 'true');
+            
+            // 重置为添加模式
+            document.getElementById('isEditMode').value = 'false';
+            addSiteModalElement.querySelector('.modal-title').textContent = '添加特殊栏目网站';
+            document.getElementById('confirmAddSite').textContent = '添加';
+            
             addSiteModal.show();
         }
 
         function showEditSpecialSiteModal(siteIndex) {
             const site = navData.more.special.sites[siteIndex];
-            document.getElementById('editSiteName').value = site.name;
-            document.getElementById('editSiteUrl').value = site.url;
-            document.getElementById('editSiteForm').setAttribute('data-special-index', siteIndex);
-            editSiteModal.show();
+            
+            // 设置编辑模式和索引
+            document.getElementById('isEditMode').value = 'true';
+            document.getElementById('addSiteForm').setAttribute('data-special', 'true');
+            document.getElementById('editSiteIndex').value = siteIndex;
+            
+            // 填充数据
+            document.getElementById('siteName').value = site.name;
+            document.getElementById('siteUrl').value = site.url;
+            
+            // 更新UI
+            addSiteModalElement.querySelector('.modal-title').textContent = '编辑特殊栏目网站';
+            document.getElementById('confirmAddSite').textContent = '保存修改';
+            
+            // 显示图标
+            showSiteIcon(site.url);
+            
+            addSiteModal.show();
         }
 
         function deleteSpecialSite(siteIndex) {
@@ -1806,9 +1832,10 @@
             }
         }
 
-        // 修改添加网站函数以支持特殊栏目
+        // 修改添加网站函数以支持特殊栏目和编辑功能
         function addNewSite() {
             const isSpecial = document.getElementById('addSiteForm').hasAttribute('data-special');
+            const isEdit = document.getElementById('isEditMode').value === 'true';
             const siteName = document.getElementById('siteName').value.trim();
             const siteUrl = document.getElementById('siteUrl').value.trim();
 
@@ -1818,36 +1845,49 @@
             }
 
             if (isSpecial) {
-                // 添加到特殊栏目
-                if (!navData.more.special.sites) {
-                    navData.more.special.sites = [];
+                if (isEdit) {
+                    // 编辑特殊栏目网站
+                    const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
+                    navData.more.special.sites[siteIndex] = {
+                        name: siteName,
+                        url: siteUrl
+                    };
+                    common.showAlert('特殊栏目网站已更新: ' + siteName, 'success');
+                } else {
+                    // 添加到特殊栏目
+                    if (!navData.more.special.sites) {
+                        navData.more.special.sites = [];
+                    }
+                    navData.more.special.sites.push({
+                        name: siteName,
+                        url: siteUrl
+                    });
+                    common.showAlert('网站已添加到特殊栏目: ' + siteName, 'success');
                 }
-
-                navData.more.special.sites.push({
-                    name: siteName,
-                    url: siteUrl
-                    // 不保存icon字段，渲染时自动生成
-                });
-
                 addSiteModal.hide();
                 renderSpecialSites();
-
-                // 标记数据已修改
-                setDataChanged();
-
-                common.showAlert('网站已添加到特殊栏目: ' + siteName, 'success');
             } else {
-                // 普通添加网站逻辑
-                if (!navData[currentPage].tabs[currentTabIndex].items) {
-                    navData[currentPage].tabs[currentTabIndex].items = [];
+                if (isEdit) {
+                    // 普通编辑网站逻辑
+                    const tabIndex = parseInt(document.getElementById('editSiteTabIndex').value);
+                    const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
+                    navData[currentPage].tabs[tabIndex].items[siteIndex] = {
+                        name: siteName,
+                        url: siteUrl
+                    };
+                    common.showAlert('网站已更新: ' + siteName, 'success');
+                } else {
+                    // 普通添加网站逻辑
+                    if (!navData[currentPage].tabs[currentTabIndex].items) {
+                        navData[currentPage].tabs[currentTabIndex].items = [];
+                    }
+                    navData[currentPage].tabs[currentTabIndex].items.push({
+                        name: siteName,
+                        url: siteUrl
+                    });
+                    common.showAlert('已添加网站: ' + siteName, 'success');
                 }
-
-                navData[currentPage].tabs[currentTabIndex].items.push({
-                    name: siteName,
-                    url: siteUrl
-                    // 不保存icon字段，渲染时自动生成
-                });
-
+                
                 addSiteModal.hide();
                 renderTabs();
 
@@ -1856,60 +1896,13 @@
                     initSiteDragAndDrop();
                     initTabDragAndDrop();
                 }, 100);
-
-                // 标记数据已修改
-                setDataChanged();
-
-                common.showAlert('已添加网站: ' + siteName, 'success');
             }
+            
+            // 标记数据已修改
+            setDataChanged();
         }
 
-        // 修改保存编辑网站函数以支持特殊栏目
-        function saveEditedSite() {
-            const isSpecial = document.getElementById('editSiteForm').hasAttribute('data-special-index');
-            const siteName = document.getElementById('editSiteName').value.trim();
-            const siteUrl = document.getElementById('editSiteUrl').value.trim();
 
-            if (!siteName || !siteUrl) {
-                common.showAlert('请填写所有字段', 'warning');
-                return;
-            }
-
-            if (isSpecial) {
-                // 编辑特殊栏目网站
-                const siteIndex = parseInt(document.getElementById('editSiteForm').getAttribute('data-special-index'));
-                navData.more.special.sites[siteIndex] = {
-                    name: siteName,
-                    url: siteUrl
-                    // 不保存icon字段，渲染时自动生成
-                };
-
-                editSiteModal.hide();
-                renderSpecialSites();
-
-                // 标记数据已修改
-                setDataChanged();
-
-                common.showAlert('特殊栏目网站已更新: ' + siteName, 'success');
-            } else {
-                // 普通编辑网站逻辑
-                const tabIndex = parseInt(document.getElementById('editSiteTabIndex').value);
-                const siteIndex = parseInt(document.getElementById('editSiteIndex').value);
-                navData[currentPage].tabs[tabIndex].items[siteIndex] = {
-                    name: siteName,
-                    url: siteUrl
-                    // 不保存icon字段，渲染时自动生成
-                };
-
-                editSiteModal.hide();
-                renderTabs();
-
-                // 标记数据已修改
-                setDataChanged();
-
-                common.showAlert('网站已更新: ' + siteName, 'success');
-            }
-        }
 
         async function saveToGithub() {
             if (!common) return;
