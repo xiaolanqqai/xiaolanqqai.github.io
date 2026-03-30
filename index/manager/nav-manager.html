@@ -15,7 +15,7 @@
     <style>
         /* 拟态框靠下一点点 */
         .modal-dialog {
-            margin-top: 10vh !important;
+            margin-top: 15vh !important;
         }
         
         .site-card {
@@ -121,6 +121,18 @@
                         <p class="flex-grow-1 xsmall">清除当前已加载的所有数据</p>
                         <button id="clearDataBtn" class="btn btn-sm manager-btn-warning mt-2">
                             <i class="fas fa-broom me-1"></i>清空
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6">
+                <div class="card feature-card h-100 border-info">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="text-info mb-3 feature-icon"><i class="fas fa-sync-alt"></i></div>
+                        <h6>同步版本</h6>
+                        <p class="flex-grow-1 xsmall">从历史记录同步最新版本</p>
+                        <button id="syncVersionBtn" class="btn btn-sm btn-info mt-2 text-white">
+                            <i class="fas fa-sync me-1"></i>同步
                         </button>
                     </div>
                 </div>
@@ -614,6 +626,12 @@
 
             // GitHub API 相关事件
             githubSaveBtn.addEventListener('click', saveToGithub);
+
+            // 版本同步功能
+            const syncVersionBtn = document.getElementById('syncVersionBtn');
+            if (syncVersionBtn) {
+                syncVersionBtn.addEventListener('click', syncVersionFromHistory);
+            }
 
             // 日志管理
             clearLogsBtn.addEventListener('click', clearAllLogs);
@@ -1922,6 +1940,45 @@
                 resetDataChanged();
             } catch (error) {
                 // 错误已由 common.syncToGithub 处理
+            }
+        }
+
+        async function syncVersionFromHistory() {
+            if (!common) return;
+            try {
+                common.showLoading('正在同步版本信息...');
+                const response = await fetch('../../data/version-history.json?t=' + Date.now());
+                if (!response.ok) throw new Error('读取 version-history.json 失败');
+                const historyData = await response.json();
+                
+                if (historyData.versions && historyData.versions.length > 0) {
+                    const latestVersion = historyData.versions[0];
+                    const siteData = historyData.dependencies.site_data;
+                    
+                    // 提取日期 (匹配 YYYY.MM.DD 格式)
+                    const dateMatch = siteData.match(/\d{4}\.\d{2}\.\d{2}/);
+                    const extractedDate = dateMatch ? dateMatch[0] : new Date().toISOString().split('T')[0].replace(/-/g, '.');
+                    
+                    // 更新本地数据
+                    navData.version.web_vol = latestVersion.name;
+                    navData.version.web_data = extractedDate;
+                    
+                    // 自动同步到 GitHub
+                    await common.syncToGithub('data/nav-data.json', navData, `Sync version to ${latestVersion.name} (${extractedDate})`);
+                    
+                    // 更新 UI 显示
+                    updateVersionDisplay();
+                    resetDataChanged();
+                    
+                    common.hideLoading();
+                    common.showAlert(`版本同步成功: ${latestVersion.name} (${extractedDate})`, 'success');
+                    common.log('版本同步成功', 'success', `版本: ${latestVersion.name}, 日期: ${extractedDate}`);
+                } else {
+                    throw new Error('version-history.json 中没有有效的版本记录');
+                }
+            } catch (error) {
+                common.hideLoading();
+                common.handleError(error, '同步版本信息');
             }
         }
 
