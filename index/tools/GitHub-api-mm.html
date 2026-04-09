@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加密工具 - XOR + Hex 加密算法</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        .result-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            word-break: break-all;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .tab-content {
+            padding: 1.5rem;
+        }
+        .nav-tabs .nav-link {
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+        .nav-tabs .nav-link.active {
+            color: #4facfe;
+            border-bottom: 3px solid #4facfe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header text-center">
+                <i class="fas fa-lock me-2"></i>XOR + Hex 加密工具
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="encryptionTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="encrypt-tab" data-bs-toggle="tab" data-bs-target="#encrypt" type="button" role="tab" aria-controls="encrypt" aria-selected="true">加密</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="decrypt-tab" data-bs-toggle="tab" data-bs-target="#decrypt" type="button" role="tab" aria-controls="decrypt" aria-selected="false">解密</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="encryptionTabsContent">
+                    <!-- 加密选项卡 -->
+                    <div class="tab-pane fade show active" id="encrypt" role="tabpanel" aria-labelledby="encrypt-tab">
+                        <div class="form-group">
+                            <label for="plaintext" class="form-label">明文</label>
+                            <textarea class="form-control" id="plaintext" rows="4" placeholder="请输入要加密的内容"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="encrypt-key" class="form-label">密钥</label>
+                            <input type="text" class="form-control" id="encrypt-key" placeholder="请输入密钥，例如 'guest'">
+                        </div>
+                        <button type="button" class="btn btn-primary w-100" onclick="encrypt()">
+                            <i class="fas fa-lock me-2"></i>加密
+                        </button>
+                        <div class="result-box mt-3">
+                            <h6 class="mb-2"><i class="fas fa-code me-2"></i>加密结果：</h6>
+                            <div id="encrypt-result"></div>
+                        </div>
+                        <button type="button" class="btn btn-secondary w-100 mt-3" onclick="copyToClipboard('encrypt-result')">
+                            <i class="fas fa-copy me-2"></i>复制结果
+                        </button>
+                    </div>
+                    <!-- 解密选项卡 -->
+                    <div class="tab-pane fade" id="decrypt" role="tabpanel" aria-labelledby="decrypt-tab">
+                        <div class="form-group">
+                            <label for="ciphertext" class="form-label">密文 (十六进制)</label>
+                            <textarea class="form-control" id="ciphertext" rows="4" placeholder="请输入要解密的十六进制字符串"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="decrypt-key" class="form-label">密钥</label>
+                            <input type="text" class="form-control" id="decrypt-key" placeholder="请输入密钥，例如 'guest'">
+                        </div>
+                        <button type="button" class="btn btn-primary w-100" onclick="decrypt()">
+                            <i class="fas fa-unlock me-2"></i>解密
+                        </button>
+                        <div class="result-box mt-3">
+                            <h6 class="mb-2"><i class="fas fa-file-alt me-2"></i>解密结果：</h6>
+                            <div id="decrypt-result"></div>
+                        </div>
+                        <button type="button" class="btn btn-secondary w-100 mt-3" onclick="copyToClipboard('decrypt-result')">
+                            <i class="fas fa-copy me-2"></i>复制结果
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center text-muted">
+                <small>基于 github-api-helper.js 中的 XOR + Hex 加密算法</small>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /**
+         * 加密函数 (XOR + Hex)
+         * @param {string} text 明文
+         * @param {string} key 密钥
+         * @returns {string} 加密后的十六进制字符串
+         */
+        function encryptText(text, key) {
+            let hex = '';
+            for (let i = 0; i < text.length; i++) {
+                const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+                hex += charCode.toString(16).padStart(2, '0');
+            }
+            return hex;
+        }
+
+        /**
+         * 解密函数 (XOR + Hex)
+         * @param {string} hex 加密后的十六进制字符串
+         * @param {string} key 密钥
+         * @returns {string} 解密后的明文
+         */
+        function decryptText(hex, key) {
+            let str = '';
+            for (let i = 0; i < hex.length; i += 2) {
+                const charCode = parseInt(hex.substr(i, 2), 16) ^ key.charCodeAt((i / 2) % key.length);
+                str += String.fromCharCode(charCode);
+            }
+            return str;
+        }
+
+        /**
+         * 加密按钮点击事件
+         */
+        function encrypt() {
+            const plaintext = document.getElementById('plaintext').value;
+            const key = document.getElementById('encrypt-key').value;
+            
+            if (!plaintext) {
+                alert('请输入明文');
+                return;
+            }
+            
+            if (!key) {
+                alert('请输入密钥');
+                return;
+            }
+            
+            const result = encryptText(plaintext, key);
+            document.getElementById('encrypt-result').textContent = result;
+        }
+
+        /**
+         * 解密按钮点击事件
+         */
+        function decrypt() {
+            const ciphertext = document.getElementById('ciphertext').value;
+            const key = document.getElementById('decrypt-key').value;
+            
+            if (!ciphertext) {
+                alert('请输入密文');
+                return;
+            }
+            
+            if (!key) {
+                alert('请输入密钥');
+                return;
+            }
+            
+            // 验证密文是否为有效的十六进制字符串
+            if (!/^[0-9a-fA-F]+$/.test(ciphertext)) {
+                alert('密文必须是有效的十六进制字符串');
+                return;
+            }
+            
+            // 验证密文长度是否为偶数
+            if (ciphertext.length % 2 !== 0) {
+                alert('密文长度必须是偶数');
+                return;
+            }
+            
+            try {
+                const result = decryptText(ciphertext, key);
+                document.getElementById('decrypt-result').textContent = result;
+            } catch (error) {
+                alert('解密失败: ' + error.message);
+            }
+        }
+
+        /**
+         * 复制到剪贴板
+         * @param {string} elementId 元素ID
+         */
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            if (!text) {
+                alert('没有可复制的内容');
+                return;
+            }
+            
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert('已复制到剪贴板');
+                })
+                .catch(err => {
+                    alert('复制失败: ' + err);
+                });
+        }
+    </script>
+</body>
+</html>
