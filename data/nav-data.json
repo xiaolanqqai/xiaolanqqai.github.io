@@ -113,11 +113,11 @@
           },
           {
             "name": "局域网分享",
-            "url": "192.168.1.8:3000"
+            "url": "http://192.168.1.8:3000"
           },
           {
             "name": "虎大ERP",
-            "url": "192.168.1.8:4000"
+            "url": "http://192.168.1.8:4000"
           }
         ]
       },
@@ -409,6 +409,10 @@
           {
             "name": "Pixso",
             "url": "https://pixso.cn"
+          },
+          {
+            "name": "Figma",
+            "url": "https://www.figma.com/"
           },
           {
             "name": "Bigjpg",
