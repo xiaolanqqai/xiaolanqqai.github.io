@@ -44,7 +44,7 @@
       <div id="nav-content-container"></div>
       <div class="mt-4 d-none" id="aav">
         <div class="alert alert-secondary shadow" role="alert">小日本ポートエロ</div>
-        <div id="ar21" class="more-grid"></div>
+        <div id="special-grid" class="more-grid"></div>
       </div>
     </div>
     <div class="fixed-bottom mx-1">
@@ -89,6 +89,7 @@
     const oMoreC = document.getElementById('more-b');
     const oMoreCC = document.getElementById('more-c');
     let oMoreB = parseInt(localStorage.getItem('oMoreB') ?? '3');
+    let _moreData = null;
 
     // 清除缓存
     oMoreCC.onclick = function () { localStorage.clear(); oTxt.value = ''; };
@@ -113,15 +114,18 @@
     oBtn.onclick = function () {
       const val = oTxt.value;
       if (!val) { alert('???'); return; }
+      oMoreC.classList.add('d-none');
       // 特殊命令（仅搜索引擎 0）
       if (oMoreB === 0) {
         if (val === '001') {
-          document.getElementById('aav').classList.remove('d-none');
-          window.scrollTo(0, document.documentElement.scrollHeight);
+          if (_moreData && _moreData.special && _moreData.special.sites) renderSpecialSection(_moreData);
+          const aav = document.getElementById('aav');
+          aav.classList.remove('d-none');
+          setTimeout(() => aav.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
           oTxt.value = '';
           return;
         } else if (val === '002') { window.open('aa.htm'); oTxt.value = ''; return; }
-        else if (val === 'mm') { localStorage.setItem('userName', 'xiaolan'); oTxt.value = ''; return; }
+        else if (val === 'mm') { localStorage.setItem('userName', 'xiaolan'); document.getElementById('more-mm').classList.remove('d-none'); oTxt.value = ''; return; }
       }
       window.open(engines[oMoreB](val));
       oTxt.value = '';
@@ -155,7 +159,7 @@
 
     // 渲染特殊栏目
     function renderSpecialSection(moreData) {
-      const container = document.getElementById('ar21');
+      const container = document.getElementById('special-grid');
       if (!moreData || !moreData.special || !moreData.special.sites) return;
       const sites = moreData.special.sites;
       if (!sites.length) { container.innerHTML = '<div class="alert alert-info">暂无特殊栏目数据</div>'; return; }
@@ -173,7 +177,7 @@
     document.addEventListener('DOMContentLoaded', function () {
       fetch('../data/nav-data.json')
         .then(r => r.json())
-        .then(data => { renderNavigation(data['more']); renderSpecialSection(data['more']); loadVersionInfo(data); })
+        .then(data => { _moreData = data['more']; renderNavigation(data['more']); renderSpecialSection(data['more']); loadVersionInfo(data); })
         .catch(() => {
           document.getElementById('nav-content-container').innerHTML = '<div class="alert alert-info mx-3">暂无导航数据，请先上传JSON文件</div>';
           document.getElementById('uptime1').textContent = 'Beta:error';

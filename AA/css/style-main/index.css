@@ -299,7 +299,7 @@ html, body {
     z-index: 1;
 }
 .nav-ban-item:hover {
-    transform: translateY(-3px) scale(1.02);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-lg);
     border-color: var(--primary-color);
     z-index: 20;
@@ -307,8 +307,8 @@ html, body {
 
 /* More page small card layout */
 .more-grid { display: flex; flex-wrap: wrap; gap: 12px; padding: 10px }
-.more-card { width: 120px; height: 90px; flex-shrink: 0 }
-.more-card .nav-ban-item { height: 100%; padding: 8px !important }
+.more-card { width: 120px; height: 90px; flex-shrink: 0; overflow: visible }
+.more-card .nav-ban-item { height: 100%; padding: 8px !important; overflow: visible }
 .more-card .nav-ban-icon { width: 32px; height: 32px; margin-bottom: 5px }
 .more-card .nav-ban-text { font-size: .85rem }
 
@@ -335,11 +335,18 @@ html, body {
     overflow: visible;
     text-overflow: clip;
     white-space: nowrap;
-    display: inline-block;
-    width: auto;
-    animation: marquee 5s linear infinite;
-    padding-left: 10px;
-    padding-right: 10px;
+    width: max-content;
+    max-width: 160px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 2px 8px;
+    box-shadow: var(--shadow-md);
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
 }
 @keyframes marquee {
     0% { transform: translateX(0) }
