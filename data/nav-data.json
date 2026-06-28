@@ -1071,6 +1071,16 @@
         ]
       },
       {
+        "id": "1782626734504",
+        "name": "嵌入式.ESP",
+        "items": [
+          {
+            "name": "ESPConnect",
+            "url": "https://thelastoutpostworkshop.github.io/ESPConnect/"
+          }
+        ]
+      },
+      {
         "name": "其它 • 开发",
         "items": [
           {
