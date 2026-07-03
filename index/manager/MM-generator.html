@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>MM-generator</title>
-    <!-- 模块化 Header 组件 -->
     <script src="../../js/components/header-component.js"></script>
     <script src="../../js/components/manager-component.js"></script>
-    
-    <!-- 引入通用脚本 -->
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
 </head>
@@ -105,12 +102,12 @@
             </div>
         </div>
         
-        <div class="upload-section bg-white rounded shadow p-4 mb-4 text-center" id="uploadSection">
+        <div class="upload-section manager-card p-4 mb-4 text-center" id="uploadSection">
             <h2 class="mb-4">请选择加载方式</h2>
             
             <div class="row justify-content-center g-4">
                 <div class="col-md-6">
-                    <div class="option-card p-4 rounded bg-light h-100">
+                    <div class="option-card p-4 h-100">
                         <h5 class="fw-medium mb-3">从本地上传</h5>
                         <input type="file" id="fileInput" class="d-none" accept=".json">
                         <button id="uploadBtn" class="btn manager-btn-primary w-100 py-3">
@@ -122,7 +119,7 @@
                 </div>
                 
                 <div class="col-md-6">
-                    <div class="option-card p-4 rounded bg-light h-100">
+                    <div class="option-card p-4 h-100">
                         <h5 class="fw-medium mb-3">从网络加载</h5>
                         <button id="loadUrlBtn" class="btn manager-btn-warning w-100 py-3">
                             <i class="fas fa-link me-2"></i>
@@ -141,7 +138,7 @@
         <div class="main-content d-none flex-column" id="mainContent">
             <div class="row g-4 mb-4">
                 <div class="col-lg-6">
-                    <div class="bg-white rounded shadow p-4 h-100">
+                    <div class="manager-card p-4 h-100">
                         <h4 class="text-primary fw-semibold border-bottom pb-2 mb-3">添加新条目</h4>
                         <p class="text-muted mb-3">在此处添加新的密码模式条目，添加后将在右侧列表中显示</p>
                         
@@ -171,7 +168,7 @@
                             <button type="submit" class="btn manager-btn-primary w-100">添加条目</button>
                         </form>
                         
-                        <div id="editForm" class="d-none bg-light p-3 rounded border-start border-primary">
+                        <div id="editForm" class="d-none p-3 rounded border-start border-primary" style="background-color:var(--bg-secondary)">
                             <h3 class="mb-3">编辑条目</h3>
                             <div class="mb-3">
                                 <label for="editPlatform" class="form-label">平台</label>
@@ -201,7 +198,7 @@
                             </div>
                         </div>
                         
-                        <div class="bg-info bg-opacity-10 p-3 rounded mt-4">
+                        <div class="p-3 rounded mt-4" style="background-color:rgba(90,200,250,0.1)">
                             <strong>使用说明：</strong><br>
                             1. 填写平台、账号类型和密码模式<br>
                             2. 点击"添加条目"按钮添加到右侧列表<br>
@@ -212,7 +209,7 @@
                 </div>
                 
                 <div class="col-lg-6">
-                    <div class="bg-white rounded shadow p-4 h-100 d-flex flex-column">
+                    <div class="manager-card p-4 h-100 d-flex flex-column">
                         <h4 class="text-primary fw-semibold border-bottom pb-2 mb-3">已添加条目 <small class="text-muted fs-6">(拖拽排序)</small></h4>
                         <p class="text-muted mb-3">所有已添加的条目列表，支持拖拽排序和删除操作</p>
                         
@@ -240,8 +237,8 @@
         </div>
     </div>
 
-    <script src="../../js/bootstrap.bundle.min.js"></script>
-    <script>
+
+<script>
         // 快捷访问 managerCommon
         const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
         if (common && !window.managerCommon) window.managerCommon = common;
@@ -364,7 +361,6 @@
         }
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('页面加载完成，开始初始化');
             
             // 获取DOM元素
             const uploadSection = document.getElementById('uploadSection');
@@ -455,17 +451,14 @@
             
             // 上传按钮点击事件
             uploadBtn.addEventListener('click', function() {
-                console.log('上传按钮被点击');
                 fileInput.click();
                 common.log('点击了文件上传按钮', 'info');
             });
             
             // 文件选择事件
             fileInput.addEventListener('change', function(e) {
-                console.log('文件选择变化');
                 const file = e.target.files[0];
                 if (file) {
-                    console.log('文件已选择:', file.name);
                     currentFileName = file.name;
                     fileInfo.textContent = `已选择文件: ${file.name} (${formatFileSize(file.size)})`;
                     
@@ -477,7 +470,6 @@
                     // 先以ArrayBuffer形式读取文件，用于检测文件类型
                     reader.onload = function(e) {
                         try {
-                            console.log('文件读取成功');
                             const arrayBuffer = e.target.result;
                             const content = new TextDecoder().decode(arrayBuffer);
                             currentFileContent = content;
@@ -514,7 +506,6 @@
             
             // 从固定URL加载文件
             loadUrlBtn.addEventListener('click', function() {
-                console.log('加载URL按钮被点击');
                 // 使用通用加载指示器
                 common.showLoading('正在从网络加载数据...');
                 urlError.textContent = '';
@@ -523,19 +514,16 @@
                 // 记录开始加载
                 common.log('开始从网络加载文件', 'info', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 来源: 网络加载`);
                 
-                console.log('开始从URL加载文件:', FIXED_URL);
                 // 添加时间戳防止缓存
                 const fetchUrl = FIXED_URL + (FIXED_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
                 fetch(fetchUrl, { cache: 'no-cache' })
                     .then(response => {
-                        console.log('收到响应:', response.status);
                         if (!response.ok) {
                             throw new Error(`HTTP错误! 状态: ${response.status}`);
                         }
                         return response.arrayBuffer();
                     })
                     .then(arrayBuffer => {
-                        console.log('文件加载成功，开始解析');
                         const content = new TextDecoder().decode(arrayBuffer);
                         currentFileContent = content;
                         currentFileArrayBuffer = arrayBuffer; // 保存原始ArrayBuffer
@@ -565,7 +553,6 @@
                         common.log('网络文件加载失败', 'error', `URL: ${FIXED_URL}, 文件名: ${currentFileName}, 错误信息: ${error.message}, 来源: 网络加载`);
                     })
                     .finally(() => {
-                        console.log('加载完成');
                         common.hideLoading();
                     });
             });
@@ -579,14 +566,12 @@
             
             // 解析文件内容
             function parseFileContent(content) {
-                console.log('开始解析文件内容');
                 // 清空现有条目
                 entries = [];
                 
                 try {
                     // 解析为JSON
                     entries = JSON.parse(content);
-                    console.log(`JSON解析完成，找到 ${entries.length} 个条目`);
                 } catch (jsonError) {
                     console.error('JSON解析失败:', jsonError);
                     common.showAlert('JSON文件解析失败: ' + jsonError.message, 'danger');
@@ -713,7 +698,6 @@
                     if (containsBinaryData(encryptedData)) {
                         // 对于二进制数据，我们需要重新以ArrayBuffer读取原始文件
                         // 因为currentFileContent是通过TextDecoder解码的，可能已经损坏
-                        console.log('检测到二进制数据，需要重新读取文件');
                         
                         if (fileInput.files && fileInput.files[0]) {
                             // 如果是通过文件上传的
@@ -755,7 +739,6 @@
                             return;
                         } else {
                         // 如果是通过网络加载的，使用保存的原始ArrayBuffer
-                        console.log('使用网络加载的原始ArrayBuffer进行处理');
                         try {
                             const binaryStr = String.fromCharCode.apply(null, new Uint8Array(currentFileArrayBuffer));
                             const base64Data = btoa(binaryStr);
@@ -884,7 +867,6 @@
                 try {
                     // 生成 JSON 内容
                     const content = generateDownloadContent();
-                    console.log(`准备同步 ${entries.length} 个条目到 GitHub`);
                     common.log('开始同步到 GitHub', 'info', `待同步条目数: ${entries.length}`);
                     
                     // 加密内容
@@ -941,7 +923,7 @@
                 
                 entries.forEach((entry, index) => {
                     const entryItem = document.createElement('div');
-                    entryItem.className = 'entry-item d-flex justify-content-between align-items-center p-2 mb-2 bg-light rounded';
+                    entryItem.className = 'entry-item d-flex justify-content-between align-items-center p-2 mb-2 rounded';
                     entryItem.draggable = true;
                     entryItem.dataset.index = index;
                     
@@ -1081,7 +1063,6 @@
             }
             
             // 初始化日志
-            console.log('页面加载完成，按钮已绑定事件');
         });
     </script>
     

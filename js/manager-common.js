@@ -1,9 +1,7 @@
-// 管理页面通用JavaScript功能
-
 class ManagerCommon {
     constructor() {
         this.logContainer = null;
-        this.maxLogs = 100; // 增加日志限制
+        this.maxLogs = 100;
         this.config = {
             iconPrefix: 'https://api.afmax.cn/so/ico/index.php?r=',
             defaultIcon: '../../img/index.png',
@@ -13,711 +11,316 @@ class ManagerCommon {
     }
 
     init() {
-        // 确保DOM已加载
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.initProgressBar();
-                this.initErrorHandling();
-                this.initLogSystem();
-                this.initSyncLock(); // 初始化同步锁定逻辑
-            });
-        } else {
-            this.initProgressBar();
-            this.initErrorHandling();
-            this.initLogSystem();
-            this.initSyncLock(); // 初始化同步锁定逻辑
-        }
+        const setup = () => { this.initProgressBar(); this.initErrorHandling(); this.initLogSystem(); this.initSyncLock(); };
+        document.readyState === 'loading'
+            ? document.addEventListener('DOMContentLoaded', setup)
+            : setup();
     }
 
-    // --- GitHub 同步锁定逻辑 ---
+    // --- 同步锁定 ---
 
-    /**
-     * 初始化同步锁定
-     */
     initSyncLock() {
         this.syncLockKey = 'github_sync_lock_time';
-        this.syncLockDuration = 5 * 60 * 1000; // 5分钟
+        this.syncLockDuration = 5 * 60 * 1000;
         this.syncLockTimer = null;
-
-        // 检查当前是否处于锁定状态
         this.checkSyncLock();
-
-        // 监听存储变化（实现跨标签页同步）
-        window.addEventListener('storage', (e) => {
-            if (e.key === this.syncLockKey) {
-                this.checkSyncLock();
-            }
-        });
+        window.addEventListener('storage', (e) => { if (e.key === this.syncLockKey) this.checkSyncLock(); });
     }
 
-    /**
-     * 检查并应用同步锁定状态
-     */
     checkSyncLock() {
         const lockTime = localStorage.getItem(this.syncLockKey);
-        if (!lockTime) {
-            this.removeSyncOverlay();
-            return;
-        }
+        if (!lockTime) return this.removeSyncOverlay();
 
-        const now = Date.now();
-        const elapsed = now - parseInt(lockTime);
-
+        const elapsed = Date.now() - parseInt(lockTime);
         if (elapsed < this.syncLockDuration) {
-            const remaining = this.syncLockDuration - elapsed;
-            this.applySyncOverlay(remaining);
-            
-            // 启动定时器更新倒计时
+            this.applySyncOverlay(this.syncLockDuration - elapsed);
             if (this.syncLockTimer) clearInterval(this.syncLockTimer);
             this.syncLockTimer = setInterval(() => {
-                const currentNow = Date.now();
-                const currentElapsed = currentNow - parseInt(lockTime);
-                if (currentElapsed >= this.syncLockDuration) {
-                    clearInterval(this.syncLockTimer);
-                    this.removeSyncOverlay();
-                } else {
-                    this.updateSyncOverlay(this.syncLockDuration - currentElapsed);
-                }
+                const cur = Date.now() - parseInt(lockTime);
+                cur >= this.syncLockDuration ? (clearInterval(this.syncLockTimer), this.removeSyncOverlay()) : this.updateSyncOverlay(this.syncLockDuration - cur);
             }, 1000);
         } else {
             this.removeSyncOverlay();
         }
     }
 
-    /**
-     * 锁定同步功能
-     */
     lockSync() {
         localStorage.setItem(this.syncLockKey, Date.now().toString());
         this.checkSyncLock();
     }
 
-    /**
-     * 获取所有可能的同步按钮
-     */
     getSyncButtons() {
-        return [
-            document.getElementById('githubSaveBtn'),
-            document.getElementById('syncToGithubBtn')
-        ].filter(btn => btn !== null);
+        return [document.getElementById('githubSaveBtn'), document.getElementById('syncToGithubBtn')].filter(Boolean);
     }
 
-    /**
-     * 应用遮罩层
-     */
     applySyncOverlay(remainingMs) {
-        const buttons = this.getSyncButtons();
-        buttons.forEach(btn => {
+        this.getSyncButtons().forEach(btn => {
             btn.disabled = true;
-            
-            // 查找或创建遮罩层
-            let container = btn.closest('.card') || btn.parentElement;
+            const container = btn.closest('.card') || btn.parentElement;
             if (!container) return;
-
-            // 确保容器是相对定位
-            if (window.getComputedStyle(container).position === 'static') {
-                container.style.position = 'relative';
-            }
+            if (window.getComputedStyle(container).position === 'static') container.style.position = 'relative';
 
             let overlay = container.querySelector('.sync-lock-overlay');
             if (!overlay) {
                 overlay = document.createElement('div');
                 overlay.className = 'sync-lock-overlay';
-                overlay.style.cssText = `
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0, 0, 0, 0.6);
-                    color: white;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    z-index: 1000;
-                    border-radius: inherit;
-                    backdrop-filter: blur(2px);
-                    transition: opacity 0.3s ease;
-                    pointer-events: all;
-                `;
-                
-                const icon = document.createElement('i');
-                icon.className = 'fas fa-clock mb-2';
-                icon.style.fontSize = '1.5rem';
-                
-                const text = document.createElement('div');
-                text.className = 'sync-lock-text';
-                text.style.fontWeight = 'bold';
-                
-                const subtext = document.createElement('small');
-                subtext.textContent = '同步功能冷却中';
-                subtext.style.opacity = '0.8';
-
-                overlay.appendChild(icon);
-                overlay.appendChild(text);
-                overlay.appendChild(subtext);
+                overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);color:white;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;border-radius:inherit;backdrop-filter:blur(2px);transition:opacity 0.3s ease;pointer-events:all;';
+                overlay.innerHTML = '<i class="fas fa-clock mb-2" style="font-size:1.5rem"></i><div class="sync-lock-text" style="font-weight:bold"></div><small style="opacity:0.8">同步功能冷却中</small>';
                 container.appendChild(overlay);
             }
-            
             this.updateSyncOverlay(remainingMs, overlay);
         });
     }
 
-    /**
-     * 更新遮罩层倒计时
-     */
     updateSyncOverlay(remainingMs, specificOverlay = null) {
-        const seconds = Math.ceil(remainingMs / 1000);
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
-
+        const s = Math.ceil(remainingMs / 1000);
+        const timeStr = `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
         const overlays = specificOverlay ? [specificOverlay] : document.querySelectorAll('.sync-lock-overlay');
-        overlays.forEach(overlay => {
-            const textEl = overlay.querySelector('.sync-lock-text');
-            if (textEl) textEl.textContent = timeStr;
-        });
+        overlays.forEach(o => { const t = o.querySelector('.sync-lock-text'); if (t) t.textContent = timeStr; });
     }
 
-    /**
-     * 移除遮罩层
-     */
     removeSyncOverlay() {
-        const buttons = this.getSyncButtons();
-        buttons.forEach(btn => btn.disabled = false);
-        
-        document.querySelectorAll('.sync-lock-overlay').forEach(overlay => {
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 300);
+        this.getSyncButtons().forEach(btn => btn.disabled = false);
+        document.querySelectorAll('.sync-lock-overlay').forEach(o => {
+            o.style.opacity = '0';
+            setTimeout(() => o.remove(), 300);
         });
-        
-        if (this.syncLockTimer) {
-            clearInterval(this.syncLockTimer);
-            this.syncLockTimer = null;
-        }
+        if (this.syncLockTimer) { clearInterval(this.syncLockTimer); this.syncLockTimer = null; }
     }
 
+    // --- 进度条 ---
 
-
-    // 初始化页面加载进度条
     initProgressBar() {
-        // 创建进度条元素
-        const progressContainer = document.createElement('div');
-        progressContainer.className = 'progress-container';
-        
-        const progressBar = document.createElement('div');
-        progressBar.className = 'progress-bar';
-        
-        progressContainer.appendChild(progressBar);
-        document.body.appendChild(progressContainer);
-        
-        // 监听页面加载进度
+        const wrap = document.createElement('div');
+        wrap.className = 'progress-container';
+        const bar = document.createElement('div');
+        bar.className = 'progress-bar';
+        wrap.appendChild(bar);
+        document.body.appendChild(wrap);
+
         window.addEventListener('load', () => {
-            // 页面加载完成后完成进度条
-            progressBar.style.width = '100%';
-            
-            // 延迟移除进度条
-            setTimeout(() => {
-                progressContainer.style.opacity = '0';
-                setTimeout(() => {
-                    progressContainer.remove();
-                }, 300);
-            }, 500);
+            bar.style.width = '100%';
+            setTimeout(() => { wrap.style.opacity = '0'; setTimeout(() => wrap.remove(), 300); }, 500);
         });
-        
-        // 模拟进度
+
         let progress = 0;
-        const interval = setInterval(() => {
+        const iv = setInterval(() => {
             progress += Math.random() * 15;
-            if (progress >= 70) {
-                clearInterval(interval);
-            }
-            progressBar.style.width = `${Math.min(progress, 100)}%`;
+            if (progress >= 70) clearInterval(iv);
+            bar.style.width = `${Math.min(progress, 100)}%`;
         }, 200);
     }
 
-    // 初始化错误处理
+    // --- 错误处理 ---
+
     initErrorHandling() {
-        // 全局错误捕获
-        window.addEventListener('error', (event) => {
-            this.handleError(event.error || new Error(event.message), '全局JavaScript错误');
-        });
-        
-        // Promise错误捕获
-        window.addEventListener('unhandledrejection', (event) => {
-            this.handleError(event.reason || new Error('未处理的Promise错误'), '未处理的Promise错误');
-        });
+        window.addEventListener('error', (e) => this.handleError(e.error || new Error(e.message), '全局JavaScript错误'));
+        window.addEventListener('unhandledrejection', (e) => this.handleError(e.reason || new Error('未处理的Promise错误'), '未处理的Promise错误'));
     }
 
-    // 初始化日志系统
+    handleError(error, context) {
+        const msg = error instanceof Error ? error.message : String(error);
+        const stack = error instanceof Error ? error.stack : '';
+        console.error(`[${context}] ${msg}`, error);
+        this.log(`错误: ${context} - ${msg}`, 'error', stack);
+        this.showToast(`发生错误: ${msg}`, 'error');
+    }
+
+    // --- 日志系统 ---
+
     initLogSystem() {
-        // 检查是否存在日志容器 (尝试寻找 ID 为 logContainer 或 log-container 的元素)
         this.logContainer = document.getElementById('logContainer') || document.getElementById('log-container');
-        
-        // 如果没有日志容器，且页面没有显式禁用日志系统，则尝试创建一个
         if (!this.logContainer && !document.querySelector('[data-no-log-system]')) {
-            // 检查是否有 offcanvas 日志容器
-            const offcanvasBody = document.querySelector('#logOffcanvas .offcanvas-body');
-            if (offcanvasBody) {
+            const body = document.querySelector('#logOffcanvas .offcanvas-body');
+            if (body) {
                 this.logContainer = document.createElement('div');
                 this.logContainer.id = 'logContainer';
                 this.logContainer.className = 'log-container-shared';
-                offcanvasBody.insertBefore(this.logContainer, offcanvasBody.firstChild);
+                body.insertBefore(this.logContainer, body.firstChild);
             }
         }
-
-        // 绑定清空日志按钮
         const clearBtn = document.getElementById('clearLogsBtn');
-        if (clearBtn) {
-            clearBtn.addEventListener('click', () => this.clearLogs());
-        }
+        if (clearBtn) clearBtn.addEventListener('click', () => this.clearLogs());
     }
 
-    // 清空日志
     clearLogs() {
-        if (this.logContainer) {
-            this.logContainer.innerHTML = '';
-            this.log('日志已清空', 'info');
-        }
+        if (this.logContainer) { this.logContainer.innerHTML = ''; this.log('日志已清空', 'info'); }
     }
 
-    // 共享工具：从 URL 获取网站标题
-    async fetchWebsiteTitle(url) {
-        try {
-            const proxyUrl = this.config.corsProxy + encodeURIComponent(url);
-            const response = await fetch(proxyUrl, {
-                method: 'GET',
-                headers: { 'Accept': 'text/html' }
-            });
-            
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const html = await response.text();
-            const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-            return titleMatch && titleMatch[1] ? titleMatch[1].trim().replace(/[\t\n\r]+/g, ' ') : null;
-        } catch (error) {
-            console.error('获取网站标题失败:', error);
-            return null;
-        }
-    }
-
-    // 共享工具：从 URL 提取网站名称
-    async extractSiteNameFromUrl(url) {
-        const title = await this.fetchWebsiteTitle(url);
-        if (title) return title.length > 30 ? title.substring(0, 30) + '...' : title;
-        
-        try {
-            const urlObj = new URL(url);
-            let hostname = urlObj.hostname.replace(/^www\./, '');
-            const parts = hostname.split('.');
-            if (parts.length >= 2) {
-                if (parts.length >= 3 && ['cn', 'net', 'org'].includes(parts[parts.length-1])) {
-                    return parts[parts.length-3];
-                }
-                return parts[parts.length-2];
-            }
-            return hostname;
-        } catch (e) {
-            return url.replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '').split('.')[0];
-        }
-    }
-
-    // 错误处理
-    handleError(error, context) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const stackTrace = error instanceof Error && error.stack ? error.stack : '';
-        
-        console.error(`[${context}] ${errorMessage}`, error);
-        
-        // 记录到日志系统
-        this.log(`错误: ${context} - ${errorMessage}`, 'error', stackTrace);
-        
-        // 显示错误提示
-        this.showToast(`发生错误: ${errorMessage}`, 'error');
-    }
-
-    // 记录日志
     log(message, level = 'info', details = '') {
         if (!this.logContainer) return;
-        
         const levels = ['info', 'success', 'warning', 'error'];
-        if (!levels.includes(level)) level = 'info';
-        
-        const timestamp = new Date().toLocaleString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-        
-        // 创建日志条目
-        const logEntry = document.createElement('div');
-        logEntry.className = `log-entry ${level}`;
-        logEntry.setAttribute('data-timestamp', timestamp);
-        
-        // 日志头部
-        const logHeader = document.createElement('div');
-        logHeader.className = 'log-header';
-        logHeader.innerHTML = `
-            <span class="log-time">${timestamp}</span>
-            <span class="log-level ${level}">${this.getLevelText(level)}</span>
-            <span class="log-message">${message}</span>
-        `;
-        
-        logEntry.appendChild(logHeader);
-        
-        // 添加详细信息（如堆栈跟踪）
+        level = levels.includes(level) ? level : 'info';
+
+        const ts = new Date().toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${level}`;
+        entry.setAttribute('data-timestamp', ts);
+
+        const header = document.createElement('div');
+        header.className = 'log-header';
+        header.innerHTML = `<span class="log-time">${ts}</span><span class="log-level ${level}">${this.getLevelText(level)}</span><span class="log-message">${message}</span>`;
+        entry.appendChild(header);
+
         if (details) {
-            const logContent = document.createElement('div');
-            logContent.className = 'log-content';
-            logContent.textContent = details;
-            logEntry.appendChild(logContent);
+            const content = document.createElement('div');
+            content.className = 'log-content';
+            content.textContent = details;
+            entry.appendChild(content);
         }
-        
-        // 添加到日志容器（添加到顶部）
-        this.logContainer.insertBefore(logEntry, this.logContainer.firstChild);
-        
-        // 限制日志数量
+
+        this.logContainer.insertBefore(entry, this.logContainer.firstChild);
         this.limitLogEntries();
-        
-        // 添加动画效果
-        setTimeout(() => {
-            logEntry.classList.add('fade-in');
-        }, 10);
+        setTimeout(() => entry.classList.add('fade-in'), 10);
     }
 
-    // 获取日志级别文本
     getLevelText(level) {
-        const levelMap = {
-            info: '信息',
-            success: '成功',
-            warning: '警告',
-            error: '错误'
-        };
-        return levelMap[level] || '信息';
+        return { info:'信息', success:'成功', warning:'警告', error:'错误' }[level] || '信息';
     }
 
-    // 限制日志条目数量
     limitLogEntries() {
         if (!this.logContainer) return;
-        
-        const logEntries = this.logContainer.querySelectorAll('.log-entry');
-        if (logEntries.length > this.maxLogs) {
-            // 移除多余的日志
-            for (let i = this.maxLogs; i < logEntries.length; i++) {
-                logEntries[i].remove();
-            }
-        }
+        const entries = this.logContainer.querySelectorAll('.log-entry');
+        for (let i = this.maxLogs; i < entries.length; i++) entries[i].remove();
     }
 
-    // 显示提示信息 (别名)
-    showAlert(message, type = 'info', duration = 3000) {
-        this.showToast(message, type, duration);
-    }
+    // --- UI 提示 ---
 
-    // 显示提示信息
+    showAlert(message, type = 'info', duration = 3000) { this.showToast(message, type, duration); }
+
     showToast(message, type = 'info', duration = 3000) {
-        // 创建提示元素
         const toast = document.createElement('div');
         toast.className = `feedback-toast ${type}`;
         toast.textContent = message;
-        
-        // 添加到页面
         document.body.appendChild(toast);
-        
-        // 添加动画效果
-        setTimeout(() => {
-            toast.classList.add('fade-in');
-        }, 10);
-        
-        // 定时移除
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
-        }, duration);
+        setTimeout(() => toast.classList.add('fade-in'), 10);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, duration);
     }
 
-    // 显示加载指示器 (别名)
-    showLoadingOverlay(message = '加载中...') {
-        this.showLoading(message);
-    }
+    showLoadingOverlay(message = '加载中...') { this.showLoading(message); }
+    hideLoadingOverlay() { this.hideLoading(); }
 
-    // 隐藏加载指示器 (别名)
-    hideLoadingOverlay() {
-        this.hideLoading();
-    }
-
-    // 显示加载指示器
     showLoading(message = '加载中...') {
-        // 检查是否已存在加载指示器
-        let loadingOverlay = document.querySelector('.loading-overlay');
-        if (!loadingOverlay) {
-            // 创建加载遮罩
-            loadingOverlay = document.createElement('div');
-            loadingOverlay.className = 'loading-overlay';
-            
-            const loadingContent = document.createElement('div');
-            loadingContent.className = 'loading-content';
-            
-            const spinner = document.createElement('div');
-            spinner.className = 'loading-spinner';
-            
-            const text = document.createElement('div');
-            text.className = 'loading-text';
-            text.textContent = message;
-            
-            loadingContent.appendChild(spinner);
-            loadingContent.appendChild(text);
-            loadingOverlay.appendChild(loadingContent);
-            
-            document.body.appendChild(loadingOverlay);
-        } else {
-            // 更新现有加载器的消息
-            const text = loadingOverlay.querySelector('.loading-text');
-            if (text) {
-                text.textContent = message;
-            }
+        let overlay = document.querySelector('.loading-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = '<div class="loading-content"><div class="loading-spinner"></div><div class="loading-text"></div></div>';
+            document.body.appendChild(overlay);
         }
-        
-        // 添加显示动画
-        setTimeout(() => {
-            loadingOverlay.style.opacity = '1';
-        }, 10);
+        const text = overlay.querySelector('.loading-text');
+        if (text) text.textContent = message;
+        setTimeout(() => overlay.style.opacity = '1', 10);
     }
 
-    // 隐藏加载指示器
     hideLoading() {
-        const loadingOverlay = document.querySelector('.loading-overlay');
-        if (loadingOverlay) {
-            loadingOverlay.style.opacity = '0';
-            setTimeout(() => {
-                loadingOverlay.remove();
-            }, 300);
-        }
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 300); }
     }
 
-    // 数据验证助手
+    // --- 数据验证 ---
+
     validateData(data, schema) {
         const errors = [];
-        
         for (const [key, rules] of Object.entries(schema)) {
-            const value = data[key];
-            
-            // 必填验证
-            if (rules.required && (value === undefined || value === null || value === '')) {
-                errors.push(`${key} 是必填项`);
-                continue;
-            }
-            
-            // 类型验证
-            if (value !== undefined && value !== null && rules.type) {
-                const isValidType = typeof value === rules.type;
-                if (!isValidType) {
-                    errors.push(`${key} 必须是 ${rules.type} 类型`);
-                }
-            }
-            
-            // 自定义验证
-            if (value !== undefined && value !== null && rules.validator) {
-                const result = rules.validator(value);
-                if (result !== true) {
-                    errors.push(typeof result === 'string' ? result : `${key} 验证失败`);
+            const val = data[key];
+            if (rules.required && (val === undefined || val === null || val === '')) { errors.push(`${key} 是必填项`); continue; }
+            if (val !== undefined && val !== null) {
+                if (rules.type && typeof val !== rules.type) errors.push(`${key} 必须是 ${rules.type} 类型`);
+                if (rules.validator && rules.validator(val) !== true) {
+                    const r = rules.validator(val);
+                    errors.push(typeof r === 'string' ? r : `${key} 验证失败`);
                 }
             }
         }
-        
-        return {
-            isValid: errors.length === 0,
-            errors
-        };
+        return { isValid: errors.length === 0, errors };
     }
 
-    // 防抖函数
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
+    // --- 工具函数 ---
+
+    debounce(fn, wait) {
+        let t;
+        return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
     }
 
-    // 节流函数
-    throttle(func, limit) {
+    throttle(fn, limit) {
         let inThrottle;
-        return function(...args) {
-            if (!inThrottle) {
-                func.apply(this, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
+        return (...args) => {
+            if (inThrottle) return;
+            fn(...args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
         };
     }
 
-    // Cookie 管理工具
+    // --- Cookie ---
+
     static Cookie = {
         set(name, value, days) {
-            let expires = '';
-            if (days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = '; expires=' + date.toUTCString();
-            }
-            document.cookie = name + '=' + (value || '')  + expires + '; path=/';
+            const expires = days ? `; expires=${new Date(Date.now() + days * 864e5).toUTCString()}` : '';
+            document.cookie = `${name}=${value || ''}${expires}; path=/`;
         },
-        
+
         get(name) {
-            const nameEQ = name + '=';
-            const ca = document.cookie.split(';');
-            for(let i=0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            const prefix = name + '=';
+            for (const c of document.cookie.split(';')) {
+                const trimmed = c.trim();
+                if (trimmed.startsWith(prefix)) return trimmed.substring(prefix.length);
             }
             return null;
         },
 
-        delete(name) {
-            this.set(name, '', -1);
-        }
+        delete(name) { this.set(name, '', -1); }
     };
 
-    // AES 加密解密工具
+    // --- AES ---
+
     static AES = {
-        // AES-256-CBC加密
+        async _deriveKey(password, usage) {
+            const enc = new TextEncoder();
+            const key = await crypto.subtle.importKey('raw', enc.encode(password.padEnd(32, ' ')), { name: 'PBKDF2' }, false, ['deriveKey']);
+            return crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: usage.salt, iterations: 100000, hash: 'SHA-256' },
+                key, { name: 'AES-CBC', length: 256 }, false, [usage.op]
+            );
+        },
+
         async encrypt(text, password) {
-            const encoder = new TextEncoder();
-            const textData = encoder.encode(text);
-            const passwordData = encoder.encode(password.padEnd(32, ' '));
-            
+            const enc = new TextEncoder();
             const iv = crypto.getRandomValues(new Uint8Array(16));
             const salt = crypto.getRandomValues(new Uint8Array(16));
-            
-            const key = await window.crypto.subtle.importKey(
-                'raw',
-                passwordData,
-                { name: 'PBKDF2' },
-                false,
-                ['deriveKey']
-            );
-
-            const derivedKey = await window.crypto.subtle.deriveKey(
-                {
-                    name: 'PBKDF2',
-                    salt: salt,
-                    iterations: 100000,
-                    hash: 'SHA-256'
-                },
-                key,
-                {
-                    name: 'AES-CBC',
-                    length: 256
-                },
-                false,
-                ['encrypt']
-            );
-
-            const encrypted = await window.crypto.subtle.encrypt(
-                {
-                    name: 'AES-CBC',
-                    iv: iv
-                },
-                derivedKey,
-                textData
-            );
-
-            const encryptedData = new Uint8Array(encrypted);
-            const totalLength = salt.length + iv.length + encryptedData.length;
-            const combined = new Uint8Array(totalLength);
-            
+            const derivedKey = await this._deriveKey(password, { salt, op: 'encrypt' });
+            const encrypted = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, derivedKey, enc.encode(text));
+            const data = new Uint8Array(encrypted);
+            const combined = new Uint8Array(salt.length + iv.length + data.length);
             combined.set(salt, 0);
             combined.set(iv, salt.length);
-            combined.set(encryptedData, salt.length + iv.length);
-            
-            return btoa(String.fromCharCode.apply(null, combined));
+            combined.set(data, salt.length + iv.length);
+            return btoa(String.fromCharCode(...combined));
         },
-        
-        // AES-256-CBC解密
+
         async decrypt(encryptedData, password) {
-            const combined = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
+            const combined = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0));
             const salt = combined.slice(0, 16);
             const iv = combined.slice(16, 32);
-            const encrypted = combined.slice(32);
-            
-            const encoder = new TextEncoder();
-            const passwordData = encoder.encode(password.padEnd(32, ' '));
-            
-            const key = await window.crypto.subtle.importKey(
-                'raw',
-                passwordData,
-                { name: 'PBKDF2' },
-                false,
-                ['deriveKey']
-            );
-
-            const derivedKey = await window.crypto.subtle.deriveKey(
-                {
-                    name: 'PBKDF2',
-                    salt: salt,
-                    iterations: 100000,
-                    hash: 'SHA-256'
-                },
-                key,
-                {
-                    name: 'AES-CBC',
-                    length: 256
-                },
-                false,
-                ['decrypt']
-            );
-
-            const decrypted = await window.crypto.subtle.decrypt(
-                {
-                    name: 'AES-CBC',
-                    iv: iv
-                },
-                derivedKey,
-                encrypted
-            );
-
-            const decoder = new TextDecoder();
-            return decoder.decode(decrypted);
+            const derivedKey = await this._deriveKey(password, { salt, op: 'decrypt' });
+            const decrypted = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, derivedKey, combined.slice(32));
+            return new TextDecoder().decode(decrypted);
         }
     };
 
-    // --- GitHub API 统一管理 ---
+    // --- GitHub 同步 ---
 
-    /**
-     * 同步数据到 GitHub
-     * @param {string} path 文件路径
-     * @param {Object|string} data 数据对象或字符串
-     * @param {string} message 提交信息
-     */
     async syncToGithub(path, data, message = 'Update data via Web Manager') {
-        if (!window.githubHelper) {
-            this.handleError(new Error('GitHub API 助手未加载'), 'GitHub 同步');
-            return null;
-        }
-
+        if (!window.githubHelper) { this.handleError(new Error('GitHub API 助手未加载'), 'GitHub 同步'); return null; }
         try {
             this.showLoading('正在同步到 GitHub...');
             const content = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
             const result = await window.githubHelper.updateFile(path, content, message);
-            
             this.hideLoading();
             this.showToast('同步成功！数据已更新到仓库。', 'success');
             this.log('GitHub 同步成功', 'success', `路径: ${path}`);
-            
-            // 锁定同步功能 5 分钟
             this.lockSync();
-            
             return result;
         } catch (error) {
             this.hideLoading();
@@ -726,50 +329,55 @@ class ManagerCommon {
         }
     }
 
-    /**
-     * 从 GitHub 获取数据
-     * @param {string} path 文件路径
-     */
     async getFromGithub(path) {
-        if (!window.githubHelper) {
-            this.handleError(new Error('GitHub API 助手未加载'), 'GitHub 加载');
-            return null;
-        }
-
+        if (!window.githubHelper) { this.handleError(new Error('GitHub API 助手未加载'), 'GitHub 加载'); return null; }
         try {
             this.log(`正在从 GitHub 加载: ${path}`, 'info');
             const response = await window.githubHelper.getFile(path);
-            
-            if (response && response.content) {
-                // 解码 Base64 内容 (处理中文字符)
-                // 使用更健壮的 Base64 解码方式，处理 Unicode 字符
-                const binaryString = atob(response.content);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
-                }
-                const decodedContent = new TextDecoder('utf-8').decode(bytes);
-                return JSON.parse(decodedContent);
+            if (response?.content) {
+                const bytes = Uint8Array.from(atob(response.content), c => c.charCodeAt(0));
+                return JSON.parse(new TextDecoder('utf-8').decode(bytes));
             }
             return null;
         } catch (error) {
-            // 如果是 404 错误，不视为致命错误，可能文件尚未创建
-            if (error.message.includes('404')) {
-                this.log(`GitHub 文件不存在 (404): ${path}`, 'warning');
-                return null;
-            }
+            if (error.message.includes('404')) { this.log(`GitHub 文件不存在 (404): ${path}`, 'warning'); return null; }
             this.handleError(error, 'GitHub 加载');
             return null;
         }
     }
+
+    // --- URL 标题获取 ---
+
+    async fetchWebsiteTitle(url) {
+        try {
+            const res = await fetch(this.config.corsProxy + encodeURIComponent(url), { headers: { Accept: 'text/html' } });
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const m = (await res.text()).match(/<title[^>]*>([^<]+)<\/title>/i);
+            return m?.[1]?.trim().replace(/[\t\n\r]+/g, ' ') || null;
+        } catch (e) {
+            console.error('获取网站标题失败:', e);
+            return null;
+        }
+    }
+
+    async extractSiteNameFromUrl(url) {
+        const title = await this.fetchWebsiteTitle(url);
+        if (title) return title.length > 30 ? title.substring(0, 30) + '...' : title;
+        try {
+            const { hostname } = new URL(url);
+            const h = hostname.replace(/^www\./, '');
+            const parts = h.split('.');
+            if (parts.length >= 3 && ['cn', 'net', 'org'].includes(parts.at(-1))) return parts.at(-3);
+            if (parts.length >= 2) return parts.at(-2);
+            return h;
+        } catch {
+            return url.replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '').split('.')[0];
+        }
+    }
 }
 
-// 初始化通用功能并暴露到全局
 const managerCommon = new ManagerCommon();
 window.managerCommon = managerCommon;
-window.ManagerCommon = ManagerCommon; // 暴露类本身，以便访问静态方法
+window.ManagerCommon = ManagerCommon;
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 页面加载完成日志
-    managerCommon.log('页面加载完成', 'success');
-});
+document.addEventListener('DOMContentLoaded', () => managerCommon.log('页面加载完成', 'success'));

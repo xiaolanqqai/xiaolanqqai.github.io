@@ -3,21 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>版本管理系统</title>
-    <!-- 模块化 Header 组件 -->
     <script src="../../js/components/header-component.js"></script>
     <script src="../../js/components/manager-component.js"></script>
-
-    <!-- 引入通用脚本 -->
     <script src="../../js/github-api-helper.js"></script>
     <script src="../../js/manager-common.js"></script>
-    <style>
-        /* 拟态框靠下一点点 */
-        .modal-dialog {
-            margin-top: 15vh !important;
-        }
-    </style>
 </head>
 
 <body class="manager-body">
@@ -30,8 +20,8 @@
 
         <!-- 功能卡片区域 -->
         <div class="row mb-4 g-3">
-            <div class="col-md-3">
-                <div class="card manager-feature-card h-100">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-primary mb-3"><i class="fas fa-plus-circle"></i></div>
                         <h5>添加新版本</h5>
@@ -43,8 +33,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card manager-feature-card h-100">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-success mb-3"><i class="fas fa-file-import"></i></div>
                         <h5>导入版本数据</h5>
@@ -56,8 +46,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card manager-feature-card h-100">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-primary mb-3"><i class="fas fa-file-export"></i></div>
                         <h5>保存/导出数据</h5>
@@ -68,8 +58,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card manager-feature-card h-100">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-warning mb-3"><i class="fas fa-layer-group"></i></div>
                         <h5>核心依赖版本</h5>
@@ -81,8 +71,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card manager-feature-card h-100 border-primary shadow-sm">
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card feature-card h-100 border-primary shadow-sm">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-info mb-3"><i class="fab fa-github"></i></div>
                         <h5>GitHub 云端保存</h5>
@@ -97,17 +87,6 @@
         </div>
 
         <!-- 版本列表区域 -->
-        <div class="card manager-card mb-4">
-            <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
-                <span>版本历史记录 <span class="readonly-badge">历史版本为只读</span></span>
-                <div>
-                    <button class="btn btn-sm btn-outline-light" id="sortByDateBtn" disabled>
-                        <i class="fas fa-sort-amount-down me-1"></i>按日期排序
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <div class="card manager-card mb-4">
             <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
                 <span>版本历史记录 <span class="readonly-badge">历史版本为只读</span></span>
@@ -259,7 +238,6 @@
                 </div>
             </div>
 
-            <script src="../../js/bootstrap.bundle.min.js"></script>
             <script>
                 // 快捷访问 managerCommon
                 const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);

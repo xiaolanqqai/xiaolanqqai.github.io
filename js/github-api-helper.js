@@ -1,150 +1,72 @@
-/**
- * GitHub API 助手 - 用于在 GitHub Pages 上实现动态存储
- * 允许直接通过 GitHub API 将更改提交回仓库，无需手动下载上传 JSON
- */
-
 class GitHubAPIHelper {
     constructor() {
         this.config = this.loadConfig();
     }
 
-    /**
-     * 加载配置 (内置 Token - 已加密)
-     */
     loadConfig() {
-        // 加密后的 Token 字符串
         const _e = "1f001507190331080815305d502f3c5f223e3c205e320105200b2e042d0e375d053e282d042c163a330b1119040a35313d2831572b36195b4e3c151b19250c0f0b333518331c29183b291f05192d25313e24202a3e1b111a5526092023";
-        
-        // 获取解密密钥 (从浏览器缓存的 userName 获取)
-        // 默认值设为 'guest' 以防止报错，但此时 Token 解密将失败
         const _k = localStorage.getItem('userName') || 'guest';
-
-        // 解密函数 (XOR + Hex)
         const _d = (hex, key) => {
             let str = '';
             for (let i = 0; i < hex.length; i += 2) {
-                const charCode = parseInt(hex.substr(i, 2), 16) ^ key.charCodeAt((i / 2) % key.length);
-                str += String.fromCharCode(charCode);
+                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ key.charCodeAt((i / 2) % key.length));
             }
             return str;
         };
 
-        const _t = _d(_e, _k);
-
-        return {
-            token: _t,
-            owner: 'xiaolanqqai',
-            repo: 'xiaolanqqai.github.io',
-            branch: 'master'
-        };
+        return { token: _d(_e, _k), owner: 'xiaolanqqai', repo: 'xiaolanqqai.github.io', branch: 'master' };
     }
 
-    /**
-     * 获取配置
-     */
-    getConfig() {
-        return this.config;
+    getConfig() { return this.config; }
+    isConfigured() { return !!this.config.token; }
+
+    _headers() {
+        return { 'Authorization': `token ${this.config.token}`, 'Accept': 'application/vnd.github.v3+json' };
     }
 
-    /**
-     * 检查配置是否完整
-     */
-    isConfigured() {
-        return !!this.config.token;
+    _apiUrl(path) {
+        return `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/contents/${path}?ref=${this.config.branch}`;
     }
 
-    /**
-     * 获取文件的 SHA 值
-     * @param {string} path 文件路径
-     */
     async getFileSHA(path) {
-        const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/contents/${path}?ref=${this.config.branch}`;
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `token ${this.config.token}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        });
-
+        const response = await fetch(this._apiUrl(path), { headers: this._headers() });
         if (!response.ok) {
             if (response.status === 404) return null;
             throw new Error(`获取文件 SHA 失败: ${response.statusText}`);
         }
-
-        const data = await response.json();
-        return data.sha;
+        return (await response.json()).sha;
     }
 
-    /**
-     * 获取 GitHub 上的文件内容
-     * @param {string} path 文件路径
-     */
     async getFile(path) {
-        if (!this.isConfigured()) {
-            throw new Error('GitHub Token 未配置或无效。');
-        }
-
-        const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/contents/${path}?ref=${this.config.branch}`;
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `token ${this.config.token}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        });
-
+        if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
+        const response = await fetch(this._apiUrl(path), { headers: this._headers() });
         if (!response.ok) {
             if (response.status === 404) return null;
             throw new Error(`获取文件失败: ${response.statusText}`);
         }
-
         return await response.json();
     }
 
-    /**
-     * 更新 GitHub 上的文件
-     * @param {string} path 文件路径
-     * @param {string} content 文件内容（字符串）
-     * @param {string} message 提交信息
-     */
     async updateFile(path, content, message = 'Update data via Web Manager') {
-        if (!this.isConfigured()) {
-            throw new Error('GitHub Token 未配置或无效。');
-        }
-
+        if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
         const sha = await this.getFileSHA(path);
-        const url = `https://api.github.com/repos/${this.config.owner}/${this.config.repo}/contents/${path}`;
-        
-        // 编码内容为 Base64 (处理中文字符)
-        const base64Content = btoa(unescape(encodeURIComponent(content)));
-
         const body = {
-            message: message,
-            content: base64Content,
-            branch: this.config.branch
+            message, content: btoa(unescape(encodeURIComponent(content))), branch: this.config.branch
         };
+        if (sha) body.sha = sha;
 
-        if (sha) {
-            body.sha = sha;
-        }
-
-        const response = await fetch(url, {
+        const response = await fetch(this._apiUrl(path).split('?')[0], {
             method: 'PUT',
-            headers: {
-                'Authorization': `token ${this.config.token}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
-            },
+            headers: { ...this._headers(), 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`更新文件失败: ${errorData.message || response.statusText}`);
+            const { message: msg } = await response.json();
+            throw new Error(`更新文件失败: ${msg || response.statusText}`);
         }
-
         return await response.json();
     }
 }
 
-// 导出全局实例
 window.githubHelper = new GitHubAPIHelper();
