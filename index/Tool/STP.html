@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>STP 模型在线查看器</title>
+  <style>
+    /* ============================================================
+     * 全局样式重置与基础变量
+     * ============================================================ */
+    :root {
+      --color-bg: #1a1a2e;
+      --color-surface: #16213e;
+      --color-primary: #0f3460;
+      --color-accent: #e94560;
+      --color-accent-hover: #ff6b81;
+      --color-text: #eaeaea;
+      --color-text-dim: #a0a0b0;
+      --color-border: #2a2a4a;
+      --color-success: #2ecc71;
+      --color-warning: #f39c12;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.3);
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+                   'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ============================================================
+     * 主画布容器 - Three.js 渲染目标
+     * ============================================================ */
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    /* ============================================================
+     * 上传区域 - 拖拽/点击上传
+     * ============================================================ */
+    #upload-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 26, 46, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: opacity var(--transition), visibility var(--transition);
+    }
+
+    #upload-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #upload-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 48px 40px;
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface);
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition),
+                  transform var(--transition);
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+    }
+
+    #upload-zone:hover,
+    #upload-zone.drag-over {
+      border-color: var(--color-accent);
+      background: rgba(233, 69, 96, 0.08);
+      transform: scale(1.02);
+    }
+
+    #upload-zone .icon {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-primary);
+      border-radius: 50%;
+      font-size: 28px;
+    }
+
+    #upload-zone .icon svg {
+      width: 32px;
+      height: 32px;
+      fill: none;
+      stroke: var(--color-accent);
+      stroke-width: 2;
+    }
+
+    #upload-zone h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    #upload-zone p {
+      font-size: 0.9rem;
+      color: var(--color-text-dim);
+      line-height: 1.6;
+    }
+
+    #upload-zone .btn {
+      display: inline-block;
+      padding: 10px 28px;
+      background: var(--color-accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    #upload-zone .btn:hover {
+      background: var(--color-accent-hover);
+    }
+
+    /* ============================================================
+     * 加载进度条
+     * ============================================================ */
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(26, 26, 46, 0.9);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity var(--transition), visibility var(--transition);
+    }
+
+    #loading-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #loading-text {
+      font-size: 0.95rem;
+      color: var(--color-text-dim);
+    }
+
+    #loading-bar-wrap {
+      width: 260px;
+      height: 4px;
+      background: var(--color-border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #loading-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--color-accent);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* ============================================================
+     * 顶部工具栏
+     * ============================================================ */
+    #toolbar {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      gap: 8px;
+      background: var(--color-surface);
+      border-radius: var(--radius);
+      padding: 6px;
+      box-shadow: var(--shadow);
+      transition: opacity var(--transition), visibility var(--transition);
+    }
+
+    #toolbar.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #toolbar button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background var(--transition);
+    }
+
+    #toolbar button:hover {
+      background: var(--color-primary);
+    }
+
+    #toolbar button.active {
+      background: var(--color-accent);
+      color: #fff;
+    }
+
+    #toolbar button svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    /* ============================================================
+     * 底部信息栏
+     * ============================================================ */
+    #info-bar {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 16px;
+      background: var(--color-surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      font-size: 0.8rem;
+      color: var(--color-text-dim);
+      transition: opacity var(--transition), visibility var(--transition);
+      font-family: var(--font-mono);
+    }
+
+    #info-bar.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #info-bar span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    #info-bar .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+    }
+
+    /* ============================================================
+     * 移动端触摸提示
+     * ============================================================ */
+    #touch-hint {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      padding: 8px 16px;
+      background: rgba(22, 33, 62, 0.9);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: var(--color-text-dim);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    /* ============================================================
+     * 响应式适配
+     * ============================================================ */
+    @media (max-width: 768px) {
+      #upload-zone {
+        padding: 32px 24px;
+        gap: 14px;
+      }
+
+      #upload-zone h2 {
+        font-size: 1.1rem;
+      }
+
+      #upload-zone .icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+      }
+
+      #toolbar {
+        top: 10px;
+        padding: 4px;
+        gap: 4px;
+      }
+
+      #toolbar button {
+        padding: 8px 10px;
+        font-size: 0.78rem;
+      }
+
+      #toolbar button span.label {
+        display: none;
+      }
+
+      #info-bar {
+        bottom: 10px;
+        padding: 6px 12px;
+        font-size: 0.72rem;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #upload-zone {
+        padding: 24px 16px;
+        gap: 10px;
+      }
+
+      #upload-zone h2 {
+        font-size: 1rem;
+      }
+
+      #upload-zone p {
+        font-size: 0.8rem;
+      }
+
+      #toolbar {
+        top: 8px;
+        gap: 2px;
+      }
+
+      #toolbar button {
+        padding: 6px 8px;
+        font-size: 0.72rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D 画布容器 -->
+  <div id="canvas-container"></div>
+
+  <!-- 上传区域 -->
+  <!--
+    使用 <label for="file-input"> 包裹整个上传区域，
+    确保 Android/iOS 移动端浏览器能可靠触发原生文件选择器。
+    避免使用 JavaScript fileInput.click()，因为部分移动浏览器
+    会阻止对 display:none 的 input[file] 的编程式点击。
+  -->
+  <div id="upload-overlay">
+    <label id="upload-zone" for="file-input">
+      <div class="icon">
+        <!-- 上传图标 -->
+        <svg viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <h2>拖拽 STP/STEP 文件到此处</h2>
+      <p>支持 .stp / .step 格式<br>解析完全在浏览器本地完成，无需上传服务器</p>
+      <span class="btn">选择文件</span>
+    </label>
+    <!-- 文件输入隐藏在 label 内部，点击 label 任意位置都会触发它 -->
+    <input type="file" id="file-input" accept=".stp,.step"
+           style="position:absolute;width:0;height:0;opacity:0;overflow:hidden;pointer-events:none;">
+  </div>
+
+  <!-- 加载进度 -->
+  <div id="loading-overlay">
+    <div id="loading-spinner"></div>
+    <div id="loading-text">正在解析模型...</div>
+    <div id="loading-bar-wrap">
+      <div id="loading-bar"></div>
+    </div>
+  </div>
+
+  <!-- 顶部工具栏 -->
+  <div id="toolbar" class="hidden">
+    <!-- 重新选择文件 -->
+    <button id="btn-open" title="打开新文件">
+      <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <span class="label">打开</span>
+    </button>
+    <!-- 重置视角 -->
+    <button id="btn-reset" title="重置视角">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span class="label">重置</span>
+    </button>
+    <!-- 线框模式 -->
+    <button id="btn-wireframe" title="线框模式">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <span class="label">线框</span>
+    </button>
+    <!-- 前视图 -->
+    <button id="btn-view-front" title="前视图">
+      <span class="label">前</span>
+    </button>
+    <!-- 顶视图 -->
+    <button id="btn-view-top" title="顶视图">
+      <span class="label">顶</span>
+    </button>
+    <!-- 右视图 -->
+    <button id="btn-view-right" title="右视图">
+      <span class="label">右</span>
+    </button>
+    <!-- 截图 -->
+    <button id="btn-screenshot" title="截图保存">
+      <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span class="label">截图</span>
+    </button>
+  </div>
+
+  <!-- 底部信息栏 -->
+  <div id="info-bar" class="hidden">
+    <span class="dot"></span>
+    <span id="info-filename">-</span>
+    <span id="info-meshes">-</span>
+    <span id="info-faces">-</span>
+  </div>
+
+  <!-- 移动端触摸提示 -->
+  <div id="touch-hint"></div>
+
+  <!-- ============================================================
+   * 依赖库加载
+   * occt-import-js: 常规脚本，暴露全局 occtimportjs
+   * Three.js: ES 模块，通过 import map 加载
+   * ============================================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/occt-import-js@0.0.23/dist/occt-import-js.js">
+  </script>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // ============================================================
+    // DOM 元素引用
+    // ============================================================
+    const canvasContainer = document.getElementById('canvas-container');
+    const uploadOverlay   = document.getElementById('upload-overlay');
+    const uploadZone      = document.getElementById('upload-zone');
+    const fileInput       = document.getElementById('file-input');
+    const loadingOverlay  = document.getElementById('loading-overlay');
+    const loadingText     = document.getElementById('loading-text');
+    const loadingBar      = document.getElementById('loading-bar');
+    const toolbar         = document.getElementById('toolbar');
+    const infoBar         = document.getElementById('info-bar');
+    const infoFilename    = document.getElementById('info-filename');
+    const infoMeshes      = document.getElementById('info-meshes');
+    const infoFaces       = document.getElementById('info-faces');
+    const touchHint       = document.getElementById('touch-hint');
+
+    // ============================================================
+    // Three.js 全局状态
+    // ============================================================
+    let scene, camera, renderer, controls;
+    let modelGroup;           // 当前加载的模型组
+    let isWireframe = false;  // 线框模式标志
+    let animationId = null;   // requestAnimationFrame ID
+
+    // ============================================================
+    // 初始化 Three.js 场景
+    // ============================================================
+    function initThreeJS() {
+      // --- 场景 ---
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1a2e);
+      // 添加雾效，增强深度感
+      scene.fog = new THREE.Fog(0x1a1a2e, 50, 500);
+
+      // --- 相机 ---
+      camera = new THREE.PerspectiveCamera(
+        45,                                                // 视场角
+        canvasContainer.clientWidth / canvasContainer.clientHeight, // 宽高比
+        0.1,                                               // 近裁剪面
+        1000                                               // 远裁剪面
+      );
+      camera.position.set(60, 40, 80);
+      camera.lookAt(0, 0, 0);
+
+      // --- 渲染器 ---
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // 限制像素比以提升性能
+      renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      canvasContainer.appendChild(renderer.domElement);
+
+      // --- 轨道控制器 ---
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.target.set(0, 0, 0);
+      controls.minDistance = 2;
+      controls.maxDistance = 500;
+      controls.update();
+
+      // --- 光照系统 ---
+      setupLights();
+
+      // --- 地面网格参考 ---
+      setupGroundGrid();
+
+      // --- 窗口大小调整 ---
+      window.addEventListener('resize', onResize);
+
+      // --- 开始渲染循环 ---
+      animate();
+    }
+
+    // ============================================================
+    // 光照系统配置
+    // ============================================================
+    function setupLights() {
+      // 环境光 - 提供基础照明
+      const ambientLight = new THREE.AmbientLight(0x404060, 2.5);
+      scene.add(ambientLight);
+
+      // 半球光 - 天空 + 地面模拟
+      const hemisphereLight = new THREE.HemisphereLight(0xddeeff, 0x0f0e0d, 1.2);
+      scene.add(hemisphereLight);
+
+      // 主方向光 - 产生阴影
+      const keyLight = new THREE.DirectionalLight(0xffffff, 4);
+      keyLight.position.set(50, 80, 60);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.width = 2048;
+      keyLight.shadow.mapSize.height = 2048;
+      keyLight.shadow.camera.near = 0.5;
+      keyLight.shadow.camera.far = 500;
+      keyLight.shadow.camera.left = -100;
+      keyLight.shadow.camera.right = 100;
+      keyLight.shadow.camera.top = 100;
+      keyLight.shadow.camera.bottom = -100;
+      keyLight.shadow.bias = -0.0001;
+      scene.add(keyLight);
+
+      // 补光 - 减少暗面过黑
+      const fillLight = new THREE.DirectionalLight(0x8899cc, 1.5);
+      fillLight.position.set(-30, 20, -30);
+      scene.add(fillLight);
+
+      // 背光 - 轮廓高亮
+      const rimLight = new THREE.DirectionalLight(0xffffff, 2);
+      rimLight.position.set(0, 10, -50);
+      scene.add(rimLight);
+    }
+
+    // ============================================================
+    // 地面参考网格
+    // ============================================================
+    function setupGroundGrid() {
+      const gridHelper = new THREE.GridHelper(200, 40, 0x333355, 0x222244);
+      scene.add(gridHelper);
+    }
+
+    // ============================================================
+    // 窗口大小响应
+    // ============================================================
+    function onResize() {
+      const w = canvasContainer.clientWidth;
+      const h = canvasContainer.clientHeight;
+      camera.aspect = w / Math.max(h, 1);
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+
+    // ============================================================
+    // 渲染循环
+    // ============================================================
+    function animate() {
+      animationId = requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // ============================================================
+    // 显示加载状态
+    // ============================================================
+    function showLoading(text, progress = 0) {
+      loadingText.textContent = text;
+      loadingBar.style.width = Math.min(progress * 100, 100) + '%';
+      loadingOverlay.classList.add('visible');
+    }
+
+    function hideLoading() {
+      loadingOverlay.classList.remove('visible');
+    }
+
+    // ============================================================
+    // 设置视图（预设视角）
+    // ============================================================
+    function setView(position, target) {
+      // 平滑动画到目标视角
+      const startPos = camera.position.clone();
+      const startTarget = controls.target.clone();
+      const endPos = new THREE.Vector3(...position);
+      const endTarget = new THREE.Vector3(...target);
+      const startTime = performance.now();
+      const duration = 600; // 毫秒
+
+      function animateView(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / duration, 1.0);
+        // easeInOutCubic 缓动
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+        camera.position.lerpVectors(startPos, endPos, eased);
+        controls.target.lerpVectors(startTarget, endTarget, eased);
+        controls.update();
+
+        if (t < 1) {
+          requestAnimationFrame(animateView);
+        }
+      }
+      requestAnimationFrame(animateView);
+    }
+
+    // ============================================================
+    // 使用 occt-import-js 解析 STP 文件
+    // ============================================================
+    async function parseStepFile(file) {
+      showLoading('正在读取文件...', 0.1);
+
+      // 读取文件为 ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      const fileBuffer = new Uint8Array(arrayBuffer);
+
+      showLoading('正在初始化解析引擎...', 0.25);
+
+      // 初始化 occt-import-js（加载 WASM）
+      const occt = await occtimportjs();
+
+      showLoading('正在解析 STEP 几何数据...', 0.4);
+
+      // 调用 ReadStepFile 解析
+      // 参数: 文件内容, 三角剖分参数
+      const result = occt.ReadStepFile(fileBuffer, {
+        linearDeflection: 0.01,   // 线性偏差（相对于包围盒）
+        angularDeflection: 0.5,   // 角度偏差（弧度）
+      });
+
+      showLoading('正在构建渲染模型...', 0.8);
+
+      if (!result || !result.success) {
+        throw new Error('STEP 文件解析失败，请确认文件格式正确且未损坏。');
+      }
+
+      return result;
+    }
+
+    // ============================================================
+    // 将 occt-import-js 解析结果转换为 Three.js 网格
+    // ============================================================
+    function buildModelFromResult(result) {
+      const group = new THREE.Group();
+      group.name = 'STP_Model';
+
+      // 遍历所有网格
+      const meshes = result.meshes || [];
+      let totalFaces = 0;
+
+      meshes.forEach((meshData, index) => {
+        // 提取顶点位置
+        const positions = meshData.attributes.position.array;
+        // 提取法线（如果有）
+        const normals = meshData.attributes.normal
+          ? meshData.attributes.normal.array
+          : null;
+        // 提取索引
+        const indices = meshData.index.array;
+
+        // 构建 Three.js BufferGeometry
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute(
+          'position',
+          new THREE.Float32BufferAttribute(positions, 3)
+        );
+
+        if (normals) {
+          geometry.setAttribute(
+            'normal',
+            new THREE.Float32BufferAttribute(normals, 3)
+          );
+        }
+
+        geometry.setIndex(Array.from(indices));
+        geometry.computeVertexNormals(); // 确保法线存在
+
+        // 构建材质
+        let material;
+        const color = meshData.color
+          ? new THREE.Color(meshData.color[0], meshData.color[1], meshData.color[2])
+          : new THREE.Color(0x7eb8da); // 默认蓝色
+
+        // 标准 PBR 材质
+        material = new THREE.MeshStandardMaterial({
+          color: color,
+          metalness: 0.15,
+          roughness: 0.35,
+          flatShading: false,
+          side: THREE.DoubleSide, // 双面渲染，避免薄壁显示问题
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.name = meshData.name || `Part_${index}`;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        group.add(mesh);
+        totalFaces += indices.length / 3;
+      });
+
+      // 如果结果包含层级结构，按层级组装
+      if (result.root) {
+        // 递归构建节点树
+        buildNodeTree(result.root, group, meshes);
+      }
+
+      return { group, meshCount: meshes.length, faceCount: Math.floor(totalFaces) };
+    }
+
+    // ============================================================
+    // 递归构建层级节点树
+    // ============================================================
+    function buildNodeTree(node, parentGroup, meshes) {
+      if (!node) return;
+
+      const nodeGroup = new THREE.Group();
+      nodeGroup.name = node.name || 'Node';
+
+      // 将当前节点的网格添加到组中
+      if (node.meshes && Array.isArray(node.meshes)) {
+        node.meshes.forEach((meshIndex) => {
+          if (meshIndex < parentGroup.children.length) {
+            // 网格已存在于父组中，移动到此节点
+            const child = parentGroup.children[meshIndex];
+            parentGroup.remove(child);
+            nodeGroup.add(child);
+          }
+        });
+      }
+
+      // 递归处理子节点
+      if (node.children && Array.isArray(node.children)) {
+        node.children.forEach((childNode) => {
+          buildNodeTree(childNode, nodeGroup, meshes);
+        });
+      }
+
+      parentGroup.add(nodeGroup);
+    }
+
+    // ============================================================
+    // 加载并显示 STP 模型
+    // ============================================================
+    async function loadModel(file) {
+      try {
+        // 移除旧模型
+        if (modelGroup) {
+          scene.remove(modelGroup);
+          disposeModel(modelGroup);
+          modelGroup = null;
+        }
+
+        // 解析 STEP 文件
+        const result = await parseStepFile(file);
+
+        // 构建 Three.js 模型
+        const { group, meshCount, faceCount } = buildModelFromResult(result);
+        modelGroup = group;
+
+        // 计算包围盒，自动调整相机
+        const box = new THREE.Box3().setFromObject(modelGroup);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+
+        // 将模型居中
+        modelGroup.position.sub(center);
+
+        // 更新控制器目标和相机距离
+        controls.target.set(0, 0, 0);
+        const fitDistance = maxDim * 2.0;
+        camera.position.set(fitDistance * 0.7, fitDistance * 0.5, fitDistance * 0.9);
+        camera.lookAt(0, 0, 0);
+        controls.update();
+
+        // 添加到场景
+        scene.add(modelGroup);
+
+        // 更新 UI
+        infoFilename.textContent = file.name;
+        infoMeshes.textContent = `${meshCount} 个部件`;
+        infoFaces.textContent = `${faceCount.toLocaleString()} 个三角面`;
+
+        // 切换 UI 状态
+        uploadOverlay.classList.add('hidden');
+        toolbar.classList.remove('hidden');
+        infoBar.classList.remove('hidden');
+
+        hideLoading();
+      } catch (error) {
+        hideLoading();
+        alert('模型加载失败: ' + error.message);
+        console.error('STP Load Error:', error);
+      }
+    }
+
+    // ============================================================
+    // 递归销毁模型（释放 GPU 内存）
+    // ============================================================
+    function disposeModel(obj) {
+      obj.traverse((child) => {
+        if (child.geometry) {
+          child.geometry.dispose();
+        }
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((mat) => {
+              disposeMaterial(mat);
+            });
+          } else {
+            disposeMaterial(child.material);
+          }
+        }
+      });
+    }
+
+    function disposeMaterial(material) {
+      // 释放材质中所有纹理
+      for (const key of Object.keys(material)) {
+        const value = material[key];
+        if (value && value.isTexture) {
+          value.dispose();
+        }
+      }
+      material.dispose();
+    }
+
+    // ============================================================
+    // 切换线框模式
+    // ============================================================
+    function toggleWireframe() {
+      if (!modelGroup) return;
+
+      isWireframe = !isWireframe;
+      modelGroup.traverse((child) => {
+        if (child.isMesh) {
+          // 保存原始材质以便恢复
+          if (isWireframe) {
+            child.userData.originalMaterial = child.material;
+            child.material = new THREE.MeshBasicMaterial({
+              color: child.material.color,
+              wireframe: true,
+              transparent: true,
+              opacity: 0.8,
+            });
+          } else if (child.userData.originalMaterial) {
+            child.material.dispose();
+            child.material = child.userData.originalMaterial;
+            child.userData.originalMaterial = null;
+          }
+        }
+      });
+
+      document.getElementById('btn-wireframe').classList.toggle('active', isWireframe);
+    }
+
+    // ============================================================
+    // 截图功能
+    // ============================================================
+    function takeScreenshot() {
+      renderer.render(scene, camera);
+      const dataURL = renderer.domElement.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 'stp-screenshot.png';
+      link.href = dataURL;
+      link.click();
+    }
+
+    // ============================================================
+    // 移动端触摸检测
+    // ============================================================
+    function showTouchHint() {
+      const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if (isMobile && !localStorage.getItem('stp-viewer-touch-hint-shown')) {
+        touchHint.textContent = '单指旋转 · 双指缩放 · 双指平移';
+        touchHint.style.opacity = '1';
+        setTimeout(() => {
+          touchHint.style.opacity = '0';
+        }, 3000);
+        localStorage.setItem('stp-viewer-touch-hint-shown', '1');
+      }
+    }
+
+    // ============================================================
+    // 事件绑定
+    // ============================================================
+
+    // --- 文件选择变更（<label for="file-input"> 原生触发，无需 JS click） ---
+    // 注意：移动端 Android/iOS 浏览器对 display:none 的 input[file]
+    // 的编程式 .click() 有安全限制，因此改用 <label for="file-input">
+    // 包裹上传区域，浏览器原生处理点击 → 弹出文件选择器。
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        // 验证文件扩展名
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext !== 'stp' && ext !== 'step') {
+          alert('请选择 .stp 或 .step 格式的文件。');
+          return;
+        }
+        loadModel(file);
+      }
+      // 重置 input，允许重复选择同一文件
+      fileInput.value = '';
+    });
+
+    // --- 拖拽上传 ---
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadZone.classList.add('drag-over');
+    });
+
+    uploadZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadZone.classList.remove('drag-over');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadZone.classList.remove('drag-over');
+
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext !== 'stp' && ext !== 'step') {
+          alert('请拖入 .stp 或 .step 格式的文件。');
+          return;
+        }
+        loadModel(file);
+      }
+    });
+
+    // 全局拖拽事件（防止浏览器默认打开文件）
+    document.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+    document.addEventListener('drop', (e) => {
+      e.preventDefault();
+    });
+
+    // --- 工具栏按钮 ---
+    document.getElementById('btn-open').addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      if (!modelGroup) return;
+      const box = new THREE.Box3().setFromObject(modelGroup);
+      const maxDim = Math.max(
+        box.getSize(new THREE.Vector3()).x,
+        box.getSize(new THREE.Vector3()).y,
+        box.getSize(new THREE.Vector3()).z
+      );
+      const fitDistance = maxDim * 2.0;
+      setView(
+        [fitDistance * 0.7, fitDistance * 0.5, fitDistance * 0.9],
+        [0, 0, 0]
+      );
+    });
+
+    document.getElementById('btn-wireframe').addEventListener('click', toggleWireframe);
+
+    document.getElementById('btn-view-front').addEventListener('click', () => {
+      if (!modelGroup) return;
+      const box = new THREE.Box3().setFromObject(modelGroup);
+      const maxDim = Math.max(
+        box.getSize(new THREE.Vector3()).x,
+        box.getSize(new THREE.Vector3()).y,
+        box.getSize(new THREE.Vector3()).z
+      );
+      const d = maxDim * 2.0;
+      setView([0, 0, d], [0, 0, 0]);
+    });
+
+    document.getElementById('btn-view-top').addEventListener('click', () => {
+      if (!modelGroup) return;
+      const box = new THREE.Box3().setFromObject(modelGroup);
+      const maxDim = Math.max(
+        box.getSize(new THREE.Vector3()).x,
+        box.getSize(new THREE.Vector3()).y,
+        box.getSize(new THREE.Vector3()).z
+      );
+      const d = maxDim * 2.0;
+      setView([0, d, 0.01], [0, 0, 0]);
+    });
+
+    document.getElementById('btn-view-right').addEventListener('click', () => {
+      if (!modelGroup) return;
+      const box = new THREE.Box3().setFromObject(modelGroup);
+      const maxDim = Math.max(
+        box.getSize(new THREE.Vector3()).x,
+        box.getSize(new THREE.Vector3()).y,
+        box.getSize(new THREE.Vector3()).z
+      );
+      const d = maxDim * 2.0;
+      setView([d, 0, 0], [0, 0, 0]);
+    });
+
+    document.getElementById('btn-screenshot').addEventListener('click', takeScreenshot);
+
+    // --- 键盘快捷键 ---
+    document.addEventListener('keydown', (e) => {
+      // 按 Esc 返回上传界面
+      if (e.key === 'Escape' && modelGroup) {
+        uploadOverlay.classList.remove('hidden');
+        toolbar.classList.add('hidden');
+        infoBar.classList.add('hidden');
+        scene.remove(modelGroup);
+        disposeModel(modelGroup);
+        modelGroup = null;
+        isWireframe = false;
+        document.getElementById('btn-wireframe').classList.remove('active');
+      }
+      // 按 W 切换线框模式
+      if (e.key === 'w' || e.key === 'W') {
+        if (modelGroup && !e.ctrlKey && !e.metaKey) {
+          toggleWireframe();
+        }
+      }
+      // 按 F 重置视角
+      if (e.key === 'f' || e.key === 'F') {
+        if (modelGroup && !e.ctrlKey && !e.metaKey) {
+          document.getElementById('btn-reset').click();
+        }
+      }
+    });
+
+    // ============================================================
+    // 启动应用
+    // ============================================================
+    initThreeJS();
+    // 延迟显示触摸提示
+    setTimeout(showTouchHint, 1000);
+
+    console.log('%c STP 在线查看器已就绪 %c| %c拖拽 .stp/.step 文件开始体验',
+      'color:#e94560;font-weight:bold;', '', 'color:#a0a0b0;');
+    console.log('%c 快捷键: %cW=线框 %cF=重置 %cEsc=关闭',
+      'color:#e94560;', 'color:#eaeaea;', 'color:#eaeaea;', 'color:#eaeaea;');
+  </script>
+</body>
+</html>
