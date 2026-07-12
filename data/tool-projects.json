@@ -13,6 +13,13 @@
       "file": "STP.html",
       "icon": "fa-tools",
       "addedAt": "2026-07-12"
+    },
+    {
+      "name": "MM加密",
+      "description": "MM加密解密",
+      "file": "mm加密.html",
+      "icon": "fa-tools",
+      "addedAt": "2026-07-12"
     }
   ]
 }
