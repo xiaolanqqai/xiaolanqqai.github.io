@@ -8,14 +8,16 @@
         { href: 'nav-manager.html', icon: 'fa-sitemap', title: '导航数据管理' },
         { href: 'MM-generator.html', icon: 'fa-key', title: '密码生成器' },
         { href: 'vol-manager.html', icon: 'fa-code-branch', title: '版本管理' },
-        { href: 'explore-manager.html', icon: 'fa-compass', title: '探索网页' }
+        { href: 'explore-manager.html', icon: 'fa-compass', title: '探索网页' },
+        { href: 'tool-manager.html', icon: 'fa-tools', title: '工具项目管理' }
     ];
 
     const headerData = {
         'nav-manager.html': { title: '导航数据管理系统', desc: '管理您的网站导航选项卡内容' },
         'MM-generator.html': { title: '密码生成器系统', desc: '加密 HTML 文件导出、编辑与管理' },
         'vol-manager.html': { title: '版本管理系统', desc: '加载版本历史记录，同步最新发布信息' },
-        'explore-manager.html': { title: '探索网页系统', desc: '管理您的浏览器收藏夹、发现有趣的网站' }
+        'explore-manager.html': { title: '探索网页系统', desc: '管理您的浏览器收藏夹、发现有趣的网站' },
+        'tool-manager.html': { title: '工具项目管理系统', desc: '管理工具跳转页面的单页工具项目' }
     };
 
     const currentHeader = headerData[page] || { title: document.title, desc: '' };

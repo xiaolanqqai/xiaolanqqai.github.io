@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>工具项目管理系统</title>
+    <script src="../../js/components/header-component.js"></script>
+    <script src="../../js/components/manager-component.js"></script>
+    <script src="../../js/github-api-helper.js"></script>
+    <script src="../../js/manager-common.js"></script>
+</head>
+
+<body class="manager-body">
+    <div class="container container-main">
+        <!-- 数据状态提示 -->
+        <div class="data-status no-data p-3 mb-4" id="dataStatus">
+            <i class="fas fa-info-circle me-2"></i>
+            <span>正在加载工具项目数据...</span>
+        </div>
+
+        <!-- 功能卡片区域 -->
+        <div class="row mb-4 g-3">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-primary mb-3"><i class="fas fa-plus-circle"></i></div>
+                        <h5>新增项目</h5>
+                        <p class="flex-grow-1 xsmall">上传单页工具文件并填写信息，添加到工具跳转页面</p>
+                        <button class="btn manager-btn-primary mt-2" data-bs-toggle="modal"
+                            data-bs-target="#addProjectModal">
+                            <i class="fas fa-plus me-1"></i>新增项目
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="card feature-card h-100 border-primary shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-info mb-3"><i class="fab fa-github"></i></div>
+                        <h5>同步到 GitHub</h5>
+                        <p class="flex-grow-1 xsmall">将单页文件上传到 Tool 文件夹，并更新 tool.html 跳转列表</p>
+                        <button id="syncToGithubBtn" class="btn btn-primary mt-2">
+                            <i class="fas fa-cloud-upload-alt me-1"></i>同步到 GitHub
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 项目列表区域 -->
+        <div class="card manager-card mb-4">
+            <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
+                <span><i class="fas fa-list me-2"></i>已有项目</span>
+                <span class="badge bg-light text-dark">共 <span id="projectCount">0</span> 个</span>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info py-2 mb-3 small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    添加或删除项目后，请点击“同步到 GitHub”按钮将更改发布到线上。同步会将单页文件上传到 <code>Tool/</code> 文件夹并更新 <code>data/tool-projects.json</code>，<code>tool.html</code> 会自动读取该列表生成跳转。
+                </div>
+                <div id="projectsContainer">
+                    <div class="text-center p-5 text-muted">
+                        <i class="fas fa-tools fa-3x mb-3"></i>
+                        <p>暂无项目记录，请点击“新增项目”添加</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增项目模态框 -->
+    <div class="modal fade" id="addProjectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>新增工具项目</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProjectForm">
+                        <div class="mb-3">
+                            <label for="projectName" class="form-label">项目名称 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="projectName" placeholder="例如: Network Tool" required>
+                            <div class="form-text">显示在 tool.html 跳转页面上的名称</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="projectDesc" class="form-label">项目简介 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="projectDesc" rows="3" placeholder="简要描述该工具的功能" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="projectIcon" class="form-label">项目图标</label>
+                            <select class="form-select" id="projectIcon">
+                                <option value="fa-tools">工具</option>
+                                <option value="fa-network-wired">网络</option>
+                                <option value="fa-wrench">扳手</option>
+                                <option value="fa-calculator">计算器</option>
+                                <option value="fa-key">钥匙</option>
+                                <option value="fa-search">搜索</option>
+                                <option value="fa-shield-alt">盾牌</option>
+                                <option value="fa-code">代码</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="projectFile" class="form-label">上传单页文件 <span class="text-danger">*</span></label>
+                            <div class="upload-area p-3" id="dropArea">
+                                <div class="upload-icon mb-2"><i class="fas fa-cloud-upload-alt"></i></div>
+                                <h6>拖放 HTML 文件到这里，或点击选择</h6>
+                                <p class="text-muted small mb-2">支持 .html 单页文件</p>
+                                <label for="projectFile" class="btn btn-sm manager-btn-primary">
+                                    <i class="fas fa-folder-open me-1"></i>选择文件
+                                </label>
+                                <input type="file" id="projectFile" accept=".html,.htm" class="d-none">
+                            </div>
+                            <div id="fileInfo" class="mt-2 d-none">
+                                <div class="alert alert-success py-2 mb-0">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <span id="fileName"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn manager-btn-primary" id="confirmAddProject">
+                        <i class="fas fa-save me-1"></i>保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
+        if (common && !window.managerCommon) window.managerCommon = common;
+
+        // 全局状态
+        let projects = [];              // 当前项目列表（元数据）
+        let pendingFiles = {};          // 待同步的文件内容: { filename: content }
+        let removedFiles = [];          // 待删除的文件名列表: [{ file, name }]
+        let pendingFileContent = null;  // 模态框中选择的文件内容
+        let pendingFileName = null;     // 模态框中选择的文件名
+
+        let projectsContainer, projectCount, dataStatus, addProjectModal;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            initDOMElements();
+            loadProjectsFromFile();
+            setupEventListeners();
+
+            const clearLogsBtn = document.getElementById('clearLogsBtn');
+            if (clearLogsBtn) {
+                clearLogsBtn.addEventListener('click', () => common.clearLogs());
+            }
+            common.log('工具项目管理系统启动', 'info', '页面加载完成');
+        });
+
+        function initDOMElements() {
+            projectsContainer = document.getElementById('projectsContainer');
+            projectCount = document.getElementById('projectCount');
+            dataStatus = document.getElementById('dataStatus');
+            const modalEl = document.getElementById('addProjectModal');
+            if (modalEl) addProjectModal = new bootstrap.Modal(modalEl);
+        }
+
+        function setupEventListeners() {
+            document.getElementById('confirmAddProject').addEventListener('click', addProject);
+            document.getElementById('syncToGithubBtn').addEventListener('click', syncToGithub);
+
+            const fileInput = document.getElementById('projectFile');
+            const dropArea = document.getElementById('dropArea');
+
+            fileInput.addEventListener('change', handleFileSelect);
+
+            dropArea.addEventListener('dragover', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                dropArea.style.borderColor = '#6a11cb';
+                dropArea.style.backgroundColor = '#e9ecef';
+            });
+            dropArea.addEventListener('dragleave', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                dropArea.style.borderColor = '#dee2e6';
+                dropArea.style.backgroundColor = '#f8f9fa';
+            });
+            dropArea.addEventListener('drop', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                dropArea.style.borderColor = '#dee2e6';
+                dropArea.style.backgroundColor = '#f8f9fa';
+                const files = e.dataTransfer.files;
+                if (files.length && /\.(html?|htm)$/i.test(files[0].name)) {
+                    fileInput.files = files;
+                    handleFileSelect({ target: fileInput });
+                } else {
+                    common.showAlert('请拖放有效的 HTML 文件', 'danger');
+                }
+            });
+
+            // 模态框打开时重置表单
+            document.getElementById('addProjectModal').addEventListener('show.bs.modal', resetAddForm);
+            document.getElementById('addProjectModal').addEventListener('hidden.bs.modal', resetAddForm);
+        }
+
+        // 从本地 JSON 加载项目列表
+        function loadProjectsFromFile() {
+            const filePath = '../../data/tool-projects.json';
+            common.log('开始加载工具项目数据', 'info', `文件路径: ${filePath}`);
+            fetch(filePath + '?t=' + Date.now())
+                .then(response => {
+                    if (!response.ok) throw new Error('网络响应不正常');
+                    return response.json();
+                })
+                .then(data => {
+                    projects = (data && data.projects) || [];
+                    common.log('工具项目数据加载成功', 'success', `共加载 ${projects.length} 个项目`);
+                })
+                .catch(error => {
+                    console.error('加载数据失败:', error);
+                    projects = [];
+                    common.log('工具项目数据加载失败', 'error', error.message);
+                })
+                .finally(() => {
+                    renderProjects();
+                    updateDataStatus();
+                });
+        }
+
+        function updateDataStatus() {
+            const hasData = projects.length > 0;
+            const pendingCount = Object.keys(pendingFiles).length + removedFiles.length;
+            if (hasData) {
+                dataStatus.className = 'data-status has-data p-3 mb-4';
+                let msg = `已加载 ${projects.length} 个项目`;
+                if (pendingCount > 0) msg += `，有 ${pendingCount} 项待同步更改`;
+                dataStatus.innerHTML = `<i class="fas fa-check-circle me-2"></i><span>${msg}</span>`;
+            } else {
+                dataStatus.className = 'data-status no-data p-3 mb-4';
+                dataStatus.innerHTML = `<i class="fas fa-info-circle me-2"></i><span>当前没有项目，请点击“新增项目”添加</span>`;
+            }
+        }
+
+        // 处理文件选择
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!/\.(html?|htm)$/i.test(file.name)) {
+                common.showAlert('请选择 HTML 文件', 'danger');
+                common.log('文件选择失败', 'error', '选择的文件不是 HTML 格式');
+                return;
+            }
+
+            document.getElementById('fileName').textContent = `已选择文件：${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+            document.getElementById('fileInfo').classList.remove('d-none');
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                pendingFileContent = e.target.result;
+                pendingFileName = file.name;
+                common.log('选择了 HTML 文件', 'info', `文件名: ${file.name}, 大小: ${(file.size / 1024).toFixed(2)} KB`);
+            };
+            reader.readAsText(file);
+        }
+
+        function resetAddForm() {
+            document.getElementById('addProjectForm').reset();
+            document.getElementById('fileInfo').classList.add('d-none');
+            pendingFileContent = null;
+            pendingFileName = null;
+        }
+
+        // 添加项目
+        function addProject() {
+            const name = document.getElementById('projectName').value.trim();
+            const desc = document.getElementById('projectDesc').value.trim();
+            const icon = document.getElementById('projectIcon').value;
+            const fileInput = document.getElementById('projectFile');
+
+            if (!name || !desc) {
+                common.showAlert('请填写项目名称和简介', 'danger');
+                return;
+            }
+
+            if (!pendingFileContent || !pendingFileName) {
+                common.showAlert('请上传单页 HTML 文件', 'danger');
+                return;
+            }
+
+            // 检查文件名冲突
+            const exists = projects.some(p => p.file === pendingFileName);
+            if (exists) {
+                if (!confirm(`已存在同名文件 “${pendingFileName}”，是否覆盖该项目的文件？`)) {
+                    return;
+                }
+                // 覆盖：移除旧项目，用新的替换
+                projects = projects.filter(p => p.file !== pendingFileName);
+            }
+
+            const project = {
+                name: name,
+                description: desc,
+                file: pendingFileName,
+                icon: icon,
+                addedAt: new Date().toISOString().split('T')[0]
+            };
+
+            projects.push(project);
+            pendingFiles[pendingFileName] = pendingFileContent;
+
+            addProjectModal.hide();
+            renderProjects();
+            updateDataStatus();
+            common.showAlert(`项目 “${name}” 已添加，请点击同步到 GitHub 发布`, 'success');
+            common.log('添加了新项目', 'success', `名称: ${name}, 文件: ${pendingFileName}`);
+        }
+
+        // 删除项目
+        function deleteProject(fileName) {
+            const project = projects.find(p => p.file === fileName);
+            if (!project) return;
+
+            if (!confirm(`确定要删除项目 “${project.name}” 吗？同步后将从 Tool 文件夹移除该文件。`)) {
+                return;
+            }
+
+            projects = projects.filter(p => p.file !== fileName);
+
+            // 如果是尚未同步的新文件，只需清除待上传记录
+            if (pendingFiles[fileName]) {
+                delete pendingFiles[fileName];
+            } else {
+                // 已同步过的文件，加入待删除列表
+                removedFiles.push({ file: fileName, name: project.name });
+            }
+
+            renderProjects();
+            updateDataStatus();
+            common.showAlert(`项目 “${project.name}” 已删除，请点击同步到 GitHub 生效`, 'warning');
+            common.log('删除了项目', 'warning', `名称: ${project.name}, 文件: ${fileName}`);
+        }
+
+        // 渲染项目列表
+        function renderProjects() {
+            projectCount.textContent = String(projects.length);
+
+            if (projects.length === 0) {
+                projectsContainer.innerHTML = `
+                    <div class="text-center p-5 text-muted">
+                        <i class="fas fa-tools fa-3x mb-3"></i>
+                        <p>暂无项目记录，请点击“新增项目”添加</p>
+                    </div>`;
+                return;
+            }
+
+            projectsContainer.innerHTML = projects.map(project => {
+                const isPending = !!pendingFiles[project.file];
+                const statusBadge = isPending
+                    ? '<span class="badge bg-warning text-dark ms-2">待同步</span>'
+                    : '<span class="badge bg-success ms-2">已发布</span>';
+                const icon = project.icon || 'fa-tools';
+                return `
+                    <div class="list-group-item favorites-list-item p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="fas ${icon} me-2 text-primary"></i>
+                                    ${project.name}
+                                    ${statusBadge}
+                                </h6>
+                                <p class="mb-1 text-muted small">${project.description}</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-file me-1"></i>${project.file}
+                                    <span class="ms-3"><i class="fas fa-calendar me-1"></i>${project.addedAt || '-'}</span>
+                                </small>
+                            </div>
+                            <div class="btn-group">
+                                <a href="../../index/Tool/${encodeURIComponent(project.file)}" target="_blank" class="btn btn-sm btn-outline-primary" title="预览">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger delete-project" data-file="${project.file}" title="删除">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            projectsContainer.querySelectorAll('.delete-project').forEach(btn => {
+                btn.addEventListener('click', () => deleteProject(btn.dataset.file));
+            });
+        }
+
+        // 同步到 GitHub
+        async function syncToGithub() {
+            if (!common) return;
+            if (!window.githubHelper || !window.githubHelper.isConfigured()) {
+                common.showAlert('GitHub Token 未配置或无效', 'danger');
+                return;
+            }
+
+            common.showLoading('正在同步到 GitHub...');
+            common.log('开始同步到 GitHub', 'info', `待上传文件: ${Object.keys(pendingFiles).length}, 待删除文件: ${removedFiles.length}`);
+
+            let successCount = 0;
+            let failCount = 0;
+
+            // 1. 上传待同步的单页文件到 Tool/ 文件夹
+            for (const fileName of Object.keys(pendingFiles)) {
+                const path = `index/Tool/${fileName}`;
+                try {
+                    await window.githubHelper.updateFile(path, pendingFiles[fileName], `Upload tool page: ${fileName}`);
+                    successCount++;
+                    common.log(`上传文件成功: ${fileName}`, 'success', `路径: ${path}`);
+                } catch (error) {
+                    failCount++;
+                    common.log(`上传文件失败: ${fileName}`, 'error', error.message);
+                }
+            }
+
+            // 2. 删除已移除的单页文件
+            for (const item of removedFiles) {
+                const path = `index/Tool/${item.file}`;
+                try {
+                    await window.githubHelper.deleteFile(path, `Delete tool page: ${item.file}`);
+                    common.log(`删除文件成功: ${item.file}`, 'success', `路径: ${path}`);
+                } catch (error) {
+                    failCount++;
+                    common.log(`删除文件失败: ${item.file}`, 'error', error.message);
+                }
+            }
+
+            // 3. 更新 tool-projects.json
+            try {
+                const data = { projects: projects };
+                const result = await common.syncToGithub('data/tool-projects.json', data, `Update tool projects list (${projects.length} items)`);
+                if (result) {
+                    common.log('工具项目列表同步成功', 'success', `项目数: ${projects.length}`);
+                } else {
+                    failCount++;
+                }
+            } catch (error) {
+                failCount++;
+                common.log('工具项目列表同步失败', 'error', error.message);
+            }
+
+            common.hideLoading();
+
+            if (failCount === 0) {
+                // 清理待处理记录
+                pendingFiles = {};
+                removedFiles = [];
+                common.showAlert(`同步完成！成功处理 ${successCount} 个文件，项目列表已更新。`, 'success');
+                common.lockSync();
+            } else {
+                common.showAlert(`同步完成，但有 ${failCount} 项失败，请查看日志`, 'warning');
+            }
+
+            renderProjects();
+            updateDataStatus();
+        }
+    </script>
+
+</body>
+
+</html>

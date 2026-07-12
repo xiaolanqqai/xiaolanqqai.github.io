@@ -1,0 +1,11 @@
+{
+  "projects": [
+    {
+      "name": "Network Tool",
+      "description": "局域网页面搜索工具，按网段与常见 Web 端口扫描局域网内可访问的网页。",
+      "file": "Network Tool.html",
+      "icon": "fa-network-wired",
+      "addedAt": "2026-07-12"
+    }
+  ]
+}

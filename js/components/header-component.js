@@ -4,6 +4,7 @@
 (function() {
     // --- Global basePath helper (shared across components) ---
     const basePath = (window.location.pathname.includes('/index/manager/')) ? '../../'
+        : (window.location.pathname.includes('/index/Tool/')) ? '../../'
         : (window.location.pathname.includes('/index/')) ? '../' : './';
     window.getBasePath = () => basePath;
 

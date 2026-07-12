@@ -67,6 +67,24 @@ class GitHubAPIHelper {
         }
         return await response.json();
     }
+
+    async deleteFile(path, message = 'Delete file via Web Manager') {
+        if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
+        const sha = await this.getFileSHA(path);
+        if (!sha) return null;
+
+        const response = await fetch(this._apiUrl(path).split('?')[0], {
+            method: 'DELETE',
+            headers: { ...this._headers(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message, sha, branch: this.config.branch })
+        });
+
+        if (!response.ok) {
+            const { message: msg } = await response.json();
+            throw new Error(`删除文件失败: ${msg || response.statusText}`);
+        }
+        return await response.json();
+    }
 }
 
 window.githubHelper = new GitHubAPIHelper();

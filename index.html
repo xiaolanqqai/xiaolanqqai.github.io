@@ -110,7 +110,7 @@
         const tabId = tab.name.toLowerCase().replace(/\s+/g, '-');
         return '<a class="nav-link btn nav-top ' + (i === 0 ? 'active' : '') +
           '" data-tab="' + tabId + '" href="#">' + tab.name + '</a>';
-      }).join('') + '<a class="nav-link btn nav-top" href="index/Tool.html">Tool</a><a class="nav-link btn nav-top" href="index/More.html">...</a>';
+      }).join('') + '<a class="nav-link btn nav-top" href="index/tool.html">Tool</a><a class="nav-link btn nav-top" href="index/More.html">...</a>';
 
       // 绑定标签事件
       tabsEl.querySelectorAll('.nav-top[data-tab]').forEach(el => {
