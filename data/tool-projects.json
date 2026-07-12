@@ -6,6 +6,13 @@
       "file": "Network Tool.html",
       "icon": "fa-network-wired",
       "addedAt": "2026-07-12"
+    },
+    {
+      "name": "STP预览",
+      "description": "STP文件预览",
+      "file": "STP.html",
+      "icon": "fa-tools",
+      "addedAt": "2026-07-12"
     }
   ]
 }
