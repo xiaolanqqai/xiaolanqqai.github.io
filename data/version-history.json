@@ -7,6 +7,30 @@
   },
   "versions": [
     {
+      "name": "BETA 4.5.4",
+      "date": "2026-07-12",
+      "changes": [
+        "1：工具页架构升级：将 `index/Tool.html` 移动并重命名为 `index/Tool/Network Tool.html`，原位置改为工具跳转总页面 `index/tool.html`",
+        "2：工具跳转页：新增 `index/tool.html` 作为工具项目跳转页面，读取 `data/tool-projects.json` 动态渲染可用的单页工具卡片",
+        "3：工具项目管理：新增 `index/manager/tool-manager.html` 管理页面，支持上传单页 HTML 文件、填写项目名称与简介，并通过模态框完成新增项目操作",
+        "4：GitHub 同步扩展：在 `js/github-api-helper.js` 中新增 `deleteFile` 方法支持删除仓库文件，工具管理页面支持单页文件上传至 `Tool/` 文件夹并同步更新 `tool-projects.json`",
+        "5：导航集成：在 `js/components/manager-component.js` 中新增工具项目管理入口，`header-component.js` 适配 `/index/Tool/` 路径下的资源基础路径"
+      ]
+    },
+    {
+      "name": "BETA 4.5.3",
+      "date": "2026-07-03",
+      "changes": [
+        "1：新增 Tool 工具页：在 `index/Tool.html` 中增加局域网页面搜索入口，支持网段、主机范围、协议和常见端口的批量探测",
+        "2：模块化实现：新增 `js/components/tool-scanner-component.js` 负责界面结构，新增 `js/tool-scanner.js` 负责扫描逻辑、进度展示、结果渲染和历史缓存",
+        "3：统一风格对齐：在 `css/style-main/index.css` 中补充 Tool 页面玻璃卡片、结果列表和响应式样式，整体视觉与现有页面保持一致",
+        "4：文档更新：补充 Tool 页面使用方式、运行建议与浏览器限制说明，便于后续维护与使用",
+        "5：交互精简：将 Tool 页的可调参数折叠进“高级”面板，标题说明改为悬浮 `i` 角标提示",
+        "6：结果聚合：按 IP 合并结果并以下拉形式展示端口，修复搜索进度条显示与完成态更新",
+        "7：排序与过滤：结果改为按 IP、端口数字顺序排序，并尽量只保留可读取到非空页面内容的端口"
+      ]
+    },
+    {
       "name": "BETA 4.5.2",
       "date": "2026-03-18",
       "changes": [
