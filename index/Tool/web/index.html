@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MiniServer Panel</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="lib/xterm.css">
+</head>
+<body>
+
+  <!-- 顶部栏 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebar-toggle" title="切换侧栏">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="topbar-title">MiniServer Panel</span>
+    </div>
+    <div class="topbar-center">
+      <span class="server-name" id="server-name">未连接</span>
+      <span class="status-dot" id="status-dot"></span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-icon" id="btn-connect" title="连接服务器">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+      </button>
+      <button class="btn-icon" id="btn-disconnect" title="断开连接" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 主体 -->
+  <div class="layout">
+
+    <!-- 侧栏 -->
+    <aside class="sidebar" id="sidebar">
+      <nav class="sidebar-nav">
+        <a class="nav-item active" data-nav="dashboard">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </span>
+          <span class="nav-label">仪表盘</span>
+        </a>
+        <a class="nav-item" data-nav="guide">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </span>
+          <span class="nav-label">引导</span>
+        </a>
+        <a class="nav-item" data-nav="terminal">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </span>
+          <span class="nav-label">终端</span>
+        </a>
+        <a class="nav-item" data-nav="files">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          </span>
+          <span class="nav-label">文件</span>
+        </a>
+        <a class="nav-item" data-nav="deploy">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </span>
+          <span class="nav-label">部署</span>
+        </a>
+        <a class="nav-item" data-nav="settings">
+          <span class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          </span>
+          <span class="nav-label">设置</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- 内容区 -->
+    <main class="main">
+
+      <!-- ========== 仪表盘 ========== -->
+      <section data-view="dashboard" class="active">
+        <div class="view-header">
+          <h2>仪表盘</h2>
+          <button class="btn-secondary btn-sm" id="btn-refresh-dashboard">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/></svg>
+            刷新
+          </button>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card stat-card">
+            <div class="stat-label">CPU 使用率</div>
+            <div class="stat-value" id="stat-cpu">--</div>
+            <div class="stat-bar"><div class="stat-bar-fill" id="bar-cpu"></div></div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">内存</div>
+            <div class="stat-value" id="stat-mem">--</div>
+            <div class="stat-bar"><div class="stat-bar-fill" id="bar-mem"></div></div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">磁盘</div>
+            <div class="stat-value" id="stat-disk">--</div>
+            <div class="stat-bar"><div class="stat-bar-fill" id="bar-disk"></div></div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">运行时间</div>
+            <div class="stat-value" id="stat-uptime">--</div>
+          </div>
+          <div class="card stat-card" style="grid-column: 1 / -1;">
+            <div class="stat-label">系统信息</div>
+            <div class="stat-value" id="stat-sysinfo" style="font-size:14px;font-weight:400;line-height:1.8;">--</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 终端 ========== -->
+      <section data-view="terminal">
+        <div class="view-header">
+          <h2>终端</h2>
+          <button class="btn-secondary btn-sm" id="btn-term-reset" title="重置终端">重置</button>
+        </div>
+        <div id="term-container"></div>
+      </section>
+
+      <!-- ========== 文件 ========== -->
+      <section data-view="files">
+        <div class="view-header">
+          <h2>文件管理</h2>
+        </div>
+        <div class="card files-card">
+          <div class="files-breadcrumb" id="files-breadcrumb">
+            <a class="breadcrumb-item" data-path="/">/</a>
+          </div>
+          <div class="files-toolbar">
+            <button class="btn-secondary btn-sm" id="btn-mkdir" title="新建文件夹">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+              新建文件夹
+            </button>
+            <button class="btn-secondary btn-sm" id="btn-upload" title="上传文件" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              上传
+            </button>
+            <button class="btn-secondary btn-sm" id="btn-reload-files" title="刷新">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/></svg>
+              刷新
+            </button>
+          </div>
+          <div class="files-table-wrap">
+            <table class="files-table">
+              <thead>
+                <tr>
+                  <th>名称</th>
+                  <th>大小</th>
+                  <th>权限</th>
+                  <th>修改时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="files-tbody">
+                <tr><td colspan="5" class="files-empty">请先连接服务器</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 部署 ========== -->
+      <section data-view="deploy">
+        <div class="view-header">
+          <h2>部署管理</h2>
+        </div>
+        <div class="deploy-layout">
+          <div class="card deploy-form-card">
+            <h3>添加站点</h3>
+            <form id="deploy-form" class="form" autocomplete="off">
+              <div class="form-group">
+                <label class="form-label">站点名称</label>
+                <input class="input" type="text" name="siteName" placeholder="my-website" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">目标路径</label>
+                <input class="input" type="text" name="targetPath" placeholder="/var/www/my-site" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">端口</label>
+                <input class="input" type="number" name="port" placeholder="8080" min="1" max="65535" required>
+              </div>
+              <button type="submit" class="btn-primary">创建并部署</button>
+            </form>
+          </div>
+          <div class="card deploy-list-card">
+            <h3>站点列表</h3>
+            <div id="deploy-site-list" class="deploy-site-list">
+              <div class="empty-state">暂无站点</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 设置 ========== -->
+      <section data-view="settings">
+        <div class="view-header">
+          <h2>设置</h2>
+        </div>
+        <div class="settings-layout">
+          <div class="card">
+            <h3>连接信息</h3>
+            <div class="info-grid" id="settings-connection">
+              <div class="info-item">
+                <span class="info-label">状态</span>
+                <span class="info-value" id="settings-status">未连接</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">主机</span>
+                <span class="info-value" id="settings-host">--</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">用户</span>
+                <span class="info-value" id="settings-user">--</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">端口</span>
+                <span class="info-value" id="settings-port">--</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>服务器列表</h3>
+            <div id="server-list" class="server-list">
+              <div class="empty-state">暂无保存的服务器</div>
+            </div>
+            <button class="btn-secondary btn-sm" id="btn-add-server" style="margin-top:12px;">+ 添加服务器</button>
+          </div>
+          <div class="card">
+            <h3>关于</h3>
+            <p class="about-text">
+              MiniServer Panel &mdash; 极简服务器管理面板<br>
+              纯浏览器端 SSH 客户端，通过服务器上的轻量 bridge 程序连接。<br>
+              静态页面部署在 GitHub Pages，手机/电脑浏览器均可使用。<br>
+              版本 3.0.0
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 引导 ========== -->
+      <section data-view="guide">
+        <div class="view-header">
+          <h2>首次使用引导</h2>
+        </div>
+        <div class="guide-layout">
+          <div class="guide-intro card">
+            <p>本面板通过服务器上的轻量 C 桥接程序（bridge）连接 SSH。使用前请先在服务器上完成安装，整个过程约 1 分钟。</p>
+            <p style="margin-top:8px;color:var(--text2);font-size:13px;">推荐使用一键安装脚本，自动完成下载、编译、运行。</p>
+          </div>
+
+          <div class="guide-step card guide-step-final">
+            <div class="guide-step-header">
+              <span class="guide-step-num">★</span>
+              <h3>方式一：一键安装（推荐）</h3>
+            </div>
+            <p class="guide-step-desc">在服务器上执行一行命令，自动完成：下载源码 → 安装 gcc → 编译 → 启动。</p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>curl 一键安装</span>
+                <button class="btn-copy" data-copy="curl -fsSL https://raw.githubusercontent.com/你的用户名/你的仓库/main/install.sh | bash">复制</button>
+              </div>
+              <pre><code>curl -fsSL https://raw.githubusercontent.com/你的用户名/你的仓库/main/install.sh | bash</code></pre>
+            </div>
+            <p class="guide-step-desc" style="margin-top:8px;">或使用 wget：</p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>wget 一键安装</span>
+                <button class="btn-copy" data-copy="wget -O - https://raw.githubusercontent.com/你的用户名/你的仓库/main/install.sh | bash">复制</button>
+              </div>
+              <pre><code>wget -O - https://raw.githubusercontent.com/你的用户名/你的仓库/main/install.sh | bash</code></pre>
+            </div>
+            <p class="guide-step-desc" style="margin-top:8px;color:var(--text2);font-size:12px;">提示：将"你的用户名/你的仓库"替换为实际的 GitHub 仓库地址。脚本运行完会自动显示 Token。</p>
+            <button class="btn-primary guide-connect-btn" id="btn-guide-connect">已安装，去连接</button>
+          </div>
+
+          <div class="guide-note card">
+            <h3>方式二：手动分步安装</h3>
+            <p class="guide-step-desc">如需手动控制每个步骤，可按以下顺序执行：</p>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>1. 登录服务器</strong></p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>终端</span>
+                <button class="btn-copy" data-copy="ssh root@你的服务器IP">复制</button>
+              </div>
+              <pre><code>ssh root@你的服务器IP</code></pre>
+            </div>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>2. 下载源码</strong></p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>wget</span>
+                <button class="btn-copy" data-copy="wget -O bridge.c https://raw.githubusercontent.com/你的用户名/你的仓库/main/bridge.c">复制</button>
+              </div>
+              <pre><code>wget -O bridge.c https://raw.githubusercontent.com/你的用户名/你的仓库/main/bridge.c</code></pre>
+            </div>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>3. 安装 gcc（如未安装）</strong></p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>apt</span>
+                <button class="btn-copy" data-copy="apt update && apt install -y gcc">复制</button>
+              </div>
+              <pre><code>apt update &amp;&amp; apt install -y gcc</code></pre>
+            </div>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>4. 编译</strong></p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>gcc</span>
+                <button class="btn-copy" data-copy="gcc -O2 -o bridge bridge.c">复制</button>
+              </div>
+              <pre><code>gcc -O2 -o bridge bridge.c</code></pre>
+            </div>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>5. 运行并获取 Token</strong></p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>前台运行</span>
+                <button class="btn-copy" data-copy="./bridge">复制</button>
+              </div>
+              <pre><code>./bridge</code></pre>
+            </div>
+            <div class="code-block">
+              <pre><code style="color:var(--success);">[bridge] listening on :8022  token=8f3a9b2c4e7d</code></pre>
+            </div>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>6. 后台常驻（可选）</strong></p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>nohup</span>
+                <button class="btn-copy" data-copy="nohup ./bridge 8022 mySecretToken123 > bridge.log 2>&1 &">复制</button>
+              </div>
+              <pre><code>nohup ./bridge 8022 mySecretToken123 &gt; bridge.log 2&gt;&amp;1 &amp;</code></pre>
+            </div>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>7. 放行防火墙端口</strong></p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>ufw</span>
+                <button class="btn-copy" data-copy="ufw allow 8022/tcp">复制</button>
+              </div>
+              <pre><code>ufw allow 8022/tcp</code></pre>
+            </div>
+          </div>
+
+          <div class="guide-step card guide-step-final">
+            <div class="guide-step-header">
+              <span class="guide-step-num">✓</span>
+              <h3>回到面板连接</h3>
+            </div>
+            <p class="guide-step-desc">安装完成！点击右上角连接按钮，填写以下信息：</p>
+            <div class="guide-fields">
+              <div class="guide-field"><span class="guide-field-key">服务器地址</span><span class="guide-field-val">你的服务器 IP</span></div>
+              <div class="guide-field"><span class="guide-field-key">Bridge 端口</span><span class="guide-field-val">8022</span></div>
+              <div class="guide-field"><span class="guide-field-key">Token</span><span class="guide-field-val">运行后控制台显示的 Token</span></div>
+              <div class="guide-field"><span class="guide-field-key">SSH 主机</span><span class="guide-field-val">127.0.0.1</span></div>
+              <div class="guide-field"><span class="guide-field-key">SSH 端口</span><span class="guide-field-val">22</span></div>
+              <div class="guide-field"><span class="guide-field-key">用户名 / 密码</span><span class="guide-field-val">SSH 登录凭据</span></div>
+            </div>
+            <button class="btn-primary guide-connect-btn" id="btn-guide-connect-2">去连接</button>
+          </div>
+
+          <div class="guide-note card">
+            <h3>常见问题</h3>
+            <div class="guide-faq">
+              <p><strong>Q: 连接提示"WebSocket 连接失败"？</strong></p>
+              <p style="color:var(--text2);">A: 请确认 bridge 已在服务器上运行，且防火墙已放行端口。</p>
+              <p style="margin-top:12px;"><strong>Q: 连接提示"Token 错误"？</strong></p>
+              <p style="color:var(--text2);">A: 检查面板填写的 Token 与 bridge 运行时输出的是否一致。</p>
+              <p style="margin-top:12px;"><strong>Q: 内存占用多少？</strong></p>
+              <p style="color:var(--text2);">A: bridge 稳定占用 &lt; 0.5MB RAM，适配 100MB 内存的低配 VPS。</p>
+              <p style="margin-top:12px;"><strong>Q: 手机能用吗？</strong></p>
+              <p style="color:var(--text2);">A: 可以，任何现代浏览器均可使用，无需安装任何插件。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 连接失败提示（bridge 未安装） -->
+  <div class="modal-overlay" id="bridge-error-modal" style="display:none;">
+    <div class="modal">
+      <h3>无法连接到服务器</h3>
+      <p style="margin:12px 0 8px;color:var(--text2);" id="bridge-error-msg">连接失败</p>
+      <div class="bridge-error-hint">
+        <p>这通常意味着服务器上尚未安装 bridge 桥接程序。</p>
+        <p style="margin-top:6px;">请按照引导完成安装后重试。</p>
+      </div>
+      <div class="form-actions" style="margin-top:20px;">
+        <button type="button" class="btn-secondary" id="btn-close-bridge-error">关闭</button>
+        <button type="button" class="btn-primary" id="btn-goto-guide">查看安装引导</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 连接对话框 -->
+  <div class="modal-overlay" id="connect-modal" style="display:none;">
+    <div class="modal">
+      <h3>连接服务器</h3>
+      <form id="connect-form" class="form" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label">名称</label>
+          <input class="input" type="text" name="name" placeholder="我的服务器" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">服务器地址</label>
+          <input class="input" type="text" name="host" placeholder="103.x.x.x" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bridge 端口</label>
+          <input class="input" type="number" name="bridgePort" value="8022" min="1" max="65535" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Token</label>
+          <input class="input" type="text" name="token" placeholder="运行 bridge 后显示的 Token" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">SSH 主机 <span style="font-weight:normal;color:var(--text-muted);">（通常 127.0.0.1）</span></label>
+          <input class="input" type="text" name="sshHost" placeholder="127.0.0.1" value="127.0.0.1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">SSH 端口</label>
+          <input class="input" type="number" name="sshPort" value="22" min="1" max="65535" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">用户名</label>
+          <input class="input" type="text" name="user" placeholder="root" value="root">
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input class="input" type="password" name="pass" placeholder="••••••••">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="btn-cancel-connect">取消</button>
+          <button type="submit" class="btn-primary">连接并保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 新建文件夹对话框 -->
+  <div class="modal-overlay" id="mkdir-modal" style="display:none;">
+    <div class="modal">
+      <h3>新建文件夹</h3>
+      <form id="mkdir-form" class="form" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label">文件夹名称</label>
+          <input class="input" type="text" name="dirname" placeholder="new-folder" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="btn-cancel-mkdir">取消</button>
+          <button type="submit" class="btn-primary">创建</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 添加服务器对话框 -->
+  <div class="modal-overlay" id="add-server-modal" style="display:none;">
+    <div class="modal">
+      <h3>添加服务器</h3>
+      <form id="add-server-form" class="form" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label">名称</label>
+          <input class="input" type="text" name="name" placeholder="我的服务器" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">服务器地址</label>
+          <input class="input" type="text" name="host" placeholder="103.x.x.x" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bridge 端口</label>
+          <input class="input" type="number" name="bridgePort" value="8022" min="1" max="65535" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Token</label>
+          <input class="input" type="text" name="token" placeholder="运行 bridge 后显示的 Token" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">SSH 主机</label>
+          <input class="input" type="text" name="sshHost" placeholder="127.0.0.1" value="127.0.0.1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">SSH 端口</label>
+          <input class="input" type="number" name="sshPort" value="22" min="1" max="65535" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">用户名</label>
+          <input class="input" type="text" name="user" placeholder="root" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input class="input" type="password" name="pass" placeholder="••••••••">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="btn-cancel-add-server">取消</button>
+          <button type="submit" class="btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast 容器 -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- 日志面板 -->
+  <div id="log-panel" class="log-panel">
+    <div class="log-header" id="log-header">
+      <span class="log-title">日志</span>
+      <div class="log-actions">
+        <button class="btn-text" id="btn-clear-log" style="font-size:12px;">清空</button>
+        <button class="btn-text" id="btn-toggle-log" style="font-size:12px;">收起</button>
+      </div>
+    </div>
+    <div class="log-body" id="log-body"></div>
+  </div>
+
+  <script src="lib/xterm.js"></script>
+  <script src="lib/xterm-addon-fit.js"></script>
+  <script src="js/ssh-bundle.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
