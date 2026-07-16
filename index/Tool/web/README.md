@@ -19,7 +19,7 @@
 ### 1. 服务器端安装 bridge（一行命令）
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/你的用户名/你的仓库/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/xiaolanqqai/xiaolanqqai.github.io/master/index/Tool/web/install.sh | bash
 ```
 
 脚本会自动完成：下载源码 → 安装 gcc → 编译 → 启动。运行完成后会输出 Token，请记下。

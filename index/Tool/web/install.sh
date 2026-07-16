@@ -1,12 +1,12 @@
 #!/bin/bash
 # MiniServer Bridge — 一键安装脚本
 # 使用方法（在服务器上执行）：
-#   curl -fsSL https://raw.githubusercontent.com/你的用户名/你的仓库/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/xiaolanqqai/xiaolanqqai.github.io/master/index/Tool/web/install.sh | bash
 # 或者：
-#   wget -O - https://raw.githubusercontent.com/你的用户名/你的仓库/main/install.sh | bash
+#   wget -O - https://raw.githubusercontent.com/xiaolanqqai/xiaolanqqai.github.io/master/index/Tool/web/install.sh | bash
 #
 # 也可以先下载再执行：
-#   wget -O install.sh https://raw.githubusercontent.com/你的用户名/你的仓库/main/install.sh
+#   wget -O install.sh https://raw.githubusercontent.com/xiaolanqqai/xiaolanqqai.github.io/master/index/Tool/web/install.sh
 #   bash install.sh
 
 set -e
@@ -97,10 +97,9 @@ cd "$SCRIPT_DIR"
 # 如果当前目录没有 bridge.c，尝试从 GitHub 下载
 if [ ! -f "bridge.c" ]; then
     info "下载 bridge.c ..."
-    # 尝试多个可能的下载源（用户可替换为自己的仓库）
+    # 下载源（如需更换仓库地址，修改此 URL）
     DOWNLOAD_URLS=(
-        "https://raw.githubusercontent.com/你的用户名/你的仓库/main/bridge.c"
-        "https://raw.githubusercontent.com/你的用户名/你的仓库/master/bridge.c"
+        "https://raw.githubusercontent.com/xiaolanqqai/xiaolanqqai.github.io/master/index/Tool/web/bridge.c"
     )
     DOWNLOADED=0
     for URL in "${DOWNLOAD_URLS[@]}"; do
