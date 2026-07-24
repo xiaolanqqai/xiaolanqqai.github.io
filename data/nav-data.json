@@ -1085,6 +1085,16 @@
         ]
       },
       {
+        "id": "1784873336751",
+        "name": "AI向开发",
+        "items": [
+          {
+            "name": "deepseek api",
+            "url": "https://platform.deepseek.com/"
+          }
+        ]
+      },
+      {
         "name": "其它 • 开发",
         "items": [
           {
