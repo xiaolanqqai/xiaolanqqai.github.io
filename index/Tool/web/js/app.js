@@ -789,6 +789,7 @@ function renderServerList(servers) {
         <div class="server-item-detail">${escapeHtml(s.user || 'root')}@${escapeHtml(s.host)}:${s.sshPort || 22}</div>
       </div>
       <div class="server-item-actions">
+        <span class="status-light status-unknown" data-action="check-server" data-index="${i}" title="点击检测连接状态"></span>
         <button class="file-action-btn delete" data-action="delete-server" data-index="${i}">删除</button>
       </div>
     </div>
@@ -837,6 +838,100 @@ function quickConnect(index) {
   if (pass === null) return
   connectServer(s.host, s.bridgePort || 8022, s.token, s.sshHost || '127.0.0.1', s.sshPort || 22, s.user || s.username || 'root', pass)
   hideModal('connect-modal')
+}
+
+// ─────────────────────────────────────────────────────────────
+// 12.6 Server Reachability Detection
+// ─────────────────────────────────────────────────────────────
+// 检测逻辑：ping → WebSocket 两阶段
+//   ping 不通 → 红灯（status-dead）
+//   ping 通但 WebSocket 失败 → 黄灯（status-ping-ok）
+//   WebSocket 握手成功 → 绿灯（status-alive）
+// 检测中：黄灯闪烁（status-checking）
+// 未检测：灰色（status-unknown）
+
+const STATUS_CLASS = {
+  unknown: 'status-unknown',
+  checking: 'status-checking',
+  dead: 'status-dead',
+  'ping-ok': 'status-ping-ok',
+  alive: 'status-alive'
+}
+
+function setServerStatus(index, status) {
+  const light = document.querySelector(`.status-light[data-action="check-server"][data-index="${index}"]`)
+  if (!light) return
+  Object.values(STATUS_CLASS).forEach(c => light.classList.remove(c))
+  light.classList.add(STATUS_CLASS[status] || STATUS_CLASS.unknown)
+}
+
+/** 探测 bridge 端口是否可达（浏览器无法 ICMP ping，用 no-cors fetch 替代） */
+function pingServer(host, port) {
+  return new Promise((resolve) => {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 4000)
+    // 加随机参数避免缓存；no-cors 模式下能收到任何响应（哪怕是 opaque）就算可达
+    fetch(`http://${host}:${port}/?_=${Date.now()}`, {
+      mode: 'no-cors',
+      signal: controller.signal,
+      cache: 'no-store'
+    }).then(() => {
+      clearTimeout(timer)
+      resolve(true)
+    }).catch(() => {
+      clearTimeout(timer)
+      // 网络层拒绝/超时都算不可达；注意 no-cors 下跨域错误也会 reject，但
+      // 只要 TCP 通了浏览器通常先触发 onopen 后才拒绝，所以这里仍视为可达兜底
+      resolve(false)
+    })
+  })
+}
+
+/** 尝试建立 WebSocket 连接，3 秒内 onopen 算成功 */
+function checkWebSocket(host, port) {
+  return new Promise((resolve) => {
+    let done = false
+    const finish = (ok) => {
+      if (done) return
+      done = true
+      clearTimeout(timer)
+      try { ws.close() } catch {}
+      resolve(ok)
+    }
+    const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:'
+    // v3.4: Token 固定为 ssh，检测时也用该值
+    const url = `${wsProto}//${host}:${port}/ssh`
+    let ws
+    try {
+      ws = new WebSocket(url)
+    } catch {
+      return resolve(false)
+    }
+    const timer = setTimeout(() => finish(false), 4000)
+    ws.onopen = () => finish(true)
+    ws.onerror = () => finish(false)
+    ws.onclose = () => finish(false)
+  })
+}
+
+/** 完整检测流程：ping → WebSocket */
+async function detectServer(index) {
+  const servers = getServers()
+  const s = servers[index]
+  if (!s) return
+  const host = s.host
+  const port = s.bridgePort || 8022
+  setServerStatus(index, 'checking')
+  // 阶段 1：ping
+  const pingOk = await pingServer(host, port)
+  if (!pingOk) {
+    setServerStatus(index, 'dead')
+    return
+  }
+  setServerStatus(index, 'ping-ok')
+  // 阶段 2：WebSocket
+  const wsOk = await checkWebSocket(host, port)
+  setServerStatus(index, wsOk ? 'alive' : 'ping-ok')
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1114,6 +1209,11 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation()
       const idx = parseInt(target.dataset.index)
       quickConnect(idx)
+    } else if (action === 'check-server') {
+      e.stopPropagation()
+      e.preventDefault()
+      const idx = parseInt(target.dataset.index)
+      detectServer(idx)
     } else if (action === 'delete-server') {
       e.stopPropagation()
       e.preventDefault()
