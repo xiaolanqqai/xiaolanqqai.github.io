@@ -889,6 +889,76 @@ h2, h3 {
   color: var(--danger);
 }
 
+/* ---------- 服务器状态灯 ---------- */
+.status-light {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text2);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  border: 1px solid rgba(0,0,0,0.15);
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.status-light:hover { transform: scale(1.15); }
+.status-light.status-unknown  { background: #c7c7cc; }
+.status-light.status-checking { background: var(--warning); animation: status-pulse 0.9s ease-in-out infinite; }
+.status-light.status-dead     { background: var(--danger);  box-shadow: 0 0 6px rgba(255,59,48,0.5); }
+.status-light.status-ping-ok  { background: #ffcc00;        box-shadow: 0 0 6px rgba(255,204,0,0.5); }
+.status-light.status-alive    { background: var(--success); box-shadow: 0 0 6px rgba(52,199,89,0.5); }
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* ---------- Tooltip 提示图标 ---------- */
+.tooltip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: help;
+  position: relative;
+  vertical-align: middle;
+  margin-left: 6px;
+  user-select: none;
+}
+.tooltip-icon:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.tooltip-icon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: rgba(0,0,0,0.88);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  max-width: 260px;
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.tooltip-icon:hover::after { opacity: 1; }
+
 /* ---------- Empty State ---------- */
 .empty-state {
   text-align: center;
@@ -902,7 +972,7 @@ h2, h3 {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 200;
+  z-index: 2000;
   display: flex;
   flex-direction: column-reverse;
   gap: 10px;
