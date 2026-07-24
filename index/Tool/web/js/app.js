@@ -105,22 +105,38 @@ function onViewDeactivated(prev, view) {
  * 连接到服务器
  * @param bridgeHost bridge 所在服务器地址（通常和 SSH 同一台）
  * @param bridgePort bridge 监听端口（默认 8022）
- * @param token      bridge 认证 Token
+ * @param token      bridge 认证 Token（v3.4 起固定为 'ssh'，保留参数为向后兼容）
  * @param sshHost    SSH 主机（通常 127.0.0.1，因为 bridge 在服务器本机）
  * @param sshPort    SSH 端口（默认 22）
  * @param user       SSH 用户名
  * @param pass       SSH 密码
  */
 async function connectServer(bridgeHost, bridgePort, token, sshHost, sshPort, user, pass) {
+  // v3.4: Token 固定为 'ssh'，忽略外部传入值（旧记录中的 token 字段也不再使用）
+  token = 'ssh'
   if (transport) {
     try { transport.disconnect() } catch {}
   }
 
-  const bridgeUrl = `ws://${bridgeHost}:${bridgePort}/${token}`
+  // 根据页面协议自动选择 ws/wss，HTTPS 站点必须用 wss 避免混合内容策略阻断
+  const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:'
+  const bridgeUrl = `${wsProto}//${bridgeHost}:${bridgePort}/${token}`
   addLog(`连接 ${user}@${sshHost}:${sshPort} via ${bridgeHost}:${bridgePort}...`)
 
   const socket = new MiniServerSSH.WsSocket(bridgeUrl)
   transport = new MiniServerSSH.SSHTransport(socket)
+
+  // 断线检测：WsSocket 触发 close 时清理状态（H6）
+  socket.onClose(() => {
+    if (isConnected) {
+      addLog('连接已断开', 'warning')
+      isConnected = false
+      shell = null
+      transport = null
+      onDisconnected()
+      toast('连接已断开', 'warning', 4000)
+    }
+  })
 
   try {
     await transport.connect(sshHost, sshPort, user, pass)
@@ -136,6 +152,10 @@ async function connectServer(bridgeHost, bridgePort, token, sshHost, sshPort, us
     addLog('Shell 已就绪', 'success')
   } catch (err) {
     addLog(`连接失败: ${err.message}`, 'error')
+    // 连接失败时彻底清理残留状态（H4）
+    isConnected = false
+    shell = null
+    transport = null
     // 检测是否为 bridge 未安装/未运行导致的连接失败
     const isBridgeError = /桥接|WebSocket|连接超时|连接失败|ECONNREFUSED|ERR_CONNECTION/i.test(err.message)
     if (isBridgeError) {
@@ -554,6 +574,11 @@ async function mkdir(dirname) {
 
 async function deletePath(name, isDir) {
   if (!isConnected) return
+  // 删除前必须二次确认，目录将执行 rm -rf 风险极高（H3 修复）
+  const confirmMsg = isDir
+    ? `确定删除文件夹 "${name}" 及其所有内容？此操作不可恢复！`
+    : `确定删除文件 "${name}"？此操作不可恢复！`
+  if (!confirm(confirmMsg)) return
   const safePath = currentPath.replace(/'/g, "'\\''")
   const safeName = name.replace(/'/g, "'\\''")
   const cmd = isDir
@@ -807,7 +832,10 @@ function quickConnect(index) {
   const servers = getServers()
   const s = servers[index]
   if (!s) return
-  connectServer(s.host, s.bridgePort || 8022, s.token, s.sshHost || '127.0.0.1', s.sshPort || 22, s.user || 'root', s.password || '')
+  // 密码不再持久化，每次快速连接需重新输入（C7 修复）
+  const pass = prompt(`请输入 ${(s.user || s.username || 'root')}@${s.host} 的 SSH 密码：`)
+  if (pass === null) return
+  connectServer(s.host, s.bridgePort || 8022, s.token, s.sshHost || '127.0.0.1', s.sshPort || 22, s.user || s.username || 'root', pass)
   hideModal('connect-modal')
 }
 
@@ -924,7 +952,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = fd.get('name') || fd.get('host')
     const host = fd.get('host')
     const bridgePort = parseInt(fd.get('bridgePort')) || 8022
-    const token = fd.get('token') || ''
+    // v3.4: Token 固定为 'ssh'，前端不再显示输入框
+    const token = 'ssh'
     const sshHost = fd.get('sshHost') || '127.0.0.1'
     const sshPort = parseInt(fd.get('sshPort')) || 22
     const user = fd.get('user') || 'root'
@@ -932,10 +961,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!host) {
       toast('请填写服务器地址', 'warning')
-      return
-    }
-    if (!token) {
-      toast('请填写 Token', 'warning')
       return
     }
 
@@ -1034,14 +1059,15 @@ document.addEventListener('DOMContentLoaded', () => {
       name: fd.get('name'),
       host: fd.get('host'),
       bridgePort: parseInt(fd.get('bridgePort')) || 8022,
-      token: fd.get('token'),
+      // v3.4: Token 固定为 'ssh'
+      token: 'ssh',
       sshHost: fd.get('sshHost') || '127.0.0.1',
       sshPort: parseInt(fd.get('sshPort')) || 22,
       user: fd.get('user'),
       password: fd.get('pass') || ''
     }
 
-    if (!server.name || !server.host || !server.user || !server.token) {
+    if (!server.name || !server.host || !server.user) {
       toast('请填写完整信息', 'warning')
       return
     }
