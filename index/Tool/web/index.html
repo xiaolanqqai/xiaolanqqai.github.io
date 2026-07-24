@@ -227,7 +227,7 @@
             </div>
           </div>
           <div class="card">
-            <h3>服务器列表</h3>
+            <h3>服务器列表<span class="tooltip-icon" data-tooltip="状态灯说明（点击灯可重新检测）：&#10;灰色：尚未检测&#10;红色：无法连接到服务器（端口不通）&#10;黄色：服务器可达，但 WebSocket 握手失败&#10;绿色：WebSocket 连接成功，可正常使用">?</span></h3>
             <div id="server-list" class="server-list">
               <div class="empty-state">暂无保存的服务器</div>
             </div>
@@ -239,7 +239,7 @@
               MiniServer Panel &mdash; 极简服务器管理面板<br>
               纯浏览器端 SSH 客户端，通过服务器上的轻量 bridge 程序连接。<br>
               静态页面部署在 GitHub Pages，手机/电脑浏览器均可使用。<br>
-              版本 3.4.0
+              版本 3.4.2
             </p>
           </div>
         </div>
@@ -368,6 +368,46 @@
             <button class="btn-primary guide-connect-btn" id="btn-guide-connect-2">去连接</button>
           </div>
 
+          <div class="guide-step card">
+            <div class="guide-step-header">
+              <span class="guide-step-num">!</span>
+              <h3>NAT VPS / 共享 IP 用户必看</h3>
+            </div>
+            <p class="guide-step-desc">如果你的 VPS 没有独立公网 IP（运营商面板有"端口转发 / 端口映射 / NAT"选项），则无法直接访问服务器的 8022 端口，需要先在运营商面板配置转发规则。</p>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>如何判断我是不是 NAT VPS？</strong></p>
+            <p style="color:var(--text2);font-size:13px;margin-top:4px;">登录运营商管理面板，看到类似"端口转发"、"端口映射"、"NAT 端口"、"共享 IP"等字样，就是 NAT VPS。独立公网 IP 的 VPS 不会有这些选项。</p>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>步骤 1：在运营商面板添加转发规则</strong></p>
+            <p style="color:var(--text2);font-size:13px;margin-top:4px;">在运营商管理面板找到"端口转发"，添加一条规则：</p>
+            <div class="guide-fields" style="margin-top:8px;">
+              <div class="guide-field"><span class="guide-field-key">外部端口</span><span class="guide-field-val">运营商分配给你的端口（如 30001）</span></div>
+              <div class="guide-field"><span class="guide-field-key">内部 IP</span><span class="guide-field-val">你服务器的内网 IP（如 10.0.0.5）</span></div>
+              <div class="guide-field"><span class="guide-field-key">内部端口</span><span class="guide-field-val">8022（bridge 监听端口）</span></div>
+              <div class="guide-field"><span class="guide-field-key">协议</span><span class="guide-field-val">TCP</span></div>
+            </div>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>步骤 2：在面板连接时填写运营商公网信息</strong></p>
+            <div class="guide-fields" style="margin-top:8px;">
+              <div class="guide-field"><span class="guide-field-key">服务器地址</span><span class="guide-field-val">运营商公网 IP（不是服务器内网 IP）</span></div>
+              <div class="guide-field"><span class="guide-field-key">Bridge 端口</span><span class="guide-field-val">运营商分配的外部端口（如 30001，不是 8022）</span></div>
+              <div class="guide-field"><span class="guide-field-key">SSH 主机</span><span class="guide-field-val">仍填 127.0.0.1（bridge 在服务器本机连 SSH）</span></div>
+              <div class="guide-field"><span class="guide-field-key">SSH 端口</span><span class="guide-field-val">仍填 22（SSH 走 bridge 内部，不经公网）</span></div>
+            </div>
+
+            <p class="guide-step-desc" style="margin-top:14px;color:var(--warning);font-size:13px;">⚠ 注意：SSH 端口 22 无需在运营商面板转发，因为 SSH 连接是 bridge 在服务器本机发起的，不走公网。只需转发 bridge 的 8022 端口即可。</p>
+
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>步骤 3：放行服务器本机防火墙</strong></p>
+            <div class="code-block">
+              <div class="code-block-bar">
+                <span>ufw</span>
+                <button class="btn-copy" data-copy="ufw allow 8022/tcp">复制</button>
+              </div>
+              <pre><code>ufw allow 8022/tcp</code></pre>
+            </div>
+            <p style="color:var(--text2);font-size:12px;margin-top:6px;">仅当服务器本机启用了 ufw/iptables 时需要此步骤，NAT VPS 通常本机无防火墙限制，可跳过。</p>
+          </div>
+
           <div class="guide-note card">
             <h3>常见问题</h3>
             <div class="guide-faq">
@@ -375,6 +415,8 @@
               <p style="color:var(--text2);">A: 请确认 bridge 已在服务器上运行，且防火墙已放行端口。</p>
               <p style="margin-top:12px;"><strong>Q: 需要配置 Token 吗？</strong></p>
               <p style="color:var(--text2);">A: v3.4 起 Token 固定为 "ssh"，前端自动填写，用户无需关心。</p>
+              <p style="margin-top:12px;"><strong>Q: 我是 NAT VPS，端口都配好了还是连不上？</strong></p>
+              <p style="color:var(--text2);">A: 排查顺序：①服务器内 <code>./bridge</code> 是否在运行；②运营商面板转发规则是否指向正确的内网 IP 和 8022 端口；③外部端口是否填的运营商分配的端口（不是 8022）；④服务器内 <code>curl 127.0.0.1:8022</code> 能否本地连通。</p>
               <p style="margin-top:12px;"><strong>Q: 内存占用多少？</strong></p>
               <p style="color:var(--text2);">A: bridge 稳定占用 &lt; 0.5MB RAM，适配 100MB 内存的低配 VPS。</p>
               <p style="margin-top:12px;"><strong>Q: 手机能用吗？</strong></p>
