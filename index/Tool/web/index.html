@@ -239,7 +239,7 @@
               MiniServer Panel &mdash; 极简服务器管理面板<br>
               纯浏览器端 SSH 客户端，通过服务器上的轻量 bridge 程序连接。<br>
               静态页面部署在 GitHub Pages，手机/电脑浏览器均可使用。<br>
-              版本 3.0.0
+              版本 3.4.0
             </p>
           </div>
         </div>
@@ -277,7 +277,7 @@
               </div>
               <pre><code>wget -O - https://raw.githubusercontent.com/xiaolanqqai/xiaolanqqai.github.io/master/index/Tool/web/install.sh | bash</code></pre>
             </div>
-            <p class="guide-step-desc" style="margin-top:8px;color:var(--text2);font-size:12px;">脚本运行完会自动显示 Token，请记下。</p>
+            <p class="guide-step-desc" style="margin-top:8px;color:var(--text2);font-size:12px;">脚本运行完会自动启动 bridge，无需手动配置 Token。</p>
             <button class="btn-primary guide-connect-btn" id="btn-guide-connect">已安装，去连接</button>
           </div>
 
@@ -321,7 +321,7 @@
               <pre><code>gcc -O2 -o bridge bridge.c</code></pre>
             </div>
 
-            <p class="guide-step-desc" style="margin-top:14px;"><strong>5. 运行并获取 Token</strong></p>
+            <p class="guide-step-desc" style="margin-top:14px;"><strong>5. 运行</strong></p>
             <div class="code-block">
               <div class="code-block-bar">
                 <span>前台运行</span>
@@ -330,16 +330,16 @@
               <pre><code>./bridge</code></pre>
             </div>
             <div class="code-block">
-              <pre><code style="color:var(--success);">[bridge] listening on :8022  token=8f3a9b2c4e7d</code></pre>
+              <pre><code style="color:var(--success);">[bridge] listening on :8022  token=ssh (固定值，前端自动填写)</code></pre>
             </div>
 
             <p class="guide-step-desc" style="margin-top:14px;"><strong>6. 后台常驻（可选）</strong></p>
             <div class="code-block">
               <div class="code-block-bar">
                 <span>nohup</span>
-                <button class="btn-copy" data-copy="nohup ./bridge 8022 mySecretToken123 > bridge.log 2>&1 &">复制</button>
+                <button class="btn-copy" data-copy="nohup ./bridge > bridge.log 2>&1 &">复制</button>
               </div>
-              <pre><code>nohup ./bridge 8022 mySecretToken123 &gt; bridge.log 2&gt;&amp;1 &amp;</code></pre>
+              <pre><code>nohup ./bridge &gt; bridge.log 2&gt;&amp;1 &amp;</code></pre>
             </div>
 
             <p class="guide-step-desc" style="margin-top:14px;"><strong>7. 放行防火墙端口</strong></p>
@@ -361,7 +361,6 @@
             <div class="guide-fields">
               <div class="guide-field"><span class="guide-field-key">服务器地址</span><span class="guide-field-val">你的服务器 IP</span></div>
               <div class="guide-field"><span class="guide-field-key">Bridge 端口</span><span class="guide-field-val">8022</span></div>
-              <div class="guide-field"><span class="guide-field-key">Token</span><span class="guide-field-val">运行后控制台显示的 Token</span></div>
               <div class="guide-field"><span class="guide-field-key">SSH 主机</span><span class="guide-field-val">127.0.0.1</span></div>
               <div class="guide-field"><span class="guide-field-key">SSH 端口</span><span class="guide-field-val">22</span></div>
               <div class="guide-field"><span class="guide-field-key">用户名 / 密码</span><span class="guide-field-val">SSH 登录凭据</span></div>
@@ -374,8 +373,8 @@
             <div class="guide-faq">
               <p><strong>Q: 连接提示"WebSocket 连接失败"？</strong></p>
               <p style="color:var(--text2);">A: 请确认 bridge 已在服务器上运行，且防火墙已放行端口。</p>
-              <p style="margin-top:12px;"><strong>Q: 连接提示"Token 错误"？</strong></p>
-              <p style="color:var(--text2);">A: 检查面板填写的 Token 与 bridge 运行时输出的是否一致。</p>
+              <p style="margin-top:12px;"><strong>Q: 需要配置 Token 吗？</strong></p>
+              <p style="color:var(--text2);">A: v3.4 起 Token 固定为 "ssh"，前端自动填写，用户无需关心。</p>
               <p style="margin-top:12px;"><strong>Q: 内存占用多少？</strong></p>
               <p style="color:var(--text2);">A: bridge 稳定占用 &lt; 0.5MB RAM，适配 100MB 内存的低配 VPS。</p>
               <p style="margin-top:12px;"><strong>Q: 手机能用吗？</strong></p>
@@ -420,10 +419,6 @@
         <div class="form-group">
           <label class="form-label">Bridge 端口</label>
           <input class="input" type="number" name="bridgePort" value="8022" min="1" max="65535" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Token</label>
-          <input class="input" type="text" name="token" placeholder="运行 bridge 后显示的 Token" required>
         </div>
         <div class="form-group">
           <label class="form-label">SSH 主机 <span style="font-weight:normal;color:var(--text-muted);">（通常 127.0.0.1）</span></label>
@@ -482,10 +477,6 @@
         <div class="form-group">
           <label class="form-label">Bridge 端口</label>
           <input class="input" type="number" name="bridgePort" value="8022" min="1" max="65535" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Token</label>
-          <input class="input" type="text" name="token" placeholder="运行 bridge 后显示的 Token" required>
         </div>
         <div class="form-group">
           <label class="form-label">SSH 主机</label>

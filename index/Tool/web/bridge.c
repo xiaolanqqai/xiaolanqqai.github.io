@@ -194,25 +194,31 @@ static void set_nonblock(int fd) {
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
-static void gen_token(char *out, int len) {
-    static const char chars[] = "abcdefghijklmnopqrstuvwxyz0123456789";
-    srand(time(NULL) ^ getpid());
-    int i;
-    for (i = 0; i < len - 1; i++)
-        out[i] = chars[rand() % (sizeof(chars) - 1)];
-    out[len - 1] = 0;
-}
+/* v3.4: Token 默认固定为 "ssh"，不再需要 gen_token。如需自定义 Token，
+ * 可通过命令行第二参数指定：./bridge 8022 myCustomToken */
 
-static void send_all(int fd, const char *data, int len) {
+/* 发送全部数据：非阻塞 fd 下 EAGAIN 不再忙循环，限制重试次数避免卡死 epoll（H13 修复） */
+static int send_all(int fd, const char *data, int len) {
+    int total = 0;
+    int retries = 0;
     while (len > 0) {
         int n = write(fd, data, len);
-        if (n <= 0) {
-            if (errno == EAGAIN || errno == EWOULDBLOCK) continue;
-            return;
+        if (n > 0) {
+            data += n;
+            len -= n;
+            total += n;
+            retries = 0;
+        } else if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+            /* 非阻塞 fd 暂时不可写，让出 CPU；超过阈值视为对端阻塞，放弃 */
+            if (++retries > 1000) return total;
+            struct timespec ts = { 0, 1000000 }; /* 1ms */
+            nanosleep(&ts, NULL);
+        } else {
+            /* 其他错误（EPIPE/ECONNRESET 等），无法继续 */
+            return total;
         }
-        data += n;
-        len -= n;
     }
+    return total;
 }
 
 /* ─── JSON 消息发送 ─── */
@@ -403,15 +409,13 @@ static int connect_tcp(const char *host, int port, int epfd, client_t *c) {
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
 
-    /* 仅允许 localhost，防止变成开放代理 */
-    if (inet_pton(AF_INET, host, &addr.sin_addr) <= 0) {
-        /* 如果不是 IP，尝试解析（仅限 localhost） */
-        if (strcmp(host, "localhost") != 0 && strcmp(host, "127.0.0.1") != 0) {
-            close(tcp_fd);
-            return -1;
-        }
-        addr.sin_addr.s_addr = htonl(0x7f000001);
+    /* 严格白名单：仅允许 localhost，防止变成开放代理（SSRF/内网穿透）
+     * 任何外部 IPv4 都将被拒绝，确保 bridge 不能被用于访问内网或第三方服务 */
+    if (strcmp(host, "127.0.0.1") != 0 && strcmp(host, "localhost") != 0) {
+        close(tcp_fd);
+        return -1;
     }
+    addr.sin_addr.s_addr = htonl(0x7f000001);
 
     int ret = connect(tcp_fd, (struct sockaddr *)&addr, sizeof(addr));
     if (ret < 0 && errno != EINPROGRESS) {
@@ -476,14 +480,11 @@ static void handle_ws_message(client_t *c, int epfd, const char *payload, int le
             }
         }
 
-        /* 强制只连 localhost */
-        if (strcmp(host, "127.0.0.1") != 0 && strcmp(host, "localhost") != 0) {
-            /* 允许连接任意地址（用户的服务器可能有多 IP） */
-        }
-
+        /* 严格的 localhost 白名单已在 connect_tcp() 中强制执行，
+         * 这里无需重复检查；非 localhost 主机会被直接拒绝 */
         c->tcp_fd = connect_tcp(host, port, epfd, c);
         if (c->tcp_fd < 0) {
-            send_json(c->fd, "error", NULL, "TCP connect failed");
+            send_json(c->fd, "error", NULL, "TCP connect failed (only localhost allowed)");
         }
         /* connected 消息在 EPOLLOUT 时发送 */
 
@@ -515,10 +516,16 @@ static void handle_ws_message(client_t *c, int epfd, const char *payload, int le
 
 /* 处理 WebSocket 客户端数据 */
 static void handle_ws_data(client_t *c, int epfd, char *buf, int len) {
-    /* 将新数据追加到缓冲区 */
+    /* ws_buf 最大 1MB，超过则关闭连接防止内存耗尽 DoS（H14 修复） */
+    #define MAX_WS_BUF (1024 * 1024)
     if (c->ws_buf_len + len > c->ws_buf_cap) {
         int new_cap = (c->ws_buf_len + len) * 2;
         if (new_cap < 4096) new_cap = 4096;
+        if (new_cap > MAX_WS_BUF) {
+            /* 超过上限，恶意客户端嫌疑，直接关闭 */
+            close_client(epfd, c);
+            return;
+        }
         char *nb = realloc(c->ws_buf, new_cap);
         if (!nb) return;
         c->ws_buf = nb;
@@ -579,9 +586,15 @@ int main(int argc, char *argv[]) {
     int port = 8022;
     if (argc > 1) port = atoi(argv[1]);
 
-    gen_token(g_token, sizeof(g_token));
+    /* v3.4: Token 默认固定为 "ssh"，前端自动填写，用户无需手动配置
+     * 如需自定义 Token，可通过第二个命令行参数指定（向后兼容）：
+     *   ./bridge 8022 myCustomToken
+     */
     if (argc > 2) {
         strncpy(g_token, argv[2], sizeof(g_token) - 1);
+        g_token[sizeof(g_token) - 1] = 0;
+    } else {
+        strncpy(g_token, "ssh", sizeof(g_token) - 1);
         g_token[sizeof(g_token) - 1] = 0;
     }
 
@@ -625,19 +638,27 @@ int main(int argc, char *argv[]) {
     }
 
     printf("╔══════════════════════════════════════════════╗\n");
-    printf("║    MiniServer Panel Bridge v3.0              ║\n");
+    printf("║    MiniServer Panel Bridge v3.4              ║\n");
     printf("╠══════════════════════════════════════════════╣\n");
     printf("║  监听端口: %-34d  ║\n", port);
     printf("║  Token: %-37s  ║\n", g_token);
     printf("║  目标: localhost:22 (SSH)                   ║\n");
     printf("╠══════════════════════════════════════════════╣\n");
     printf("║  WebSocket URL:                              ║\n");
-    printf("║  ws://YOUR_SERVER:%d/%s  ║\n", port, g_token);
+    printf("║  ws://YOUR_SERVER:%d/%s\n", port, g_token);
+    printf("╠══════════════════════════════════════════════╣\n");
+    printf("║  安全提示:                                  ║\n");
+    printf("║  · 监听 0.0.0.0 (公网可达)，请用防火墙限制   ║\n");
+    printf("║    来源 IP，仅放行需要的客户端 IP 段         ║\n");
+    printf("║  · v3.4 起 Token 默认固定为 ssh（前端自动    ║\n");
+    printf("║    填写）。如需自定义可传入第二参数：        ║\n");
+    printf("║    ./bridge 8022 myCustomToken               ║\n");
+    printf("║  · TCP 目标已强制限制为 localhost，无 SSRF   ║\n");
     printf("╚══════════════════════════════════════════════╝\n");
     fflush(stdout);
 
     struct epoll_event events[MAX_EVENTS];
-    char buf[BUF_SIZE];
+    char buf[BUF_SIZE + 1];  /* +1 字节用于 NUL 终止，防止 strstr 越界读（H12 修复） */
 
     while (1) {
         int n = epoll_wait(epfd, events, MAX_EVENTS, -1);
@@ -689,13 +710,14 @@ int main(int argc, char *argv[]) {
                 }
 
                 if (events[i].events & EPOLLIN) {
-                    int len = read(tcp_fd, buf, sizeof(buf));
+                    int len = read(tcp_fd, buf, sizeof(buf) - 1);
                     if (len <= 0) {
                         send_json(c->fd, "disconnected", NULL, NULL);
                         epoll_ctl(epfd, EPOLL_CTL_DEL, tcp_fd, NULL);
                         close(tcp_fd);
                         c->tcp_fd = -1;
                     } else {
+                        buf[len] = 0;  /* NUL 终止，确保后续字符串操作安全 */
                         handle_tcp_data(c, buf, len);
                     }
                 }
@@ -710,11 +732,12 @@ int main(int argc, char *argv[]) {
                 }
                 if (!c) continue;
 
-                int len = read(ws_fd, buf, sizeof(buf));
+                int len = read(ws_fd, buf, sizeof(buf) - 1);
                 if (len <= 0) {
                     close_client(epfd, c);
                     continue;
                 }
+                buf[len] = 0;  /* NUL 终止，确保 strstr 等字符串函数不会越界读（H12 修复） */
 
                 if (c->state == ST_WS_HANDSHAKE) {
                     int ret = handle_ws_handshake(ws_fd, buf, len, g_token);
