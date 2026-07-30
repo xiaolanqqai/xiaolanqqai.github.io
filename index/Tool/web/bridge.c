@@ -208,7 +208,10 @@ static int origin_allowed(const char *buf) {
     if (!end) return 0;
     size_t len = (size_t)(end - origin);
     const char *github = "https://xiaolanqqai.github.io";
+    const char *custom_domain = "https://xiaolanqqai.cloud-ip.cc";
     if (len == strlen(github) && memcmp(origin, github, len) == 0) return 1;
+    if (len == strlen(custom_domain) &&
+        memcmp(origin, custom_domain, len) == 0) return 1;
     if (local_origin(origin, len, "http://localhost")) return 1;
     if (local_origin(origin, len, "http://127.0.0.1")) return 1;
     return 0;
