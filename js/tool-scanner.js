@@ -438,10 +438,10 @@
                         </summary>
                         <div class="tool-port-list">
                             ${group.endpoints.map((item) => `
-                                <a class="tool-port-chip" href="${item.url}" target="_blank" rel="nofollow noopener">
+                                <a class="tool-port-chip" href="${escapeHtml(item.url)}" target="_blank" rel="nofollow noopener">
                                     <span>${item.protocol.toUpperCase()}</span>
                                     <span>${item.port}</span>
-                                    ${item.title ? `<span class="tool-port-title">${item.title}</span>` : ''}
+                                    ${item.title ? `<span class="tool-port-title">${escapeHtml(item.title)}</span>` : ''}
                                 </a>
                             `).join('')}
                         </div>

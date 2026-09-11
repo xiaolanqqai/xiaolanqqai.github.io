@@ -4,8 +4,7 @@ class ManagerCommon {
         this.maxLogs = 100;
         this.config = {
             iconPrefix: 'https://api.afmax.cn/so/ico/index.php?r=',
-            defaultIcon: '../../img/index.png',
-            corsProxy: 'https://api.allorigins.win/raw?url='
+            defaultIcon: '../../img/index.png'
         };
         this.init();
     }
@@ -273,39 +272,17 @@ class ManagerCommon {
         delete(name) { this.set(name, '', -1); }
     };
 
-    // --- AES ---
+    // --- AES（统一委托给 js/mm-crypto.js，避免同一算法存在两份实现） ---
 
     static AES = {
-        async _deriveKey(password, usage) {
-            const enc = new TextEncoder();
-            const key = await crypto.subtle.importKey('raw', enc.encode(password.padEnd(32, ' ')), { name: 'PBKDF2' }, false, ['deriveKey']);
-            return crypto.subtle.deriveKey(
-                { name: 'PBKDF2', salt: usage.salt, iterations: 100000, hash: 'SHA-256' },
-                key, { name: 'AES-CBC', length: 256 }, false, [usage.op]
-            );
-        },
-
         async encrypt(text, password) {
-            const enc = new TextEncoder();
-            const iv = crypto.getRandomValues(new Uint8Array(16));
-            const salt = crypto.getRandomValues(new Uint8Array(16));
-            const derivedKey = await this._deriveKey(password, { salt, op: 'encrypt' });
-            const encrypted = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, derivedKey, enc.encode(text));
-            const data = new Uint8Array(encrypted);
-            const combined = new Uint8Array(salt.length + iv.length + data.length);
-            combined.set(salt, 0);
-            combined.set(iv, salt.length);
-            combined.set(data, salt.length + iv.length);
-            return btoa(String.fromCharCode(...combined));
+            if (!window.MMCrypto) throw new Error('mm-crypto.js 未加载，无法加密。');
+            return window.MMCrypto.encrypt(text, password);
         },
 
         async decrypt(encryptedData, password) {
-            const combined = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0));
-            const salt = combined.slice(0, 16);
-            const iv = combined.slice(16, 32);
-            const derivedKey = await this._deriveKey(password, { salt, op: 'decrypt' });
-            const decrypted = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, derivedKey, combined.slice(32));
-            return new TextDecoder().decode(decrypted);
+            if (!window.MMCrypto) throw new Error('mm-crypto.js 未加载，无法解密。');
+            return window.MMCrypto.decrypt(encryptedData, password);
         }
     };
 
@@ -346,23 +323,11 @@ class ManagerCommon {
         }
     }
 
-    // --- URL 标题获取 ---
-
-    async fetchWebsiteTitle(url) {
-        try {
-            const res = await fetch(this.config.corsProxy + encodeURIComponent(url), { headers: { Accept: 'text/html' } });
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            const m = (await res.text()).match(/<title[^>]*>([^<]+)<\/title>/i);
-            return m?.[1]?.trim().replace(/[\t\n\r]+/g, ' ') || null;
-        } catch (e) {
-            console.error('获取网站标题失败:', e);
-            return null;
-        }
-    }
+    // --- URL 站点名推导 ---
+    // 已下线原先经由第三方 CORS 代理（api.allorigins.win）抓取页面标题的逻辑：
+    // 该代理可见所有被探测的 URL，且第三方可用性不可控。现仅从域名推导名称。
 
     async extractSiteNameFromUrl(url) {
-        const title = await this.fetchWebsiteTitle(url);
-        if (title) return title.length > 30 ? title.substring(0, 30) + '...' : title;
         try {
             const { hostname } = new URL(url);
             const h = hostname.replace(/^www\./, '');

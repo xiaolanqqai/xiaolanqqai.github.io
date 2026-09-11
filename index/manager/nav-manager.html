@@ -1048,7 +1048,7 @@
                 tabContent.className = 'tab-pane fade ' + (index === 0 ? 'show active' : '');
                 tabContent.id = 'tab-' + index;
                 tabContent.setAttribute('role', 'tabpanel');
-                tabContent.innerHTML = '<div class="d-flex justify-content-between align-items-center mb-3"><h5>' + tab.name + ' 选项卡中的网站</h5><button class="btn btn-sm btn-primary add-site-btn" data-tab-index="' + index + '"><i class="fas fa-plus me-1"></i>添加网站</button></div><div class="sites-container" id="sites-container-' + index + '">' + renderSites(tab.items, index) + '</div>';
+                tabContent.innerHTML = '<div class="d-flex justify-content-between align-items-center mb-3"><h5>' + escapeHtml(tab.name) + ' 选项卡中的网站</h5><button class="btn btn-sm btn-primary add-site-btn" data-tab-index="' + index + '"><i class="fas fa-plus me-1"></i>添加网站</button></div><div class="sites-container" id="sites-container-' + index + '">' + renderSites(tab.items, index) + '</div>';
                 navTabContent.appendChild(tabContent);
             });
 
@@ -1652,12 +1652,14 @@
             return sites.map((site, siteIndex) => {
                 const siteName = site.name || site.title || '未命名网站';
                 const iconUrl = site.icon || iconPrefix + encodeURIComponent(site.url);
+                const safeIcon = escapeHtml(iconUrl);
+                const safeName = escapeHtml(siteName);
                 return '<div class="site-card" data-site-index="' + siteIndex + '" data-tab-index="' + tabIndex + '" draggable="true" data-drag-type="site">' +
                     '<div class="delete-corner" data-tab-index="' + tabIndex + '" data-site-index="' + siteIndex + '">' +
                     '<i class="fas fa-times"></i>' +
                     '</div>' +
-                    '<img src="' + iconUrl + '" class="site-icon" alt="' + siteName + '" onerror="this.src=\'../img/index.png\'">' +
-                    '<div class="site-name">' + siteName + '</div>' +
+                    '<img src="' + safeIcon + '" class="site-icon" alt="' + safeName + '" onerror="this.src=\'../img/index.png\'">' +
+                    '<div class="site-name">' + safeName + '</div>' +
                     '</div>';
             }).join('');
         }
@@ -1770,8 +1772,8 @@
                     <div class="delete-corner" data-site-index="${index}" data-special="true">
                         <i class="fas fa-times"></i>
                     </div>
-                    <img src="${iconUrl}" alt="${site.name}" class="site-icon" onerror="this.src='../img/index.png'">
-                    <div class="site-name">${site.name}</div>
+                    <img src="${escapeHtml(iconUrl)}" alt="${escapeHtml(site.name)}" class="site-icon" onerror="this.src='../img/index.png'">
+                    <div class="site-name">${escapeHtml(site.name)}</div>
                 `;
                 specialSitesContainer.appendChild(siteCard);
 
@@ -1927,7 +1929,7 @@
             if (!common) return;
             try {
                 common.showLoading('正在同步版本信息...');
-                const response = await fetch('../../data/version-history.json?t=' + Date.now());
+                const response = await fetch('../../data/version-history.json', { cache: 'no-cache' });
                 if (!response.ok) throw new Error('读取 version-history.json 失败');
                 const historyData = await response.json();
                 
@@ -3093,18 +3095,14 @@
             for (const engine of searchEngines) {
                 const startTime = performance.now();
                 try {
-                    // 使用CORS代理服务来绕过跨域限制
-                    // 注意：实际使用时可能需要更换为更可靠的代理服务
-                    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(engine.url);
-
+                    // 直连探测：no-cors 允许跨域发起请求（响应为 opaque），不经过任何第三方代理
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 延长超时时间到5秒
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-                    await fetch(proxyUrl, {
-                        method: 'GET', // 使用GET而不是HEAD，有些代理可能不支持HEAD
-                        headers: {
-                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                        },
+                    await fetch(engine.url, {
+                        method: 'GET',
+                        mode: 'no-cors',
+                        cache: 'no-store',
                         signal: controller.signal
                     });
 
@@ -3148,7 +3146,7 @@
             if (successCount > 0) {
                 common.showAlert(`成功检测到${successCount}个搜索引擎的连接速度`, 'success');
             } else {
-                common.showAlert('所有搜索引擎连接检测失败，可能是代理服务问题或网络限制', 'warning');
+                common.showAlert('所有搜索引擎连接检测失败，可能是网络限制或浏览器拦截了跨域探测', 'warning');
             }
         }
 

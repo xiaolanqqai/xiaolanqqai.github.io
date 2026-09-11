@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 
 <head>
 	<meta charset="utf-8" />
+	<meta name="robots" content="noindex, nofollow">
 	<title>Xiaolan - Secure MM</title>
 	<!-- 模块化 Header 组件 -->
 	<script src="../js/components/header-component.js"></script>
 	<link rel="stylesheet" href="../css/manager-styles.css">
-	<script type="text/javascript" src="../js/jquery-3.5.1.min.js"></script>
+	<script type="text/javascript" src="../js/mm-crypto.js"></script>
 	<style>
 		/* 页面特定样式 - 仅保留未标准化的动画 */
 		@keyframes shake {
@@ -64,7 +65,7 @@
 			<div class=" container-fluid">
 				<div class="float-end">
 					<span class="badge text-black-50">
-						<a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow" target="_blank">Dev</a> • 
+						<a href="https://xiaolanqqai-sturdy-journey-97xqj446r6wfpw6v.github.dev/" rel="nofollow noopener noreferrer" target="_blank">Dev</a> • 
 						<a id="uptime1" href="Develop.html">加载中...</a>
 					</span>
 					<span id="state1" class="badge text-bg-success">加载中...</span>
@@ -77,9 +78,9 @@
 	<!-- 模块化 Background 组件 -->
 	<script src="../js/components/background-component.js"></script>
 	<script>
-		$('img').on("error", function () {
-			$(this).attr('src', '../img/index.png');
-		});
+		document.addEventListener('error', function (e) {
+			if (e.target && e.target.tagName === 'IMG') e.target.src = '../img/index.png';
+		}, true);
 	</script>
 	<script src="../js/foot.js"></script>
 	<script src="../js/dark-mode.js"></script>
@@ -95,60 +96,12 @@
 		const MAX_ERRORS = 3;
 		const LOCKOUT_DURATION = 24 * 60 * 60 * 1000; // 24小时
 
-		// AES加密解密功能 - 与MM-generator.html保持一致
-		class AESUtil {
-			// AES-256-CBC解密
-			static decrypt(encryptedData, password) {
-				const combined = new Uint8Array(atob(encryptedData).split('').map(char => char.charCodeAt(0)));
-				const salt = combined.slice(0, 16);
-				const iv = combined.slice(16, 32);
-				const encrypted = combined.slice(32);
-				
-				const encoder = new TextEncoder();
-				const passwordData = encoder.encode(password.padEnd(32, ' '));
-				
-				return window.crypto.subtle.importKey(
-					'raw',
-					passwordData,
-					{ name: 'PBKDF2' },
-					false,
-					['deriveKey']
-				).then(key => {
-					return window.crypto.subtle.deriveKey(
-						{
-							name: 'PBKDF2',
-							salt: salt,
-							iterations: 100000,
-							hash: 'SHA-256'
-						},
-						key,
-						{
-							name: 'AES-CBC',
-							length: 256
-						},
-						false,
-						['decrypt']
-					);
-				}).then(key => {
-					return window.crypto.subtle.decrypt(
-						{
-							name: 'AES-CBC',
-							iv: iv
-						},
-						key,
-						encrypted
-					);
-				}).then(decrypted => {
-					const decoder = new TextDecoder();
-					return decoder.decode(decrypted);
-				});
-			}
-		}
+		// 加解密统一由 js/mm-crypto.js 提供（window.MMCrypto）
 
 		// 初始化
 		document.addEventListener('DOMContentLoaded', function () {
 			// 加载版本信息
-			fetch('../data/nav-data.json')
+			fetch('../data/nav-data.json', { cache: 'no-cache' })
 				.then(response => response.json())
 				.then(data => {
 					loadVersionInfo(data);
@@ -322,7 +275,7 @@
 
 		// 加载MM.json文件
 		function loadMMFile() {
-			fetch('../data/MM.json')
+			fetch('../data/MM.json', { cache: 'no-store' })
 				.then(response => {
 					if (!response.ok) {
 						throw new Error('无法加载MM.json文件');
@@ -340,10 +293,9 @@
 
 		// 尝试解密
 		async function attemptDecryption() {
-			console.log('开始尝试解密，当前密码:', currentPassword);
 			try {
 				// 加载MM.json文件
-				const response = await fetch('../data/MM.json?t=' + new Date().getTime());
+				const response = await fetch('../data/MM.json', { cache: 'no-store' });
 				if (!response.ok) {
 					throw new Error('无法加载MM.json文件');
 				}
@@ -371,42 +323,33 @@
 							atob(cleanStr);
 						}
 					} catch (e) {
-						console.log('atob失败，判定为二进制数据');
 						isBinary = true;
 					}
 				}
 				
 				if (isBinary) {
-					console.log('检测到二进制数据，转换为Base64...');
 					const binaryStr = String.fromCharCode.apply(null, new Uint8Array(arrayBuffer));
 					encryptedContent = btoa(binaryStr);
 				} else {
 					encryptedContent = textContent;
 					// 检查并移除data URL前缀
 					if (encryptedContent.startsWith('data:application/json;base64,')) {
-						console.log('检测到data URL前缀，移除它...');
 						encryptedContent = encryptedContent.replace('data:application/json;base64,', '');
 					}
 				}
 
-				console.log('处理后的内容长度:', encryptedContent.length);
-				console.log('文件内容前50个字符:', encryptedContent.substring(0, 50));
 
 				// 尝试解密
 				let decryptedContent;
 				try {
-					// 直接使用AESUtil.decrypt解密，因为MM.json是base64加密的
-					console.log('开始解密...');
-					decryptedContent = await AESUtil.decrypt(encryptedContent, currentPassword);
-					console.log('解密成功，解密内容:', decryptedContent);
+					// 直接使用 MMCrypto 解密，MM.json 为 base64 加密内容
+					decryptedContent = await MMCrypto.decrypt(encryptedContent, currentPassword);
 				} catch (e) {
 					console.error('解密失败:', e);
 					// 如果解密失败，可能是明文JSON
 					try {
-						console.log('尝试解析为明文JSON...');
 						JSON.parse(encryptedContent);
 						decryptedContent = encryptedContent;
-						console.log('解析明文JSON成功');
 					} catch (jsonError) {
 						console.error('解析明文JSON也失败:', jsonError);
 						// 不是明文JSON，解密确实失败
@@ -415,7 +358,6 @@
 				}
 
 				// 解密成功
-				console.log('准备显示解密内容');
 				displayDecryptedContent(decryptedContent);
 				resetLockout();
 			} catch (error) {
@@ -453,15 +395,15 @@
 							<div class="card h-100 shadow-sm border-0 bg-white">
 								<div class="card-body">
 									<h5 class="card-title text-primary border-bottom pb-2 mb-3">
-										<i class="fas fa-globe me-2"></i>${entry.platform}
+										<i class="fas fa-globe me-2"></i>${escapeHtml(entry.platform)}
 									</h5>
 									<p class="card-text mb-2">
 										<i class="fas fa-user me-2 text-secondary"></i>
-										<strong>账号:</strong> ${entry.accountType}
+										<strong>账号:</strong> ${escapeHtml(entry.accountType)}
 									</p>
 									<p class="card-text">
 										<i class="fas fa-key me-2 text-secondary"></i>
-										<strong>模式:</strong> <span class="badge bg-info text-dark">${entry.passwordPattern || '无'}</span>
+										<strong>模式:</strong> <span class="badge bg-info text-dark">${escapeHtml(entry.passwordPattern || '无')}</span>
 									</p>
 								</div>
 							</div>

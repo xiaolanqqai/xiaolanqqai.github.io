@@ -4,6 +4,7 @@ var RENDERER = {
 	MAX_INTERVAL_COUNT : 50,
 	INIT_HEIGHT_RATE : 0.5,
 	THRESHOLD : 50,
+	WATCH_INTERVAL : 80,
 	
 	init : function(){
 		this.setParameters();
@@ -13,10 +14,13 @@ var RENDERER = {
 		this.render();
 	},
 	setParameters : function(){
-		this.$window = $(window);
-		this.$container = $('#jsi-flying-fish-container');
-		this.$canvas = $('<canvas />');
-		this.context = this.$canvas.appendTo(this.$container).get(0).getContext('2d');
+		this.container = document.getElementById('jsi-flying-fish-container');
+		if(!this.container){
+			return;
+		}
+		this.canvas = document.createElement('canvas');
+		this.container.appendChild(this.canvas);
+		this.context = this.canvas.getContext('2d');
 		this.points = [];
 		this.fishes = [];
 		this.watchIds = [];
@@ -48,10 +52,11 @@ var RENDERER = {
 		this.fishes.length = 0;
 		this.watchIds.length = 0;
 		this.intervalCount = this.MAX_INTERVAL_COUNT;
-		this.width = this.$container.width();
-		this.height = this.$container.height();
+		this.width = this.container.clientWidth;
+		this.height = this.container.clientHeight;
 		this.fishCount = this.FISH_COUNT * this.width / 500 * this.height / 500;
-		this.$canvas.attr({width : this.width, height : this.height});
+		this.canvas.setAttribute('width', this.width);
+		this.canvas.setAttribute('height', this.height);
 		this.reverse = false;
 		
 		this.fishes.push(new FISH(this));
@@ -59,8 +64,8 @@ var RENDERER = {
 	},
 	watchWindowSize : function(){
 		this.clearTimer();
-		this.tmpWidth = this.$container.width();
-		this.tmpHeight = this.$container.height();
+		this.tmpWidth = this.container.clientWidth;
+		this.tmpHeight = this.container.clientHeight;
 		this.watchIds.push(setTimeout(this.jdugeToStopResize, this.WATCH_INTERVAL));
 	},
 	clearTimer : function(){
@@ -69,8 +74,8 @@ var RENDERER = {
 		}
 	},
 	jdugeToStopResize : function(){
-		var width = this.$container.width(),
-			height = this.$container.height(),
+		var width = this.container.clientWidth,
+			height = this.container.clientHeight,
 			stopped = (width == this.tmpWidth && height == this.tmpHeight);
 			
 		this.tmpWidth = width;
@@ -81,17 +86,25 @@ var RENDERER = {
 		}
 	},
 	bindEvent : function(){
-		this.$window.on('resize', this.watchWindowSize);
-		this.$container.on('mouseenter', this.startEpicenter);
-		this.$container.on('mousemove', this.moveEpicenter);
-		this.$container.on('click', this.reverseVertical);
+		window.addEventListener('resize', this.watchWindowSize);
+		this.container.addEventListener('mouseenter', this.startEpicenter);
+		this.container.addEventListener('mousemove', this.moveEpicenter);
+		this.container.addEventListener('click', this.reverseVertical);
 	},
 	getAxis : function(event){
-		var offset = this.$container.offset();
+		var offset = this.getOffset();
 		
 		return {
-			x : event.clientX - offset.left + this.$window.scrollLeft(),
-			y : event.clientY - offset.top + this.$window.scrollTop()
+			x : event.clientX - offset.left + window.pageXOffset,
+			y : event.clientY - offset.top + window.pageYOffset
+		};
+	},
+	getOffset : function(){
+		var rect = this.container.getBoundingClientRect();
+		
+		return {
+			left : rect.left + window.pageXOffset,
+			top : rect.top + window.pageYOffset
 		};
 	},
 	startEpicenter : function(event){
@@ -140,6 +153,9 @@ var RENDERER = {
 	},
 	render : function(){
 		requestAnimationFrame(this.render);
+		if(!this.context){
+			return;
+		}
 		this.controlStatus();
 		this.context.clearRect(0, 0, this.width, this.height);
 		this.context.fillStyle = 'hsl(0, 0%, 95%)';

@@ -1,5 +1,3 @@
-window.onload = () => Particles.init({ selector: '.background' });
-
 function loadVersionInfo(data) {
     const el = document.getElementById('uptime1');
     if (data.version) {

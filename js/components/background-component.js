@@ -166,10 +166,8 @@
     // --- Init ---
     const initBackground = async () => {
         try {
-            if (typeof jQuery === 'undefined') await loadScript(`${getBasePath()}js/jquery-3.5.1.min.js`);
             await Promise.all([
                 loadScript(`${getBasePath()}js/foot.js`),
-                loadScript(`${getBasePath()}js/dark-mode.js`),
                 loadScript(`${getBasePath()}js/fish.js`)
             ]);
             ParticleSystem.init();

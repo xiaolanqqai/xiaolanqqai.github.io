@@ -38,13 +38,9 @@
     // --- Load search logic ---
     const loadSearchLogic = () => {
         if (typeof submitFn === 'function') return;
-        if (window.jQuery) {
-            const s = document.createElement('script');
-            s.src = `${getBasePath()}js/search_ajx.js`;
-            document.body.appendChild(s);
-        } else {
-            setTimeout(loadSearchLogic, 50);
-        }
+        const s = document.createElement('script');
+        s.src = `${getBasePath()}js/search_ajx.js`;
+        document.body.appendChild(s);
     };
 
     const {readyState} = document;

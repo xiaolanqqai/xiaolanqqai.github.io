@@ -77,6 +77,16 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
   - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
   - [Font Awesome 图标库](https://fontawesome.com/icons)
 
+BETA 4.5.5-2026-09-10
+1：安全加固：新增全站 `escapeHtml` / `safeUrl` 工具函数，修复百度联想词、局域网扫描结果标题、导航链接共 3 处 DOM 注入点；管理页停止注入流量分析并加 `noindex`
+2：访问边界收敛：新增 `robots.txt` 屏蔽管理目录与保险库页面，全站外链补齐 `rel="noopener noreferrer"`
+3：加密实现合并：新增 `js/mm-crypto.js` 作为站点唯一 AES 实现（PBKDF2-SHA256 10 万次 + AES-256-CBC），经等价性测试与旧实现逐字节一致，`MM.json` 无需重新加密；移除会打印明文口令的调试日志
+4：依赖精简：移除 jQuery 与 particles.js 依赖，`fish.js` / `search_ajx.js` 移植为原生实现，删除未被任何页面引用的 `css/index.css`
+5：第三方资源收敛：FontAwesome / Bootstrap 改回本地引用，STP 页面 three.js 落地本地 `vendor` 目录并为 occt-import-js 补充 SRI 校验，下线 allorigins 代理探测
+6：性能优化：FontAwesome 字体子集化（258KB → 7KB，保留全部在用字形），统一数据文件加载缓存策略，移除逐资源 `console.log`
+7：无障碍与规范：补齐页面 `lang` 属性，移除 `user-scalable=no`，修复视口设置
+8：版本信息同步：站点版本号与网站数据日期对齐至本次发布，依赖列表更新为 Bootstrap 5.3.2
+
 BETA 4.5.4-2026-07-12
 1：工具页架构升级：将 `index/Tool.html` 移动并重命名为 `index/Tool/Network Tool.html`，原位置改为工具跳转总页面 `index/tool.html`
 2：工具跳转页：新增 `index/tool.html` 作为工具项目跳转页面，读取 `data/tool-projects.json` 动态渲染可用的单页工具卡片

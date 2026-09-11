@@ -211,11 +211,11 @@
                     listItem.innerHTML = `
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="mb-1">${site.name || site.title || '未命名'}</h5>
-                                <p class="mb-0 text-muted">${site.description || site.url}</p>
+                                <h5 class="mb-1">${escapeHtml(site.name || site.title || '未命名')}</h5>
+                                <p class="mb-0 text-muted">${escapeHtml(site.description || site.url)}</p>
                             </div>
                             <div>
-                                <a href="${site.url}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                                <a href="${safeUrl(site.url)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary me-2">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
                                 <button class="btn btn-sm btn-outline-danger remove-favorite" data-id="${site.id}">
@@ -306,16 +306,17 @@
                     const tr = document.createElement('tr');
                     tr.style.cursor = 'pointer';
                     tr.innerHTML = `
-                        <td><input type="checkbox" class="history-item-checkbox" data-url="${record.url}" data-title="${record.title}" data-count="${record.count}"></td>
-                        <td class="text-truncate" style="max-width: 200px;" title="${record.title}">${record.title}</td>
-                        <td class="text-truncate" style="max-width: 300px;"><a href="${record.url}" target="_blank" class="history-link">${record.url}</a></td>
+                        <td><input type="checkbox" class="history-item-checkbox" data-url="${escapeHtml(record.url)}" data-title="${escapeHtml(record.title)}" data-count="${escapeHtml(record.count)}"></td>
+                        <td class="text-truncate" style="max-width: 200px;" title="${escapeHtml(record.title)}">${escapeHtml(record.title)}</td>
+                        <td class="text-truncate" style="max-width: 300px;"><a href="${safeUrl(record.url)}" target="_blank" rel="noopener noreferrer" class="history-link">${escapeHtml(record.url)}</a></td>
                         <td><span class="badge bg-info">${record.count}</span></td>
                     `;
 
                     // 点击行时打开链接（排除点击复选框和链接本身的情况）
                     tr.addEventListener('click', (e) => {
                         if (!e.target.classList.contains('history-item-checkbox') && e.target.tagName !== 'A') {
-                            window.open(record.url, '_blank');
+                            const targetUrl = safeUrl(record.url);
+                            if (targetUrl) window.open(targetUrl, '_blank', 'noopener');
                         }
                     });
 
@@ -394,7 +395,7 @@
                         common.showLoading('正在更新导航数据...');
 
                         // 获取当前的 nav-data.json
-                        const response = await fetch('../../data/nav-data.json?t=' + Date.now());
+                        const response = await fetch('../../data/nav-data.json', { cache: 'no-cache' });
                         if (!response.ok) throw new Error('读取 nav-data.json 失败');
                         const navData = await response.json();
 
@@ -473,7 +474,7 @@
             // 本地同步按钮点击
             syncLocalBtn.addEventListener('click', async function () {
                 try {
-                    const response = await fetch('../../data/local-bookmarks.json?t=' + Date.now());
+                    const response = await fetch('../../data/local-bookmarks.json', { cache: 'no-cache' });
                     if (!response.ok) throw new Error('未找到本地同步文件，请先运行 scripts/get_bookmarks.py');
 
                     const data = await response.json();

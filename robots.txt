@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /index/manager/
+Disallow: /index/MM-secure.html
+Disallow: /index/AA.htm
+Disallow: /data/
+Disallow: /js/
