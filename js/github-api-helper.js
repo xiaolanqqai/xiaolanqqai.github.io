@@ -4,24 +4,25 @@ class GitHubAPIHelper {
     }
 
     loadConfig() {
-        const _e = "1f001507190331080815305d502f3c5f223e3c205e3b0a00383c2c3d101e0e3d2f3e572a2004083c14163e5c173955020a0d2305561a1003493b251b09341f1611515d0203270b03552006500a2e3c2e3c2f3559342d07030005253618";
-        const _k = localStorage.getItem('userName') || 'guest';
-        const _d = (hex, key) => {
-            let str = '';
-            for (let i = 0; i < hex.length; i += 2) {
-                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ key.charCodeAt((i / 2) % key.length));
-            }
-            return str;
+        // 安全加固：token 不再硬编码在前端源码（原 XOR 混淆可被离线还原，具备仓库写权限）。
+        // 改由管理员在浏览器控制台注入一次，存 localStorage，长期有效、不进 Git 仓库：
+        //   localStorage.setItem('github_token', 'github_pat_xxx')
+        // 未注入时 isConfigured() 为 false。
+        return {
+            owner: 'xiaolanqqai',
+            repo: 'xiaolanqqai.github.io',
+            branch: 'master'
         };
-
-        return { token: _d(_e, _k), owner: 'xiaolanqqai', repo: 'xiaolanqqai.github.io', branch: 'master' };
     }
 
+    // 每次实时读取存储的 token（localStorage 长期有效，避免构造时缓存为 null）
+    _token() { return localStorage.getItem('github_token'); }
+
     getConfig() { return this.config; }
-    isConfigured() { return !!this.config.token; }
+    isConfigured() { return !!this._token(); }
 
     _headers() {
-        return { 'Authorization': `token ${this.config.token}`, 'Accept': 'application/vnd.github.v3+json' };
+        return { 'Authorization': `token ${this._token()}`, 'Accept': 'application/vnd.github.v3+json' };
     }
 
     _apiUrl(path) {
