@@ -11,14 +11,16 @@
     <div class="search-wrapper">
         <div class="input-holder">
             <input type="text" id="txt" class="search-input" placeholder="Type to search"
+                role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="list"
+                aria-label="搜索" autocomplete="off"
                 onkeyup="searchToggle(this, event);" onkeypress="handleKeyPress(event)" />
-            <button class="search-icon" onclick="searchToggle(this, event);"><span></span></button>
+            <button class="search-icon" onclick="searchToggle(this, event);" aria-label="展开搜索"><span></span></button>
         </div>
         <span class="close" onclick="searchToggle(this, event);"></span>
         <div class="result-container"></div>
     </div>
     <div id="search_ajx">
-        <ul id="list" class="d-none"></ul>
+        <ul id="list" class="d-none" role="listbox" aria-label="搜索候选词"></ul>
     </div>
 </form>`;
 

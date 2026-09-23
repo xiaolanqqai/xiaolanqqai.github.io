@@ -166,12 +166,14 @@ body {
 }
 
 /* 搜索建议 (AJAX) 样式 */
+/* 相对 #search-engine-container（position:relative，高 100px）定位，与 .search-wrapper 同一包含块，
+   这样 top:100% 恰好落在搜索框（70px 高、垂直居中，底边在 85px）下方 15px，不会与搜索框重叠。 */
 #search_ajx {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 50%;
   z-index: 1000;
   transform: translateX(-50%);
-  margin-top: 20px;
-  left: 50%;
 }
 #search_ajx ul {
   text-align: left;
@@ -199,6 +201,7 @@ body {
   padding: 0 20px;
   transition: background 0.2s;
 }
-#list li a:hover {
+#list li a:hover,
+#list li a.active {
   background: var(--bg-light);
 }

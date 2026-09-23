@@ -1658,7 +1658,7 @@
                     '<div class="delete-corner" data-tab-index="' + tabIndex + '" data-site-index="' + siteIndex + '">' +
                     '<i class="fas fa-times"></i>' +
                     '</div>' +
-                    '<img src="' + safeIcon + '" class="site-icon" alt="' + safeName + '" onerror="this.src=\'../img/index.png\'">' +
+                    '<img src="' + safeIcon + '" class="site-icon" alt="' + safeName + '" onerror="this.src=\'../../img/index.png\'">' +
                     '<div class="site-name">' + safeName + '</div>' +
                     '</div>';
             }).join('');
@@ -1772,7 +1772,7 @@
                     <div class="delete-corner" data-site-index="${index}" data-special="true">
                         <i class="fas fa-times"></i>
                     </div>
-                    <img src="${escapeHtml(iconUrl)}" alt="${escapeHtml(site.name)}" class="site-icon" onerror="this.src='../img/index.png'">
+                    <img src="${escapeHtml(iconUrl)}" alt="${escapeHtml(site.name)}" class="site-icon" onerror="this.src='../../img/index.png'">
                     <div class="site-name">${escapeHtml(site.name)}</div>
                 `;
                 specialSitesContainer.appendChild(siteCard);

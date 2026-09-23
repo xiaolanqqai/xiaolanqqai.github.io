@@ -5,6 +5,27 @@
   },
   "versions": [
     {
+      "name": "BETA 4.5.7",
+      "date": "2026-09-23",
+      "changes": [
+        "1：候选词健壮性：新增 150ms 输入防抖与「最新请求胜出」序号守卫，丢弃过期响应；改用 `input` + `compositionstart/end` 事件，输入法组合期间不再用拼音误发请求；清空输入框时同时使在途请求失效",
+        "2：候选词跟随当前引擎：候选词链接不再写死百度，改为按当前所选引擎的 URL 模板生成（局域网 IP 前缀索引 0-2 不启用联想词）；搜索框补 `autocomplete=\"off\"` 避免浏览器原生下拉遮挡",
+        "3：键盘与无障碍：候选词支持 ↑↓ 选择、Enter 采用、Esc 关闭，补齐 `combobox`/`listbox`/`option` 角色与 `aria-expanded`、`aria-activedescendant` 等属性",
+        "4：修复样式遮挡：候选词列表由相对视口的 `position:fixed`（且未设 `top`、依赖流布局静态位置）改为相对 `#search-engine-container` 的 `absolute` + `top:100%`，消除列表顶边与搜索框底边 14px 的重叠；键盘高亮复用 hover 的 `--bg-light` 背景，不引入新视觉",
+        "5：清理死代码：移除无任何调用点的 `window.fly`；`index/More.html` 移除未被使用的 `search_ajx.js` 引入；`index.html` 的静态引入改为 `defer`，不再阻塞首屏渲染",
+        "6：修正 Ahmia 接入方式：实测其 `/search/?q=` 在缺少「每次访问都会变化的隐藏 token」时会 302 回首页，静态链接无法完成查询，故由搜索引擎下调为直达入口（与 Aleph、abuse.ch 一致），搜索引擎索引收敛为 0-12"
+      ]
+    },
+    {
+      "name": "BETA 4.5.6",
+      "date": "2026-09-23",
+      "changes": [
+        "1：新增搜索引擎：接入 Alleba（菲律宾）、Daum（韩国）、goo（日本）、DuckDuckGo、Ahmia 共 5 个引擎，同步 `index/More.html` 引擎面板与 `js/search_ajx.js` 模板表（索引 9–13）",
+        "2：新增站点入口：Aleph Open Search 与 abuse.ch Hunting 经实测不支持 URL 查询参数（前者为 SPA、后者走 `POST /ajax/`），以直达入口卡片形式加入引擎面板，不占用搜索引擎索引",
+        "3：依赖信息修正：README 顶部依赖列表同步为 Bootstrap 5.3.2 与网站数据 2026.09.10，移除已下线的 jQuery、Particles 条目"
+      ]
+    },
+    {
       "name": "BETA 4.5.5",
       "date": "2026-09-10",
       "changes": [

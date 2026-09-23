@@ -5,7 +5,6 @@
   <meta charset="utf-8" />
   <title>Xiaolan - More</title>
   <script src="../js/components/header-component.js"></script>
-  <script type="text/javascript" src="../js/search_ajx.js"></script>
 </head>
 <body class="main-content">
   <header class="sticky-header">
@@ -40,6 +39,14 @@
         <div class="more-card"><a href="javascript:a(6)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.yandex.com" loading="lazy"><h6 class="nav-ban-text">Yandex</h6></a></div>
         <div class="more-card"><a href="javascript:a(7)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.bilibili.com" loading="lazy"><h6 class="nav-ban-text">BiliBili</h6></a></div>
         <div class="more-card"><a href="javascript:a(8)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.kuaidi100.com" loading="lazy"><h6 class="nav-ban-text">快递100</h6></a></div>
+        <div class="more-card"><a href="javascript:a(9)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.alleba.com" loading="lazy"><h6 class="nav-ban-text">Alleba</h6></a></div>
+        <div class="more-card"><a href="javascript:a(10)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.daum.net" loading="lazy"><h6 class="nav-ban-text">Daum</h6></a></div>
+        <div class="more-card"><a href="javascript:a(11)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fwww.goo.ne.jp" loading="lazy"><h6 class="nav-ban-text">goo</h6></a></div>
+        <div class="more-card"><a href="javascript:a(12)" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fduckduckgo.com" loading="lazy"><h6 class="nav-ban-text">DuckDuckGo</h6></a></div>
+        <!-- 以下 3 个站点无法用静态 URL 查询：Aleph 是 SPA、abuse.ch 走 POST /ajax/、Ahmia 的 /search/ 需要每次变化的隐藏 token（否则 302 回首页），故作为直达入口，不占搜索引擎位 -->
+        <div class="more-card"><a href="https://ahmia.fi/" rel="nofollow noopener noreferrer" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fahmia.fi" loading="lazy"><h6 class="nav-ban-text">Ahmia</h6></a></div>
+        <div class="more-card"><a href="https://open-search.aleph-networks.eu/en" rel="nofollow noopener noreferrer" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fopen-search.aleph-networks.eu" loading="lazy"><h6 class="nav-ban-text">Aleph</h6></a></div>
+        <div class="more-card"><a href="https://hunting.abuse.ch/" rel="nofollow noopener noreferrer" target="_blank" class="nav-ban-item"><img class="nav-ban-icon" src="https://api.afmax.cn/so/ico/index.php?r=https%3A%2F%2Fhunting.abuse.ch" loading="lazy"><h6 class="nav-ban-text">abuse.ch</h6></a></div>
       </div>
       <div id="nav-content-container"></div>
       <div class="mt-4 d-none" id="aav">
@@ -69,8 +76,9 @@
       if (event.keyCode === 13) { event.preventDefault(); document.getElementById('btn').click(); return false; }
     }
 
-    // 搜索引擎映射
-    const engineNames = ['1.', '2.', '192168', 'Baidu', 'Bing', 'Google.hk', 'Yandex', 'BiliBili', '快递100'];
+    // 搜索引擎映射（索引需与 js/search_ajx.js 的 SEARCH_ENGINES 严格一致）
+    const engineNames = ['1.', '2.', '192168', 'Baidu', 'Bing', 'Google.hk', 'Yandex', 'BiliBili', '快递100',
+      'Alleba', 'Daum', 'goo', 'DuckDuckGo'];
     const engines = [
       v => 'http://192.168.1.' + v,
       v => 'http://192.168.2.' + v,
@@ -80,7 +88,11 @@
       v => 'https://www.google.com.hk/search?q=' + v,
       v => 'https://yandex.com/search/?text=' + v,
       v => 'https://search.bilibili.com/all?keyword=' + v,
-      v => 'https://www.kuaidi100.com/chaxun?com=&nu=' + v
+      v => 'https://www.kuaidi100.com/chaxun?com=&nu=' + v,
+      v => 'https://www.alleba.com/dir.html?q=' + v,
+      v => 'https://search.daum.net/search?q=' + v,
+      v => 'https://search.goo.ne.jp/web.jsp?MT=' + v,
+      v => 'https://duckduckgo.com/?q=' + v
     ];
 
     const oTxt = document.getElementById('txt');
