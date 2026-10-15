@@ -118,6 +118,10 @@
           {
             "name": "虎大ERP",
             "url": "http://192.168.1.8:4000"
+          },
+          {
+            "name": "fnos",
+            "url": "https://fnos.net/xiaolanqqai"
           }
         ]
       },
@@ -867,6 +871,10 @@
           {
             "name": "漫画站",
             "url": "https://www.manhuazhan.com"
+          },
+          {
+            "name": "漫巴士",
+            "url": "https://manbashi.com/"
           }
         ]
       },
@@ -896,6 +904,10 @@
           {
             "name": "poki",
             "url": "https://poki.com/zh"
+          },
+          {
+            "name": "minebbs",
+            "url": "https://mc.minebbs.com/"
           }
         ]
       },
@@ -1205,6 +1217,10 @@
           {
             "name": "JD抢购脚本",
             "url": "https://github.com/tychxn/jd-assistant"
+          },
+          {
+            "name": "太棒了",
+            "url": "https://github.com/jivoi/awesome-osint"
           }
         ]
       },
