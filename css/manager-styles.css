@@ -240,6 +240,7 @@ body {
     background-color: var(--bg-secondary); cursor: pointer;
 }
 .upload-area:hover { border-color: var(--primary-color); background-color: var(--bg-light) }
+.upload-area.dragging { border-color: var(--primary-color); background-color: var(--bg-light) }
 .upload-icon { font-size: 3rem; color: var(--secondary-color); margin-bottom: 15px }
 
 /* Special Section */
@@ -605,3 +606,7 @@ body {
 
 /* Print style override */
 @media print { .manager-nav, .theme-toggle, .progress-container { display: none !important } }
+
+/* AI 上传接口说明代码块 */
+.ai-guide-pre { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 14px 16px; margin-bottom: 12px; max-height: 320px; overflow: auto; font-size: .78rem; line-height: 1.6; white-space: pre-wrap; word-break: break-word }
+.ai-guide-pre code { background: none; padding: 0; color: inherit }

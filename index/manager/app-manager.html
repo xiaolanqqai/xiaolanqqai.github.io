@@ -18,6 +18,25 @@
             <span>正在加载 App 项目数据...</span>
         </div>
 
+        <!-- 拖拽自动归类上传区 -->
+        <div class="card manager-card mb-4">
+            <div class="card-body">
+                <div class="upload-area" id="dropZone">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <h6 class="mb-1">拖拽文件到这里，自动归类并暂存</h6>
+                    <p class="text-muted small mb-3">
+                        按 <code>{项目名}-v{版本}.{扩展名}</code> 命名，会自动归入同名项目；<b>没有对应项目则自动新建</b>。<br>
+                        暂存后点「同步到 GitHub」统一发布；同项目内版本号最大的文件成为下载主文件。
+                    </p>
+                    <label for="dropInput" class="btn btn-sm btn-success mb-0">
+                        <i class="fas fa-folder-open me-1"></i>选择文件
+                    </label>
+                    <input type="file" id="dropInput" class="d-none" multiple>
+                </div>
+                <div id="dropResult" class="mt-3 d-none"></div>
+            </div>
+        </div>
+
         <!-- 功能卡片区域 -->
         <div class="row mb-4 g-3">
             <div class="col-lg-4 col-md-6 col-sm-12">
@@ -80,6 +99,27 @@
         </div>
     </div>
 
+    <!-- AI 上传接口 -->
+    <div class="card manager-card mb-4">
+        <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
+            <span><i class="fas fa-robot me-2"></i>AI 上传接口</span>
+            <button class="btn btn-sm btn-primary" id="copyAiPromptBtn">
+                <i class="fas fa-copy me-1"></i>复制提示词给 AI
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info py-2 mb-3 small">
+                <i class="fas fa-info-circle me-1"></i>
+                接口挂在 <code>window.AppUpdaterAPI</code>，供本地 AI 在<b>本页已打开的标签页</b>内直接发布产物；密钥只存在于本机 localStorage，因此不能用无头或远端浏览器代替。点右上角复制提示词发给 AI 即可（自带「先查已有项目」判断规则与注意事项），也可直接让 AI 读取
+                <a href="/AI.md" id="aiMdLink" target="_blank" rel="noopener noreferrer"><code id="aiMdUrl">/AI.md</code></a>。
+            </div>
+            <pre class="ai-guide-pre"><code id="aiGuideCode"></code></pre>
+            <button class="btn btn-sm btn-outline-secondary" id="copyAiGuideBtn">
+                <i class="fas fa-copy me-1"></i>复制接口说明
+            </button>
+        </div>
+    </div>
+
     <!-- 新建项目模态框 -->
     <div class="modal fade" id="addProjectModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -134,11 +174,13 @@
         let pendingMainFile = {};          // 最新上传文件，用于确定 info.json 的 mainFile: { 项目名: 文件名 }
 
         let projectsContainer, projectCount, dataStatus, addProjectModal, uploadInput;
+        let dropZone, dropInput, dropResult;
         let currentUploadProject = null;
 
         document.addEventListener('DOMContentLoaded', function () {
             initDOMElements();
             setupEventListeners();
+            initAiGuide();
             loadProjects();
             common.log('App 更新管理系统启动', 'info', '页面加载完成');
         });
@@ -148,6 +190,9 @@
             projectCount = document.getElementById('projectCount');
             dataStatus = document.getElementById('dataStatus');
             uploadInput = document.getElementById('uploadInput');
+            dropZone = document.getElementById('dropZone');
+            dropInput = document.getElementById('dropInput');
+            dropResult = document.getElementById('dropResult');
             const modalEl = document.getElementById('addProjectModal');
             if (modalEl) addProjectModal = new bootstrap.Modal(modalEl);
         }
@@ -157,6 +202,43 @@
             document.getElementById('syncToGithubBtn').addEventListener('click', syncToGithub);
             document.getElementById('scanDirBtn').addEventListener('click', scanDirectory);
             uploadInput.addEventListener('change', handleUploadSelect);
+
+            // 拖拽自动归类：拖入文件即按文件名归入项目并暂存
+            dropInput.addEventListener('change', e => {
+                handleDroppedFiles(Array.from(e.target.files || []));
+                dropInput.value = '';
+            });
+            dropZone.addEventListener('click', e => {
+                if (e.target.closest('label') || e.target.tagName === 'INPUT') return;   // 避免与 label 触发重复弹出
+                dropInput.click();
+            });
+            dropZone.addEventListener('dragover', e => {
+                e.preventDefault(); e.stopPropagation();
+                dropZone.classList.add('dragging');
+            });
+            dropZone.addEventListener('dragleave', e => {
+                e.preventDefault(); e.stopPropagation();
+                dropZone.classList.remove('dragging');
+            });
+            dropZone.addEventListener('drop', e => {
+                e.preventDefault(); e.stopPropagation();
+                dropZone.classList.remove('dragging');
+
+                // 文件夹由“目录识别更新”处理，这里只接收文件
+                const items = Array.from(e.dataTransfer.items || []);
+                const hasDir = items.some(it => {
+                    const entry = it.webkitGetAsEntry && it.webkitGetAsEntry();
+                    return entry && entry.isDirectory;
+                });
+                if (hasDir) {
+                    common.showAlert('暂不支持拖入文件夹；已上传到仓库的文件夹请用「目录识别更新」处理', 'warning');
+                    return;
+                }
+                handleDroppedFiles(Array.from(e.dataTransfer.files || []));
+            });
+            // 防止拖到区域外时浏览器直接打开被拖入的文件
+            window.addEventListener('dragover', e => e.preventDefault());
+            window.addEventListener('drop', e => e.preventDefault());
             document.getElementById('addProjectModal').addEventListener('hidden.bs.modal', resetAddForm);
 
             // 项目卡片内的按钮统一走事件委托，避免每次渲染后重新绑定
@@ -187,6 +269,7 @@
                 dataStatus.className = 'data-status no-data p-3 mb-4';
                 dataStatus.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><span>GitHub Token 未配置或无效，请打开顶部“操作日志”面板注入 Token 后刷新</span>';
                 renderProjects();
+                refreshAiGuide();
                 common.log('加载失败：GitHub Token 未配置', 'error', '请在“操作日志”面板的 GitHub Token 注入区保存 Token');
                 return;
             }
@@ -223,18 +306,26 @@
                 common.hideLoading();
                 renderProjects();
                 updateDataStatus();
+                refreshAiGuide();   // 已有项目清单随线上数据刷新，AI 读页面即可判断上传目标
             }
         }
 
         // --- 暂存区与线上数据的合并视图 ---
 
+        // 项目当前“有效文件”清单：线上未删的文件 + 暂存待上传的文件
+        function fileCandidates(projectName) {
+            const online = projects.find(p => p.name === projectName);
+            const deleted = new Set(pendingFileDeletes[projectName] || []);
+            const names = [];
+            if (online) online.files.forEach(f => { if (!deleted.has(f.name) && !names.includes(f.name)) names.push(f.name); });
+            Object.keys(pendingFiles[projectName] || {}).forEach(name => { if (!names.includes(name)) names.push(name); });
+            return names;
+        }
+
         // 计算项目当前的下载主文件：最新上传 > 原有主文件（未被删） > 剩余最后一个文件
         function resolveMainFile(projectName) {
             const online = projects.find(p => p.name === projectName);
-            const deleted = new Set(pendingFileDeletes[projectName] || []);
-            const remaining = [];
-            if (online) online.files.forEach(f => { if (!deleted.has(f.name) && !remaining.includes(f.name)) remaining.push(f.name); });
-            Object.keys(pendingFiles[projectName] || {}).forEach(name => { if (!remaining.includes(name)) remaining.push(name); });
+            const remaining = fileCandidates(projectName);
 
             const uploaded = pendingMainFile[projectName];
             if (uploaded && remaining.includes(uploaded)) return uploaded;
@@ -650,6 +741,124 @@
             await loadProjects();
         }
 
+        // --- 拖拽自动归类 ---
+        // 拖入文件后按文件名归入项目：优先匹配已有项目名，否则从文件名推导项目名（无对应项目则自动新建并暂存）。
+        // 全部改动仍走暂存区，最终由“同步到 GitHub”统一发布。
+
+        const DROP_VERSION_TAIL = /[-_.]v?\d+(?:[._-]\d+)*$/i;   // 形如 -v1.3 / _2.0.1 的版本尾巴
+
+        // 从文件名推导项目名：去扩展名 → 去版本尾巴 → 规范化非法字符
+        function projectNameFromFile(fileName) {
+            const base = fileName.replace(/\.[^.]+$/, '').replace(DROP_VERSION_TAIL, '');
+            return base.replace(/[^A-Za-z0-9_\-.一-龥]+/g, '-').replace(/^[-.]+|[-.]+$/g, '');
+        }
+
+        // 归类决策：返回 { name, isNew }
+        function resolveDropProject(fileName) {
+            const lower = fileName.toLowerCase();
+            const known = projects.map(p => p.name).concat(pendingProjects.map(p => p.name));
+
+            // 1) 文件名以已有项目名开头且紧随分隔符（或 v+数字）→ 归入该项目，取最长匹配
+            let matched = '';
+            known.forEach(name => {
+                const n = name.toLowerCase();
+                if (!n || !lower.startsWith(n) || n.length <= matched.length) return;
+                const next = lower.charAt(n.length);
+                if (next === '' || /[-_.\s]/.test(next) || next === 'v') matched = name;
+            });
+            if (matched) return { name: matched, isNew: false };
+
+            // 2) 推导出的项目名恰好是已有项目
+            const derived = projectNameFromFile(fileName);
+            const exact = known.find(name => name === derived);
+            if (exact) return { name: exact, isNew: false };
+
+            // 3) 推导名 = 已有项目名 + 版本尾巴（如 MyApp2）→ 仍归入已有项目，避免误建名字相近的项目
+            const owner = known
+                .filter(name => name && derived.toLowerCase().startsWith(name.toLowerCase())
+                    && /^[-_.]?v?\d/i.test(derived.slice(name.length)))
+                .sort((a, b) => b.length - a.length)[0];
+            if (owner) return { name: owner, isNew: false };
+
+            return { name: derived, isNew: true };
+        }
+
+        async function handleDroppedFiles(files) {
+            if (!files.length) return;
+
+            const grouped = {};            // { 项目名: [文件名] }
+            const createdProjects = [];    // 本次自动新建的项目
+            const rejected = [];
+
+            for (const file of files) {
+                if (file.size > MAX_FILE_SIZE) {
+                    rejected.push(`${file.name}（超过 100MB，请改用 GitHub Releases）`);
+                    continue;
+                }
+                const target = resolveDropProject(file.name);
+                if (!target.name || !PROJECT_NAME_PATTERN.test(target.name)) {
+                    rejected.push(`${file.name}（无法推导出合法项目名）`);
+                    continue;
+                }
+                try {
+                    const content = await file.arrayBuffer();
+                    if (!pendingFiles[target.name]) pendingFiles[target.name] = {};
+                    pendingFiles[target.name][file.name] = { content: content, size: file.size };
+                    if (target.isNew && !pendingProjects.some(p => p.name === target.name)) {
+                        pendingProjects.push({ name: target.name, description: '' });   // 简介留空，可在同步前补充
+                        createdProjects.push(target.name);
+                    }
+                    if (!grouped[target.name]) grouped[target.name] = [];
+                    grouped[target.name].push(file.name);
+                } catch (error) {
+                    rejected.push(`${file.name}（读取失败：${error.message}）`);
+                }
+            }
+
+            // 主文件按“项目内全部有效文件（线上未删 + 全部暂存）中版本号最大者”确定，
+            // 与“目录识别更新”口径一致；分多次拖入时不会被本批文件覆盖掉更高版本
+            Object.keys(grouped).forEach(projectName => {
+                const picked = pickMainFile(fileCandidates(projectName));
+                if (picked) pendingMainFile[projectName] = picked;
+            });
+
+            renderProjects();
+            updateDataStatus();
+            renderDropResult(grouped, createdProjects, rejected);
+
+            const total = Object.keys(grouped).reduce((n, k) => n + grouped[k].length, 0);
+            if (total) {
+                common.showAlert(`已暂存 ${total} 个文件，点击“同步到 GitHub”发布`, 'success');
+                common.log('拖拽暂存文件', 'success',
+                    `文件 ${total} 个，涉及项目 ${Object.keys(grouped).length} 个${createdProjects.length ? `，自动新建项目 ${createdProjects.length} 个` : ''}`);
+            }
+            rejected.forEach(item => common.log('拖拽跳过文件', 'warning', item));
+        }
+
+        function renderDropResult(grouped, createdProjects, rejected) {
+            if (!dropResult) return;
+            const names = Object.keys(grouped);
+            if (!names.length && !rejected.length) { dropResult.classList.add('d-none'); return; }
+
+            const total = names.reduce((n, k) => n + grouped[k].length, 0);
+            const rows = names.map(projectName => {
+                const list = grouped[projectName].map(fileName =>
+                    pendingMainFile[projectName] === fileName
+                        ? `${escapeHtml(fileName)} <span class="badge bg-primary">主文件</span>`
+                        : escapeHtml(fileName)).join('、');
+                const isNew = createdProjects.includes(projectName);
+                return `<li><b>${escapeHtml(projectName)}</b>${isNew ? ' <span class="badge bg-warning text-dark">自动新建</span>' : ''} ← ${list}</li>`;
+            }).join('');
+
+            dropResult.className = 'mt-3';
+            dropResult.innerHTML = `
+                <div class="alert alert-success py-2 mb-0 small">
+                    <div><i class="fas fa-check-circle me-1"></i>已暂存 ${total} 个文件，点「同步到 GitHub」发布${createdProjects.length ? `；自动新建项目 ${createdProjects.length} 个（简介为空，可点项目卡片补充）` : ''}</div>
+                    ${names.length ? `<ul class="mb-0 mt-1 ps-3">${rows}</ul>` : ''}
+                    ${rejected.length ? `<div class="mt-1 text-danger"><i class="fas fa-exclamation-triangle me-1"></i>跳过 ${rejected.length} 个：${rejected.map(escapeHtml).join('、')}</div>` : ''}
+                </div>`;
+        }
+
         // --- 同步 ---
 
         function buildInfoContent(projectName) {
@@ -758,6 +967,259 @@
                 updateDataStatus();
             }
         }
+
+        // --- AI 上传接口 ---
+        // 供本地 AI 在同标签页内直接发布产物。token 只存在于本机 localStorage，
+        // 所以必须由本地浏览器发起，无头/远端环境拿不到凭据。
+
+        function assertReady() {
+            if (!window.githubHelper || !window.githubHelper.isConfigured()) {
+                throw new Error('GitHub Token 未配置：请在本页“操作日志”面板的 GitHub Token 注入区保存后再调用');
+            }
+        }
+
+        async function readInfo(projectName) {
+            try {
+                const info = await window.githubHelper.getFile(`${ROOT_DIR}/${projectName}/${INFO_FILE}`);
+                if (info && info.content) return JSON.parse(decodeBase64Utf8(info.content));
+            } catch (error) {
+                return null;   // 项目尚无 info.json
+            }
+            return null;
+        }
+
+        // 已有项目清单：让 AI 无需摸索即可判断“已有哪些项目、已有项目该传到哪个文件夹”
+        function aiProjectsText() {
+            if (!window.githubHelper || !window.githubHelper.isConfigured()) {
+                return '【当前已有项目】需先在本页“操作日志”面板注入 GitHub Token 才能读取。';
+            }
+            if (!projects.length) {
+                return '【当前已有项目】无 —— AppUpdater 目录为空，首次上传时接口会自动创建项目。';
+            }
+            const lines = projects.map(p => {
+                const base = `${window.location.origin}/${ROOT_DIR}/${encodeURIComponent(p.name)}/`;
+                const url = p.mainFile ? base + encodeURIComponent(p.mainFile) : base;
+                return `· ${p.name} —— 简介：${p.description || '（无）'}；主文件：${p.mainFile || '（无，上传后设为主文件）'}；文件 ${p.files.length} 个；固定直链：${url}`;
+            });
+            return [`【当前已有项目】共 ${projects.length} 个（已有应用请把 project 传为下列项目名，上传进对应文件夹，勿另建相近项目）`]
+                .concat(lines).join('\n');
+        }
+
+        function aiGuideText() {
+            const origin = window.location.origin;
+            return [
+                '【本地 AI 上传 AppUpdater 产物 · 使用说明】',
+                '',
+                `页面：${origin}/index/manager/app-manager.html`,
+                '前提：GitHub token 保存在本机浏览器 localStorage，必须在已打开本站的本地浏览器标签页内执行。',
+                '就绪判断：等待 window.AppUpdaterAPI 存在后再调用（页面加载完成即有）。',
+                '',
+                '【第一步：先确认目标项目是否已存在】',
+                '先执行 await window.AppUpdaterAPI.list()，或直接看下方“当前已有项目”清单，再决定上传目标：',
+                '· 已存在 → project 必须传该已有项目名，文件上传到它的文件夹内；切勿为同一应用新建名字相近的项目',
+                '  （如 MyApp / MyApp-v2 / MyAppNew），否则包会散落到多个文件夹，App 端已在用的固定直链会失效',
+                '· 不存在 → 才新建项目；项目名用应用的稳定英文名（如 MyApp），版本号只体现在文件名上',
+                '',
+                aiProjectsText(),
+                '',
+                '【文件命名建议】',
+                '{项目名}-v{版本}.{扩展名}，例如 MyApp-v1.3.apk',
+                '主文件按文件名自然排序识别“较新版本”（v1.10 > v1.2），文件名带版本号才会被正确识别为最新',
+                '',
+                '方式一（推荐，免 base64，适合大文件）',
+                '1) 用浏览器自动化把本地文件塞进页面隐藏输入框 #uploadInput（如 CDP DOM.setFileInputFiles / Playwright setInputFiles）',
+                "2) 在该页面上下文执行：await window.AppUpdaterAPI.publishInputFiles('MyApp', { description: '我的应用', setMain: true })",
+                '',
+                '方式二（已有 base64，或小文件）',
+                'await window.AppUpdaterAPI.publish({',
+                "  project: 'MyApp',          // 必填，已有项目请填已有项目名；不存在则自动创建",
+                "  fileName: 'MyApp-v1.2.apk',// 必填，不能含路径分隔符，不能是 info.json",
+                "  base64: '<base64 内容>',   // 可用 base64 / content: ArrayBuffer / blob: File 之一",
+                "  description: '我的应用',   // 可选，项目不存在时用它生成 info.json",
+                '  setMain: true              // 可选，默认 true：把该文件设为主文件',
+                '})',
+                '',
+                '只读查询',
+                'await window.AppUpdaterAPI.list()   // 返回各项目、主文件与固定下载直链',
+                'window.AppUpdaterAPI.help()         // 重新输出本说明',
+                '',
+                '约定与限制',
+                '· 项目名允许字母/数字/下划线/短横线/点/中文；项目不存在会自动创建并生成 info.json，无需先建项目',
+                '· 单文件上限 100MB（GitHub Contents API 限制）',
+                '· 调用后立即写入仓库并生效，无需点“同步到 GitHub”（该按钮只处理页面内暂存）',
+                `· 固定下载直链格式：${origin}/AppUpdater/<项目名>/<主文件>`
+            ].join('\n');
+        }
+
+        // 投给 AI 的现成提示词：指向静态 /AI.md，并附上本次已有项目摘要，避免 AI 另建相近项目
+        function aiPromptText() {
+            const origin = window.location.origin;
+            const brief = projects.length
+                ? projects.map(p => `${p.name}（主文件 ${p.mainFile || '无'}）`).join('、')
+                : '无（AppUpdater 目录为空）';
+            return [
+                `请读取 ${origin}/AI.md ，按其中的提示词与注意事项，把本地文件上传到本站的 AppUpdater。`,
+                '',
+                '要上传的文件：<本地文件绝对路径>',
+                '版本号/文件名：<建议形如 MyApp-v1.3.apk，带版本号>',
+                '目标项目：<已有项目名，或新建项目名>',
+                '',
+                `当前已有项目：${brief}`,
+                '已有应用请上传到对应的已有项目，不要新建名字相近的项目（否则 App 端已在用的固定直链会失效）。'
+            ].join('\n');
+        }
+
+        function refreshAiGuide() {
+            const codeEl = document.getElementById('aiGuideCode');
+            if (codeEl) codeEl.textContent = aiGuideText();
+        }
+
+        function initAiGuide() {
+            refreshAiGuide();
+
+            // 静态提示词地址：以真实域名回填链接，便于直接发给 AI
+            const mdUrl = `${window.location.origin}/AI.md`;
+            const mdCode = document.getElementById('aiMdUrl');
+            const mdLink = document.getElementById('aiMdLink');
+            if (mdCode) mdCode.textContent = mdUrl;
+            if (mdLink) mdLink.href = mdUrl;
+
+            const copy = text => navigator.clipboard.writeText(text)
+                .then(() => common.showAlert('已复制到剪贴板', 'success'))
+                .catch(() => window.prompt('请手动复制：', text));
+
+            const promptBtn = document.getElementById('copyAiPromptBtn');
+            if (promptBtn) promptBtn.addEventListener('click', () => copy(aiPromptText()));
+
+            const guideBtn = document.getElementById('copyAiGuideBtn');
+            if (guideBtn) guideBtn.addEventListener('click', () => copy(aiGuideText()));
+        }
+
+        window.AppUpdaterAPI = {
+            version: 1,
+
+            // 输出使用说明（同时打印到控制台，便于 AI 自行读取）
+            help() {
+                const text = aiGuideText();
+                console.log(text);
+                return text;
+            },
+
+            // 发布单个文件：项目不存在则一并创建 info.json
+            async publish(options) {
+                const opt = options || {};
+                const project = String(opt.project || '').trim();
+                const fileName = String(opt.fileName || '').trim();
+
+                assertReady();
+                if (!project || !PROJECT_NAME_PATTERN.test(project)) {
+                    throw new Error('project 非法：仅允许字母/数字/下划线/短横线/点/中文');
+                }
+                if (!fileName || fileName === INFO_FILE || fileName.includes('/')) {
+                    throw new Error('fileName 非法：不能为空、不能含路径分隔符、不能是 info.json');
+                }
+
+                // 内容来源：base64 优先，其次 ArrayBuffer/Uint8Array、Blob/File、纯文本
+                let base64 = '', size = 0;
+                if (typeof opt.base64 === 'string' && opt.base64.trim()) {
+                    base64 = opt.base64.replace(/\s/g, '');
+                    size = Math.floor(base64.length * 3 / 4);
+                } else if (opt.blob && typeof opt.blob.arrayBuffer === 'function') {
+                    const buffer = await opt.blob.arrayBuffer();
+                    base64 = GitHubAPIHelper.arrayBufferToBase64(buffer);
+                    size = buffer.byteLength;
+                } else if (opt.content && typeof opt.content.byteLength === 'number') {
+                    base64 = GitHubAPIHelper.arrayBufferToBase64(opt.content);
+                    size = opt.content.byteLength;
+                } else if (typeof opt.content === 'string') {
+                    base64 = btoa(unescape(encodeURIComponent(opt.content)));
+                    size = opt.content.length;
+                } else {
+                    throw new Error('缺少文件内容：请提供 base64 / content(ArrayBuffer|string) / blob(File)');
+                }
+
+                if (size > MAX_FILE_SIZE) {
+                    throw new Error(`文件约 ${(size / 1024 / 1024).toFixed(1)}MB，超过 100MB 上限，请改用 GitHub Releases`);
+                }
+
+                const path = `${ROOT_DIR}/${project}/${fileName}`;
+                await window.githubHelper.updateFileBase64(path, base64, `Upload ${fileName} (${project})`);
+
+                // 项目缺失则创建 info.json；setMain 或显式传 description 时同步元数据
+                const infoPath = `${ROOT_DIR}/${project}/${INFO_FILE}`;
+                const existing = await readInfo(project);
+                const setMain = opt.setMain !== false;
+                if (!existing) {
+                    await window.githubHelper.updateFile(infoPath, scanInfoContent({
+                        project: project, description: opt.description || '', mainFile: setMain ? fileName : '', createdAt: ''
+                    }), `Create project info (${project})`);
+                } else if (setMain || typeof opt.description === 'string') {
+                    await window.githubHelper.updateFile(infoPath, scanInfoContent({
+                        project: project,
+                        description: typeof opt.description === 'string' ? opt.description : existing.description,
+                        mainFile: setMain ? fileName : (existing.mainFile || ''),
+                        createdAt: existing.createdAt
+                    }), `Update project info (${project})`);
+                }
+
+                const base = `${window.location.origin}/${ROOT_DIR}/${encodeURIComponent(project)}/`;
+                const result = {
+                    ok: true,
+                    project: project,
+                    fileName: fileName,
+                    size: size,
+                    mainFile: setMain ? fileName : ((existing && existing.mainFile) || ''),
+                    downloadUrl: base + encodeURIComponent(fileName),
+                    folderUrl: base
+                };
+                common.log(`AI 接口发布文件: ${project}/${fileName}`, 'success', `下载直链: ${result.downloadUrl}`);
+                await loadProjects();
+                return result;
+            },
+
+            // 供浏览器自动化使用：读取已塞入 #uploadInput 的本地文件并逐个发布（免 base64 传输）
+            async publishInputFiles(project, options) {
+                const opt = options || {};
+                const files = Array.from(uploadInput.files || []);
+                if (!files.length) {
+                    throw new Error('未检测到文件：请先把本地文件设置到 #uploadInput（如 setFileInputFiles）后再调用');
+                }
+                const results = [];
+                for (const file of files) {
+                    results.push(await this.publish({
+                        project: project,
+                        fileName: file.name,
+                        blob: file,
+                        description: opt.description,
+                        setMain: opt.setMain !== false
+                    }));
+                }
+                uploadInput.value = '';   // 清空输入框，避免残留文件被后续操作误用
+                return results;
+            },
+
+            // 只读：项目列表 + 固定下载直链
+            async list() {
+                assertReady();
+                const view = [];
+                const entries = await window.githubHelper.listDir(ROOT_DIR);
+                for (const dir of entries.filter(e => e.type === 'dir')) {
+                    const meta = (await readInfo(dir.name)) || {};
+                    const files = (await window.githubHelper.listDir(dir.path))
+                        .filter(f => f.type === 'file' && f.name !== INFO_FILE)
+                        .map(f => ({ name: f.name, size: f.size }));
+                    const base = `${window.location.origin}/${ROOT_DIR}/${encodeURIComponent(dir.name)}/`;
+                    view.push({
+                        name: dir.name,
+                        description: meta.description || '',
+                        mainFile: meta.mainFile || '',
+                        files: files,
+                        downloadUrl: meta.mainFile ? base + encodeURIComponent(meta.mainFile) : base
+                    });
+                }
+                return view;
+            }
+        };
     </script>
 </body>
 
