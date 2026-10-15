@@ -72,6 +72,12 @@ class GitHubAPIHelper {
         return this._put(path, btoa(unescape(encodeURIComponent(content))), message);
     }
 
+    // 直接以 base64 内容写入：文件迁移时内容本就取自 getFile 的 base64，无需解码再编码
+    async updateFileBase64(path, base64Content, message = 'Update file via Web Manager') {
+        if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
+        return this._put(path, base64Content, message);
+    }
+
     // 上传二进制文件（APK/ZIP 等）：必须按字节编码，不能走文本的 encodeURIComponent 路径，否则文件损坏
     async updateBinaryFile(path, arrayBuffer, message = 'Upload binary via Web Manager') {
         if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');

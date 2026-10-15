@@ -48,6 +48,7 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 - **项目元数据**：每个项目内的 `info.json` 记录名称、简介、下载主文件（`mainFile`）与创建/更新时间
 - **下载直链（固定 URL）**：`https://<站点>/AppUpdater/<项目名>/<mainFile>`，点击项目名后的复制图标即可取得；最新上传的文件自动成为主文件，App 端使用该固定 URL 即可持续获取最新包
 - **同步模式**：新建项目、上传文件、删除操作均先暂存，点击“同步到 GitHub”后统一提交到仓库
+- **目录识别更新**：若直接在 GitHub 网页或 git 里往 `AppUpdater/` 上传了文件夹/文件（绕过了本管理页），点击“目录识别更新”可自动建项目、补建项目 `info.json`，并按文件名自然排序识别较新版本作为下载主文件；执行前会列出变更清单供确认
 - **单文件上限**：100MB（GitHub Contents API 限制），超限请改用 GitHub Releases
 
 ### Network Tool 页面使用方式
@@ -84,6 +85,13 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
   - [Bootstrap 5 官方文档](https://getbootstrap.com/docs/5.0/)
   - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
   - [Font Awesome 图标库](https://fontawesome.com/icons)
+
+BETA 4.6.0-2026-10-15
+1：App 更新管理新增“目录识别更新”：一键扫描 `AppUpdater/` 下绕过管理页直接上传的内容，自动建项目、自动补建/更新项目的 `info.json`，无需手动维护元数据
+2：主文件与版本识别：按文件名自然排序识别较新版本（`v1.10` 正确排在 `v1.2` 之后），优先在安装包类扩展名中取最新；主文件已一致时不再重写 `info.json`，避免无意义的提交
+3：散落文件归位：直接放在 `AppUpdater/` 根下的文件按“去扩展名同名项目”迁移进文件夹（先写后删，避免中途丢失），超过 50MB 的文件跳过并提示改用 git / GitHub 网页移动
+4：执行前预览：先扫描并列出“将迁移 / 将新建 / 将更新 / 将跳过”清单，二次确认后才写仓库；存在待同步暂存改动时拒绝执行，避免状态不一致
+5：GitHub 封装扩展：`js/github-api-helper.js` 新增 `updateFileBase64`，供文件迁移直接复用已有的 base64 内容，避免解码后再编码
 
 BETA 4.5.9-2026-10-15
 1：GitHub Token 可视化注入：在管理页“操作日志”面板新增 Token 注入区，可直接保存/清除本机 localStorage 的 `github_token`，替代手动开控制台注入；状态区仅回显前缀与末 4 位（不回显完整凭据），保存后立即清空输入框

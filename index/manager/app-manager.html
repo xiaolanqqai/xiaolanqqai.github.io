@@ -20,7 +20,7 @@
 
         <!-- 功能卡片区域 -->
         <div class="row mb-4 g-3">
-            <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="card feature-card h-100">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-primary mb-3"><i class="fas fa-plus-circle"></i></div>
@@ -33,7 +33,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12">
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-success mb-3"><i class="fas fa-sync-alt"></i></div>
+                        <h5>目录识别更新</h5>
+                        <p class="flex-grow-1 xsmall">扫描 AppUpdater 下直接上传的文件夹与文件，自动建项目、补 info.json 并识别新版本主文件</p>
+                        <button id="scanDirBtn" class="btn btn-success mt-2">
+                            <i class="fas fa-sync-alt me-1"></i>目录识别更新
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="card feature-card h-100 border-primary shadow-sm">
                     <div class="card-body text-center d-flex flex-column">
                         <div class="feature-icon text-info mb-3"><i class="fab fa-github"></i></div>
@@ -109,6 +121,9 @@
         const ROOT_DIR = 'AppUpdater';       // 站点根目录下的 App 更新目录
         const INFO_FILE = 'info.json';       // 项目元数据文件名
         const MAX_FILE_SIZE = 100 * 1024 * 1024;  // GitHub Contents API 单文件上限 100MB
+        const PROJECT_NAME_PATTERN = /^[A-Za-z0-9_\-.一-龥]+$/;  // 项目名即文件夹名，限制字符集以保证路径与 URL 安全
+        const PACKAGE_EXT = /\.(apk|aab|ipa|zip|exe|msi|dmg|7z|rar|tar|gz|xz|bin|img)$/i;
+        const MAX_MOVE_SIZE = 50 * 1024 * 1024;   // 迁移散落文件需在浏览器内中转内容，过大易耗尽内存
 
         // 全局状态：线上快照 + 待同步增量（暂存/同步模式）
         let projects = [];                 // 线上项目: [{ name, description, mainFile, createdAt, files: [{name, sha, size}] }]
@@ -140,6 +155,7 @@
         function setupEventListeners() {
             document.getElementById('confirmAddProject').addEventListener('click', addProject);
             document.getElementById('syncToGithubBtn').addEventListener('click', syncToGithub);
+            document.getElementById('scanDirBtn').addEventListener('click', scanDirectory);
             uploadInput.addEventListener('change', handleUploadSelect);
             document.getElementById('addProjectModal').addEventListener('hidden.bs.modal', resetAddForm);
 
@@ -346,7 +362,7 @@
                 return;
             }
             // 项目名即文件夹名，需限制字符集以保证 URL 与路径安全
-            if (!/^[A-Za-z0-9_\-.一-龥]+$/.test(name)) {
+            if (!PROJECT_NAME_PATTERN.test(name)) {
                 common.showAlert('项目名仅允许字母、数字、下划线、短横线、点与中文', 'danger');
                 return;
             }
@@ -458,6 +474,180 @@
                 window.prompt('请手动复制下载链接：', url);
             }
             common.log('复制下载链接', 'info', url);
+        }
+
+        // --- 目录识别更新 ---
+        // 回收“绕过本管理页直接上传到仓库”的内容：散落在 AppUpdater 根下的文件归入同名项目文件夹，
+        // 缺失的 info.json 自动补建，主文件按文件名自然排序识别出较新版本。
+
+        // 自然排序：数字段按数值比较，使 v1.10 排在 v1.2 之后
+        function naturalCompare(a, b) {
+            const ra = a.match(/(\d+|\D+)/g) || [];
+            const rb = b.match(/(\d+|\D+)/g) || [];
+            for (let i = 0; i < Math.max(ra.length, rb.length); i++) {
+                const sa = ra[i] || '', sb = rb[i] || '';
+                const na = parseInt(sa, 10), nb = parseInt(sb, 10);
+                if (!isNaN(na) && !isNaN(nb)) { if (na !== nb) return na - nb; }
+                else if (sa !== sb) return sa < sb ? -1 : 1;
+            }
+            return 0;
+        }
+
+        // 主文件识别：优先在安装包类文件中取“最新”，无安装包时在全部文件中取最新
+        function pickMainFile(fileNames) {
+            if (!fileNames.length) return '';
+            const packages = fileNames.filter(n => PACKAGE_EXT.test(n));
+            const pool = (packages.length ? packages : fileNames).slice().sort(naturalCompare);
+            return pool[pool.length - 1];
+        }
+
+        async function buildScanPlan() {
+            const entries = await window.githubHelper.listDir(ROOT_DIR);
+            const dirs = entries.filter(e => e.type === 'dir');
+            const looseFiles = entries.filter(e => e.type === 'file');
+
+            const moves = [];
+            const skipped = [];
+            const movedInto = {};
+            looseFiles.forEach(f => {
+                const base = f.name.replace(/\.[^.]+$/, '');   // 去扩展名作为项目名
+                if (!base || !PROJECT_NAME_PATTERN.test(base)) { skipped.push(`${f.name}（项目名不符规范）`); return; }
+                if (f.size > MAX_MOVE_SIZE) { skipped.push(`${f.name}（超过 50MB，请用 git / GitHub 网页移动）`); return; }
+                moves.push({ fileName: f.name, project: base });
+                if (!movedInto[base]) movedInto[base] = [];
+                movedInto[base].push(f.name);
+            });
+
+            const upserts = [];
+            for (const dir of dirs) {
+                let meta = null;
+                try {
+                    const info = await window.githubHelper.getFile(`${dir.path}/${INFO_FILE}`);
+                    if (info && info.content) meta = JSON.parse(decodeBase64Utf8(info.content));
+                } catch (error) {
+                    meta = null;   // info.json 缺失或不可解析，按需补建
+                }
+                // 目标文件夹内的文件 = 线上已有文件 + 本次将迁入的散落文件
+                const fileNames = (await window.githubHelper.listDir(dir.path))
+                    .filter(f => f.type === 'file' && f.name !== INFO_FILE)
+                    .map(f => f.name)
+                    .concat(movedInto[dir.name] || []);
+                const expected = pickMainFile(fileNames);
+
+                if (!meta) {
+                    upserts.push({ project: dir.name, description: '', mainFile: expected, createdAt: '', previous: '', created: true });
+                } else if ((meta.mainFile || '') !== expected) {
+                    upserts.push({ project: dir.name, description: meta.description || '', mainFile: expected, createdAt: meta.createdAt || '', previous: meta.mainFile || '', created: false });
+                }
+                // 主文件已一致时不重写，避免产生无意义的提交
+            }
+
+            // 仅由散落文件迁移而产生、当前还不是文件夹的项目
+            Object.keys(movedInto).forEach(base => {
+                if (dirs.some(d => d.name === base)) return;
+                upserts.push({ project: base, description: '', mainFile: pickMainFile(movedInto[base]), createdAt: '', previous: '', created: true });
+            });
+
+            return { moves, upserts, skipped };
+        }
+
+        function scanInfoContent(item) {
+            const today = new Date().toISOString().split('T')[0];
+            return JSON.stringify({
+                name: item.project,
+                description: item.description || '',
+                mainFile: item.mainFile || '',
+                createdAt: item.createdAt || today,
+                updatedAt: today
+            }, null, 2);
+        }
+
+        async function scanDirectory() {
+            if (!window.githubHelper || !window.githubHelper.isConfigured()) {
+                common.showAlert('GitHub Token 未配置或无效', 'danger');
+                return;
+            }
+            // 扫描会直接写仓库，与暂存区并存会造成状态不一致，故要求先清空暂存
+            if (pendingCount()) {
+                common.showAlert('存在待同步的暂存改动，请先“同步到 GitHub”后再执行目录识别', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('scanDirBtn');
+            btn.disabled = true;
+            common.showLoading('正在扫描 AppUpdater 目录...');
+            common.log('开始扫描 AppUpdater 目录', 'info', '识别直接上传的文件夹与文件');
+
+            let plan;
+            try {
+                plan = await buildScanPlan();
+            } catch (error) {
+                common.hideLoading();
+                btn.disabled = false;
+                common.showAlert(`扫描失败: ${error.message}`, 'danger');
+                common.log('目录识别扫描失败', 'error', error.message);
+                return;
+            }
+            common.hideLoading();
+            btn.disabled = false;
+
+            plan.skipped.forEach(name => common.log('目录识别跳过', 'warning', name));
+
+            if (!plan.moves.length && !plan.upserts.length) {
+                const tail = plan.skipped.length ? `，另有 ${plan.skipped.length} 项被跳过（见日志）` : '';
+                common.showAlert(`目录已是最新，无需更新${tail}`, 'info');
+                return;
+            }
+
+            const lines = [];
+            plan.moves.forEach(m => lines.push(`· 迁移散落文件：AppUpdater/${m.fileName} → ${m.project}/`));
+            plan.upserts.forEach(u => lines.push(u.created
+                ? `· 新建项目并生成 info.json：${u.project}（主文件 ${u.mainFile || '无'}）`
+                : `· 更新 info.json：${u.project}（主文件 ${u.previous || '无'} → ${u.mainFile || '无'}）`));
+            plan.skipped.forEach(n => lines.push(`· 跳过：${n}`));
+
+            if (!window.confirm(`目录识别结果：\n${lines.join('\n')}\n\n确认执行？`)) return;
+
+            btn.disabled = true;
+            common.showLoading('正在按识别结果更新...');
+            common.log('开始执行目录识别更新', 'info', `迁移 ${plan.moves.length} 项，info.json 写入 ${plan.upserts.length} 项`);
+
+            let failCount = 0;
+
+            // 1. 先迁移散落文件（写成功后再删原文件，避免中途丢失内容）
+            for (const move of plan.moves) {
+                const target = `${ROOT_DIR}/${move.project}/${move.fileName}`;
+                try {
+                    const source = await window.githubHelper.getFile(`${ROOT_DIR}/${move.fileName}`);
+                    if (!source || !source.content) throw new Error('源文件内容为空');
+                    await window.githubHelper.updateFileBase64(target, source.content.replace(/\s/g, ''), `Move ${move.fileName} into ${move.project}`);
+                    await window.githubHelper.deleteFile(`${ROOT_DIR}/${move.fileName}`, `Move ${move.fileName} into ${move.project}`);
+                    common.log(`迁移文件成功: ${move.fileName}`, 'success', `→ ${target}`);
+                } catch (error) {
+                    failCount++;
+                    common.log(`迁移文件失败: ${move.fileName}`, 'error', error.message);
+                }
+            }
+
+            // 2. 再补建/更新 info.json（此时迁入的文件已在目标文件夹内）
+            for (const item of plan.upserts) {
+                const path = `${ROOT_DIR}/${item.project}/${INFO_FILE}`;
+                try {
+                    await window.githubHelper.updateFile(path, scanInfoContent(item), `Sync project info (${item.project})`);
+                    common.log(`${item.created ? '生成' : '更新'} info.json 成功: ${item.project}`, 'success', `路径: ${path}`);
+                } catch (error) {
+                    failCount++;
+                    common.log(`${item.created ? '生成' : '更新'} info.json 失败: ${item.project}`, 'error', error.message);
+                }
+            }
+
+            common.hideLoading();
+            btn.disabled = false;
+
+            if (failCount === 0) common.showAlert('目录识别更新完成', 'success');
+            else common.showAlert(`目录识别更新完成，但有 ${failCount} 项失败，请查看日志`, 'warning');
+
+            await loadProjects();
         }
 
         // --- 同步 ---
