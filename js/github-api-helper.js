@@ -48,12 +48,10 @@ class GitHubAPIHelper {
         return await response.json();
     }
 
-    async updateFile(path, content, message = 'Update data via Web Manager') {
-        if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
+    // 统一的写文件入口：sha 存在即覆盖，否则新建
+    async _put(path, base64Content, message) {
         const sha = await this.getFileSHA(path);
-        const body = {
-            message, content: btoa(unescape(encodeURIComponent(content))), branch: this.config.branch
-        };
+        const body = { message, content: base64Content, branch: this.config.branch };
         if (sha) body.sha = sha;
 
         const response = await fetch(this._apiUrl(path).split('?')[0], {
@@ -67,6 +65,51 @@ class GitHubAPIHelper {
             throw new Error(`更新文件失败: ${msg || response.statusText}`);
         }
         return await response.json();
+    }
+
+    async updateFile(path, content, message = 'Update data via Web Manager') {
+        if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
+        return this._put(path, btoa(unescape(encodeURIComponent(content))), message);
+    }
+
+    // 上传二进制文件（APK/ZIP 等）：必须按字节编码，不能走文本的 encodeURIComponent 路径，否则文件损坏
+    async updateBinaryFile(path, arrayBuffer, message = 'Upload binary via Web Manager') {
+        if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
+        return this._put(path, GitHubAPIHelper.arrayBufferToBase64(arrayBuffer), message);
+    }
+
+    // 分块转换，避免大文件一次性 fromCharCode 触发调用栈参数上限
+    static arrayBufferToBase64(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        const chunkSize = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+            binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+        }
+        return btoa(binary);
+    }
+
+    // 列举目录内容；路径不存在时返回空数组（Contents API 对目录返回数组，对文件返回对象）
+    async listDir(path) {
+        if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
+        const response = await fetch(this._apiUrl(path), { headers: this._headers() });
+        if (!response.ok) {
+            if (response.status === 404) return [];
+            throw new Error(`读取目录失败: ${response.statusText}`);
+        }
+        const data = await response.json();
+        return Array.isArray(data) ? data : [data];
+    }
+
+    // 递归删除目录：GitHub 不支持删除文件夹，只能逐层列出后删除其中的文件
+    async deleteDir(path, message = 'Delete dir via Web Manager') {
+        const entries = await this.listDir(path);
+        let count = 0;
+        for (const entry of entries) {
+            if (entry.type === 'dir') count += await this.deleteDir(entry.path, message);
+            else { await this.deleteFile(entry.path, message); count++; }
+        }
+        return count;
     }
 
     async deleteFile(path, message = 'Delete file via Web Manager') {

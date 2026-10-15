@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>App 更新管理系统</title>
+    <script src="../../js/components/header-component.js"></script>
+    <script src="../../js/components/manager-component.js"></script>
+    <script src="../../js/github-api-helper.js"></script>
+    <script src="../../js/manager-common.js"></script>
+</head>
+
+<body class="manager-body">
+    <div class="container container-main">
+        <!-- 数据状态提示 -->
+        <div class="data-status no-data p-3 mb-4" id="dataStatus">
+            <i class="fas fa-info-circle me-2"></i>
+            <span>正在加载 App 项目数据...</span>
+        </div>
+
+        <!-- 功能卡片区域 -->
+        <div class="row mb-4 g-3">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-primary mb-3"><i class="fas fa-plus-circle"></i></div>
+                        <h5>新建项目</h5>
+                        <p class="flex-grow-1 xsmall">填写项目名（即文件夹名）与简介，在 AppUpdater 下创建更新项目</p>
+                        <button class="btn manager-btn-primary mt-2" data-bs-toggle="modal"
+                            data-bs-target="#addProjectModal">
+                            <i class="fas fa-plus me-1"></i>新建项目
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="card feature-card h-100 border-primary shadow-sm">
+                    <div class="card-body text-center d-flex flex-column">
+                        <div class="feature-icon text-info mb-3"><i class="fab fa-github"></i></div>
+                        <h5>同步到 GitHub</h5>
+                        <p class="flex-grow-1 xsmall">将新建项目、上传文件与删除操作一次性提交到 AppUpdater 目录</p>
+                        <button id="syncToGithubBtn" class="btn btn-primary mt-2">
+                            <i class="fas fa-cloud-upload-alt me-1"></i>同步到 GitHub
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 项目列表区域 -->
+        <div class="card manager-card mb-4">
+            <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
+                <span><i class="fas fa-list me-2"></i>项目列表</span>
+                <span class="badge bg-light text-dark">共 <span id="projectCount">0</span> 个</span>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info py-2 mb-3 small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    所有改动先暂存，点击“同步到 GitHub”后统一发布。<code>info.json</code> 记录项目简介与下载主文件（复制链接指向它，最新上传的文件自动成为主文件）。单文件上限 100MB。
+                </div>
+                <div id="projectsContainer">
+                    <div class="text-center p-5 text-muted">
+                        <i class="fas fa-mobile-alt fa-3x mb-3"></i>
+                        <p>暂无项目记录，请点击“新建项目”添加</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新建项目模态框 -->
+    <div class="modal fade" id="addProjectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>新建 App 更新项目</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProjectForm">
+                        <div class="mb-3">
+                            <label for="projectName" class="form-label">项目名称 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="projectName" placeholder="例如: MyApp" required>
+                            <div class="form-text">即文件夹名，仅允许字母、数字、下划线、短横线、点与中文，创建后不可更改</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="projectDesc" class="form-label">项目简介 <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="projectDesc" rows="3" placeholder="简要描述该 App 的用途" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn manager-btn-primary" id="confirmAddProject">
+                        <i class="fas fa-save me-1"></i>保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 复用同一个隐藏上传控件，按当前项目分流 -->
+    <input type="file" id="uploadInput" class="d-none" multiple>
+
+    <script>
+        const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
+        if (common && !window.managerCommon) window.managerCommon = common;
+
+        const ROOT_DIR = 'AppUpdater';       // 站点根目录下的 App 更新目录
+        const INFO_FILE = 'info.json';       // 项目元数据文件名
+        const MAX_FILE_SIZE = 100 * 1024 * 1024;  // GitHub Contents API 单文件上限 100MB
+
+        // 全局状态：线上快照 + 待同步增量（暂存/同步模式）
+        let projects = [];                 // 线上项目: [{ name, description, mainFile, createdAt, files: [{name, sha, size}] }]
+        let pendingProjects = [];          // 待新建项目: [{ name, description }]
+        let pendingFiles = {};             // 待上传文件: { 项目名: { 文件名: { content: ArrayBuffer, size } } }
+        let pendingFileDeletes = {};       // 待删除文件: { 项目名: [文件名] }
+        let pendingProjectDeletes = [];    // 待删除项目: [项目名]
+        let pendingMainFile = {};          // 最新上传文件，用于确定 info.json 的 mainFile: { 项目名: 文件名 }
+
+        let projectsContainer, projectCount, dataStatus, addProjectModal, uploadInput;
+        let currentUploadProject = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            initDOMElements();
+            setupEventListeners();
+            loadProjects();
+            common.log('App 更新管理系统启动', 'info', '页面加载完成');
+        });
+
+        function initDOMElements() {
+            projectsContainer = document.getElementById('projectsContainer');
+            projectCount = document.getElementById('projectCount');
+            dataStatus = document.getElementById('dataStatus');
+            uploadInput = document.getElementById('uploadInput');
+            const modalEl = document.getElementById('addProjectModal');
+            if (modalEl) addProjectModal = new bootstrap.Modal(modalEl);
+        }
+
+        function setupEventListeners() {
+            document.getElementById('confirmAddProject').addEventListener('click', addProject);
+            document.getElementById('syncToGithubBtn').addEventListener('click', syncToGithub);
+            uploadInput.addEventListener('change', handleUploadSelect);
+            document.getElementById('addProjectModal').addEventListener('hidden.bs.modal', resetAddForm);
+
+            // 项目卡片内的按钮统一走事件委托，避免每次渲染后重新绑定
+            projectsContainer.addEventListener('click', function (e) {
+                const btn = e.target.closest('button');
+                if (!btn) return;
+                if (btn.classList.contains('copy-link')) copyDownloadLink(btn.dataset.project);
+                else if (btn.classList.contains('delete-project')) deleteProject(btn.dataset.project);
+                else if (btn.classList.contains('delete-file')) deleteFile(btn.dataset.project, btn.dataset.file);
+                else if (btn.classList.contains('upload-file')) triggerUpload(btn.dataset.project);
+            });
+        }
+
+        function resetAddForm() {
+            document.getElementById('addProjectForm').reset();
+        }
+
+        // --- 数据加载 ---
+
+        function decodeBase64Utf8(base64) {
+            const bytes = Uint8Array.from(atob(base64.replace(/\s/g, '')), c => c.charCodeAt(0));
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
+        async function loadProjects() {
+            if (!window.githubHelper || !window.githubHelper.isConfigured()) {
+                projects = [];
+                dataStatus.className = 'data-status no-data p-3 mb-4';
+                dataStatus.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><span>GitHub Token 未配置或无效，请在控制台执行 localStorage.setItem(\'github_token\', \'github_pat_xxx\') 后刷新</span>';
+                renderProjects();
+                common.log('加载失败：GitHub Token 未配置', 'error', '请先在控制台注入 github_token');
+                return;
+            }
+
+            common.showLoading('正在加载项目数据...');
+            try {
+                const dirs = (await window.githubHelper.listDir(ROOT_DIR)).filter(d => d.type === 'dir');
+                projects = await Promise.all(dirs.map(async dir => {
+                    let meta = {};
+                    try {
+                        const info = await window.githubHelper.getFile(`${dir.path}/${INFO_FILE}`);
+                        if (info && info.content) meta = JSON.parse(decodeBase64Utf8(info.content));
+                    } catch (error) {
+                        // 缺少 info.json 的项目按空简介处理，不影响文件列表
+                        common.log(`读取 ${dir.name} 的 info.json 失败`, 'warning', error.message);
+                    }
+                    const files = (await window.githubHelper.listDir(dir.path))
+                        .filter(f => f.type === 'file' && f.name !== INFO_FILE)
+                        .map(f => ({ name: f.name, sha: f.sha, size: f.size }));
+                    return {
+                        name: dir.name,
+                        description: meta.description || '',
+                        mainFile: meta.mainFile || '',
+                        createdAt: meta.createdAt || '',
+                        files: files
+                    };
+                }));
+                common.log('项目数据加载成功', 'success', `共加载 ${projects.length} 个项目`);
+            } catch (error) {
+                projects = [];
+                common.log('项目数据加载失败', 'error', error.message);
+                common.showAlert(`加载失败: ${error.message}`, 'danger');
+            } finally {
+                common.hideLoading();
+                renderProjects();
+                updateDataStatus();
+            }
+        }
+
+        // --- 暂存区与线上数据的合并视图 ---
+
+        // 计算项目当前的下载主文件：最新上传 > 原有主文件（未被删） > 剩余最后一个文件
+        function resolveMainFile(projectName) {
+            const online = projects.find(p => p.name === projectName);
+            const deleted = new Set(pendingFileDeletes[projectName] || []);
+            const remaining = [];
+            if (online) online.files.forEach(f => { if (!deleted.has(f.name) && !remaining.includes(f.name)) remaining.push(f.name); });
+            Object.keys(pendingFiles[projectName] || {}).forEach(name => { if (!remaining.includes(name)) remaining.push(name); });
+
+            const uploaded = pendingMainFile[projectName];
+            if (uploaded && remaining.includes(uploaded)) return uploaded;
+            if (online && online.mainFile && remaining.includes(online.mainFile)) return online.mainFile;
+            return remaining[remaining.length - 1] || '';
+        }
+
+        function buildView() {
+            const removedProjects = new Set(pendingProjectDeletes);
+            const view = [];
+
+            projects.forEach(p => {
+                if (removedProjects.has(p.name)) return;
+                const deleted = new Set(pendingFileDeletes[p.name] || []);
+                const files = p.files.filter(f => !deleted.has(f.name)).map(f => ({ name: f.name, size: f.size, pending: false }));
+                Object.keys(pendingFiles[p.name] || {}).forEach(name => {
+                    const exist = files.find(f => f.name === name);
+                    if (exist) exist.pending = true;
+                    else files.push({ name: name, size: pendingFiles[p.name][name].size, pending: true });
+                });
+                view.push({ name: p.name, description: p.description, mainFile: resolveMainFile(p.name), isNew: false, files: files });
+            });
+
+            pendingProjects.forEach(p => {
+                const files = Object.keys(pendingFiles[p.name] || {})
+                    .map(name => ({ name: name, size: pendingFiles[p.name][name].size, pending: true }));
+                view.push({ name: p.name, description: p.description, mainFile: resolveMainFile(p.name), isNew: true, files: files });
+            });
+
+            return view;
+        }
+
+        function pendingCount() {
+            let count = pendingProjects.length + pendingProjectDeletes.length;
+            Object.keys(pendingFiles).forEach(p => { count += Object.keys(pendingFiles[p]).length; });
+            Object.keys(pendingFileDeletes).forEach(p => { count += pendingFileDeletes[p].length; });
+            return count;
+        }
+
+        function updateDataStatus() {
+            const view = buildView();
+            const pending = pendingCount();
+            dataStatus.className = `data-status ${view.length ? 'has-data' : 'no-data'} p-3 mb-4`;
+            if (view.length) {
+                dataStatus.innerHTML = `<i class="fas fa-check-circle me-2"></i><span>已加载 ${view.length} 个项目${pending ? `，有 ${pending} 项待同步更改` : ''}</span>`;
+            } else {
+                dataStatus.innerHTML = '<i class="fas fa-info-circle me-2"></i><span>当前没有项目，请点击“新建项目”添加</span>';
+            }
+        }
+
+        // --- 渲染 ---
+
+        function formatSize(bytes) {
+            if (bytes === undefined || bytes === null) return '';
+            if (bytes < 1024) return `${bytes} B`;
+            if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+            return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+        }
+
+        function renderProjects() {
+            const view = buildView();
+            projectCount.textContent = String(view.length);
+
+            if (!view.length) {
+                projectsContainer.innerHTML = `
+                    <div class="text-center p-5 text-muted">
+                        <i class="fas fa-mobile-alt fa-3x mb-3"></i>
+                        <p>暂无项目记录，请点击“新建项目”添加</p>
+                    </div>`;
+                return;
+            }
+
+            projectsContainer.innerHTML = view.map(p => {
+                const fileRows = p.files.length ? p.files.map(f => `
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="text-truncate">
+                            <i class="fas fa-file-archive me-2 text-secondary"></i>${escapeHtml(f.name)}
+                            <small class="text-muted ms-2">${formatSize(f.size)}</small>
+                            ${f.pending ? '<span class="badge bg-warning text-dark ms-2">待上传</span>' : ''}
+                            ${p.mainFile === f.name ? '<span class="badge bg-primary ms-2">下载主文件</span>' : ''}
+                        </span>
+                        <button class="btn btn-sm btn-outline-danger delete-file" data-project="${escapeHtml(p.name)}"
+                            data-file="${escapeHtml(f.name)}" title="删除该文件">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>`).join('')
+                    : '<div class="text-muted small py-2">暂无文件，点击下方“上传文件”添加</div>';
+
+                return `
+                    <div class="card manager-card mb-3 shadow-sm">
+                        <div class="card-header manager-card-header d-flex justify-content-between align-items-center">
+                            <span class="d-flex align-items-center flex-wrap">
+                                <i class="fas fa-mobile-alt me-2 text-primary"></i>
+                                <strong>${escapeHtml(p.name)}</strong>
+                                ${p.isNew ? '<span class="badge bg-warning text-dark ms-2">待新建</span>' : ''}
+                                <button class="btn btn-sm btn-outline-secondary ms-2 copy-link" data-project="${escapeHtml(p.name)}"
+                                    title="复制该项目下载链接">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </span>
+                            <button class="btn btn-sm btn-outline-danger delete-project" data-project="${escapeHtml(p.name)}"
+                                title="删除整个项目（含文件夹内全部文件）">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted small mb-3">${escapeHtml(p.description || '（无简介）')}</p>
+                            <div class="list-group list-group-flush">${fileRows}</div>
+                            <button class="btn btn-sm manager-btn-primary mt-3 upload-file" data-project="${escapeHtml(p.name)}">
+                                <i class="fas fa-plus me-1"></i>上传文件
+                            </button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        // --- 操作 ---
+
+        function addProject() {
+            const name = document.getElementById('projectName').value.trim();
+            const description = document.getElementById('projectDesc').value.trim();
+
+            if (!name || !description) {
+                common.showAlert('请填写项目名称和简介', 'danger');
+                return;
+            }
+            // 项目名即文件夹名，需限制字符集以保证 URL 与路径安全
+            if (!/^[A-Za-z0-9_\-.一-龥]+$/.test(name)) {
+                common.showAlert('项目名仅允许字母、数字、下划线、短横线、点与中文', 'danger');
+                return;
+            }
+            if (projects.some(p => p.name === name) || pendingProjects.some(p => p.name === name) || pendingProjectDeletes.includes(name)) {
+                common.showAlert(`项目 “${name}” 已存在`, 'warning');
+                return;
+            }
+
+            pendingProjects.push({ name: name, description: description });
+            addProjectModal.hide();
+            renderProjects();
+            updateDataStatus();
+            common.showAlert(`项目 “${name}” 已创建，请上传文件后点击“同步到 GitHub”发布`, 'success');
+            common.log('暂存新建项目', 'info', `名称: ${name}`);
+        }
+
+        function deleteProject(projectName) {
+            const isPending = pendingProjects.some(p => p.name === projectName);
+            const tip = isPending
+                ? `确定放弃项目 “${projectName}” 吗？`
+                : `确定删除项目 “${projectName}” 吗？同步后将删除其文件夹及内部全部文件。`;
+            if (!confirm(tip)) return;
+
+            if (isPending) pendingProjects = pendingProjects.filter(p => p.name !== projectName);
+            else if (!pendingProjectDeletes.includes(projectName)) pendingProjectDeletes.push(projectName);
+
+            delete pendingFiles[projectName];
+            delete pendingFileDeletes[projectName];
+            delete pendingMainFile[projectName];
+
+            renderProjects();
+            updateDataStatus();
+            common.showAlert(`项目 “${projectName}” 已移除，请点击“同步到 GitHub”生效`, 'warning');
+            common.log('暂存删除项目', 'warning', `名称: ${projectName}`);
+        }
+
+        function deleteFile(projectName, fileName) {
+            if (!confirm(`确定删除文件 “${fileName}” 吗？`)) return;
+
+            const online = projects.find(p => p.name === projectName);
+            const isOnlineFile = !!(online && online.files.some(f => f.name === fileName));
+
+            if (pendingFiles[projectName]) {
+                delete pendingFiles[projectName][fileName];
+                if (!Object.keys(pendingFiles[projectName]).length) delete pendingFiles[projectName];
+            }
+            // 已发布过的文件需排队删除；仅暂存的文件直接从暂存区丢弃即可
+            if (isOnlineFile) {
+                if (!pendingFileDeletes[projectName]) pendingFileDeletes[projectName] = [];
+                if (!pendingFileDeletes[projectName].includes(fileName)) pendingFileDeletes[projectName].push(fileName);
+            }
+
+            renderProjects();
+            updateDataStatus();
+            common.showAlert(`文件 “${fileName}” 已移除，请点击“同步到 GitHub”生效`, 'warning');
+            common.log('暂存删除文件', 'warning', `${projectName}/${fileName}`);
+        }
+
+        function triggerUpload(projectName) {
+            currentUploadProject = projectName;
+            uploadInput.value = '';
+            uploadInput.click();
+        }
+
+        async function handleUploadSelect(event) {
+            const project = currentUploadProject;
+            if (!project) return;
+
+            const files = Array.from(event.target.files || []);
+            if (!files.length) return;
+
+            let added = 0;
+            for (const file of files) {
+                if (file.size > MAX_FILE_SIZE) {
+                    common.showAlert(`“${file.name}” 超过 100MB，Contents API 不支持，请改用 GitHub Releases`, 'danger');
+                    continue;
+                }
+                try {
+                    // 统一按字节读取：文本文件用二进制方式上传同样正确，避免两套编码路径
+                    const content = await file.arrayBuffer();
+                    if (!pendingFiles[project]) pendingFiles[project] = {};
+                    pendingFiles[project][file.name] = { content: content, size: file.size };
+                    // 方案 C：最新上传的文件自动成为下载主文件
+                    pendingMainFile[project] = file.name;
+                    added++;
+                } catch (error) {
+                    common.log(`读取文件失败: ${file.name}`, 'error', error.message);
+                }
+            }
+
+            renderProjects();
+            updateDataStatus();
+            if (added) {
+                common.showAlert(`已暂存 ${added} 个文件，点击“同步到 GitHub”发布`, 'success');
+                common.log('暂存上传文件', 'success', `项目: ${project}, 文件数: ${added}`);
+            }
+        }
+
+        async function copyDownloadLink(projectName) {
+            const view = buildView().find(p => p.name === projectName);
+            const base = `${window.location.origin}/${ROOT_DIR}/${encodeURIComponent(projectName)}/`;
+            const url = view && view.mainFile ? base + encodeURIComponent(view.mainFile) : base;
+
+            try {
+                await navigator.clipboard.writeText(url);
+                common.showAlert('下载链接已复制到剪贴板', 'success');
+            } catch (error) {
+                // 剪贴板不可用（非安全上下文/未授权）时降级为手动复制
+                window.prompt('请手动复制下载链接：', url);
+            }
+            common.log('复制下载链接', 'info', url);
+        }
+
+        // --- 同步 ---
+
+        function buildInfoContent(projectName) {
+            const online = projects.find(p => p.name === projectName);
+            const created = pendingProjects.find(p => p.name === projectName);
+            const today = new Date().toISOString().split('T')[0];
+            return JSON.stringify({
+                name: projectName,
+                description: created ? created.description : (online ? online.description : ''),
+                mainFile: resolveMainFile(projectName),
+                // 已有项目保留原创建日期；旧数据缺失时以当天补齐
+                createdAt: (online && online.createdAt) || today,
+                updatedAt: today
+            }, null, 2);
+        }
+
+        async function syncToGithub() {
+            if (!window.githubHelper || !window.githubHelper.isConfigured()) {
+                common.showAlert('GitHub Token 未配置或无效', 'danger');
+                return;
+            }
+            if (!pendingCount()) {
+                common.showAlert('没有待同步的更改', 'info');
+                return;
+            }
+
+            const btn = document.getElementById('syncToGithubBtn');
+            btn.disabled = true;
+            common.showLoading('正在同步到 GitHub...');
+            common.log('开始同步到 GitHub', 'info', `待处理项: ${pendingCount()}`);
+
+            let failCount = 0;
+
+            // 1. 上传新增/覆盖的文件（先传文件，确保 info.json 引用的主文件已存在）
+            for (const projectName of Object.keys(pendingFiles)) {
+                for (const fileName of Object.keys(pendingFiles[projectName])) {
+                    const path = `${ROOT_DIR}/${projectName}/${fileName}`;
+                    try {
+                        await window.githubHelper.updateBinaryFile(path, pendingFiles[projectName][fileName].content, `Upload ${fileName} (${projectName})`);
+                        common.log(`上传文件成功: ${fileName}`, 'success', `路径: ${path}`);
+                    } catch (error) {
+                        failCount++;
+                        common.log(`上传文件失败: ${fileName}`, 'error', error.message);
+                    }
+                }
+            }
+
+            // 2. 删除文件
+            for (const projectName of Object.keys(pendingFileDeletes)) {
+                for (const fileName of pendingFileDeletes[projectName]) {
+                    const path = `${ROOT_DIR}/${projectName}/${fileName}`;
+                    try {
+                        await window.githubHelper.deleteFile(path, `Delete ${fileName} (${projectName})`);
+                        common.log(`删除文件成功: ${fileName}`, 'success', `路径: ${path}`);
+                    } catch (error) {
+                        failCount++;
+                        common.log(`删除文件失败: ${fileName}`, 'error', error.message);
+                    }
+                }
+            }
+
+            // 3. 删除整个项目（递归删除文件夹内所有文件）
+            for (const projectName of pendingProjectDeletes) {
+                try {
+                    const count = await window.githubHelper.deleteDir(`${ROOT_DIR}/${projectName}`, `Delete project ${projectName}`);
+                    common.log(`删除项目成功: ${projectName}`, 'success', `已删除 ${count} 个文件`);
+                } catch (error) {
+                    failCount++;
+                    common.log(`删除项目失败: ${projectName}`, 'error', error.message);
+                }
+            }
+
+            // 4. 写入 info.json（新建项目据此创建文件夹，同时同步简介与主文件）
+            const touched = new Set([
+                ...pendingProjects.map(p => p.name),
+                ...Object.keys(pendingFiles),
+                ...Object.keys(pendingFileDeletes)
+            ]);
+            for (const projectName of touched) {
+                if (pendingProjectDeletes.includes(projectName)) continue;
+                const path = `${ROOT_DIR}/${projectName}/${INFO_FILE}`;
+                try {
+                    await window.githubHelper.updateFile(path, buildInfoContent(projectName), `Update project info (${projectName})`);
+                    common.log(`更新项目信息成功: ${projectName}`, 'success', `路径: ${path}`);
+                } catch (error) {
+                    failCount++;
+                    common.log(`更新项目信息失败: ${projectName}`, 'error', error.message);
+                }
+            }
+
+            common.hideLoading();
+            btn.disabled = false;
+
+            if (failCount === 0) {
+                // 同步成功后清空暂存区，并重新从线上拉取真实 SHA
+                pendingProjects = [];
+                pendingFiles = {};
+                pendingFileDeletes = {};
+                pendingProjectDeletes = [];
+                pendingMainFile = {};
+                common.showAlert('同步完成！所有更改已发布到 AppUpdater 目录', 'success');
+                await loadProjects();
+            } else {
+                common.showAlert(`同步完成，但有 ${failCount} 项失败，请查看日志`, 'warning');
+                renderProjects();
+                updateDataStatus();
+            }
+        }
+    </script>
+</body>
+
+</html>

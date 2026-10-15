@@ -1,9 +1,20 @@
 {
   "dependencies": {
     "bootstrap": "Bootstrap_v5.3.2",
-    "site_data": "网站数据_2026.09.10"
+    "site_data": "网站数据_2026.10.15"
   },
   "versions": [
+    {
+      "name": "BETA 4.5.8",
+      "date": "2026-10-15",
+      "changes": [
+        "1：新增 App 更新管理系统：新增 `index/manager/app-manager.html`，在站点根目录 `AppUpdater/` 下新建项目（文件夹名即项目名）并填写简介，每个项目可上传软件包，全程采用“暂存 + 同步”模式，改动统一提交",
+        "2：下载主文件（方案 C）：每个项目的 `info.json` 记录 `mainFile`，复制按钮始终返回 `https://<站点>/AppUpdater/<项目名>/<主文件>` 的固定直链，最新上传的文件自动成为主文件，App 端使用固定 URL 即可持续获取最新包",
+        "3：GitHub 封装扩展：`js/github-api-helper.js` 新增 `listDir`（目录列举）、`updateBinaryFile`（二进制按字节 base64 上传，避免 APK/ZIP 损坏）、`deleteDir`（递归删除文件夹），并抽出统一写入口 `_put`",
+        "4：导航集成：`js/components/manager-component.js` 新增“App 更新管理”入口",
+        "5：限制说明：单文件上限 100MB（GitHub Contents API 限制），超限时提示改用 GitHub Releases"
+      ]
+    },
     {
       "name": "BETA 4.5.7",
       "date": "2026-09-23",

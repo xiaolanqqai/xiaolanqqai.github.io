@@ -2,7 +2,7 @@
 
 Bootstrap_v5.3.2
 
-网站数据_2026.09.10
+网站数据_2026.10.15
 
 ## 网站介绍
 
@@ -19,6 +19,7 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 - **局域网工具页**：`index/Tool/Network Tool.html` 支持按网段与常见 Web 端口搜索局域网内可访问网页
 - **工具跳转页**：`index/tool.html` 作为工具项目总入口，读取 `data/tool-projects.json` 动态渲染可用工具卡片，支持通过管理页面上传新单页工具
 - **工具项目管理**：`index/manager/tool-manager.html` 管理工具跳转页的项目列表，支持上传单页文件、填写项目信息并同步到 GitHub
+- **App 更新管理**：`index/manager/app-manager.html` 在站点根目录 `AppUpdater/` 下新建项目并上传软件包，每个项目提供固定下载主文件直链，供 App 请求更新
 
 ### 技术架构
 - **前端框架**：基于Bootstrap 5.3.0-alpha3构建响应式界面
@@ -39,6 +40,14 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 - **入口页面**：`index/tool.html`
 - **项目列表**：页面读取 `data/tool-projects.json` 动态渲染可用工具卡片，点击卡片即可跳转到对应的单页工具
 - **项目来源**：通过 `index/manager/tool-manager.html` 管理页面添加，单页文件上传到 `index/Tool/` 文件夹
+
+### App 更新目录使用方式
+- **管理入口**：`index/manager/app-manager.html`
+- **目录结构**：站点根目录 `AppUpdater/`，每个项目占一个子文件夹，文件夹名即项目名
+- **项目元数据**：每个项目内的 `info.json` 记录名称、简介、下载主文件（`mainFile`）与创建/更新时间
+- **下载直链（固定 URL）**：`https://<站点>/AppUpdater/<项目名>/<mainFile>`，点击项目名后的复制图标即可取得；最新上传的文件自动成为主文件，App 端使用该固定 URL 即可持续获取最新包
+- **同步模式**：新建项目、上传文件、删除操作均先暂存，点击“同步到 GitHub”后统一提交到仓库
+- **单文件上限**：100MB（GitHub Contents API 限制），超限请改用 GitHub Releases
 
 ### Network Tool 页面使用方式
 - **入口页面**：`index/Tool/Network Tool.html`（也可通过 `index/tool.html` 跳转页进入）
@@ -74,6 +83,13 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
   - [Bootstrap 5 官方文档](https://getbootstrap.com/docs/5.0/)
   - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
   - [Font Awesome 图标库](https://fontawesome.com/icons)
+
+BETA 4.5.8-2026-10-15
+1：新增 App 更新管理系统：新增 `index/manager/app-manager.html`，在站点根目录 `AppUpdater/` 下新建项目（文件夹名即项目名）并填写简介，每个项目可上传软件包，全程采用“暂存 + 同步”模式，改动统一提交
+2：下载主文件（方案 C）：每个项目的 `info.json` 记录 `mainFile`，复制按钮始终返回 `https://<站点>/AppUpdater/<项目名>/<主文件>` 的固定直链，最新上传的文件自动成为主文件，App 端使用固定 URL 即可持续获取最新包
+3：GitHub 封装扩展：`js/github-api-helper.js` 新增 `listDir`（目录列举）、`updateBinaryFile`（二进制按字节 base64 上传，避免 APK/ZIP 损坏）、`deleteDir`（递归删除文件夹），并抽出统一写入口 `_put`
+4：导航集成：`js/components/manager-component.js` 新增“App 更新管理”入口
+5：限制说明：单文件上限 100MB（GitHub Contents API 限制），超限时提示改用 GitHub Releases
 
 BETA 4.5.7-2026-09-23
 1：候选词健壮性：新增 150ms 输入防抖与「最新请求胜出」序号守卫，丢弃过期响应；改用 `input` + `compositionstart/end` 事件，输入法组合期间不再用拼音误发请求；清空输入框时同时使在途请求失效
