@@ -169,9 +169,9 @@
             if (!window.githubHelper || !window.githubHelper.isConfigured()) {
                 projects = [];
                 dataStatus.className = 'data-status no-data p-3 mb-4';
-                dataStatus.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><span>GitHub Token 未配置或无效，请在控制台执行 localStorage.setItem(\'github_token\', \'github_pat_xxx\') 后刷新</span>';
+                dataStatus.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><span>GitHub Token 未配置或无效，请打开顶部“操作日志”面板注入 Token 后刷新</span>';
                 renderProjects();
-                common.log('加载失败：GitHub Token 未配置', 'error', '请先在控制台注入 github_token');
+                common.log('加载失败：GitHub Token 未配置', 'error', '请在“操作日志”面板的 GitHub Token 注入区保存 Token');
                 return;
             }
 

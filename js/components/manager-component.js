@@ -140,6 +140,27 @@
             </button>
         </div>
     </div>
+    <div class="mt-4 p-3 bg-light rounded border">
+        <h6 class="text-muted mb-3 small fw-bold"><i class="fas fa-key me-2"></i>GitHub Token 注入</h6>
+        <div id="tokenStatus" class="alert alert-warning py-2 small mb-2">
+            <i class="fas fa-exclamation-triangle me-1"></i>未配置，无法同步到 GitHub
+        </div>
+        <div class="input-group input-group-sm mb-2">
+            <input type="password" class="form-control" id="githubTokenInput" placeholder="github_pat_..." autocomplete="off" aria-label="GitHub Token">
+            <button class="btn btn-outline-secondary" type="button" id="toggleTokenBtn" title="显示/隐藏 Token">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
+        <div class="d-grid gap-2">
+            <button class="btn btn-sm btn-outline-primary text-start" id="saveTokenBtn">
+                <i class="fas fa-save me-2 w-20px"></i>保存 Token
+            </button>
+            <button class="btn btn-sm btn-outline-danger text-start" id="clearTokenBtn">
+                <i class="fas fa-trash-alt me-2 w-20px"></i>清除 Token
+            </button>
+        </div>
+        <div class="form-text small mt-2">仅保存于本机 localStorage，不写入源码与仓库；保存后无需刷新即可生效。</div>
+    </div>
 </div>`;
         document.body.appendChild(div);
 
@@ -152,7 +173,73 @@
         });
     };
 
-    const initAll = () => { injectNav(); injectHeader(); injectLogOffcanvas(); injectFooter(); };
+    // --- GitHub Token 注入面板 ---
+    // token 只存本机 localStorage，不写入源码与仓库，所以需要一个可视化入口，替代手动开控制台注入。
+    const TOKEN_KEY = 'github_token';
+
+    // 仅暴露前缀与末 4 位用于确认是哪一枚 token，不回显完整凭据
+    const maskToken = token => token.length > 16 ? `${token.slice(0, 12)}...${token.slice(-4)}` : '****';
+
+    const refreshTokenStatus = () => {
+        const el = document.getElementById('tokenStatus');
+        if (!el) return;
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (token) {
+            el.className = 'alert alert-success py-2 small mb-2';
+            el.innerHTML = `<i class="fas fa-check-circle me-1"></i>已配置：${escapeHtml(maskToken(token))}`;
+        } else {
+            el.className = 'alert alert-warning py-2 small mb-2';
+            el.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>未配置，无法同步到 GitHub';
+        }
+    };
+
+    const notify = (message, type) => {
+        if (window.managerCommon) window.managerCommon.showAlert(message, type);
+        else window.alert(message);
+    };
+
+    const bindTokenPanel = () => {
+        const input = document.getElementById('githubTokenInput');
+        const toggleBtn = document.getElementById('toggleTokenBtn');
+        const saveBtn = document.getElementById('saveTokenBtn');
+        const clearBtn = document.getElementById('clearTokenBtn');
+        if (!input || !saveBtn) return;
+
+        saveBtn.onclick = () => {
+            const value = input.value.trim();
+            if (!value) { notify('请输入 GitHub Token', 'danger'); return; }
+            if (!/^(github_pat_|ghp_)/.test(value)) {
+                notify('Token 格式不正确，应以 github_pat_ 或 ghp_ 开头', 'danger');
+                return;
+            }
+            localStorage.setItem(TOKEN_KEY, value);
+            input.value = '';   // 保存后立即清空，避免明文长期留在 DOM 中
+            refreshTokenStatus();
+            notify('Token 已保存，无需刷新即可生效', 'success');
+        };
+
+        clearBtn.onclick = () => {
+            if (!localStorage.getItem(TOKEN_KEY)) { notify('当前没有已保存的 Token', 'warning'); return; }
+            if (!window.confirm('确定清除本机保存的 GitHub Token 吗？清除后将无法同步到仓库。')) return;
+            localStorage.removeItem(TOKEN_KEY);
+            refreshTokenStatus();
+            notify('Token 已清除', 'warning');
+        };
+
+        toggleBtn.onclick = () => {
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            toggleBtn.querySelector('i').className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+        };
+
+        // 打开面板时刷新（覆盖其他标签页改动），storage 事件用于跨标签页实时同步
+        document.getElementById('logOffcanvas').addEventListener('show.bs.offcanvas', refreshTokenStatus);
+        window.addEventListener('storage', e => { if (e.key === TOKEN_KEY) refreshTokenStatus(); });
+
+        refreshTokenStatus();
+    };
+
+    const initAll = () => { injectNav(); injectHeader(); injectLogOffcanvas(); injectFooter(); bindTokenPanel(); };
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initAll);
     } else {

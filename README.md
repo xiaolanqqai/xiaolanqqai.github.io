@@ -20,6 +20,7 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 - **工具跳转页**：`index/tool.html` 作为工具项目总入口，读取 `data/tool-projects.json` 动态渲染可用工具卡片，支持通过管理页面上传新单页工具
 - **工具项目管理**：`index/manager/tool-manager.html` 管理工具跳转页的项目列表，支持上传单页文件、填写项目信息并同步到 GitHub
 - **App 更新管理**：`index/manager/app-manager.html` 在站点根目录 `AppUpdater/` 下新建项目并上传软件包，每个项目提供固定下载主文件直链，供 App 请求更新
+- **GitHub Token 注入面板**：管理页“操作日志”面板内可保存/清除本机 `localStorage.github_token`，无需手动开控制台
 
 ### 技术架构
 - **前端框架**：基于Bootstrap 5.3.0-alpha3构建响应式界面
@@ -83,6 +84,11 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
   - [Bootstrap 5 官方文档](https://getbootstrap.com/docs/5.0/)
   - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
   - [Font Awesome 图标库](https://fontawesome.com/icons)
+
+BETA 4.5.9-2026-10-15
+1：GitHub Token 可视化注入：在管理页“操作日志”面板新增 Token 注入区，可直接保存/清除本机 localStorage 的 `github_token`，替代手动开控制台注入；状态区仅回显前缀与末 4 位（不回显完整凭据），保存后立即清空输入框
+2：Token 校验与跨标签页同步：保存前校验 `github_pat_` / `ghp_` 前缀，清除需二次确认；监听 `storage` 事件，其他标签页改动后状态实时刷新
+3：入口提示对齐：`app-manager.html` 未配置 Token 时的提示改为指向该面板
 
 BETA 4.5.8-2026-10-15
 1：新增 App 更新管理系统：新增 `index/manager/app-manager.html`，在站点根目录 `AppUpdater/` 下新建项目（文件夹名即项目名）并填写简介，每个项目可上传软件包，全程采用“暂存 + 同步”模式，改动统一提交

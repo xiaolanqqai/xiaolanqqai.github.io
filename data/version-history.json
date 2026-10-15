@@ -5,6 +5,15 @@
   },
   "versions": [
     {
+      "name": "BETA 4.5.9",
+      "date": "2026-10-15",
+      "changes": [
+        "1：GitHub Token 可视化注入：在管理页“操作日志”面板新增 Token 注入区，可直接保存/清除本机 localStorage 的 `github_token`，替代手动开控制台注入；状态区仅回显前缀与末 4 位（不回显完整凭据），保存后立即清空输入框",
+        "2：Token 校验与跨标签页同步：保存前校验 `github_pat_` / `ghp_` 前缀，清除需二次确认；监听 `storage` 事件，其他标签页改动后状态实时刷新",
+        "3：入口提示对齐：`app-manager.html` 未配置 Token 时的提示改为指向该面板"
+      ]
+    },
+    {
       "name": "BETA 4.5.8",
       "date": "2026-10-15",
       "changes": [
