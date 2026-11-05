@@ -1,0 +1,35 @@
+{
+  "format": 1,
+  "project": "PocketSageMiniApps",
+  "base": "https://xiaolanqqai.cloud-ip.cc/AppUpdater/PocketSageMiniApps/",
+  "apps": [
+    {
+      "id": "calc",
+      "name": "计算器",
+      "version": "1.3",
+      "file": "calc-v1.3.json",
+      "hash": "65a145e2dc8925f2"
+    },
+    {
+      "id": "filemgr",
+      "name": "文件管理器",
+      "version": "1.2",
+      "file": "filemgr-v1.2.json",
+      "hash": "eb0e1a52f8c82ad6"
+    },
+    {
+      "id": "manbanshi",
+      "name": "漫巴士",
+      "version": "1.11",
+      "file": "manbanshi-v1.11.json",
+      "hash": "44b34608464dd5d3"
+    },
+    {
+      "id": "netcheck",
+      "name": "网络诊断",
+      "version": "1.1",
+      "file": "netcheck-v1.1.json",
+      "hash": "49a7a77690780f63"
+    }
+  ]
+}
