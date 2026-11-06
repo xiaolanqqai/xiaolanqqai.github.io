@@ -30,7 +30,8 @@ class GitHubAPIHelper {
     }
 
     async getFileSHA(path) {
-        const response = await fetch(this._apiUrl(path), { headers: this._headers() });
+        // 禁用缓存：SHA 必须与仓库当前状态一致，否则 PUT/DELETE 会因过期 SHA 返回 409
+        const response = await fetch(this._apiUrl(path), { headers: this._headers(), cache: 'no-store' });
         if (!response.ok) {
             if (response.status === 404) return null;
             throw new Error(`获取文件 SHA 失败: ${response.statusText}`);
@@ -40,7 +41,7 @@ class GitHubAPIHelper {
 
     async getFile(path) {
         if (!this.isConfigured()) throw new Error('GitHub Token 未配置或无效。');
-        const response = await fetch(this._apiUrl(path), { headers: this._headers() });
+        const response = await fetch(this._apiUrl(path), { headers: this._headers(), cache: 'no-store' });
         if (!response.ok) {
             if (response.status === 404) return null;
             throw new Error(`获取文件失败: ${response.statusText}`);

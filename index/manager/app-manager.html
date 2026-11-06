@@ -97,26 +97,25 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- AI 上传接口 -->
-    <div class="card manager-card mb-4">
-        <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
-            <span><i class="fas fa-robot me-2"></i>AI 上传接口</span>
-            <button class="btn btn-sm btn-primary" id="copyAiPromptBtn">
-                <i class="fas fa-copy me-1"></i>复制提示词给 AI
-            </button>
-        </div>
-        <div class="card-body">
-            <div class="alert alert-info py-2 mb-3 small">
-                <i class="fas fa-info-circle me-1"></i>
-                接口挂在 <code>window.AppUpdaterAPI</code>，供本地 AI 在<b>本页已打开的标签页</b>内直接发布产物；密钥只存在于本机 localStorage，因此不能用无头或远端浏览器代替。点右上角复制提示词发给 AI 即可（自带「先查已有项目」判断规则与注意事项），也可直接让 AI 读取
-                <a href="/AI.md" id="aiMdLink" target="_blank" rel="noopener noreferrer"><code id="aiMdUrl">/AI.md</code></a>。
+        <!-- AI 上传接口 -->
+        <div class="card manager-card mb-4">
+            <div class="card-header manager-card-header d-flex justify-content-between align-items-center py-3">
+                <span><i class="fas fa-robot me-2"></i>AI 上传接口</span>
+                <button class="btn btn-sm btn-primary" id="copyAiPromptBtn">
+                    <i class="fas fa-copy me-1"></i>复制提示词给 AI
+                </button>
             </div>
-            <pre class="ai-guide-pre"><code id="aiGuideCode"></code></pre>
-            <button class="btn btn-sm btn-outline-secondary" id="copyAiGuideBtn">
-                <i class="fas fa-copy me-1"></i>复制接口说明
-            </button>
+            <div class="card-body">
+                <div class="alert alert-info py-2 mb-3 small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    接口挂在 <code>window.AppUpdaterAPI</code>，供本地 AI 在<b>本页已打开的标签页</b>内直接发布产物；密钥只存在于本机 localStorage，因此不能用无头或远端浏览器代替。点右上角复制提示词发给 AI 即可（自带「先查已有项目」判断规则与注意事项），也可直接让 AI 读取
+                    <a href="/AI.md" id="aiMdLink" target="_blank" rel="noopener noreferrer"><code id="aiMdUrl">/AI.md</code></a>。
+                </div>
+                <pre class="ai-guide-pre"><code id="aiGuideCode"></code></pre>
+                <button class="btn btn-sm btn-outline-secondary" id="copyAiGuideBtn">
+                    <i class="fas fa-copy me-1"></i>复制接口说明
+                </button>
+            </div>
         </div>
     </div>
 

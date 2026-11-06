@@ -5,6 +5,23 @@
   },
   "versions": [
     {
+      "name": "BETA 4.6.6",
+      "date": "2026-11-05",
+      "changes": [
+        "1：修复「删除项目」偶发删不干净：`getFileSHA` / `getFile` 未禁用浏览器缓存，可能拿到过期 SHA 导致 DELETE 返回 409、该文件被跳过（真机测试中表现为一次同步只删掉部分文件，项目目录残留）；现统一加 `cache: 'no-store'`，删除/覆盖均基于仓库当前状态",
+        "2：真机验证：使用真实 GitHub 仓库完成 上传 → AI 接口发布 → 删除 全链路冒烟（11/11 通过），测试项目已从仓库清除"
+      ]
+    },
+    {
+      "name": "BETA 4.6.5",
+      "date": "2026-11-03",
+      "changes": [
+        "1：修复图标缺字形：FontAwesome 子集重建，补入 2026-09-10 之后新增页面所用字形（`fa-mobile-alt` / `fa-file-archive` / `fa-robot` / `fa-eye` / `fa-eye-slash` / `fa-sitemap` 等），此前在 `app-manager.html` 显示为豆腐块；solid 字体 5.9 KB → 6.4 KB",
+        "2：修复「AI 上传接口」卡片位置：该卡片原先写在 `.container` 闭合标签之外，导致全宽铺开、与其余内容左右各错位 60px；现移入容器内并与其它卡片对齐",
+        "3：子集脚本修正：`fa-subset.py` 重跑时改为以 `.workbuddy/backup-webfonts/` 的完整原字体为基础裁剪，避免从「已裁剪字体」再裁导致新增图标永远补不回来"
+      ]
+    },
+    {
       "name": "BETA 4.6.4",
       "date": "2026-10-15",
       "changes": [
