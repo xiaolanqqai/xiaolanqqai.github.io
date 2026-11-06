@@ -13,16 +13,16 @@
     {
       "id": "filemgr",
       "name": "文件管理器",
-      "version": "1.2",
-      "file": "filemgr-v1.2.json",
-      "hash": "eb0e1a52f8c82ad6"
+      "version": "1.3",
+      "file": "filemgr-v1.3.json",
+      "hash": "1d1f4d88bca89fbe"
     },
     {
       "id": "manbanshi",
       "name": "漫巴士",
-      "version": "1.11",
-      "file": "manbanshi-v1.11.json",
-      "hash": "44b34608464dd5d3"
+      "version": "1.12",
+      "file": "manbanshi-v1.12.json",
+      "hash": "0dcc485e45e10099"
     },
     {
       "id": "netcheck",
