@@ -1,7 +1,7 @@
 {
     "name":  "PocketSageFirmware",
     "description":  "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-    "mainFile":  "pocket-sage-official-dsh-2.9.37.bin",
+    "mainFile":  "pocket-sage-official-dsh-2.9.38.bin",
     "createdAt":  "2026-11-05",
     "updatedAt":  "2026-11-07"
 }
