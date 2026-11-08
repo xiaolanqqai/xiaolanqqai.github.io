@@ -1,42 +1,42 @@
 {
-    "format":  1,
-    "project":  "PocketSageMiniApps",
-    "base":  "https://xiaolanqqai.cloud-ip.cc/AppUpdater/PocketSageMiniApps/",
-    "apps":  [
-                 {
-                     "id":  "calc",
-                     "name":  "计算器",
-                     "version":  "1.3",
-                     "file":  "calc-v1.3.json",
-                     "hash":  "65a145e2dc8925f2"
-                 },
-                 {
-                     "id":  "filemgr",
-                     "name":  "文件管理器",
-                     "version":  "1.4",
-                     "file":  "filemgr-v1.4.json",
-                     "hash":  "012f26b59b850486"
-                 },
-                 {
-                     "id":  "manbanshi",
-                     "name":  "漫巴士",
-                     "version":  "1.12",
-                     "file":  "manbanshi-v1.12.json",
-                     "hash":  "0dcc485e45e10099"
-                 },
-                 {
-                     "id":  "netcheck",
-                     "name":  "网络诊断",
-                     "version":  "1.1",
-                     "file":  "netcheck-v1.1.json",
-                     "hash":  "49a7a77690780f63"
-                 },
-                 {
-                     "id":  "eviljuice",
-                     "name":  "邪恶苹果汁",
-                     "version":  "1.1",
-                     "file":  "eviljuice-v1.1.json",
-                     "hash":  "c673dda68f9529a2"
-                 }
-             ]
+  "format": 1,
+  "project": "PocketSageMiniApps",
+  "base": "https://xiaolanqqai.cloud-ip.cc/AppUpdater/PocketSageMiniApps/",
+  "apps": [
+    {
+      "id": "calc",
+      "name": "计算器",
+      "version": "1.3",
+      "file": "calc-v1.3.json",
+      "hash": "65a145e2dc8925f2"
+    },
+    {
+      "id": "filemgr",
+      "name": "文件管理器",
+      "version": "1.5",
+      "file": "filemgr-v1.5.json",
+      "hash": "b0fe2bdf4489f001"
+    },
+    {
+      "id": "manbanshi",
+      "name": "漫巴士",
+      "version": "1.12",
+      "file": "manbanshi-v1.12.json",
+      "hash": "0dcc485e45e10099"
+    },
+    {
+      "id": "netcheck",
+      "name": "网络诊断",
+      "version": "1.1",
+      "file": "netcheck-v1.1.json",
+      "hash": "49a7a77690780f63"
+    },
+    {
+      "id": "eviljuice",
+      "name": "邪恶苹果汁",
+      "version": "1.1",
+      "file": "eviljuice-v1.1.json",
+      "hash": "c673dda68f9529a2"
+    }
+  ]
 }
