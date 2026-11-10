@@ -1,8 +1,8 @@
 {
     "name": "PocketSageFirmware",
     "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-    "mainFile": "pocket-sage-official-dsh-2.9.47.bin",
-    "notes": "2.9.47：列表修复——挑战统一按对话路径申请并缓存复用（进列表不再重复计算十几秒），对话连接超时恢复 10 秒",
+    "mainFile": "pocket-sage-official-dsh-2.9.48.bin",
+    "notes": "2.9.48：修复对话失败（工作证明头防重放，一挑战一用，移除缓存恢复独立求解）；列表改用新鲜求解的头重试",
     "createdAt": "2026-11-05",
     "updatedAt": "2026-11-10"
 }
