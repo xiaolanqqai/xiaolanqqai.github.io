@@ -1,7 +1,8 @@
 {
     "name": "PocketSageFirmware",
     "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-    "mainFile": "pocket-sage-official-dsh-2.9.43.bin",
+    "mainFile": "pocket-sage-official-dsh-2.9.44.bin",
+    "notes": "2.9.44：语音识别先确认再发送（语音键单击发送/长按重录/左键取消）；检查更新显示更新概要与下载进度条（含已下载/总字节），下载失败自动重试 3 次；列表挑战失败屏显响应特征便于定位",
     "createdAt": "2026-11-05",
-    "updatedAt": "2026-11-08"
+    "updatedAt": "2026-11-10"
 }
