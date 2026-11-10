@@ -1,8 +1,8 @@
 {
     "name": "PocketSageFirmware",
     "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-    "mainFile": "pocket-sage-official-dsh-2.9.48.bin",
-    "notes": "2.9.48：修复对话失败（工作证明头防重放，一挑战一用，移除缓存恢复独立求解）；列表改用新鲜求解的头重试",
+    "mainFile": "pocket-sage-official-dsh-2.9.49.bin",
+    "notes": "2.9.49：修复 DeepSeek 回复被截断（读超时被误判流结束，现区分对端关闭继续等待）；会话历史秒进（先加载本地缓存立即进页，异步刷新远端列表，计算工作证明时提示栏实时显示进度，成功后缓存列表）",
     "createdAt": "2026-11-05",
     "updatedAt": "2026-11-10"
 }
