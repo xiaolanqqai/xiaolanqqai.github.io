@@ -1,8 +1,8 @@
 {
     "name": "PocketSageFirmware",
     "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-    "mainFile": "pocket-sage-official-dsh-2.9.45.bin",
-    "notes": "2.9.45：语音识别各阶段耗时上屏（连接/上传/排队识别分段计时），连接错误翻译成人话，DeepSeek 连接超时 10 秒降到 6 秒",
+    "mainFile": "pocket-sage-official-dsh-2.9.46.bin",
+    "notes": "2.9.46：挑战被拒时显示 DeepSeek 返回的完整原因（限流/令牌问题一目了然）；对话页右键菜单新增当前模型展示；修复语音直达对话后右键菜单走错分支",
     "createdAt": "2026-11-05",
     "updatedAt": "2026-11-10"
 }
