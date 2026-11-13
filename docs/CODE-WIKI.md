@@ -210,9 +210,9 @@ xiaolan/
 
 - `nav-manager.html`：读写导航数据，经 `managerCommon.syncToGithub` 同步 `data/nav-data.json`。
 - `tool-manager.html`：管理工具跳转页项目列表，上传单页文件并同步 `data/tool-projects.json` 到 GitHub。
-- `app-manager.html`：管理 `AppUpdater/` 下的 App 更新项目。新建项目（文件夹名 = 项目名）与简介，按项目上传软件包、删除单个文件或整个项目；所有改动**先暂存**，点“同步到 GitHub”后统一提交。每个项目的 `info.json` 记录 `mainFile`，复制按钮输出的下载直链为 `https://<站点>/AppUpdater/<项目名>/<mainFile>`（方案 C：最新上传的文件自动成为主文件）。
-  另含**目录识别更新**（`scanDirectory` → `buildScanPlan`）：扫描绕过管理页直接上传到仓库的内容 —— 散落在 `AppUpdater/` 根下的文件按“去扩展名同名项目”迁移进文件夹（`updateFileBase64` 写 + `deleteFile` 删，先写后删），缺失的 `info.json` 自动补建、主文件变更时自动更新。主文件用 `pickMainFile` 识别：在安装包类扩展名（`PACKAGE_EXT`）中按 `naturalCompare` 自然排序取最新（`v1.10 > v1.2`），无安装包时取全部文件中最新的一个；主文件已一致则不重写，避免无意义提交。执行前先输出变更清单二次确认。
-  另含**拖拽自动归类**（`dropZone` → `handleDroppedFiles` / `resolveDropProject` / `projectNameFromFile`）：拖入文件即按文件名归入项目并暂存，无对应项目则自动新建（`pendingProjects`，简介留空），最终统一走“同步到 GitHub”。归类优先匹配已有项目名（取最长匹配，要求紧随分隔符或 `v数字`）；再从文件名去扩展名、去版本尾巴（`DROP_VERSION_TAIL`）推导项目名；若推导名 = 已有项目名 + 版本尾巴（如 `MyApp2`）则仍归入已有项目，避免误建名字相近的项目。主文件按“项目内全部有效文件（`fileCandidates()` = 线上未删 + 全部暂存）中版本号最大者”确定，与目录识别口径一致。
+- `app-manager.html`：管理 `AppUpdater/` 下的 App 更新项目。新建项目（文件夹名 = 项目名）与简介，按项目上传软件包、删除单个文件或整个项目；所有改动**先暂存**，点“同步到 GitHub”后经 Git Data API（blobs → tree → commit → ref）**一次原子提交**。每个项目的 `info.json` 记录 `mainFile`，复制按钮输出的下载直链为 `https://<站点>/AppUpdater/<项目名>/<mainFile>`（已有 `mainFile` 仍存在时保持不变，`setMain` / `setMainFile` 显式切换）。
+  另含**目录识别更新**（`scanDirectory` → `buildScanPlan`）：扫描绕过管理页直接上传到仓库的内容 —— 散落在 `AppUpdater/` 根下的文件按“去扩展名同名项目”迁移进文件夹（迁移写入 + 删除源文件放在同一个提交里），缺失的 `info.json` 自动补建、主文件失效时自动更新。主文件用 `pickMainFile` 识别：已有 `mainFile` 仍存在时保持不变，否则在安装包类扩展名（`PACKAGE_EXT`）中按 `naturalCompare` 自然排序取最新（`v1.10 > v1.2`），无安装包时取全部文件中最新的一个；主文件已一致则不重写，避免无意义提交。执行前先输出变更清单二次确认。
+  另含**拖拽自动归类**（`dropZone` → `handleDroppedFiles` / `resolveDropProject` / `projectNameFromFile`）：拖入文件即按文件名归入项目并暂存，无对应项目则自动新建（`pendingProjects`，简介留空），最终统一走“同步到 GitHub”。归类优先匹配已有项目名（取最长匹配，要求紧随分隔符或 `v数字`）；再从文件名去扩展名、去版本尾巴（`DROP_VERSION_TAIL`）推导项目名；若推导名 = 已有项目名 + 版本尾巴（如 `MyApp2`）则仍归入已有项目，避免误建名字相近的项目。拖拽只做归类，主文件保持已有值；新项目才从 `fileCandidates()`（线上未删 + 全部暂存）中按自然排序补选；项目卡片的“上传文件”属显式操作，会切换主文件。
   另导出 **AI 上传接口** `window.AppUpdaterAPI`（详见 [§6.11](#611-appupdaterapiapp-managerhtml) 与 [AI-UPLOAD-GUIDE.md](AI-UPLOAD-GUIDE.md)）：供本地 AI 在同标签页内直接发布产物。token 只在本机 `localStorage`，故必须由本地浏览器发起。
 - `MM-generator.html`：加密生成 MM 密文。
 - `explore-manager.html`：基于 `localStorage` 点击记录做「最近点击」统计，支持生成 History 类目。
@@ -335,14 +335,18 @@ xiaolan/
 
 | 成员                                                 | 说明                                                                 |
 | -------------------------------------------------- | ------------------------------------------------------------------ |
-| `publish({ project, fileName, base64\|content\|blob, description?, setMain? })` | 发布单个文件；项目不存在则自动创建并生成 `info.json`；`setMain` 默认 `true`（设为主文件）。返回 `downloadUrl` 等字段 |
-| `publishInputFiles(project, { description?, setMain? })` | 读取已塞入 `#uploadInput` 的本地文件并逐个发布（免 base64 中转，适合大文件） |
-| `list()`                                           | 只读：返回各项目、主文件、文件清单与固定下载直链                                           |
+| `publish({ project, fileName, text\|base64\|content\|blob, description?, setMain?, mainFile? })` | 发布单个文件；文件 + `info.json` 一次原子提交；`setMain` 默认 `false`（保持现有主文件）。返回 `bytes` / `commitSha` / `commitUrl` 等 |
+| `publishFiles(project, files[], { description?, setMain?, mainFile?, onProgress? })` | 批量发布：多文件 + `info.json` 一次提交，全成功或全失败 |
+| `beginUpload(fileName)` / `appendChunk(id, chunk, encoding?)` / `commitUpload(id, project, opts?)` / `abortUpload(id)` | 分块上传，最后一次性提交 |
+| `publishInputFiles(project, { input?, setMain?, mainFile? })` | 读取文件输入框（默认 `#apiFileInput`，兼容 `#uploadInput`）并批量发布；结束后清空输入框 |
+| `setMainFile(project, fileName)`                    | 只切换下载主文件，不改文件内容                                                     |
+| `verify({ project, fileName, expectedBytes?, waitMs? })` | 直链 HEAD（带时间戳绕缓存）+ Pages 构建状态校验                                     |
+| `list()`                                           | 只读：一次递归 Git tree 读取项目与文件，再并行读取各项目 `info.json`                        |
 | `help()`                                           | 输出使用说明（同时 `console.log`，便于 AI 自行读取）                                  |
 | `aiProjectsText()`（内部）                             | 生成【当前已有项目】清单（项目名/简介/主文件/文件数/固定直链），随 `loadProjects` 刷新并写入页面说明；供 AI 判断“已有哪些项目、已有项目该传到哪” |
 | `aiPromptText()`（内部）                               | 生成可直接投喂给 AI 的提示词（指向站点根目录 `/AI.md`，并附本次已有项目摘要）；页面「复制提示词给 AI」按钮即用它 |
 
-约定：项目名即文件夹名（白名单校验）；`fileName` 不得含 `/` 或为 `info.json`；单文件 ≤ 100MB；调用即写仓库生效，与页面“暂存 + 同步”流程相互独立。
+约定：项目名即文件夹名（白名单校验，禁 `..` 与首尾点）；`fileName` 不得含 `\ / : * ? " < > |`、`..` 或为 `info.json`；单文件本页上限 40MB、GitHub 硬上限 100MB；调用即写仓库生效，与页面“暂存 + 同步”流程相互独立；`info.json` 浅合并保留未知字段。
 引导要求（页面说明与 [AI-UPLOAD-GUIDE.md](AI-UPLOAD-GUIDE.md) 同源）：**先确认已有项目** —— 已有项目须复用其项目名并上传进对应文件夹，禁止为同一应用另建名字相近的新项目，否则包散落多目录、App 端固定直链失效；文件名建议 `{项目名}-v{版本}.{扩展名}`，以配合主文件的自然排序识别。
 
 ---
@@ -381,8 +385,8 @@ xiaolan/
 ```
 
 - 项目名即文件夹名，字符集限制为字母/数字/下划线/短横线/点/中文。
-- `mainFile` 为下载主文件，复制按钮输出的固定直链指向它（最新上传的文件自动成为主文件）。
-- 文件夹内其余文件即软件包本体；本项目无 `data/` 下的聚合索引，项目列表由 `listDir('AppUpdater')` 实时列举得到。
+- `mainFile` 为下载主文件，复制按钮输出的固定直链指向它（默认保持不变；上传时显式 `setMain` 或调用 `setMainFile()` 才切换）。
+- 文件夹内其余文件即软件包本体；项目列表由一次递归 Git tree 读取得到，`info.json` 内容逐项目并行读取。
 - 该文件由管理页的“目录识别更新”自动补建：直接上传文件夹/文件时无需手工维护元数据。
 
 ### `data/version-history.json`

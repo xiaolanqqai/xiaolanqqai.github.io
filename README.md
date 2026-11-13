@@ -45,15 +45,15 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 ### App 更新目录使用方式
 - **管理入口**：`index/manager/app-manager.html`
 - **目录结构**：站点根目录 `AppUpdater/`，每个项目占一个子文件夹，文件夹名即项目名
-- **项目元数据**：每个项目内的 `info.json` 记录名称、简介、下载主文件（`mainFile`）与创建/更新时间
-- **下载直链（固定 URL）**：`https://<站点>/AppUpdater/<项目名>/<mainFile>`，点击项目名后的复制图标即可取得；最新上传的文件自动成为主文件，App 端使用该固定 URL 即可持续获取最新包
-- **拖拽自动归类**：把文件直接拖到页面顶部拖拽区（或点其中的“选择文件”），会按 `{项目名}-v{版本}.{扩展名}` 自动归入同名项目；**没有对应项目则自动新建**。暂存后点「同步到 GitHub」统一发布，同项目内版本号最大的文件成为下载主文件
-- **同步模式**：新建项目、上传文件、删除操作均先暂存，点击“同步到 GitHub”后统一提交到仓库
-- **目录识别更新**：若直接在 GitHub 网页或 git 里往 `AppUpdater/` 上传了文件夹/文件（绕过了本管理页），点击“目录识别更新”可自动建项目、补建项目 `info.json`，并按文件名自然排序识别较新版本作为下载主文件；执行前会列出变更清单供确认
-- **AI 上传接口**：页面导出 `window.AppUpdaterAPI`，本地 AI 可在该标签页内直接发布产物（项目不存在会自动创建并生成 `info.json`）。页面“AI 上传接口”说明中会**实时列出当前已有项目**及固定直链，已有应用让 AI 传该项目名上传进对应文件夹即可。
+- **项目元数据**：每个项目内的 `info.json` 记录名称、简介、下载主文件（`mainFile`）与创建/更新时间；写回采用**浅合并**，`promptFile` / `libs` / `notes` 等自定义字段原样保留
+- **下载直链（固定 URL）**：`https://<站点>/AppUpdater/<项目名>/<mainFile>`，点击项目名后的复制图标即可取得。**已有主文件默认保持不变**，要切换请用项目卡片的「上传文件」（显式上传）或接口 `setMain: true` / `setMainFile()`；App 端使用该固定 URL 即可持续获取最新包
+- **拖拽自动归类**：把文件直接拖到页面顶部拖拽区（或点其中的“选择文件”），会按 `{项目名}-v{版本}.{扩展名}` 自动归入同名项目；**没有对应项目则自动新建**。暂存后点「同步到 GitHub」一次原子提交发布；已有主文件不会因拖入其它文件而改变
+- **同步模式**：新建项目、上传文件、删除操作均先暂存，点击“同步到 GitHub”后通过 Git Data API（blobs → tree → commit → ref）**一次提交**全部写入，全成功或全失败；失败时暂存区保留可直接重试
+- **目录识别更新**：若直接在 GitHub 网页或 git 里往 `AppUpdater/` 上传了文件夹/文件（绕过了本管理页），点击“目录识别更新”可自动建项目、补建项目 `info.json`，迁移散落文件；已有主文件仍存在时不改动，迁移与元数据写入合并为一次提交；执行前会列出变更清单供确认
+- **AI 上传接口**：页面导出 `window.AppUpdaterAPI`（v2），本地 AI 可在该标签页内直接发布产物（项目不存在会自动创建并生成 `info.json`）。支持内容直传、批量原子提交、分块上传、`setMainFile` 与发布后 `verify` 校验。页面“AI 上传接口”说明中会**实时列出当前已有项目**及固定直链，已有应用让 AI 传该项目名上传进对应文件夹即可。
   - **现成提示词**：站点根目录 [`AI.md`](AI.md)（即 `{站点}/AI.md`），可直接对 AI 说“读取 `{站点}/AI.md`，按其中指示上传此文件”；页面右上角「复制提示词给 AI」按钮即复制该话术（含本次已有项目摘要）
   - **技术细节**：见 [docs/AI-UPLOAD-GUIDE.md](docs/AI-UPLOAD-GUIDE.md)
-- **单文件上限**：100MB（GitHub Contents API 限制），超限请改用 GitHub Releases
+- **单文件上限**：本页通道 40MB（内容经 base64 传输）；GitHub 单文件硬上限 100MB，超出请改用 GitHub Releases
 
 ### Network Tool 页面使用方式
 - **入口页面**：`index/Tool/Network Tool.html`（也可通过 `index/tool.html` 跳转页进入）
@@ -89,6 +89,15 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
   - [Bootstrap 5 官方文档](https://getbootstrap.com/docs/5.0/)
   - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
   - [Font Awesome 图标库](https://fontawesome.com/icons)
+
+BETA 4.6.7-2026-11-13
+1：发布链路改为一次原子提交：`js/github-api-helper.js` 新增 Git Data API 封装（blobs → tree → commit → ref），多文件 + info.json 一次提交，全成功或全失败，只触发一次 Pages 构建；`deleteDir` 与“目录识别更新”同路径处理
+2：`info.json` 改为浅合并写回，保留 `promptFile` / `libs` / `notes` 等未知字段；`readInfo` 仅 404 返回 null，读失败不再按空简介处理，避免瞬时网络错误覆盖元数据
+3：主文件规则收紧：已有 `mainFile` 仍存在时不再被后上传的文件覆盖；新增 `setMainFile(project, fileName)` 与 `publish({ mainFile })` 显式切换；`pickMainFile` 统一自然排序，并修正 manifest 型项目（如 `PocketSageMiniApps`）被“目录识别更新”误改主文件的问题
+4：`AppUpdaterAPI` 升至 v2：新增 `publishFiles`（批量原子提交）、`beginUpload`/`appendChunk`/`commitUpload`（分块）、`verify`（直链 HEAD + Pages 构建状态）；`publish` 支持 `text`/`base64`/`content`/`blob`，返回 `bytes`/`commitSha`/`commitUrl`；`publishInputFiles` 改用独立 `#apiFileInput` 并在 finally 清空
+5：校验与错误：项目名/文件名统一白名单（禁 `..`、`\`、首尾点、控制字符）；错误统一为 `GithubApiError`（status/code/path），409 自动重取 HEAD 重试一次，401/403 给出可执行提示；`listDir` 补 `no-store`；`list()` 改一次递归树读取
+6：上限与文案：区分「本页 40MB」与「GitHub 100MB」；size 按真实字节计算；`unescape` 编码替换为 TextEncoder 分块
+7：AI 引导对齐：`AI.md`、`docs/AI-UPLOAD-GUIDE.md` 与页面 `help()` 重写，明确「优先内容直传、页面不请求本地/外部 URL、不要搭本机 HTTP+CORS 中转、缓存与 verify 校验、info.json 字段合并规则、真实单文件上限」
 
 BETA 4.6.6-2026-11-05
 1：修复「删除项目」偶发删不干净：`getFileSHA` / `getFile` 未禁用浏览器缓存，可能拿到过期 SHA 导致 DELETE 返回 409、该文件被跳过（真机测试中表现为一次同步只删掉部分文件，项目目录残留）；现统一加 `cache: 'no-store'`，删除/覆盖均基于仓库当前状态

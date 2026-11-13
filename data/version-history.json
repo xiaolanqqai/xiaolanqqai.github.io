@@ -5,6 +5,19 @@
   },
   "versions": [
     {
+      "name": "BETA 4.6.7",
+      "date": "2026-11-13",
+      "changes": [
+        "1：发布链路改为一次原子提交：`js/github-api-helper.js` 新增 Git Data API 封装（blobs → tree → commit → ref），多文件 + info.json 一次提交，全成功或全失败，只触发一次 Pages 构建；`deleteDir` 与“目录识别更新”同路径处理",
+        "2：`info.json` 改为浅合并写回，保留 `promptFile` / `libs` / `notes` 等未知字段；`readInfo` 仅 404 返回 null，读失败不再按空简介处理，避免瞬时网络错误覆盖元数据",
+        "3：主文件规则收紧：已有 `mainFile` 仍存在时不再被后上传的文件覆盖；新增 `setMainFile(project, fileName)` 与 `publish({ mainFile })` 显式切换；`pickMainFile` 统一自然排序，并修正 manifest 型项目（如 `PocketSageMiniApps`）被“目录识别更新”误改主文件的问题",
+        "4：`AppUpdaterAPI` 升至 v2：新增 `publishFiles`（批量原子提交）、`beginUpload`/`appendChunk`/`commitUpload`（分块）、`verify`（直链 HEAD + Pages 构建状态）；`publish` 支持 `text`/`base64`/`content`/`blob`，返回 `bytes`/`commitSha`/`commitUrl`；`publishInputFiles` 改用独立 `#apiFileInput` 并在 finally 清空",
+        "5：校验与错误：项目名/文件名统一白名单（禁 `..`、`\\`、首尾点、控制字符）；错误统一为 `GithubApiError`（status/code/path），409 自动重取 HEAD 重试一次，401/403 给出可执行提示；`listDir` 补 `no-store`；`list()` 改一次递归树读取",
+        "6：上限与文案：区分「本页 40MB」与「GitHub 100MB」；size 按真实字节计算；`unescape` 编码替换为 TextEncoder 分块",
+        "7：AI 引导对齐：`AI.md`、`docs/AI-UPLOAD-GUIDE.md` 与页面 `help()` 重写，明确「优先内容直传、页面不请求本地/外部 URL、不要搭本机 HTTP+CORS 中转、缓存与 verify 校验、info.json 字段合并规则、真实单文件上限」"
+      ]
+    },
+    {
       "name": "BETA 4.6.6",
       "date": "2026-11-05",
       "changes": [

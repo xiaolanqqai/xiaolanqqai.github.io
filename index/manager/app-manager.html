@@ -26,7 +26,7 @@
                     <h6 class="mb-1">拖拽文件到这里，自动归类并暂存</h6>
                     <p class="text-muted small mb-3">
                         按 <code>{项目名}-v{版本}.{扩展名}</code> 命名，会自动归入同名项目；<b>没有对应项目则自动新建</b>。<br>
-                        暂存后点「同步到 GitHub」统一发布；同项目内版本号最大的文件成为下载主文件。
+                        暂存后点「同步到 GitHub」统一发布；已有下载主文件保持不变，新项目按版本号最大者选定。
                     </p>
                     <label for="dropInput" class="btn btn-sm btn-success mb-0">
                         <i class="fas fa-folder-open me-1"></i>选择文件
@@ -87,7 +87,7 @@
             <div class="card-body">
                 <div class="alert alert-info py-2 mb-3 small">
                     <i class="fas fa-info-circle me-1"></i>
-                    所有改动先暂存，点击“同步到 GitHub”后统一发布。<code>info.json</code> 记录项目简介与下载主文件（复制链接指向它，最新上传的文件自动成为主文件）。单文件上限 100MB。
+                    所有改动先暂存，点击“同步到 GitHub”后一次原子提交发布。已有项目的 <code>info.json</code> 会被合并保留自定义字段，下载主文件不会因上传其它文件而改变。单文件上限：本页 40MB（GitHub 硬上限 100MB，超出请改用 GitHub Releases）。
                 </div>
                 <div id="projectsContainer">
                     <div class="text-center p-5 text-muted">
@@ -108,7 +108,7 @@
             <div class="card-body">
                 <div class="alert alert-info py-2 mb-3 small">
                     <i class="fas fa-info-circle me-1"></i>
-                    接口挂在 <code>window.AppUpdaterAPI</code>，供本地 AI 在<b>本页已打开的标签页</b>内直接发布产物；密钥只存在于本机 localStorage，因此不能用无头或远端浏览器代替。点右上角复制提示词发给 AI 即可（自带「先查已有项目」判断规则与注意事项），也可直接让 AI 读取
+                    接口挂在 <code>window.AppUpdaterAPI</code>，供本地 AI 在<b>本页已打开的标签页</b>内直接发布产物（支持内容直传、批量原子提交与发布后校验）；密钥只存在于本机 localStorage，因此不能用无头或远端浏览器代替。点右上角复制提示词发给 AI 即可（自带「先查已有项目」判断规则与注意事项），也可直接让 AI 读取
                     <a href="/AI.md" id="aiMdLink" target="_blank" rel="noopener noreferrer"><code id="aiMdUrl">/AI.md</code></a>。
                 </div>
                 <pre class="ai-guide-pre"><code id="aiGuideCode"></code></pre>
@@ -152,6 +152,8 @@
 
     <!-- 复用同一个隐藏上传控件，按当前项目分流 -->
     <input type="file" id="uploadInput" class="d-none" multiple>
+    <!-- 脚本接口专用输入框：与页面 UI 分开，避免 AI 塞入的文件被项目卡片的“上传文件”误用 -->
+    <input type="file" id="apiFileInput" class="d-none" multiple>
 
     <script>
         const common = window.managerCommon || (typeof ManagerCommon !== 'undefined' ? new ManagerCommon() : null);
@@ -159,20 +161,25 @@
 
         const ROOT_DIR = 'AppUpdater';       // 站点根目录下的 App 更新目录
         const INFO_FILE = 'info.json';       // 项目元数据文件名
-        const MAX_FILE_SIZE = 100 * 1024 * 1024;  // GitHub Contents API 单文件上限 100MB
-        const PROJECT_NAME_PATTERN = /^[A-Za-z0-9_\-.一-龥]+$/;  // 项目名即文件夹名，限制字符集以保证路径与 URL 安全
+        const MAX_PAGE_FILE_SIZE = 40 * 1024 * 1024;      // 本页上传通道实际可用上限（内容经 base64 JSON 传输，约 1.37 倍膨胀）
+        const MAX_GITHUB_FILE_SIZE = 100 * 1024 * 1024;   // GitHub 单文件硬上限
+        // 项目名即文件夹名：禁 `..`、首尾点与控制字符，保证路径安全
+        const PROJECT_NAME_PATTERN = /^(?!\.)(?!.*\.$)(?!.*\.\.)[A-Za-z0-9_\-.一-龥]+$/;
+        // 文件名：禁 `..`、路径分隔符、首尾点、Windows 非法字符与控制字符
+        const FILE_NAME_PATTERN = /^(?!\.)(?!.*\.$)(?!.*\.\.)[^\\/:*?"<>|\x00-\x1F\x7F]+$/;
         const PACKAGE_EXT = /\.(apk|aab|ipa|zip|exe|msi|dmg|7z|rar|tar|gz|xz|bin|img)$/i;
         const MAX_MOVE_SIZE = 50 * 1024 * 1024;   // 迁移散落文件需在浏览器内中转内容，过大易耗尽内存
 
         // 全局状态：线上快照 + 待同步增量（暂存/同步模式）
-        let projects = [];                 // 线上项目: [{ name, description, mainFile, createdAt, files: [{name, sha, size}] }]
+        let projects = [];                 // 线上项目: [{ name, info, description, mainFile, createdAt, files: [{name, sha, size}] }]
         let pendingProjects = [];          // 待新建项目: [{ name, description }]
         let pendingFiles = {};             // 待上传文件: { 项目名: { 文件名: { content: ArrayBuffer, size } } }
         let pendingFileDeletes = {};       // 待删除文件: { 项目名: [文件名] }
         let pendingProjectDeletes = [];    // 待删除项目: [项目名]
-        let pendingMainFile = {};          // 最新上传文件，用于确定 info.json 的 mainFile: { 项目名: 文件名 }
+        let pendingMainFile = {};          // 显式指定的主文件（仅“上传文件”按钮或接口 setMain 时写入）
+        let syncInProgress = false;        // 同步期间禁止继续暂存，避免原子提交后清理不干净
 
-        let projectsContainer, projectCount, dataStatus, addProjectModal, uploadInput;
+        let projectsContainer, projectCount, dataStatus, addProjectModal, uploadInput, apiFileInput;
         let dropZone, dropInput, dropResult;
         let currentUploadProject = null;
 
@@ -189,6 +196,7 @@
             projectCount = document.getElementById('projectCount');
             dataStatus = document.getElementById('dataStatus');
             uploadInput = document.getElementById('uploadInput');
+            apiFileInput = document.getElementById('apiFileInput');
             dropZone = document.getElementById('dropZone');
             dropInput = document.getElementById('dropInput');
             dropResult = document.getElementById('dropResult');
@@ -262,6 +270,113 @@
             return new TextDecoder('utf-8').decode(bytes);
         }
 
+        function formatMb(bytes) {
+            return (bytes / 1024 / 1024).toFixed(1);
+        }
+
+        // 项目名/文件名统一白名单校验：非法时抛结构化错误，调用方直接展示 message
+        function validateProjectName(name) {
+            const value = String(name || '').trim();
+            if (!value || !PROJECT_NAME_PATTERN.test(value)) {
+                throw new GithubApiError('project 非法：仅允许字母/数字/下划线/短横线/点/中文，且不能以点开头或结尾、不能包含 ..', { code: 'INVALID_PROJECT', path: value });
+            }
+            return value;
+        }
+
+        function validateFileName(name) {
+            const value = String(name || '').trim();
+            if (!value || value.toLowerCase() === INFO_FILE || !FILE_NAME_PATTERN.test(value)) {
+                throw new GithubApiError('fileName 非法：不能为空、不能是 info.json，不能含 \\ / : * ? " < > | 或 ..，不能以点开头或结尾', { code: 'INVALID_FILE_NAME', path: value });
+            }
+            return value;
+        }
+
+        // 单文件大小：先区分“超本页通道上限”与“超 GitHub 硬上限”，size 一律按真实字节
+        function assertFileSize(bytes, name) {
+            if (bytes > MAX_GITHUB_FILE_SIZE) {
+                throw new GithubApiError(`“${name}” 约 ${formatMb(bytes)}MB，超过 GitHub 单文件硬上限 100MB，请改用 GitHub Releases`, { code: 'FILE_TOO_LARGE_GITHUB', path: name });
+            }
+            if (bytes > MAX_PAGE_FILE_SIZE) {
+                throw new GithubApiError(`“${name}” 约 ${formatMb(bytes)}MB，超过本页上传通道上限 40MB（GitHub 硬上限为 100MB，但本页经 base64 传输，超过 40MB 易失败），请改用 git 命令行或 GitHub Releases`, { code: 'FILE_TOO_LARGE_PAGE', path: name });
+            }
+        }
+
+        function todayStr() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 内容入参统一转为 base64 + 真实字节数：支持 text / base64 / content(ArrayBuffer|string) / blob(File)
+        async function contentToBase64(input) {
+            const src = input || {};
+            // 直接传 Blob/File
+            if (typeof src.arrayBuffer === 'function') {
+                const buffer = await src.arrayBuffer();
+                return { base64: GitHubAPIHelper.arrayBufferToBase64(buffer), bytes: buffer.byteLength };
+            }
+            if (typeof src.base64 === 'string' && src.base64.trim()) {
+                const base64 = src.base64.replace(/^data:[^;]+;base64,/, '').replace(/\s/g, '');
+                return { base64, bytes: GitHubAPIHelper.base64ByteLength(base64) };
+            }
+            if (src.blob && typeof src.blob.arrayBuffer === 'function') {
+                const buffer = await src.blob.arrayBuffer();
+                return { base64: GitHubAPIHelper.arrayBufferToBase64(buffer), bytes: buffer.byteLength };
+            }
+            if (src.content && typeof src.content.arrayBuffer === 'function') {
+                const buffer = await src.content.arrayBuffer();
+                return { base64: GitHubAPIHelper.arrayBufferToBase64(buffer), bytes: buffer.byteLength };
+            }
+            if (src.content && typeof src.content.byteLength === 'number') {
+                return { base64: GitHubAPIHelper.arrayBufferToBase64(src.content), bytes: src.content.byteLength };
+            }
+            if (typeof src.text === 'string') {
+                const base64 = GitHubAPIHelper.textToBase64(src.text);
+                return { base64, bytes: GitHubAPIHelper.base64ByteLength(base64) };
+            }
+            if (typeof src.content === 'string') {
+                const base64 = GitHubAPIHelper.textToBase64(src.content);
+                return { base64, bytes: GitHubAPIHelper.base64ByteLength(base64) };
+            }
+            throw new GithubApiError('缺少文件内容：请提供 text / base64 / content(ArrayBuffer|string) / blob(File)', { code: 'NO_CONTENT' });
+        }
+
+        // 一次递归树读取，得到 { 项目名: [{ name, sha, size }] }，替代逐目录列举
+        async function fetchProjectListing() {
+            const tree = await window.githubHelper.getTree();
+            const prefix = `${ROOT_DIR}/`;
+            const listing = new Map();
+            (tree.tree || []).forEach(entry => {
+                if (entry.type !== 'blob' || !entry.path.startsWith(prefix)) return;
+                const rest = entry.path.slice(prefix.length);
+                const slash = rest.indexOf('/');
+                if (slash <= 0) return;                 // 忽略 AppUpdater 根下的散落文件
+                const project = rest.slice(0, slash);
+                const name = rest.slice(slash + 1);
+                if (!name || name.includes('/')) return; // 只统计项目根下的文件
+                if (!listing.has(project)) listing.set(project, []);
+                listing.get(project).push({ name, sha: entry.sha, size: entry.size });
+            });
+            return listing;
+        }
+
+        async function readInfo(projectName) {
+            const info = await window.githubHelper.getFile(`${ROOT_DIR}/${projectName}/${INFO_FILE}`);
+            if (!info || !info.content) return null;   // 仅“文件不存在”返回 null
+            try {
+                return JSON.parse(decodeBase64Utf8(info.content));
+            } catch (error) {
+                throw new GithubApiError(`${projectName}/info.json 不是合法 JSON：${error.message}`, { code: 'INFO_PARSE_FAILED', path: `${ROOT_DIR}/${projectName}/${INFO_FILE}` });
+            }
+        }
+
+        async function listProjectFileNames(projectName) {
+            const entries = await window.githubHelper.listDir(`${ROOT_DIR}/${projectName}`);
+            return entries.filter(f => f.type === 'file' && f.name !== INFO_FILE).map(f => f.name);
+        }
+
         async function loadProjects() {
             if (!window.githubHelper || !window.githubHelper.isConfigured()) {
                 projects = [];
@@ -275,25 +390,18 @@
 
             common.showLoading('正在加载项目数据...');
             try {
-                const dirs = (await window.githubHelper.listDir(ROOT_DIR)).filter(d => d.type === 'dir');
-                projects = await Promise.all(dirs.map(async dir => {
-                    let meta = {};
-                    try {
-                        const info = await window.githubHelper.getFile(`${dir.path}/${INFO_FILE}`);
-                        if (info && info.content) meta = JSON.parse(decodeBase64Utf8(info.content));
-                    } catch (error) {
-                        // 缺少 info.json 的项目按空简介处理，不影响文件列表
-                        common.log(`读取 ${dir.name} 的 info.json 失败`, 'warning', error.message);
-                    }
-                    const files = (await window.githubHelper.listDir(dir.path))
-                        .filter(f => f.type === 'file' && f.name !== INFO_FILE)
-                        .map(f => ({ name: f.name, sha: f.sha, size: f.size }));
+                const listing = await fetchProjectListing();
+                const names = [...listing.keys()].sort((a, b) => naturalCompare(a, b));
+                projects = await Promise.all(names.map(async name => {
+                    // 读失败（401/403/网络/JSON 损坏）必须上抛，不能再按空简介处理，否则同步时会覆盖原有元数据
+                    const meta = (await readInfo(name)) || {};
                     return {
-                        name: dir.name,
+                        name: name,
+                        info: meta,                 // 保留完整 info.json，写回时浅合并，未知字段不丢
                         description: meta.description || '',
                         mainFile: meta.mainFile || '',
                         createdAt: meta.createdAt || '',
-                        files: files
+                        files: (listing.get(name) || []).filter(f => f.name !== INFO_FILE)
                     };
                 }));
                 common.log('项目数据加载成功', 'success', `共加载 ${projects.length} 个项目`);
@@ -321,15 +429,13 @@
             return names;
         }
 
-        // 计算项目当前的下载主文件：最新上传 > 原有主文件（未被删） > 剩余最后一个文件
+        // 计算项目当前的下载主文件：显式指定 > 已有主文件（仍存在） > 自然排序最新
         function resolveMainFile(projectName) {
             const online = projects.find(p => p.name === projectName);
             const remaining = fileCandidates(projectName);
-
-            const uploaded = pendingMainFile[projectName];
-            if (uploaded && remaining.includes(uploaded)) return uploaded;
-            if (online && online.mainFile && remaining.includes(online.mainFile)) return online.mainFile;
-            return remaining[remaining.length - 1] || '';
+            const explicit = pendingMainFile[projectName];
+            if (explicit && remaining.includes(explicit)) return explicit;
+            return pickMainFile(remaining, online ? online.mainFile : '');
         }
 
         function buildView() {
@@ -444,6 +550,7 @@
         // --- 操作 ---
 
         function addProject() {
+            if (syncInProgress) { common.showAlert('正在同步，请稍后再试', 'warning'); return; }
             const name = document.getElementById('projectName').value.trim();
             const description = document.getElementById('projectDesc').value.trim();
 
@@ -452,8 +559,10 @@
                 return;
             }
             // 项目名即文件夹名，需限制字符集以保证 URL 与路径安全
-            if (!PROJECT_NAME_PATTERN.test(name)) {
-                common.showAlert('项目名仅允许字母、数字、下划线、短横线、点与中文', 'danger');
+            try {
+                validateProjectName(name);
+            } catch (error) {
+                common.showAlert(error.message, 'danger');
                 return;
             }
             if (projects.some(p => p.name === name) || pendingProjects.some(p => p.name === name) || pendingProjectDeletes.includes(name)) {
@@ -470,6 +579,7 @@
         }
 
         function deleteProject(projectName) {
+            if (syncInProgress) { common.showAlert('正在同步，请稍后再试', 'warning'); return; }
             const isPending = pendingProjects.some(p => p.name === projectName);
             const tip = isPending
                 ? `确定放弃项目 “${projectName}” 吗？`
@@ -490,6 +600,7 @@
         }
 
         function deleteFile(projectName, fileName) {
+            if (syncInProgress) { common.showAlert('正在同步，请稍后再试', 'warning'); return; }
             if (!confirm(`确定删除文件 “${fileName}” 吗？`)) return;
 
             const online = projects.find(p => p.name === projectName);
@@ -512,6 +623,7 @@
         }
 
         function triggerUpload(projectName) {
+            if (syncInProgress) { common.showAlert('正在同步，请稍后再试', 'warning'); return; }
             currentUploadProject = projectName;
             uploadInput.value = '';
             uploadInput.click();
@@ -523,25 +635,27 @@
 
             const files = Array.from(event.target.files || []);
             if (!files.length) return;
+            if (syncInProgress) { common.showAlert('正在同步，请稍后再试', 'warning'); return; }
 
             let added = 0;
+            const uploaded = [];
             for (const file of files) {
-                if (file.size > MAX_FILE_SIZE) {
-                    common.showAlert(`“${file.name}” 超过 100MB，Contents API 不支持，请改用 GitHub Releases`, 'danger');
-                    continue;
-                }
                 try {
+                    // 用户对该项目显式上传：文件名与大小统一校验，成功后显式切换主文件
+                    const fileName = validateFileName(file.name);
+                    assertFileSize(file.size, fileName);
                     // 统一按字节读取：文本文件用二进制方式上传同样正确，避免两套编码路径
                     const content = await file.arrayBuffer();
                     if (!pendingFiles[project]) pendingFiles[project] = {};
-                    pendingFiles[project][file.name] = { content: content, size: file.size };
-                    // 方案 C：最新上传的文件自动成为下载主文件
-                    pendingMainFile[project] = file.name;
+                    pendingFiles[project][fileName] = { content: content, size: file.size };
+                    uploaded.push(fileName);
                     added++;
                 } catch (error) {
-                    common.log(`读取文件失败: ${file.name}`, 'error', error.message);
+                    common.showAlert(error.message, 'danger');
+                    common.log(`暂存文件失败: ${file.name}`, 'error', error.message);
                 }
             }
+            if (uploaded.length) pendingMainFile[project] = pickMainFile(uploaded);
 
             renderProjects();
             updateDataStatus();
@@ -583,18 +697,36 @@
             return 0;
         }
 
-        // 主文件识别：优先在安装包类文件中取“最新”，无安装包时在全部文件中取最新
-        function pickMainFile(fileNames) {
+        // 主文件识别：已有主文件仍在（current）时保持不变；否则优先在安装包类文件中取“最新”
+        function pickMainFile(fileNames, current) {
             if (!fileNames.length) return '';
+            if (current && fileNames.includes(current)) return current;
             const packages = fileNames.filter(n => PACKAGE_EXT.test(n));
             const pool = (packages.length ? packages : fileNames).slice().sort(naturalCompare);
             return pool[pool.length - 1];
         }
 
         async function buildScanPlan() {
-            const entries = await window.githubHelper.listDir(ROOT_DIR);
-            const dirs = entries.filter(e => e.type === 'dir');
-            const looseFiles = entries.filter(e => e.type === 'file');
+            // 一次递归树读取：同时得到根下散落文件与各项目文件，避免逐目录列举
+            const tree = await window.githubHelper.getTree();
+            const prefix = `${ROOT_DIR}/`;
+            const looseFiles = [];
+            const dirFileMap = new Map();
+            const dirNames = new Set();
+
+            (tree.tree || []).forEach(entry => {
+                if (entry.type !== 'blob' || !entry.path.startsWith(prefix)) return;
+                const rest = entry.path.slice(prefix.length);
+                const slash = rest.indexOf('/');
+                if (slash < 0) { looseFiles.push({ name: rest, size: entry.size }); return; }
+                const project = rest.slice(0, slash);
+                const name = rest.slice(slash + 1);
+                if (!project) return;
+                dirNames.add(project);
+                if (!name || name.includes('/') || name === INFO_FILE) return;
+                if (!dirFileMap.has(project)) dirFileMap.set(project, []);
+                dirFileMap.get(project).push(name);
+            });
 
             const moves = [];
             const skipped = [];
@@ -609,41 +741,39 @@
             });
 
             const upserts = [];
-            for (const dir of dirs) {
+            for (const project of dirNames) {
                 let meta = null;
                 try {
-                    const info = await window.githubHelper.getFile(`${dir.path}/${INFO_FILE}`);
-                    if (info && info.content) meta = JSON.parse(decodeBase64Utf8(info.content));
+                    meta = await readInfo(project);   // 解析失败直接上抛，绝不按“无 info.json”重建
                 } catch (error) {
-                    meta = null;   // info.json 缺失或不可解析，按需补建
+                    throw new GithubApiError(`项目 ${project} 的 info.json 无法解析，已中止扫描以免覆盖元数据：${error.message}`, { code: error.code, path: error.path });
                 }
-                // 目标文件夹内的文件 = 线上已有文件 + 本次将迁入的散落文件
-                const fileNames = (await window.githubHelper.listDir(dir.path))
-                    .filter(f => f.type === 'file' && f.name !== INFO_FILE)
-                    .map(f => f.name)
-                    .concat(movedInto[dir.name] || []);
-                const expected = pickMainFile(fileNames);
+                const fileNames = (dirFileMap.get(project) || []).concat(movedInto[project] || []);
+                // 已有主文件仍存在时保持不变；仅在缺失/失效时按自然排序补选
+                const expected = pickMainFile(fileNames, meta ? (meta.mainFile || '') : '');
 
                 if (!meta) {
-                    upserts.push({ project: dir.name, description: '', mainFile: expected, createdAt: '', previous: '', created: true });
+                    upserts.push({ project, description: '', mainFile: expected, createdAt: '', previous: '', created: true, info: null });
                 } else if ((meta.mainFile || '') !== expected) {
-                    upserts.push({ project: dir.name, description: meta.description || '', mainFile: expected, createdAt: meta.createdAt || '', previous: meta.mainFile || '', created: false });
+                    upserts.push({ project, description: meta.description || '', mainFile: expected, createdAt: meta.createdAt || '', previous: meta.mainFile || '', created: false, info: meta });
                 }
                 // 主文件已一致时不重写，避免产生无意义的提交
             }
 
             // 仅由散落文件迁移而产生、当前还不是文件夹的项目
             Object.keys(movedInto).forEach(base => {
-                if (dirs.some(d => d.name === base)) return;
-                upserts.push({ project: base, description: '', mainFile: pickMainFile(movedInto[base]), createdAt: '', previous: '', created: true });
+                if (dirNames.has(base)) return;
+                upserts.push({ project: base, description: '', mainFile: pickMainFile(movedInto[base]), createdAt: '', previous: '', created: true, info: null });
             });
 
             return { moves, upserts, skipped };
         }
 
+        // 合并写回：保留 info.json 中的未知字段（promptFile / libs / notes 等）
         function scanInfoContent(item) {
-            const today = new Date().toISOString().split('T')[0];
+            const today = todayStr();
             return JSON.stringify({
+                ...(item.info || {}),
                 name: item.project,
                 description: item.description || '',
                 mainFile: item.mainFile || '',
@@ -657,6 +787,7 @@
                 common.showAlert('GitHub Token 未配置或无效', 'danger');
                 return;
             }
+            if (syncInProgress) { common.showAlert('正在同步，请稍后再试', 'warning'); return; }
             // 扫描会直接写仓库，与暂存区并存会造成状态不一致，故要求先清空暂存
             if (pendingCount()) {
                 common.showAlert('存在待同步的暂存改动，请先“同步到 GitHub”后再执行目录识别', 'warning');
@@ -702,39 +833,36 @@
             common.showLoading('正在按识别结果更新...');
             common.log('开始执行目录识别更新', 'info', `迁移 ${plan.moves.length} 项，info.json 写入 ${plan.upserts.length} 项`);
 
+            // 迁移与 info.json 写入放进同一个提交：要么全成功，要么全失败
+            const changes = [];
             let failCount = 0;
-
-            // 1. 先迁移散落文件（写成功后再删原文件，避免中途丢失内容）
             for (const move of plan.moves) {
-                const target = `${ROOT_DIR}/${move.project}/${move.fileName}`;
                 try {
                     const source = await window.githubHelper.getFile(`${ROOT_DIR}/${move.fileName}`);
                     if (!source || !source.content) throw new Error('源文件内容为空');
-                    await window.githubHelper.updateFileBase64(target, source.content.replace(/\s/g, ''), `Move ${move.fileName} into ${move.project}`);
-                    await window.githubHelper.deleteFile(`${ROOT_DIR}/${move.fileName}`, `Move ${move.fileName} into ${move.project}`);
-                    common.log(`迁移文件成功: ${move.fileName}`, 'success', `→ ${target}`);
+                    changes.push({ path: `${ROOT_DIR}/${move.project}/${move.fileName}`, base64: source.content.replace(/\s/g, '') });
+                    changes.push({ path: `${ROOT_DIR}/${move.fileName}`, delete: true });
                 } catch (error) {
                     failCount++;
                     common.log(`迁移文件失败: ${move.fileName}`, 'error', error.message);
                 }
             }
+            plan.upserts.forEach(item => changes.push({ path: `${ROOT_DIR}/${item.project}/${INFO_FILE}`, text: scanInfoContent(item) }));
 
-            // 2. 再补建/更新 info.json（此时迁入的文件已在目标文件夹内）
-            for (const item of plan.upserts) {
-                const path = `${ROOT_DIR}/${item.project}/${INFO_FILE}`;
+            if (changes.length) {
                 try {
-                    await window.githubHelper.updateFile(path, scanInfoContent(item), `Sync project info (${item.project})`);
-                    common.log(`${item.created ? '生成' : '更新'} info.json 成功: ${item.project}`, 'success', `路径: ${path}`);
+                    const commit = await window.githubHelper.commitChanges(changes, `Sync AppUpdater directory (${plan.moves.length} moves, ${plan.upserts.length} info)`);
+                    common.log('目录识别更新已提交', 'success', `${commit.changed} 项，提交 ${commit.commitSha.slice(0, 7)}`);
                 } catch (error) {
                     failCount++;
-                    common.log(`${item.created ? '生成' : '更新'} info.json 失败: ${item.project}`, 'error', error.message);
+                    common.log('目录识别提交失败', 'error', error.message);
                 }
             }
 
             common.hideLoading();
             btn.disabled = false;
 
-            if (failCount === 0) common.showAlert('目录识别更新完成', 'success');
+            if (failCount === 0) common.showAlert('目录识别更新完成（已一次提交）', 'success');
             else common.showAlert(`目录识别更新完成，但有 ${failCount} 项失败，请查看日志`, 'warning');
 
             await loadProjects();
@@ -784,17 +912,22 @@
 
         async function handleDroppedFiles(files) {
             if (!files.length) return;
+            if (syncInProgress) { common.showAlert('正在同步，请稍后再拖入文件', 'warning'); return; }
 
             const grouped = {};            // { 项目名: [文件名] }
             const createdProjects = [];    // 本次自动新建的项目
             const rejected = [];
 
             for (const file of files) {
-                if (file.size > MAX_FILE_SIZE) {
-                    rejected.push(`${file.name}（超过 100MB，请改用 GitHub Releases）`);
+                let fileName;
+                try {
+                    fileName = validateFileName(file.name);
+                    assertFileSize(file.size, fileName);
+                } catch (error) {
+                    rejected.push(`${file.name}（${error.message}）`);
                     continue;
                 }
-                const target = resolveDropProject(file.name);
+                const target = resolveDropProject(fileName);
                 if (!target.name || !PROJECT_NAME_PATTERN.test(target.name)) {
                     rejected.push(`${file.name}（无法推导出合法项目名）`);
                     continue;
@@ -802,22 +935,24 @@
                 try {
                     const content = await file.arrayBuffer();
                     if (!pendingFiles[target.name]) pendingFiles[target.name] = {};
-                    pendingFiles[target.name][file.name] = { content: content, size: file.size };
+                    pendingFiles[target.name][fileName] = { content: content, size: file.size };
                     if (target.isNew && !pendingProjects.some(p => p.name === target.name)) {
                         pendingProjects.push({ name: target.name, description: '' });   // 简介留空，可在同步前补充
                         createdProjects.push(target.name);
                     }
                     if (!grouped[target.name]) grouped[target.name] = [];
-                    grouped[target.name].push(file.name);
+                    grouped[target.name].push(fileName);
                 } catch (error) {
                     rejected.push(`${file.name}（读取失败：${error.message}）`);
                 }
             }
 
-            // 主文件按“项目内全部有效文件（线上未删 + 全部暂存）中版本号最大者”确定，
-            // 与“目录识别更新”口径一致；分多次拖入时不会被本批文件覆盖掉更高版本
+            // 拖拽只是归类：已有主文件仍存在时保持不变，仅在缺失时为新建项目补选
             Object.keys(grouped).forEach(projectName => {
-                const picked = pickMainFile(fileCandidates(projectName));
+                const online = projects.find(p => p.name === projectName);
+                const explicit = pendingMainFile[projectName];
+                if (explicit && fileCandidates(projectName).includes(explicit)) return;
+                const picked = pickMainFile(fileCandidates(projectName), online ? online.mainFile : '');
                 if (picked) pendingMainFile[projectName] = picked;
             });
 
@@ -860,18 +995,61 @@
 
         // --- 同步 ---
 
+        // 浅合并写回：以线上 info.json 为基底，未知字段原样保留
         function buildInfoContent(projectName) {
             const online = projects.find(p => p.name === projectName);
             const created = pendingProjects.find(p => p.name === projectName);
-            const today = new Date().toISOString().split('T')[0];
+            const base = (online && online.info) || {};
+            const today = todayStr();
             return JSON.stringify({
+                ...base,
                 name: projectName,
-                description: created ? created.description : (online ? online.description : ''),
+                description: created ? created.description : (online ? online.description : (base.description || '')),
                 mainFile: resolveMainFile(projectName),
                 // 已有项目保留原创建日期；旧数据缺失时以当天补齐
-                createdAt: (online && online.createdAt) || today,
+                createdAt: base.createdAt || (online && online.createdAt) || today,
                 updatedAt: today
             }, null, 2);
+        }
+
+        // 汇总本次暂存改动为一份变更清单（上传 / 删除 / 删项目 / info.json），供一次原子提交
+        async function buildSyncChanges() {
+            const changes = [];
+
+            Object.keys(pendingFiles).forEach(projectName => {
+                Object.keys(pendingFiles[projectName]).forEach(fileName => {
+                    changes.push({ path: `${ROOT_DIR}/${projectName}/${fileName}`, content: pendingFiles[projectName][fileName].content });
+                });
+            });
+
+            Object.keys(pendingFileDeletes).forEach(projectName => {
+                pendingFileDeletes[projectName].forEach(fileName => {
+                    changes.push({ path: `${ROOT_DIR}/${projectName}/${fileName}`, delete: true });
+                });
+            });
+
+            // 删除项目：用一次树读取找出目录下全部文件，与本批改动同树提交
+            if (pendingProjectDeletes.length) {
+                const tree = await window.githubHelper.getTree();
+                const blobs = (tree.tree || []).filter(entry => entry.type === 'blob');
+                pendingProjectDeletes.forEach(projectName => {
+                    const prefix = `${ROOT_DIR}/${projectName}/`;
+                    blobs.filter(entry => entry.path.startsWith(prefix))
+                        .forEach(entry => changes.push({ path: entry.path, delete: true }));
+                });
+            }
+
+            const touched = new Set([
+                ...pendingProjects.map(p => p.name),
+                ...Object.keys(pendingFiles),
+                ...Object.keys(pendingFileDeletes)
+            ]);
+            touched.forEach(projectName => {
+                if (pendingProjectDeletes.includes(projectName)) return;
+                changes.push({ path: `${ROOT_DIR}/${projectName}/${INFO_FILE}`, text: buildInfoContent(projectName) });
+            });
+
+            return changes;
         }
 
         async function syncToGithub() {
@@ -883,87 +1061,43 @@
                 common.showAlert('没有待同步的更改', 'info');
                 return;
             }
+            if (syncInProgress) {
+                common.showAlert('同步正在进行中', 'warning');
+                return;
+            }
 
+            syncInProgress = true;
             const btn = document.getElementById('syncToGithubBtn');
             btn.disabled = true;
-            common.showLoading('正在同步到 GitHub...');
+            common.showLoading('正在准备提交...');
             common.log('开始同步到 GitHub', 'info', `待处理项: ${pendingCount()}`);
 
-            let failCount = 0;
+            try {
+                const changes = await buildSyncChanges();
+                common.showLoading(`正在一次提交 ${changes.length} 项更改...`);
+                const commit = await window.githubHelper.commitChanges(changes, `Sync AppUpdater via Web Manager (${changes.length} changes)`);
 
-            // 1. 上传新增/覆盖的文件（先传文件，确保 info.json 引用的主文件已存在）
-            for (const projectName of Object.keys(pendingFiles)) {
-                for (const fileName of Object.keys(pendingFiles[projectName])) {
-                    const path = `${ROOT_DIR}/${projectName}/${fileName}`;
-                    try {
-                        await window.githubHelper.updateBinaryFile(path, pendingFiles[projectName][fileName].content, `Upload ${fileName} (${projectName})`);
-                        common.log(`上传文件成功: ${fileName}`, 'success', `路径: ${path}`);
-                    } catch (error) {
-                        failCount++;
-                        common.log(`上传文件失败: ${fileName}`, 'error', error.message);
-                    }
-                }
-            }
-
-            // 2. 删除文件
-            for (const projectName of Object.keys(pendingFileDeletes)) {
-                for (const fileName of pendingFileDeletes[projectName]) {
-                    const path = `${ROOT_DIR}/${projectName}/${fileName}`;
-                    try {
-                        await window.githubHelper.deleteFile(path, `Delete ${fileName} (${projectName})`);
-                        common.log(`删除文件成功: ${fileName}`, 'success', `路径: ${path}`);
-                    } catch (error) {
-                        failCount++;
-                        common.log(`删除文件失败: ${fileName}`, 'error', error.message);
-                    }
-                }
-            }
-
-            // 3. 删除整个项目（递归删除文件夹内所有文件）
-            for (const projectName of pendingProjectDeletes) {
-                try {
-                    const count = await window.githubHelper.deleteDir(`${ROOT_DIR}/${projectName}`, `Delete project ${projectName}`);
-                    common.log(`删除项目成功: ${projectName}`, 'success', `已删除 ${count} 个文件`);
-                } catch (error) {
-                    failCount++;
-                    common.log(`删除项目失败: ${projectName}`, 'error', error.message);
-                }
-            }
-
-            // 4. 写入 info.json（新建项目据此创建文件夹，同时同步简介与主文件）
-            const touched = new Set([
-                ...pendingProjects.map(p => p.name),
-                ...Object.keys(pendingFiles),
-                ...Object.keys(pendingFileDeletes)
-            ]);
-            for (const projectName of touched) {
-                if (pendingProjectDeletes.includes(projectName)) continue;
-                const path = `${ROOT_DIR}/${projectName}/${INFO_FILE}`;
-                try {
-                    await window.githubHelper.updateFile(path, buildInfoContent(projectName), `Update project info (${projectName})`);
-                    common.log(`更新项目信息成功: ${projectName}`, 'success', `路径: ${path}`);
-                } catch (error) {
-                    failCount++;
-                    common.log(`更新项目信息失败: ${projectName}`, 'error', error.message);
-                }
-            }
-
-            common.hideLoading();
-            btn.disabled = false;
-
-            if (failCount === 0) {
-                // 同步成功后清空暂存区，并重新从线上拉取真实 SHA
                 pendingProjects = [];
                 pendingFiles = {};
                 pendingFileDeletes = {};
                 pendingProjectDeletes = [];
                 pendingMainFile = {};
-                common.showAlert('同步完成！所有更改已发布到 AppUpdater 目录', 'success');
+
+                const brief = commit.unchanged ? '内容无变化，未产生新提交' : `提交 ${commit.commitSha.slice(0, 7)}，共 ${commit.changed} 项`;
+                common.showAlert(`同步完成！${brief}（Pages 生效需数十秒，可用 AppUpdaterAPI.verify() 确认）`, 'success');
+                common.log('同步完成', 'success', brief);
+                if (commit.commitUrl) common.log('提交地址', 'info', commit.commitUrl);
                 await loadProjects();
-            } else {
-                common.showAlert(`同步完成，但有 ${failCount} 项失败，请查看日志`, 'warning');
+            } catch (error) {
+                // 原子提交失败：暂存区原样保留，可直接重试
+                common.showAlert(`同步失败（未写入任何文件）：${error.message}`, 'danger');
+                common.log('同步失败', 'error', error.message);
                 renderProjects();
                 updateDataStatus();
+            } finally {
+                syncInProgress = false;
+                common.hideLoading();
+                btn.disabled = false;
             }
         }
 
@@ -973,19 +1107,50 @@
 
         function assertReady() {
             if (!window.githubHelper || !window.githubHelper.isConfigured()) {
-                throw new Error('GitHub Token 未配置：请在本页“操作日志”面板的 GitHub Token 注入区保存后再调用');
+                throw new GithubApiError('GitHub Token 未配置：请在本页“操作日志”面板的 GitHub Token 注入区保存后再调用', { code: 'TOKEN_MISSING' });
             }
         }
 
-        async function readInfo(projectName) {
-            try {
-                const info = await window.githubHelper.getFile(`${ROOT_DIR}/${projectName}/${INFO_FILE}`);
-                if (info && info.content) return JSON.parse(decodeBase64Utf8(info.content));
-            } catch (error) {
-                return null;   // 项目尚无 info.json
+        // 批量发布的核心：文件 + info.json 放进同一次提交，全成功或全失败
+        async function publishItems(project, items, opt) {
+            const existing = await readInfo(project);                 // 仅 404 返回 null，其余错误上抛
+            const existingFiles = await listProjectFileNames(project);
+            const allFiles = existingFiles.concat(items.map(item => item.fileName));
+
+            let mainFile = (existing && existing.mainFile) || '';
+            if (opt.mainFile) {
+                mainFile = validateFileName(opt.mainFile);
+                if (!allFiles.includes(mainFile)) {
+                    throw new GithubApiError(`mainFile 不存在于项目内：${project}/${mainFile}`, { code: 'MAIN_FILE_NOT_FOUND', path: mainFile });
+                }
+            } else if (opt.setMain === true) {
+                mainFile = items[items.length - 1].fileName;          // 显式指定才切换
             }
-            return null;
+            if (!mainFile || !allFiles.includes(mainFile)) mainFile = pickMainFile(allFiles);
+
+            // 浅合并保留未知字段（promptFile / libs / notes 等）
+            const text = JSON.stringify({
+                ...(existing || {}),
+                name: project,
+                description: typeof opt.description === 'string' ? opt.description : ((existing && existing.description) || ''),
+                mainFile: mainFile,
+                createdAt: (existing && existing.createdAt) || todayStr(),
+                updatedAt: todayStr()
+            }, null, 2);
+
+            const changes = items.map(item => ({ path: `${ROOT_DIR}/${project}/${item.fileName}`, base64: item.base64 }));
+            changes.push({ path: `${ROOT_DIR}/${project}/${INFO_FILE}`, text: text });
+            const commit = await window.githubHelper.commitChanges(changes, `Publish ${items.length} file(s) to ${project}`);
+            return { commit, mainFile };
         }
+
+        function projectFolderUrl(project) {
+            return `${window.location.origin}/${ROOT_DIR}/${encodeURIComponent(project)}/`;
+        }
+
+        // 分块上传会话：大文件可由调用方逐块追加，最后一次性提交
+        const uploadBuffers = new Map();
+        let uploadSeq = 0;
 
         // 已有项目清单：让 AI 无需摸索即可判断“已有哪些项目、已有项目该传到哪个文件夹”
         function aiProjectsText() {
@@ -1007,7 +1172,7 @@
         function aiGuideText() {
             const origin = window.location.origin;
             return [
-                '【本地 AI 上传 AppUpdater 产物 · 使用说明】',
+                '【本地 AI 上传 AppUpdater 产物 · 使用说明 v2】',
                 '',
                 `页面：${origin}/index/manager/app-manager.html`,
                 '前提：GitHub token 保存在本机浏览器 localStorage，必须在已打开本站的本地浏览器标签页内执行。',
@@ -1021,30 +1186,40 @@
                 '',
                 aiProjectsText(),
                 '',
-                '【文件命名建议】',
-                '{项目名}-v{版本}.{扩展名}，例如 MyApp-v1.3.apk',
-                '主文件按文件名自然排序识别“较新版本”（v1.10 > v1.2），文件名带版本号才会被正确识别为最新',
+                '【发布：优先内容直传（推荐）】',
+                "await window.AppUpdaterAPI.publishFiles('MyApp', [",
+                "  { fileName: 'MyApp-v1.3.apk', content: arrayBuffer }   // 内容可用 text / base64 / content(ArrayBuffer) / blob(File)",
+                "], { description: '我的应用', setMain: true, mainFile: 'MyApp-v1.3.apk' })",
+                '· 一次调用 = 一个原子提交：多个文件 + info.json 全成功或全失败，只触发一次 Pages 构建',
+                '· 大文件可分块：const id = beginUpload(\'x.apk\'); appendChunk(id, chunk); await commitUpload(id, \'MyApp\')',
+                "· 单文件：publish({ project: 'MyApp', fileName: 'x.apk', text|base64|content|blob, setMain, mainFile })",
                 '',
-                '方式一（推荐，免 base64，适合大文件）',
-                '1) 用浏览器自动化把本地文件塞进页面隐藏输入框 #uploadInput（如 CDP DOM.setFileInputFiles / Playwright setInputFiles）',
-                "2) 在该页面上下文执行：await window.AppUpdaterAPI.publishInputFiles('MyApp', { description: '我的应用', setMain: true })",
+                '【内容从哪来 —— 重要】',
+                '· 页面不会请求任何本地或外部 URL。不要为本机 HTTP 服务/CORS 中转搭脚手架：',
+                '  HTTPS 页面 fetch http://127.0.0.1 会被混合内容拦截，且浏览器可能返回缓存的旧响应。',
+                '· 三种来源：你读取文件后直接传 text/base64/ArrayBuffer；浏览器自动化设置文件输入；用户手动选择文件。',
+                '· 仅当你确实能设置文件输入时才用 publishInputFiles(project, { input: \'#apiFileInput\' })；',
+                '  默认读取 #apiFileInput，兼容旧的 #uploadInput，调用结束会清空输入框。',
                 '',
-                '方式二（已有 base64，或小文件）',
-                'await window.AppUpdaterAPI.publish({',
-                "  project: 'MyApp',          // 必填，已有项目请填已有项目名；不存在则自动创建",
-                "  fileName: 'MyApp-v1.2.apk',// 必填，不能含路径分隔符，不能是 info.json",
-                "  base64: '<base64 内容>',   // 可用 base64 / content: ArrayBuffer / blob: File 之一",
-                "  description: '我的应用',   // 可选，项目不存在时用它生成 info.json",
-                '  setMain: true              // 可选，默认 true：把该文件设为主文件',
-                '})',
+                '【主文件与 info.json 规则】',
+                '· 默认不改变已有 mainFile；要切换请显式传 setMain: true / mainFile，或调用 setMainFile(project, fileName)',
+                '· info.json 写回采用浅合并，promptFile / libs / notes 等自定义字段会保留，不要把扩展元数据搬去 apps.json',
+                '· 新项目未指定主文件时，按文件名自然排序选安装包类最新者（v1.10 > v1.2）',
+                '',
+                '【上限】',
+                '· 本页单文件上限 40MB（内容经 base64 传输）；GitHub 单文件硬上限 100MB，超过请改用 GitHub Releases',
+                '',
+                '【发布后确认是否生效】',
+                '· 提交成功 ≠ Pages 已更新：CDN/构建通常需要数十秒',
+                '· await window.AppUpdaterAPI.verify({ project, fileName, expectedBytes, waitMs: 60000 })',
+                '  返回直链 HEAD 状态、字节数与 Pages 构建状态；publish 返回值含 commitSha / commitUrl / bytes',
                 '',
                 '只读查询',
                 'await window.AppUpdaterAPI.list()   // 返回各项目、主文件与固定下载直链',
                 'window.AppUpdaterAPI.help()         // 重新输出本说明',
                 '',
                 '约定与限制',
-                '· 项目名允许字母/数字/下划线/短横线/点/中文；项目不存在会自动创建并生成 info.json，无需先建项目',
-                '· 单文件上限 100MB（GitHub Contents API 限制）',
+                '· 项目名允许字母/数字/下划线/短横线/点/中文，禁 .. 与首尾点；项目不存在会自动创建并生成 info.json',
                 '· 调用后立即写入仓库并生效，无需点“同步到 GitHub”（该按钮只处理页面内暂存）',
                 `· 固定下载直链格式：${origin}/AppUpdater/<项目名>/<主文件>`
             ].join('\n');
@@ -1064,7 +1239,9 @@
                 '目标项目：<已有项目名，或新建项目名>',
                 '',
                 `当前已有项目：${brief}`,
-                '已有应用请上传到对应的已有项目，不要新建名字相近的项目（否则 App 端已在用的固定直链会失效）。'
+                '已有应用请上传到对应的已有项目，不要新建名字相近的项目（否则 App 端已在用的固定直链会失效）。',
+                '发布请优先用 AppUpdaterAPI.publishFiles 直接传文件内容（一次原子提交）；不要为本机 HTTP 服务搭 CORS 中转。',
+                '上传后请用 AppUpdaterAPI.verify 确认直链已生效，再回报结果。'
             ].join('\n');
         }
 
@@ -1095,7 +1272,7 @@
         }
 
         window.AppUpdaterAPI = {
-            version: 1,
+            version: 2,
 
             // 输出使用说明（同时打印到控制台，便于 AI 自行读取）
             help() {
@@ -1104,119 +1281,261 @@
                 return text;
             },
 
-            // 发布单个文件：项目不存在则一并创建 info.json
+            // 单文件发布：文件 + info.json 一次原子提交
             async publish(options) {
                 const opt = options || {};
-                const project = String(opt.project || '').trim();
-                const fileName = String(opt.fileName || '').trim();
-
                 assertReady();
-                if (!project || !PROJECT_NAME_PATTERN.test(project)) {
-                    throw new Error('project 非法：仅允许字母/数字/下划线/短横线/点/中文');
-                }
-                if (!fileName || fileName === INFO_FILE || fileName.includes('/')) {
-                    throw new Error('fileName 非法：不能为空、不能含路径分隔符、不能是 info.json');
-                }
+                const project = validateProjectName(opt.project);
+                const fileName = validateFileName(opt.fileName);
+                const content = await contentToBase64(opt);
+                assertFileSize(content.bytes, fileName);
 
-                // 内容来源：base64 优先，其次 ArrayBuffer/Uint8Array、Blob/File、纯文本
-                let base64 = '', size = 0;
-                if (typeof opt.base64 === 'string' && opt.base64.trim()) {
-                    base64 = opt.base64.replace(/\s/g, '');
-                    size = Math.floor(base64.length * 3 / 4);
-                } else if (opt.blob && typeof opt.blob.arrayBuffer === 'function') {
-                    const buffer = await opt.blob.arrayBuffer();
-                    base64 = GitHubAPIHelper.arrayBufferToBase64(buffer);
-                    size = buffer.byteLength;
-                } else if (opt.content && typeof opt.content.byteLength === 'number') {
-                    base64 = GitHubAPIHelper.arrayBufferToBase64(opt.content);
-                    size = opt.content.byteLength;
-                } else if (typeof opt.content === 'string') {
-                    base64 = btoa(unescape(encodeURIComponent(opt.content)));
-                    size = opt.content.length;
-                } else {
-                    throw new Error('缺少文件内容：请提供 base64 / content(ArrayBuffer|string) / blob(File)');
-                }
+                const { commit, mainFile } = await publishItems(project, [{ fileName, base64: content.base64 }], opt);
+                if (!opt._skipRefresh) await loadProjects();
 
-                if (size > MAX_FILE_SIZE) {
-                    throw new Error(`文件约 ${(size / 1024 / 1024).toFixed(1)}MB，超过 100MB 上限，请改用 GitHub Releases`);
-                }
-
-                const path = `${ROOT_DIR}/${project}/${fileName}`;
-                await window.githubHelper.updateFileBase64(path, base64, `Upload ${fileName} (${project})`);
-
-                // 项目缺失则创建 info.json；setMain 或显式传 description 时同步元数据
-                const infoPath = `${ROOT_DIR}/${project}/${INFO_FILE}`;
-                const existing = await readInfo(project);
-                const setMain = opt.setMain !== false;
-                if (!existing) {
-                    await window.githubHelper.updateFile(infoPath, scanInfoContent({
-                        project: project, description: opt.description || '', mainFile: setMain ? fileName : '', createdAt: ''
-                    }), `Create project info (${project})`);
-                } else if (setMain || typeof opt.description === 'string') {
-                    await window.githubHelper.updateFile(infoPath, scanInfoContent({
-                        project: project,
-                        description: typeof opt.description === 'string' ? opt.description : existing.description,
-                        mainFile: setMain ? fileName : (existing.mainFile || ''),
-                        createdAt: existing.createdAt
-                    }), `Update project info (${project})`);
-                }
-
-                const base = `${window.location.origin}/${ROOT_DIR}/${encodeURIComponent(project)}/`;
+                const base = projectFolderUrl(project);
                 const result = {
                     ok: true,
                     project: project,
                     fileName: fileName,
-                    size: size,
-                    mainFile: setMain ? fileName : ((existing && existing.mainFile) || ''),
+                    size: content.bytes,
+                    bytes: content.bytes,
+                    mainFile: mainFile,
                     downloadUrl: base + encodeURIComponent(fileName),
-                    folderUrl: base
+                    folderUrl: base,
+                    commitSha: commit.commitSha,
+                    commitUrl: commit.commitUrl,
+                    unchanged: !!commit.unchanged
                 };
-                common.log(`AI 接口发布文件: ${project}/${fileName}`, 'success', `下载直链: ${result.downloadUrl}`);
-                await loadProjects();
+                common.log(`AI 接口发布文件: ${project}/${fileName}`, 'success', `${result.bytes} 字节，提交 ${commit.commitSha.slice(0, 7)}`);
                 return result;
             },
 
-            // 供浏览器自动化使用：读取已塞入 #uploadInput 的本地文件并逐个发布（免 base64 传输）
-            async publishInputFiles(project, options) {
+            // 批量发布：多个文件 + info.json 同一次提交（全成功或全失败），完成后只刷新一次列表
+            async publishFiles(project, files, options) {
                 const opt = options || {};
-                const files = Array.from(uploadInput.files || []);
-                if (!files.length) {
-                    throw new Error('未检测到文件：请先把本地文件设置到 #uploadInput（如 setFileInputFiles）后再调用');
+                assertReady();
+                const projectName = validateProjectName(project);
+                const list = Array.from(files || []);
+                if (!list.length) throw new GithubApiError('未提供文件：files 为空', { code: 'NO_FILES' });
+
+                const items = [];
+                for (let i = 0; i < list.length; i++) {
+                    const file = list[i] || {};
+                    const fileName = validateFileName(file.fileName || file.name);
+                    const content = await contentToBase64(file);
+                    assertFileSize(content.bytes, fileName);
+                    items.push({ fileName, base64: content.base64, bytes: content.bytes });
+                    if (typeof opt.onProgress === 'function') opt.onProgress(i + 1, list.length, fileName);
                 }
-                const results = [];
-                for (const file of files) {
-                    results.push(await this.publish({
-                        project: project,
-                        fileName: file.name,
-                        blob: file,
-                        description: opt.description,
-                        setMain: opt.setMain !== false
-                    }));
-                }
-                uploadInput.value = '';   // 清空输入框，避免残留文件被后续操作误用
-                return results;
+                // 同名文件以后出现的为准
+                const unique = [...new Map(items.map(item => [item.fileName, item])).values()];
+
+                const { commit, mainFile } = await publishItems(projectName, unique, opt);
+                if (!opt._skipRefresh) await loadProjects();
+
+                const base = projectFolderUrl(projectName);
+                const result = {
+                    ok: true,
+                    project: projectName,
+                    files: unique.map(item => ({
+                        fileName: item.fileName,
+                        bytes: item.bytes,
+                        downloadUrl: base + encodeURIComponent(item.fileName)
+                    })),
+                    mainFile: mainFile,
+                    downloadUrl: mainFile ? base + encodeURIComponent(mainFile) : base,
+                    folderUrl: base,
+                    commitSha: commit.commitSha,
+                    commitUrl: commit.commitUrl,
+                    unchanged: !!commit.unchanged
+                };
+                common.log(`AI 接口批量发布: ${projectName}`, 'success', `${unique.length} 个文件，提交 ${commit.commitSha.slice(0, 7)}`);
+                return result;
             },
 
-            // 只读：项目列表 + 固定下载直链
+            // 分块上传：大文件逐块累加，最后一次提交（分块编码不可混用 base64 与二进制）
+            beginUpload(fileName, options) {
+                const opt = options || {};
+                const name = validateFileName(fileName);
+                const id = `upload-${++uploadSeq}`;
+                uploadBuffers.set(id, {
+                    fileName: name,
+                    encoding: opt.encoding || '',
+                    parts: [],
+                    kind: '',
+                    bytes: 0,
+                    description: opt.description,
+                    setMain: opt.setMain,
+                    mainFile: opt.mainFile
+                });
+                return id;
+            },
+
+            appendChunk(id, chunk, encoding) {
+                const buffer = uploadBuffers.get(id);
+                if (!buffer) throw new GithubApiError(`未找到上传会话：${id}`, { code: 'UPLOAD_NOT_FOUND' });
+                const mode = encoding || buffer.encoding;
+                const resolved = mode === 'base64' ? 'base64' : (typeof chunk === 'string' ? 'text' : 'bytes');
+                if (resolved === 'base64') {
+                    if (buffer.kind && buffer.kind !== 'base64') throw new GithubApiError('不能混用 base64 与二进制分块', { code: 'CHUNK_MODE_MISMATCH' });
+                    if (typeof chunk !== 'string') throw new GithubApiError('base64 分块必须是字符串', { code: 'CHUNK_TYPE_INVALID' });
+                    const part = chunk.replace(/\s/g, '');
+                    buffer.kind = 'base64';
+                    buffer.parts.push(part);
+                    buffer.bytes += GitHubAPIHelper.base64ByteLength(part);
+                } else {
+                    if (buffer.kind === 'base64') throw new GithubApiError('不能混用 base64 与二进制分块', { code: 'CHUNK_MODE_MISMATCH' });
+                    const bytes = typeof chunk === 'string' ? new TextEncoder().encode(chunk) : new Uint8Array(chunk);
+                    buffer.kind = 'bytes';
+                    buffer.parts.push(bytes);
+                    buffer.bytes += bytes.byteLength;
+                }
+                if (buffer.bytes > MAX_GITHUB_FILE_SIZE) {
+                    throw new GithubApiError(`“${buffer.fileName}” 已超过 GitHub 单文件硬上限 100MB，请改用 GitHub Releases`, { code: 'FILE_TOO_LARGE_GITHUB', path: buffer.fileName });
+                }
+                return buffer.bytes;
+            },
+
+            async commitUpload(id, project, options) {
+                const buffer = uploadBuffers.get(id);
+                if (!buffer) throw new GithubApiError(`未找到上传会话：${id}`, { code: 'UPLOAD_NOT_FOUND' });
+                const opt = options || {};
+                try {
+                    assertFileSize(buffer.bytes, buffer.fileName);
+                    let base64;
+                    if (buffer.kind === 'base64') {
+                        base64 = buffer.parts.join('');
+                    } else {
+                        const merged = new Uint8Array(buffer.bytes);
+                        let offset = 0;
+                        buffer.parts.forEach(part => { merged.set(part, offset); offset += part.byteLength; });
+                        base64 = GitHubAPIHelper.arrayBufferToBase64(merged);
+                    }
+                    return await this.publish({
+                        project: project,
+                        fileName: buffer.fileName,
+                        base64: base64,
+                        description: opt.description !== undefined ? opt.description : buffer.description,
+                        setMain: opt.setMain !== undefined ? opt.setMain : buffer.setMain,
+                        mainFile: opt.mainFile || buffer.mainFile
+                    });
+                } finally {
+                    uploadBuffers.delete(id);
+                }
+            },
+
+            abortUpload(id) {
+                return uploadBuffers.delete(id);
+            },
+
+            // 供浏览器自动化使用：读取文件输入框中的本地文件并批量发布（一次原子提交）
+            // 默认 #apiFileInput；为兼容旧调用，仍会读取 #uploadInput，结束时清空两个输入框
+            async publishInputFiles(project, options) {
+                const opt = options || {};
+                const preferred = opt.input
+                    ? (typeof opt.input === 'string' ? document.querySelector(opt.input) : opt.input)
+                    : apiFileInput;
+                const candidates = [preferred, apiFileInput, uploadInput].filter(Boolean);
+                let files = [];
+                for (const input of candidates) {
+                    const list = Array.from(input.files || []);
+                    if (list.length) { files = list; break; }
+                }
+                try {
+                    if (!files.length) {
+                        throw new GithubApiError('未检测到文件：请先把本地文件设置到 #apiFileInput（兼容 #uploadInput），如 CDP DOM.setFileInputFiles / Playwright setInputFiles', { code: 'NO_INPUT_FILES' });
+                    }
+                    const payload = await Promise.all(files.map(async file => ({ fileName: file.name, content: await file.arrayBuffer() })));
+                    const batch = await this.publishFiles(project, payload, opt);
+                    return batch.files.map(item => ({
+                        ok: true,
+                        project: batch.project,
+                        fileName: item.fileName,
+                        size: item.bytes,
+                        bytes: item.bytes,
+                        mainFile: batch.mainFile,
+                        downloadUrl: item.downloadUrl,
+                        folderUrl: batch.folderUrl,
+                        commitSha: batch.commitSha,
+                        commitUrl: batch.commitUrl
+                    }));
+                } finally {
+                    candidates.forEach(input => { input.value = ''; });   // 无论成功失败都清空，避免残留文件被误用
+                }
+            },
+
+            // 显式切换下载主文件（不改变文件内容）
+            async setMainFile(project, fileName) {
+                assertReady();
+                const projectName = validateProjectName(project);
+                const name = validateFileName(fileName);
+                const info = await readInfo(projectName);
+                if (!info) throw new GithubApiError(`项目 ${projectName} 没有 info.json，请先发布至少一个文件`, { code: 'INFO_MISSING' });
+                const files = await listProjectFileNames(projectName);
+                if (!files.includes(name)) throw new GithubApiError(`文件不存在：${projectName}/${name}`, { code: 'FILE_NOT_FOUND' });
+
+                const text = JSON.stringify({ ...info, name: projectName, mainFile: name, updatedAt: todayStr() }, null, 2);
+                const commit = await window.githubHelper.commitChanges(
+                    [{ path: `${ROOT_DIR}/${projectName}/${INFO_FILE}`, text: text }],
+                    `Set main file ${name} (${projectName})`
+                );
+                await loadProjects();
+                return { ok: true, project: projectName, mainFile: name, commitSha: commit.commitSha, commitUrl: commit.commitUrl, unchanged: !!commit.unchanged };
+            },
+
+            // 发布后校验：直链 HEAD（带时间戳绕过缓存）+ Pages 构建状态；waitMs > 0 时轮询
+            async verify(options) {
+                const opt = options || {};
+                assertReady();
+                const project = validateProjectName(opt.project);
+                const fileName = validateFileName(opt.fileName);
+                const expectedBytes = typeof opt.expectedBytes === 'number' ? opt.expectedBytes : null;
+                const url = projectFolderUrl(project) + encodeURIComponent(fileName);
+                const deadline = Date.now() + Number(opt.waitMs || 0);
+
+                let file;
+                do {
+                    file = await window.githubHelper.verifyFile(url, expectedBytes);
+                    if (file.ok || Date.now() >= deadline) break;
+                    await sleep(3000);
+                } while (true);
+
+                let deploy = null;
+                try {
+                    const build = await window.githubHelper.getPagesBuild();
+                    deploy = build ? { status: build.status, commit: build.commit, updatedAt: build.updated_at } : null;
+                } catch (error) {
+                    deploy = { error: error.message };
+                }
+                return {
+                    ok: file.ok,
+                    project: project,
+                    fileName: fileName,
+                    url: file.url,
+                    httpStatus: file.status,
+                    bytes: file.bytes,
+                    expectedBytes: expectedBytes,
+                    deploy: deploy
+                };
+            },
+
+            // 只读：一次递归树读取项目与文件，再并行读取各项目 info.json
             async list() {
                 assertReady();
-                const view = [];
-                const entries = await window.githubHelper.listDir(ROOT_DIR);
-                for (const dir of entries.filter(e => e.type === 'dir')) {
-                    const meta = (await readInfo(dir.name)) || {};
-                    const files = (await window.githubHelper.listDir(dir.path))
-                        .filter(f => f.type === 'file' && f.name !== INFO_FILE)
-                        .map(f => ({ name: f.name, size: f.size }));
-                    const base = `${window.location.origin}/${ROOT_DIR}/${encodeURIComponent(dir.name)}/`;
-                    view.push({
-                        name: dir.name,
+                const listing = await fetchProjectListing();
+                const names = [...listing.keys()].sort((a, b) => naturalCompare(a, b));
+                return Promise.all(names.map(async name => {
+                    const meta = (await readInfo(name)) || {};
+                    const base = projectFolderUrl(name);
+                    return {
+                        name: name,
                         description: meta.description || '',
                         mainFile: meta.mainFile || '',
-                        files: files,
+                        files: (listing.get(name) || []).filter(f => f.name !== INFO_FILE).map(f => ({ name: f.name, size: f.size })),
                         downloadUrl: meta.mainFile ? base + encodeURIComponent(meta.mainFile) : base
-                    });
-                }
-                return view;
+                    };
+                }));
             }
         };
     </script>
