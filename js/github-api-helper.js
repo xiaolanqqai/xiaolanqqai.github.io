@@ -303,6 +303,8 @@ class GitHubAPIHelper {
     // --- 发布后校验 ---
 
     // 直链 HEAD 校验：加时间戳绕过 CDN/浏览器缓存，尽量比对字节数
+    // 压缩响应（gzip/br/deflate）的 Content-Length 是压缩后大小，不能用于比对；
+    // 此时或长度对不上时回退到 GET，以浏览器解码后的真实字节数为准
     async verifyFile(url, expectedBytes) {
         const target = `${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
         let response;
@@ -311,9 +313,20 @@ class GitHubAPIHelper {
         } catch (error) {
             return { ok: false, status: 0, bytes: null, error: error.message, url: target };
         }
-        const length = Number(response.headers.get('Content-Length') || 0) || null;
-        const sizeOk = !expectedBytes || !length || length === expectedBytes;
-        return { ok: response.ok && sizeOk, status: response.status, bytes: length, url: target };
+        let length = Number(response.headers.get('Content-Length') || 0) || null;
+        const encoding = (response.headers.get('Content-Encoding') || '').trim().toLowerCase();
+        const compressed = !!encoding && encoding !== 'identity';
+        if (response.ok && (compressed || !length || (expectedBytes && length !== expectedBytes))) {
+            try {
+                const body = await fetch(target, { cache: 'no-store' });
+                if (!body.ok) return { ok: false, status: body.status, bytes: null, error: `GET ${body.status}`, url: target };
+                length = (await body.arrayBuffer()).byteLength;
+            } catch (error) {
+                return { ok: false, status: response.status, bytes: null, error: error.message, url: target };
+            }
+        }
+        const sizeOk = !expectedBytes || length === expectedBytes;
+        return { ok: response.ok && sizeOk, status: response.status, bytes: length, compressed: compressed, url: target };
     }
 
     // 最近一次 Pages 构建状态；无权限或未启用 Pages 时返回 null

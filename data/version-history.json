@@ -5,6 +5,15 @@
   },
   "versions": [
     {
+      "name": "BETA 4.6.9",
+      "date": "2026-11-13",
+      "changes": [
+        "1：修复 `verify()` 对 CDN 压缩响应的误判：识别 `Content-Encoding: gzip/br/deflate` 时不再使用压缩后的 `Content-Length`，改为 GET 后按浏览器解码的真实字节数比对",
+        "2：未压缩响应、头部长度缺失或与期望值不符时也会回退到真实正文长度，保留原有字节数校验能力与返回结构，不跳过校验",
+        "3：实测 2.9.57 固件（gzip，原 2,129,104 B）返回 `ok:true`；LanShare `version.json`（未压缩）路径仍正常"
+      ]
+    },
+    {
       "name": "BETA 4.6.8",
       "date": "2026-11-13",
       "changes": [

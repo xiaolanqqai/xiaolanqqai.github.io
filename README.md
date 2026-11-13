@@ -90,6 +90,11 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
   - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
   - [Font Awesome 图标库](https://fontawesome.com/icons)
 
+BETA 4.6.9-2026-11-13
+1：修复 `verify()` 对 CDN 压缩响应的误判：识别 `Content-Encoding: gzip/br/deflate` 时不再使用压缩后的 `Content-Length`，改为 GET 后按浏览器解码的真实字节数比对
+2：未压缩响应、头部长度缺失或与期望值不符时也会回退到真实正文长度，保留原有字节数校验能力与返回结构，不跳过校验
+3：实测 2.9.57 固件（gzip，原 2,129,104 B）返回 `ok:true`；LanShare `version.json`（未压缩）路径仍正常
+
 BETA 4.6.8-2026-11-13
 1：上传链路自动维护 App 端更新清单：发布/同步/目录识别时，若项目主文件为安装包类（apk/aab/ipa/zip/exe/bin 等），在同一次原子提交中写入 `AppUpdater/<项目>/version.json`（字段 `version`、`file`）
 2：版本号从主文件名 `-vX.Y.Z` 解析；解析不到时沿用云端 `version.json` 已有值，两者都没有则不生成，避免写入空值或垃圾值

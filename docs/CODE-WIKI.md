@@ -340,7 +340,7 @@ xiaolan/
 | `beginUpload(fileName)` / `appendChunk(id, chunk, encoding?)` / `commitUpload(id, project, opts?)` / `abortUpload(id)` | 分块上传，最后一次性提交 |
 | `publishInputFiles(project, { input?, setMain?, mainFile? })` | 读取文件输入框（默认 `#apiFileInput`，兼容 `#uploadInput`）并批量发布；结束后清空输入框 |
 | `setMainFile(project, fileName)`                    | 只切换下载主文件，不改文件内容                                                     |
-| `verify({ project, fileName, expectedBytes?, waitMs? })` | 直链 HEAD（带时间戳绕缓存）+ Pages 构建状态校验                                     |
+| `verify({ project, fileName, expectedBytes?, waitMs? })` | 直链 HEAD（带时间戳绕缓存；gzip/br/deflate 压缩响应自动回退 GET 按解码后字节数比对）+ Pages 构建状态校验                                     |
 | `list()`                                           | 只读：一次递归 Git tree 读取项目与文件，再并行读取各项目 `info.json`                        |
 | `help()`                                           | 输出使用说明（同时 `console.log`，便于 AI 自行读取）                                  |
 | `aiProjectsText()`（内部）                             | 生成【当前已有项目】清单（项目名/简介/主文件/文件数/固定直链），随 `loadProjects` 刷新并写入页面说明；供 AI 判断“已有哪些项目、已有项目该传到哪” |

@@ -1522,7 +1522,7 @@
                 return { ok: true, project: projectName, mainFile: name, commitSha: commit.commitSha, commitUrl: commit.commitUrl, unchanged: !!commit.unchanged };
             },
 
-            // 发布后校验：直链 HEAD（带时间戳绕过缓存）+ Pages 构建状态；waitMs > 0 时轮询
+            // 发布后校验：直链 HEAD（带时间戳绕过缓存；压缩响应回退为解码后真实字节数）+ Pages 构建状态；waitMs > 0 时轮询
             async verify(options) {
                 const opt = options || {};
                 assertReady();
