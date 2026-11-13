@@ -1,7 +1,7 @@
 {
   "name": "smoke-test-20261113",
   "description": "冒烟测试项目，测试结束后删除",
-  "mainFile": "smoke-c.bin",
+  "mainFile": "smoke-b.txt",
   "createdAt": "2026-11-13",
   "updatedAt": "2026-11-13",
   "noteField": "自定义备注",
