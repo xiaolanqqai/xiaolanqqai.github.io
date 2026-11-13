@@ -33,5 +33,14 @@
             "version": "1.3",
             "entry": "main.lua"
         }
+    ],
+    "promptFile": "prompt.md",
+    "promptHash": "50306b208017befa",
+    "libs": [
+        {
+            "name": "ui_kit",
+            "file": "ui_kit.lua",
+            "hash": "b3dc5c538f435585"
+        }
     ]
 }
