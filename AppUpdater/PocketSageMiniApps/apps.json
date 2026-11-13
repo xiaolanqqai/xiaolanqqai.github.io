@@ -14,10 +14,10 @@
         {
             "id": "filemgr",
             "name": "文件管理器",
-            "version": "1.6",
+            "version": "1.7",
             "entry": "main.lua",
-            "file": "filemgr-v1.6.json",
-            "hash": "3250cb73dc8b18a0"
+            "file": "filemgr-v1.7.json",
+            "hash": "133d63adaec9eb6e"
         },
         {
             "id": "manbanshi",
