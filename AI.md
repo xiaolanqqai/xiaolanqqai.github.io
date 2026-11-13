@@ -120,6 +120,7 @@ await window.AppUpdaterAPI.verify({
 - ✅ 文件名建议 `{项目名}-v{版本}.{扩展名}`（如 `MyApp-v1.3.apk`）；新项目按自然排序（`v1.10 > v1.2`）选主文件。
 - ✅ **主文件默认不变**：已有 `mainFile` 不会被后续上传覆盖。要更新下载主文件，必须显式传 `setMain: true` / `mainFile`，或调用 `setMainFile(project, fileName)`。
 - ✅ **`info.json` 是浅合并写回**：`promptFile` / `libs` / `notes` 等自定义字段会保留，无需把它们搬到 `apps.json`。
+- ✅ **`version.json` 自动维护**：发布/同步时若项目主文件是安装包类（apk/aab/ipa/zip/exe/bin 等），接口会在同一次提交里写 `version.json`（`{version, file}`，版本号从文件名 `-vX.Y.Z` 解析；解析不到沿用云端已有值）。`PocketSageMiniApps` 等非安装包项目不会生成；**不要手动删除该文件**，App 的“检查更新”依赖它。
 - ✅ 单文件上限：**本页 40MB**（内容经 base64 传输）；GitHub 硬上限 100MB，超出请改用 GitHub Releases。
 - ✅ 调用后立即写入仓库并生效，不需要点页面上的「同步到 GitHub」——那个按钮只处理页面内的暂存改动。
 - ✅ 同一项目重复发布同名文件即**覆盖**。

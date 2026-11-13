@@ -137,6 +137,7 @@ await window.AppUpdaterAPI.publishInputFiles('MyApp', { setMain: true });
 - **主文件默认不变**：已有 `mainFile` 不会被后续上传覆盖。要切换必须显式传 `setMain: true` / `mainFile`，或调用 `setMainFile(project, fileName)`。
 - 新项目未指定时，按文件名自然排序选安装包类（apk/aab/ipa/zip/exe/bin…）最新者。
 - `info.json` 采用**浅合并写回**：`name` / `description` / `mainFile` / `createdAt` / `updatedAt` 由接口维护，其余字段（`promptFile`、`promptHash`、`libs`、`notes` 等）原样保留。
+- `version.json`（App 端检查更新清单）自动维护：主文件为安装包类（apk/aab/ipa/zip/exe/bin 等）时，与 `info.json` 同一次提交写入 `{version, file}`；`version` 从主文件名 `-vX.Y.Z` 解析，解析不到则沿用云端已有值，都没有则不生成。非安装包项目不会生成，**不要手动删除该文件**。
 - 读到 `info.json` 但 JSON 损坏时，接口会直接报错中止，不会用空内容覆盖。
 
 ## 9. 返回字段

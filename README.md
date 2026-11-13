@@ -45,7 +45,7 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
 ### App 更新目录使用方式
 - **管理入口**：`index/manager/app-manager.html`
 - **目录结构**：站点根目录 `AppUpdater/`，每个项目占一个子文件夹，文件夹名即项目名
-- **项目元数据**：每个项目内的 `info.json` 记录名称、简介、下载主文件（`mainFile`）与创建/更新时间；写回采用**浅合并**，`promptFile` / `libs` / `notes` 等自定义字段原样保留
+- **项目元数据**：每个项目内的 `info.json` 记录名称、简介、下载主文件（`mainFile`）与创建/更新时间；写回采用**浅合并**，`promptFile` / `libs` / `notes` 等自定义字段原样保留。安装包类主文件（apk/zip/bin 等）还会在同一次提交里自动维护 App 端更新清单 `version.json`（`{version, file}`，版本号从 `-vX.Y.Z` 解析，解析不到沿用云端已有值；非安装包项目不生成）
 - **下载直链（固定 URL）**：`https://<站点>/AppUpdater/<项目名>/<mainFile>`，点击项目名后的复制图标即可取得。**已有主文件默认保持不变**，要切换请用项目卡片的「上传文件」（显式上传）或接口 `setMain: true` / `setMainFile()`；App 端使用该固定 URL 即可持续获取最新包
 - **拖拽自动归类**：把文件直接拖到页面顶部拖拽区（或点其中的“选择文件”），会按 `{项目名}-v{版本}.{扩展名}` 自动归入同名项目；**没有对应项目则自动新建**。暂存后点「同步到 GitHub」一次原子提交发布；已有主文件不会因拖入其它文件而改变
 - **同步模式**：新建项目、上传文件、删除操作均先暂存，点击“同步到 GitHub”后通过 Git Data API（blobs → tree → commit → ref）**一次提交**全部写入，全成功或全失败；失败时暂存区保留可直接重试
@@ -89,6 +89,12 @@ Xiaolan是一个高效的导航页面系统，旨在提供快速搜索和网站�
   - [Bootstrap 5 官方文档](https://getbootstrap.com/docs/5.0/)
   - [MDN Web Docs](https://developer.mozilla.org/zh-CN/)
   - [Font Awesome 图标库](https://fontawesome.com/icons)
+
+BETA 4.6.8-2026-11-13
+1：上传链路自动维护 App 端更新清单：发布/同步/目录识别时，若项目主文件为安装包类（apk/aab/ipa/zip/exe/bin 等），在同一次原子提交中写入 `AppUpdater/<项目>/version.json`（字段 `version`、`file`）
+2：版本号从主文件名 `-vX.Y.Z` 解析；解析不到时沿用云端 `version.json` 已有值，两者都没有则不生成，避免写入空值或垃圾值
+3：非安装包项目（如 `PocketSageFirmware`、`PocketSageMiniApps`）不生成 `version.json`；`info.json` / `version.json` 均为浅合并/同格式写回，不覆盖自定义字段
+4：修复原因：App 端 `AppUpdater` 只请求 `AppUpdater/<项目>/version.json`，此前管理页只写 `info.json`，新项目会出现检查更新 404
 
 BETA 4.6.7-2026-11-13
 1：发布链路改为一次原子提交：`js/github-api-helper.js` 新增 Git Data API 封装（blobs → tree → commit → ref），多文件 + info.json 一次提交，全成功或全失败，只触发一次 Pages 构建；`deleteDir` 与“目录识别更新”同路径处理

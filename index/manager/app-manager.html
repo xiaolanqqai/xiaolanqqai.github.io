@@ -161,6 +161,7 @@
 
         const ROOT_DIR = 'AppUpdater';       // 站点根目录下的 App 更新目录
         const INFO_FILE = 'info.json';       // 项目元数据文件名
+        const VERSION_FILE = 'version.json'; // App 端检查更新清单（仅安装包类主文件自动维护）
         const MAX_PAGE_FILE_SIZE = 40 * 1024 * 1024;      // 本页上传通道实际可用上限（内容经 base64 JSON 传输，约 1.37 倍膨胀）
         const MAX_GITHUB_FILE_SIZE = 100 * 1024 * 1024;   // GitHub 单文件硬上限
         // 项目名即文件夹名：禁 `..`、首尾点与控制字符，保证路径安全
@@ -847,7 +848,12 @@
                     common.log(`迁移文件失败: ${move.fileName}`, 'error', error.message);
                 }
             }
-            plan.upserts.forEach(item => changes.push({ path: `${ROOT_DIR}/${item.project}/${INFO_FILE}`, text: scanInfoContent(item) }));
+            for (const item of plan.upserts) {
+                changes.push({ path: `${ROOT_DIR}/${item.project}/${INFO_FILE}`, text: scanInfoContent(item) });
+                // 新建/主文件变更的项目同步维护 App 更新清单；非安装包项目不会生成
+                const versionText = await buildVersionManifest(item.project, item.mainFile);
+                if (versionText) changes.push({ path: `${ROOT_DIR}/${item.project}/${VERSION_FILE}`, text: versionText });
+            }
 
             if (changes.length) {
                 try {
@@ -1012,7 +1018,34 @@
             }, null, 2);
         }
 
-        // 汇总本次暂存改动为一份变更清单（上传 / 删除 / 删项目 / info.json），供一次原子提交
+        // 从主文件名解析版本号：LanShare-v1.0.17.apk → 1.0.17
+        function versionFromFileName(fileName) {
+            const match = String(fileName || '').match(/-v(\d+(?:\.\d+)*)/i);
+            return match ? match[1] : '';
+        }
+
+        // 生成 App 端更新清单 version.json 的内容；仅安装包类主文件才生成
+        // 版本号优先从主文件名解析，解析不到时沿用云端已有值；两者都没有则返回 null（不写空值/垃圾值）
+        async function buildVersionManifest(projectName, mainFile) {
+            if (!mainFile || !PACKAGE_EXT.test(mainFile)) return null;
+
+            let version = versionFromFileName(mainFile);
+            if (!version) {
+                const existing = await window.githubHelper.getFile(`${ROOT_DIR}/${projectName}/${VERSION_FILE}`);
+                if (existing && existing.content) {
+                    try {
+                        version = String(JSON.parse(decodeBase64Utf8(existing.content)).version || '').trim();
+                    } catch (error) {
+                        version = '';
+                    }
+                }
+            }
+            if (!version) return null;
+
+            return JSON.stringify({ version: version, file: mainFile }, null, 2) + '\n';
+        }
+
+        // 汇总本次暂存改动为一份变更清单（上传 / 删除 / 删项目 / info.json / version.json），供一次原子提交
         async function buildSyncChanges() {
             const changes = [];
 
@@ -1044,10 +1077,13 @@
                 ...Object.keys(pendingFiles),
                 ...Object.keys(pendingFileDeletes)
             ]);
-            touched.forEach(projectName => {
-                if (pendingProjectDeletes.includes(projectName)) return;
+            for (const projectName of touched) {
+                if (pendingProjectDeletes.includes(projectName)) continue;
                 changes.push({ path: `${ROOT_DIR}/${projectName}/${INFO_FILE}`, text: buildInfoContent(projectName) });
-            });
+                // 安装包类项目同步维护 App 更新清单，避免 App 检查更新时 404
+                const versionText = await buildVersionManifest(projectName, resolveMainFile(projectName));
+                if (versionText) changes.push({ path: `${ROOT_DIR}/${projectName}/${VERSION_FILE}`, text: versionText });
+            }
 
             return changes;
         }
@@ -1140,6 +1176,8 @@
 
             const changes = items.map(item => ({ path: `${ROOT_DIR}/${project}/${item.fileName}`, base64: item.base64 }));
             changes.push({ path: `${ROOT_DIR}/${project}/${INFO_FILE}`, text: text });
+            const versionText = await buildVersionManifest(project, mainFile);
+            if (versionText) changes.push({ path: `${ROOT_DIR}/${project}/${VERSION_FILE}`, text: versionText });
             const commit = await window.githubHelper.commitChanges(changes, `Publish ${items.length} file(s) to ${project}`);
             return { commit, mainFile };
         }

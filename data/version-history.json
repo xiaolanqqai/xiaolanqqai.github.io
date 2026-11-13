@@ -5,6 +5,16 @@
   },
   "versions": [
     {
+      "name": "BETA 4.6.8",
+      "date": "2026-11-13",
+      "changes": [
+        "1：上传链路自动维护 App 端更新清单：发布/同步/目录识别时，若项目主文件为安装包类（apk/aab/ipa/zip/exe/bin 等），在同一次原子提交中写入 `AppUpdater/<项目>/version.json`（字段 `version`、`file`）",
+        "2：版本号从主文件名 `-vX.Y.Z` 解析；解析不到时沿用云端 `version.json` 已有值，两者都没有则不生成，避免写入空值或垃圾值",
+        "3：非安装包项目（如 `PocketSageFirmware`、`PocketSageMiniApps`）不生成 `version.json`；`info.json` / `version.json` 均为浅合并/同格式写回，不覆盖自定义字段",
+        "4：修复原因：App 端 `AppUpdater` 只请求 `AppUpdater/<项目>/version.json`，此前管理页只写 `info.json`，新项目会出现检查更新 404"
+      ]
+    },
+    {
       "name": "BETA 4.6.7",
       "date": "2026-11-13",
       "changes": [
