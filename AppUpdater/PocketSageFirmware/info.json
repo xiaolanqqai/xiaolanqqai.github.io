@@ -1,8 +1,8 @@
 {
-    "name": "PocketSageFirmware",
-    "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-    "mainFile": "pocket-sage-official-dsh-2.9.49.bin",
-    "notes": "2.9.49：修复 DeepSeek 回复被截断（读超时被误判流结束，现区分对端关闭继续等待）；会话历史秒进（先加载本地缓存立即进页，异步刷新远端列表，计算工作证明时提示栏实时显示进度，成功后缓存列表）",
-    "createdAt": "2026-11-05",
-    "updatedAt": "2026-11-10"
+  "name": "PocketSageFirmware",
+  "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
+  "mainFile": "pocket-sage-official-dsh-2.9.57.bin",
+  "notes": "2.9.49：修复 DeepSeek 回复被截断（读超时被误判流结束，现区分对端关闭继续等待）；会话历史秒进（先加载本地缓存立即进页，异步刷新远端列表，计算工作证明时提示栏实时显示进度，成功后缓存列表）",
+  "createdAt": "2026-11-05",
+  "updatedAt": "2026-11-13"
 }
