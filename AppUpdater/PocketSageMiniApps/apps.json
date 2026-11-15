@@ -6,10 +6,10 @@
         {
             "id": "eviljuice",
             "name": "邪恶苹果汁",
-            "version": "1.5",
+            "version": "1.6",
             "entry": "main.lua",
-            "file": "eviljuice-v1.5.json",
-            "hash": "e1c4a2f2a952d9de"
+            "file": "eviljuice-v1.6.json",
+            "hash": "ab569cb1432ece9d"
         },
         {
             "id": "filemgr",
