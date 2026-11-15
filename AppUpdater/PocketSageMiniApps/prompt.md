@@ -1,6 +1,6 @@
-# 墨本 AI 小应用制作前提概要（提示词 v3.0）
+# 墨本 AI 小应用制作前提概要（提示词 v3.2）
 
-> **最低固件版本：2.9.54**（`.lua` 单文件包安装、`sys.lib` 公共库、`on_idle` 空闲回调自 2.9.54 / 2.9.33 / 2.9.47 起可用）
+> **最低固件版本：2.9.66**（`.lua` 单文件包安装、`sys.lib` 公共库、`on_idle` 空闲回调自 2.9.54 / 2.9.33 / 2.9.47 起可用；统一状态行 `kit.draw_status` 自 2.9.65 起可用；标题栏 40..84、正文 88、底栏 746..800 的几何自 2.9.66 起生效）
 >
 > 用途：把本文件整段交给 AI（或作为设备端 AI 对话上传的素材），让它直接产出能在设备上运行的小应用。
 > 设备端：ESP32-S3 / 480×800 单色墨水屏 / 四按键；小应用运行在固件内置的 Lua 5.4 沙箱里。
@@ -21,7 +21,7 @@
 | 内存 | 每个应用最多 2MB 的 Lua 堆（PSRAM）；超出即报 "not enough memory" |
 | 单次回调耗时 | ≤ 3 秒（`draw()` / `on_key()` / `on_idle()` 各算一次；超时被强制中断） |
 | 持久化 | `store` 键值，整体 ≤ 4KB；键 ≤32 字符、值 ≤200 字符，均不可含换行，键不可含 `=` |
-| 本地缓存 | `cache` 每应用 1MB，自动淘汰最久未更新的一条 |
+| 本地缓存 | `cache` 每应用 2MB，自动淘汰最久未更新的一条 |
 | 网络 | `net.get/post` 只支持 `http://` / `https://`，同步阻塞（数秒级），一次回调最多一两个请求 |
 | 绘制 | 单色 1bpp，无灰度、无抗锯齿；坐标与宽高越界会被裁剪 |
 
@@ -45,21 +45,50 @@
 ```
 y=0     ┌──────────────┐
         │ 状态栏 40px  │  ← 仅空闲页由框架绘制，小应用页不画
-y=50    ├──────────────┤  ← 内容区起点（ui.content_top()）
-y=52    │   页面标题    │  ← ui.title(...) 居中，约 28px 高
-y=88    │  自定义文字   │  ← ui.text(...) 常用位置
-y=130   ├──────────────┤  ← ui.menu / ui.list 的固定起点
-        │  行高 66px   │  ← 一屏最多 9 行；选中行反白
-        │      …       │
-y≈752   ├──────────────┤  ← ui.footer(...) 提示栏（48px）
+y=40    ├──────────────┤
+        │ 标题栏 44px  │  ← ui.title(...)：一级黑底白字 / 二级白底+下框
+y=84    ├──────────────┤
+y=88    │  正文起点     │  ← ui.content_top()，不得在其上方绘制任何像素
+        │  行高 36 步进 │  ← 正文一屏 16 行
+        │  列表行高 64  │  ← 一屏 10 行；值右对齐 x=460；行间 1px 分隔线
+y=744   ├──────────────┤  ← 正文安全下沿 736（下方 10px 留白）
+y=746   ├──────────────┤  ← 底栏 1px 上框线（满宽）
+        │ 提示条 54px   │  ← 文字 y=752、0.65 倍、左 16 起；右侧 56px 页码槽
+y=790   │ ▓▓▓ 进度线    │  ← 3px，仅活动态
 y=800   └──────────────┘
 ```
 
+> `ui.title` 不再占用正文：标题栏固定 40..84，正文从 `ui.content_top()=88` 开始。
+> `kit.TOP` 就是 88，`kit.FOOTER_H` 是 54；自定义版式只用这两个常量，不要写死 50/44/756。
+> `ui.menu` / `ui.list` 固定从 88 起、行高 64，一屏 10 行；自定义正文的 y 必须小于列表起点才不会重叠。
+
 - 逻辑坐标：左上角 `(0,0)`，宽 480、高 800；`ui.size()` 返回的就是这两个值。
-- 建议版式：`ui.title()` 放标题/主状态；`ui.text(x, y)` 放详情（y 建议 88 起）；`ui.menu()` 放可选项（自动从 130 开始）；`ui.footer()` 放操作提示。
-- **`ui.menu` / `ui.list` 不会自动清屏**，固定从 y=130 往下画，所以 `ui.text` 的 y 必须小于 130 才不会重叠。
-- 中文用内置 24px 点阵字体（覆盖 ASCII + 中文标点 + GB2312 一级汉字）；生僻字显示为空白，**请用常用字**；Emoji、繁体生僻字一律不要用。
-- 超过一屏的列表/正文要自己分页：行高建议 `ui.line_height() + 10`；文字按 `ui.measure` 逐字断行（可用公共库 `ui_kit.wrap_lines`，见第 5 节）。
+- 建议版式：`ui.title()` 放标题；`ui.text()` 放详情（从 88 起）；`ui.footer()` 放操作提示（页码用第二参数）。
+- 中文用内置 28px 点阵字体（覆盖 ASCII + 中文标点 + GB2312 一级汉字）；生僻字显示为空白，**请用常用字**；Emoji、繁体生僻字一律不要用。
+- 超过一屏的列表/正文要自己分页：列表行高 64、正文行高 `ui.line_height()`（36）；文字按 `ui.measure` 逐字断行（可用 `ui_kit.wrap_lines`，见第 5 节）。
+- **`ui.text` 会自动折行**：凡是"一行写满"的文案，必须自己先按宽度换行再逐行推进，否则长句折行会压到下一块文字。
+
+### 2.1 视觉约束（固件 2.9.66 起，违反其中数值的稿子一律退回）
+
+```text
+【墨本 ai 小应用视觉约束 v1】
+屏幕 480×800，1bpp，只有纯黑与纯白，无灰阶。
+1) 标题调用 ui.title(文字)，≤11 个汉字；一屏只允许一个标题。
+2) 正文从 ui.content_top() 开始（y=88），不得在其上方绘制任何像素。
+3) 字号只用 28px 的三档缩放：1.0 / 0.85 / 0.65；中文不得小于 0.65。
+4) 单行中文 ≤16 字；必须手动换行，禁止依赖 ui.text 的自动折行。
+5) 左右边距 16，安全宽 448；间距只用 8 / 16 / 24 三档。
+6) 列表行高 64：标签 x=20，值右对齐到 x=460；行间画 1px 分隔线，最后一行不画。
+7) 选中态：列表整行反白 rect(8, y+2, 464, 60) + 白字；网格用 2px 外框，不填黑。
+8) 按钮宽 448、高 56、1px 外框、文字居中；一屏最多 1 个主按钮。
+9) 危险操作必须二次确认；确认按钮反白，文案以 "!" 开头（如 "! 删除"）。
+10) 图标 24×24、线宽 2px、直角；只复用公共字形，不自绘细节。
+11) 底栏只写一行 ≤20 汉字，用 " · " 分隔；页码用 footer 的 page 参数放右侧槽。
+12) 长任务每 ≤8 秒调用一次 progress(phase, pct)；禁止自绘浮层或转圈。
+13) 空列表显示"暂无内容"并给出下一步提示，不画选中框。
+14) 所有请求超时 ≤8 秒；失败必须给出中文原因和可重试入口。
+15) 禁止：渐变、阴影、圆角、灰字、半透明、抖动做灰、整屏反白、动画。
+```
 
 ---
 
@@ -131,6 +160,40 @@ end
 - `on_idle` 每次调用只做**一个**网络动作，做完 `return true` 让框架刷新；没活干 `return false`。
 - 加载未完成时 `draw()` 必须画出加载状态文字，绝不允许整屏空白等待。
 
+### 3.2 状态与进度反馈（2.9.65 起统一规范）
+
+固件底栏是全局状态通道：固件任务（挑战、同步、下载）进行时，底栏会自动显示当前活动，结束后恢复页面提示。**小应用不要自绘状态条/进度框**，统一写底栏：
+
+```lua
+local kit = sys.lib("ui_kit")
+
+-- 不确定进度：阶段词 + 已用时间（由 on_idle 每秒累加）
+kit.draw_status("加载中", { subject = "第 3 页" })
+
+-- 确定进度：有总长才写百分比
+kit.draw_status("下载中", { index = 2, total = 3, percent = 45 })  -- 下载中 2/3 · 45%
+
+-- 失败：原因 + 下一步（一行放不下就只留“语音键重试”）
+ui.footer("更新失败 · 语音键重试")
+```
+
+规则：
+
+- **只写一行**：阶段词（≤6 个汉字）+ 可选对象 + 可选 `i/N` + 可选百分比；不要换行、不要多行堆叠。
+- **不确定进度不要编百分比**：用阶段词 + 已用秒数（`加载中 · 5s`）或 `i/N`。
+- **不画动画/转圈/自绘进度条**；1bpp 墨水屏只接受离散步进。
+- **刷新节流**：状态变化至少间隔 1.5 秒再 `ui.flush()`；同一操作最多刷 4–8 次。`on_idle` 返回 true 会触发框架局刷，不要再叠加手动 flush。
+- **不要用 `ui.flush(true)` 刷进度**：整屏刷新会黑闪且耗时约 1.6 秒；`true` 只用于切页/首次进入。
+- 阶段词白名单：`加载中`、`下载中`、`上传中`、`校验中`、`安装中`、`同步中`、`连接中`、`计算中`、`读取中`。
+
+### 3.3 超时、重试与错误
+
+- `net.get(url, timeout_ms)` 的 `timeout_ms` 是**整个请求预算**，默认 15000。建议：小接口 8000、列表/文本 15000、图片 25000。
+- 固件网络层已对连接失败/5xx/不完整响应做 3 次重试（500ms/1500ms，流式下载不重试）。**脚本不要再套一层重试**，否则弱网下一次回调会被拖到十几秒。
+- 失败返回 `nil, 错误`，错误以 `ERR ` 开头；用 `kit.error_text(err)` 去掉前缀并限长，只展示一行原因，动作交给底栏提示。
+- 业务错误（无权限、文件不存在、参数错）不要重试；只有超时/连接类错误值得用户手动再试。
+- 不要假设有流式下载接口：`net.get` 会一次性收完响应体；大内容请用 `cache` 分页 + `on_idle` 逐页拉取（单条缓存读取上限 128KB）。
+
 ---
 
 ## 4. 交付格式：`.lua` 单文件包（2.9.54 起）
@@ -170,14 +233,15 @@ end
 - 库文件对脚本只读；库代码的内存计入本应用的 Lua 堆（2MB），报错信息带 `@.lib/<名>.lua` 路径。
 - **建议所有新应用都引用 `ui_kit`**：文本排版、图标、田字格布局常量统一走库，风格一致、体积更小。
 
-### ui_kit v1 内容速览
+### ui_kit v3 内容速览（2.9.66 起）
 
 ```lua
 local kit = sys.lib("ui_kit")
 -- 布局常量（随屏幕自动计算）
 kit.W, kit.H            -- 480, 800
-kit.TOP, kit.LH         -- 正文起始 y、行高
-kit.MARGIN, kit.GAP     -- 8, 10
+kit.TOP, kit.LH, kit.FOOTER_H    -- 正文起点 88、行高 36、底栏高 54
+kit.CONTENT_BOTTOM      -- 正文安全下沿 736
+kit.MARGIN, kit.GAP     -- 16, 16
 kit.GRID_Y, kit.GRID_BOTTOM      -- 田字格区域上下沿
 kit.CELL_W, kit.CELL_H           -- 田字格单元尺寸
 kit.COVER_W, kit.COVER_H         -- 网格封面 140×186
@@ -187,16 +251,33 @@ kit.REL_COVER_W, kit.REL_COVER_H, kit.REL_ROW_H, kit.REL_TEXT_X -- 推荐行
 kit.LIB_ROW_H, kit.LIB_COVER_W, kit.LIB_COVER_H, kit.LIB_TOP, kit.LIB_ROWS -- 收藏/历史列表
 kit.CHAR  -- UTF-8 切分 pattern；kit.TAB = "\t"
 
+-- 结构件（新应用优先用这些，不要再自己算坐标）
+kit.header(title, { level = "primary"|"secondary" })
+kit.footer(text, { page = "2/7" })   -- 页码放右侧槽，不参与截断
+kit.progress(phase, pct, { index = 2, total = 3, elapsed = 12 })
+kit.list(items, sel, { top = kit.TOP, row = 64 })  -- → 夹紧后的 sel, 可视行数
+kit.grid(items, sel, { cols = 2, cover_w = 150, cover_h = 200 })  -- 2px 选中框
+kit.button(label, { y = 680, danger = false, focused = true })
+kit.dialog(title, lines, { ok = "确认", cancel = "取消", danger = true })
+kit.icon(name, x, y, size)   -- chevron/check/cross/dot/folder/file/star
+kit.divider(y, x1, x2)       -- 1px，默认左右内缩 16
+
 -- 文本排版
-kit.wrap_lines(text, width)      -- 按像素宽度逐字断行 → 行数组
-kit.fit_line(text, width)        -- 超宽截断加 "…"
+kit.wrap_lines(text, width)      -- 识别 \n 与自动换行 → 行数组（kit.wrap 同义）
+kit.fit_line(text, width)        -- 超宽截断加一个 "…"（kit.fit 同义）
 kit.truncate_utf8(text, limit)   -- 按字节截断且不切半个汉字
 kit.center_in(text, x, y, width) -- 在 [x, x+width) 内水平居中画一行
+kit.measure(text, scale)         -- 文字宽度；scale 仅用于 0.85/0.65 的换算
+
+-- 状态行（统一走底栏，不要再自绘进度框）
+kit.status_line(phase, opts)     -- phase + subject + i/N + percent/elapsed
+kit.draw_status(phase, opts)     -- 等价于 ui.footer(kit.status_line(...))
+kit.error_text(err)              -- 去掉 "ERR " 前缀、限长后的一行错误文案
 
 -- 绘制
-kit.draw_frame(x, y, w, h)       -- 双线选中框
+kit.draw_frame(x, y, w, h)       -- 双线选中框（旧接口，保留兼容）
 kit.STAR_PBM                     -- 20×20 五角星位图（字库无 ★，ui.image 贴图）
-kit.show_loading(title, line)    -- 「加载中」页 + 整屏刷新
+kit.show_loading(title, line)    -- 「加载中」页 + 整屏刷新（冷启动/切页用）
 ```
 
 ---
@@ -208,26 +289,26 @@ kit.show_loading(title, line)    -- 「加载中」页 + 整屏刷新
 | 调用 | 说明 |
 |---|---|
 | `ui.clear()` | 清屏（全白），状态栏由框架补画 |
-| `ui.title(text)` | 页面标题，居中 y≈52 |
-| `ui.text(text, x, y, width)` | 画文字；`width` 自动换行；返回占用高度 |
+| `ui.title(text, secondary)` | 标题栏 40..84：不传/`false` 一级黑底白字，`true` 二级白底+下框 |
+| `ui.text(text, x, y, width)` | 画文字；`width` 自动换行；返回占用高度；y 默认 `content_top()` |
+| `ui.text_inv(text, x, y, width)` | 同上，反色文字（黑条上的白字） |
 | `ui.center(text, y)` | 指定 y 居中一行 |
-| `ui.menu(items, selected)` | 单列列表（0 基下标），y=130 起、行高 66、选中反白；单次 ≤9 项 |
-| `ui.list(items, selected)` | 同版式，无右侧箭头 |
+| `ui.menu(items, selected)` | 单列列表（0 基下标），y=88 起、行高 64、选中整行反白；单次 ≤10 项 |
 | `ui.rect(x, y, w, h, filled)` | 矩形；越界裁剪 |
 | `ui.hline(x, y, w)` | 水平分割线 |
-| `ui.footer(text)` | 底部提示（48px），写当前可用的按键操作 |
+| `ui.footer(text, page)` | 底栏单行（54px，746..800）；`page` 显示在右侧 56px 槽位；超宽按 ` · ` 分段截断、不换行 |
 | `ui.size()` | `宽, 高` |
 | `ui.measure(text)` | 文字像素宽度 |
 | `ui.image(pbm, x, y)` | 画网关下发的 P4 PBM（480×800 内），成功返回 `true` |
 | `ui.flush()` / `ui.flush(true)` | 立即刷新：不传=局刷，`true`=整屏（切页用） |
-| `ui.content_top()` / `ui.line_height()` | 正文起始 y / 当前行高 |
+| `ui.content_top()` / `ui.line_height()` | 正文起点 y（88）/ 当前行高（36） |
 
 ### store / cache / fs
 
 | 调用 | 说明 |
 |---|---|
 | `store.get(key)` / `store.set(key, value)` | 键值持久化（≤4KB）；非法输入静默失败 |
-| `cache.get/set/del/clear/size/list` | 本地缓存 1MB/应用，二进制安全，超配额自动淘汰 |
+| `cache.get/set/del/clear/size/list` | 本地缓存 2MB/应用，二进制安全，超配额自动淘汰 |
 | `fs.list(dir)` | 列 `/assets/apps` 下 `dir`；每行 `类型<TAB>名称<TAB>字节数` |
 | `fs.read(path)` | 读文件（≤96KB），失败 `nil, 原因` |
 | `fs.size(path)` / `fs.remove(path)` | 字节数 / 删除文件或目录（2.9.39 起，文件管理器用） |
@@ -334,6 +415,19 @@ ui.flush(true)
 - `sys.log()` 打点 + 串口日志；报错直接显示在墨水屏上，照提示改。
 - 脚本编译失败时固件会清掉本地 hash，下次同步自动重新下载修复。
 
+### 8.1 已废弃 / 不再推荐的写法
+
+| 旧写法 | 问题 | 新写法 |
+|---|---|---|
+| 自己用 `ui.rect` + `ui.text` 画进度框/百分比 | 与固件底栏状态通道重复，遮挡正文，整屏刷新代价高 | `kit.draw_status("下载中", {index=i,total=n,percent=p})` |
+| 用 `ui.flush(true)` 刷每次进度 | 每次约 1.6s 黑闪，进度反而更慢 | 底栏文案 + `ui.flush()`，间隔 ≥1.5s |
+| 在脚本里写重试循环（3 次以上） | 固件网络层已重试 3 次，叠加后单次回调可达十几秒，触发超时 | 只展示失败原因，由用户按键重试 |
+| 把加载状态画在屏幕中央/顶部自绘 | 与底栏状态重复，页面跳动 | 底栏 `kit.draw_status("加载中")`；只有冷启动/切页才用 `kit.show_loading` |
+| `ui.footer` 里写多行长文案 | 底栏单行，超宽会被裁切 | 阶段词 + 关键数字；详情放正文 `ui.text` |
+| 把页码拼进 footer 文本（`ui.footer("… 2/7")`） | 页码参与截断，长文案会把页码挤掉 | `ui.footer("…", "2/7")` 或 `kit.footer(text, {page="2/7"})` |
+| 在 `TOP+6/8/34` 等处写字给标题让位 | 2.9.66 起标题栏独立，正文起点就是 88，额外偏移会留白或压字 | 正文一律从 `ui.content_top()` / `kit.TOP` 开始 |
+| 用 `y = y + LH` 推进长句段落 | `ui.text` 自动折行后仍按一行推进，下一块文字被叠印 | 先 `kit.wrap_lines(text, width)` 再逐行推进 |
+
 ---
 
 ## 9. 交付自查清单
@@ -343,7 +437,11 @@ ui.flush(true)
 - [ ] 引用了 `sys.lib("ui_kit")`，且库缺失时有降级页面
 - [ ] 翻页/加载走 `on_key 登记意图 → on_idle 分步执行 → draw 显示加载状态`，无整屏空白
 - [ ] `on_idle` 每次只做一个网络动作并正确返回 true/false；用了 `sys.pending()` 让位
-- [ ] `ui.text` 的 y 在 88~120，不与 `ui.menu`（y≥130）重叠；`ui.menu` 单次 ≤9 项
+- [ ] `ui.text` 的 y 在 88~120，不与 `ui.menu`（y=88 起、行高 64）重叠；`ui.menu` 单次 ≤10 项
+- [ ] 长句先用 `kit.wrap_lines` 换行；单行中文 ≤16 字，没有依赖自动折行压到下一块
+- [ ] 底栏 ≤20 汉字，页码走 `ui.footer(text, page)` 右槽，没有把页码拼进正文
+- [ ] 选中态为整行反白 `rect(8,y+2,464,60)`、值右对齐 x=460、行间 1px 分隔线（最后一行不画）
+- [ ] 状态/进度只写底栏（`kit.draw_status`），没有自绘进度框；进度刷新间隔 ≥1.5s，未用 `ui.flush(true)` 刷进度
 - [ ] 四键语义明确，`back` 能退出；所有网络请求判空
 - [ ] `store` < 4KB；脚本 UTF-8 无 BOM、≤96KB、只用常用汉字；代码全半角标点
 - [ ] 没有 io/os/require/print/load，没有死循环与超大实心矩形
