@@ -1,8 +1,8 @@
 {
   "name": "PocketSageFirmware",
   "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-  "mainFile": "pocket-sage-official-dsh-2.9.70.bin",
-  "notes": "2.9.70：小应用管理把「站点应用列表」并入「从网关/GitHub 安装·更新」右键长按（短按检查更新、长按进站点）；正式镜像启用 BLE（NimBLE，裁掉 Central/Observer），修复此前协议栈空实现导致 BLE 小应用发不出广播；eviljuice 音频广播补齐至 31 字节（原 19 字节与 AD 声明长度不符，AirPods/Beats/0x2E 全被丢弃），新增「只弹系统更新」独立模式与 PDU 三型轮换，adv_start 连续两次失败即停止并提示；自定义广播功率 +20dBm，低功耗保持 +9dBm、退出即复位，注意 +20dBm 已接近 2.4GHz ISM 常见 EIRP 上限，改装高增益天线可能超出当地法规，满功率连续广播会增加发热与耗电",
+  "mainFile": "pocket-sage-official-dsh-2.9.71.bin",
+  "notes": "2.9.71：更新说明版本校验——云端 notes 所带版本与目标版本不一致时隐藏旧文案，提示「该版本的更新说明尚未同步」，不再让旧说明冒充新版本（无版本前缀的历史说明与网关通道照常兼容，离线仍只提示检查更新失败）；延续 2.9.70：正式镜像启用 BLE（NimBLE）并修复 eviljuice 广播长度（补齐 31 字节、新增 0x2E 只弹系统更新、PDU 三型轮换、失败即停），自定义广播 +20dBm、低功耗 +9dBm 不增强，注意 EIRP 合规与发热耗电",
   "createdAt": "2026-11-05",
   "updatedAt": "2026-11-15"
 }
