@@ -1,8 +1,8 @@
 {
   "name": "PocketSageFirmware",
   "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-  "mainFile": "pocket-sage-official-dsh-2.9.89.bin",
-  "notes": "2.9.89 新增小应用蓝牙鱼缸：固件新增 BLE 被动扫描能力（ble.scan_start/scan_get/scan_stop，观察者角色与 NUS 广播共存，蓝牙需在设置里开启；结果按 MAC 去重含广播名与 RSSI）；新增小应用「蓝牙鱼缸」1.0——全标点符号画面（~ 水面、O o . 气泡、＞＜o）））＞ 鱼、（ ） 水草），首次发现的蓝牙设备触发投喂动画，老朋友到访按信号强度和冷却概率投喂，饥饿度随时间上升满 8 格鱼赌气停止吐泡，底部显示设备总数/累计投喂/饥饿度；模拟器同步 ble.scan 模拟桩并新增 --idle N 回归入口",
+  "mainFile": "pocket-sage-official-dsh-2.9.90.bin",
+  "notes": "2.9.90 新增 sys.time() 绑定（Unix 秒，NTP 同步后为真实时间）供小应用做每日重置/夜幕/时间戳日志；配合蓝牙鱼缸 2.0（成长等级/成就/鱼种/日志页/手动撒食/摩尔斯播报/夜幕/Matrix 彩蛋/设备间串门协议 AQUM）",
   "createdAt": "2026-11-05",
   "updatedAt": "2026-11-18"
 }
