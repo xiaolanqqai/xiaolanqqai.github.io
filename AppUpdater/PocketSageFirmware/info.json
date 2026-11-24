@@ -1,8 +1,8 @@
 {
   "name": "PocketSageFirmware",
   "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-  "mainFile": "pocket-sage-official-dsh-2.9.91.bin",
-  "notes": "2.9.91 记录加密：小应用 store 统一按设备绑定加密落盘（AES-256-GCM，密钥由芯片出厂 MAC 派生，不落盘）。记录复制到其它设备无法解密，自动重新建档；旧明文记录首次读取自动迁移。配合蓝牙鱼缸 3.1（繁育系统：求偶仲裁/唯一子女/自由转移/繁育开关）",
+  "mainFile": "pocket-sage-official-dsh-2.9.94.bin",
+  "notes": "2.9.94 蓝牙编译开关丢失修复：某次构建把 sdkconfig 重置，CONFIG_BT_ENABLED 被清掉，整个 BLE 模块（含 NimBLE 协议栈）从未编入固件——设置里开启蓝牙无效、状态栏无蓝牙符文、蓝牙鱼缸提示请开启蓝牙的根因。修复：恢复蓝牙编译开关并把配置沉淀到 sdkconfig.defaults 防止再被重置；真实代码首次编译，手动格式化 MAC。配合蓝牙鱼缸 3.3（界面与鱼游重制：全画面显式宽度排版修复重叠 + boids 鱼游 + 字库缺字形重制）",
   "createdAt": "2026-11-05",
-  "updatedAt": "2026-11-24"
+  "updatedAt": "2026-11-25"
 }
