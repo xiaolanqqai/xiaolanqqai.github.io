@@ -1,8 +1,8 @@
 {
   "name": "PocketSageFirmware",
   "description": "墨本 AI 墨水屏固件（GitHub 镜像通道）",
-  "mainFile": "pocket-sage-official-dsh-2.9.90.bin",
-  "notes": "2.9.90 新增 sys.time() 绑定（Unix 秒，NTP 同步后为真实时间）供小应用做每日重置/夜幕/时间戳日志；配合蓝牙鱼缸 2.0（成长等级/成就/鱼种/日志页/手动撒食/摩尔斯播报/夜幕/Matrix 彩蛋/设备间串门协议 AQUM）",
+  "mainFile": "pocket-sage-official-dsh-2.9.91.bin",
+  "notes": "2.9.91 记录加密：小应用 store 统一按设备绑定加密落盘（AES-256-GCM，密钥由芯片出厂 MAC 派生，不落盘）。记录复制到其它设备无法解密，自动重新建档；旧明文记录首次读取自动迁移。配合蓝牙鱼缸 3.1（繁育系统：求偶仲裁/唯一子女/自由转移/繁育开关）",
   "createdAt": "2026-11-05",
-  "updatedAt": "2026-11-18"
+  "updatedAt": "2026-11-24"
 }

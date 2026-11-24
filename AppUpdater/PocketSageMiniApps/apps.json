@@ -4,6 +4,14 @@
     "base": "https://xiaolanqqai.cloud-ip.cc/AppUpdater/PocketSageMiniApps/",
     "apps": [
         {
+            "id": "aquarium",
+            "name": "蓝牙鱼缸",
+            "version": "3.1",
+            "entry": "main.lua",
+            "file": "aquarium-v3.1.json",
+            "hash": "49e93ba094775bf5"
+        },
+        {
             "id": "eviljuice",
             "name": "邪恶苹果汁",
             "version": "1.6",
